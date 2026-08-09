@@ -1833,6 +1833,28 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// The GUI child pages are now native; replace only their remaining
+	// Designer tab host while preserving page order, labels, and current state.
+	if (ui.tabsGUI) {
+		auto* legacyGuiTabs = ui.tabsGUI;
+		auto* nativeGuiTabs = new QTabWidget(legacyGuiTabs->parentWidget());
+		nativeGuiTabs->setObjectName(QStringLiteral("tabsGUI"));
+		nativeGuiTabs->setTabPosition(QTabWidget::West);
+		nativeGuiTabs->setAccessibleName(tr("GUI settings pages"));
+		const int currentGuiIndex = legacyGuiTabs->currentIndex();
+		while (legacyGuiTabs->count() > 0) {
+			const int index = legacyGuiTabs->count() - 1;
+			nativeGuiTabs->insertTab(0, legacyGuiTabs->widget(index), legacyGuiTabs->tabText(index));
+			legacyGuiTabs->removeTab(index);
+		}
+		nativeGuiTabs->setCurrentIndex(qBound(0, currentGuiIndex, nativeGuiTabs->count() - 1));
+		nativeGuiTabs->setProperty("m3NativeSurface", true);
+		if (auto* guiHostLayout = legacyGuiTabs->parentWidget()->layout())
+			guiHostLayout->replaceWidget(legacyGuiTabs, nativeGuiTabs);
+		legacyGuiTabs->deleteLater();
+		ui.tabsGUI = nativeGuiTabs;
+	}
+
 	ui.cmbDPI->addItem(tr("None"), 0);
 	ui.cmbDPI->addItem(tr("Native"), 1);
 	ui.cmbDPI->addItem(tr("Qt"), 2);
