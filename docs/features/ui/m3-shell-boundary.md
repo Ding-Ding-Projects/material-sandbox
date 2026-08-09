@@ -181,6 +181,10 @@ Settings Templates now uses a native M3 tab host around Local Templates and App
 Compatibility pages, preserving page order, labels, current selection, and
 template model wiring.
 
+Settings Advanced now uses a native M3 tab host around Sandbox Options and
+Sandboxie.ini pages, preserving page order, labels, current selection, and
+settings wiring.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

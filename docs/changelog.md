@@ -107,6 +107,13 @@ Commit: [addd2d9eaa76c0102dc60c9714fd84fa57d0dd82](https://github.com/Ding-Ding-
 - Rebuilt the Settings Templates tab host with native Material 3 controls around Local Templates and App Compatibility pages.
 - Preserved page order, labels, current selection, and template model wiring.
 
+## 2026-08-09 · Native Settings advanced tab host
+
+Commit: [91c68684d0f4d4ebb0eded025950efcaac10a0fd](https://github.com/Ding-Ding-Projects/material-sandbox/commit/91c68684d0f4d4ebb0eded025950efcaac10a0fd)
+
+- Rebuilt the Settings Advanced tab host with native Material 3 controls around Sandbox Options and Sandboxie.ini pages.
+- Preserved page order, labels, current selection, and settings wiring.
+
 ## 2026-08-09 · Native Options resource-access tab host
 
 Commit: [01cf568a6d36d64b7e2450e532ffc3785cf0d0b1](https://github.com/Ding-Ding-Projects/material-sandbox/commit/01cf568a6d36d64b7e2450e532ffc3785cf0d0b1)
