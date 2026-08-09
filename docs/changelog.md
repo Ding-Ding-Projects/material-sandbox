@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native rename dialog
+
+Commit: [2251972eb131533c38532531fba767fb5e2f36c3](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2251972eb131533c38532531fba767fb5e2f36c3)
+
+- Replaced `RenameSandboxDialog.ui` with a native Material 3 form.
+- Preserved alias visibility and remembered hide-alias behavior.
+
 ## 2026-08-09 · Native sandbox import dialog
 
 Commit: [f2c3e874db5a1673a689b310e55b5cc2a752f935](https://github.com/Ding-Ding-Projects/material-sandbox/commit/f2c3e874db5a1673a689b310e55b5cc2a752f935)
