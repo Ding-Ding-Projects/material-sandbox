@@ -21,6 +21,19 @@
 #include <QVBoxLayout>
 #include <QTextStream>
 
+namespace {
+
+QString escapeNotificationMarkdown(QString value)
+{
+    value.replace(QChar('\\'), QStringLiteral("\\\\"));
+    value.replace(QChar('\n'), QChar(' '));
+    value.replace(QChar('*'), QStringLiteral("\\*"));
+    value.replace(QChar('['), QStringLiteral("\\["));
+    return value;
+}
+
+}
+
 CNotificationCenter::CNotificationCenter(CSettings* settings, QWidget* parent)
     : QWidget(parent), m_settings(settings), m_key(QStringLiteral("UIConfig/NotificationHistory"))
 {
@@ -130,8 +143,12 @@ void CNotificationCenter::exportJson()
         array.append(object);
     }
     QSaveFile file(path);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-        file.write(QJsonDocument(array).toJson(QJsonDocument::Indented)), file.commit();
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+    const QByteArray payload = QJsonDocument(array).toJson(QJsonDocument::Indented);
+    if (file.write(payload) != payload.size())
+        return;
+    file.commit();
 }
 
 void CNotificationCenter::exportMarkdown()
@@ -141,12 +158,15 @@ void CNotificationCenter::exportMarkdown()
     QSaveFile file(path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return;
     QTextStream stream(&file);
-    stream << "# Notification history\n\n" << "Search: `" << m_filter->text().replace('`', "'") << "`\n\n";
-    const auto escape = [](QString value) { return value.replace('\\', "\\\\").replace('\n', " ").replace('*', "\\*").replace('[', "\\["); };
+    QString search = m_filter->text();
+    search.replace(QChar('`'), QChar('\''));
+    stream << QStringLiteral("# Notification history\n\nSearch: `") << search << QStringLiteral("`\n\n");
     for (int i = 0; i < m_list->count(); ++i) {
         QListWidgetItem* item = m_list->item(i);
         if (item->isHidden()) continue;
-        stream << "- **" << escape(item->data(Qt::UserRole + 2).toString()) << "** — " << escape(item->data(Qt::UserRole + 3).toString()) << " (" << item->data(Qt::UserRole + 4).toString() << ")\n";
+        stream << QStringLiteral("- **") << escapeNotificationMarkdown(item->data(Qt::UserRole + 2).toString())
+            << QStringLiteral("** — ") << escapeNotificationMarkdown(item->data(Qt::UserRole + 3).toString())
+            << QStringLiteral(" (") << item->data(Qt::UserRole + 4).toString() << QStringLiteral(")\n");
     }
     stream.flush();
     file.commit();
