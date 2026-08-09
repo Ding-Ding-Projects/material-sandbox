@@ -158,6 +158,10 @@ OptionsWindow File Migration is now another native slice: copy-limit settings,
 prompts, wildcard rules, and actions are created in code while copy-rule
 persistence and handlers remain intact; other OptionsWindow tabs remain staged.
 
+OptionsWindow Restrictions is now another native slice: printing and
+system-protection controls are created in code while the existing persistence
+and handlers remain intact; other OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls

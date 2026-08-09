@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Restrictions tab
+
+Commit: [d79b138ff97d1bc99c34c426963f89e69ee41812](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d79b138ff97d1bc99c34c426963f89e69ee41812)
+
+- Rebuilt the Restrictions child tab with native Material 3 printing and system-protection controls.
+- Preserved OptionsGeneral persistence, enablement rules, and signal handlers.
+
 ## 2026-08-09 · Native Options File Migration tab
 
 Commit: [6ffcaed5b82c9eaf1fc97813ce8e3c2e271efaad](https://github.com/Ding-Ding-Projects/material-sandbox/commit/6ffcaed5b82c9eaf1fc97813ce8e3c2e271efaad)
