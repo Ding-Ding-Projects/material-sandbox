@@ -11,7 +11,7 @@ $checks = @(
     [pscustomobject]@{ Pass = $cpp -match 'M3ShellHost::Install\(this, m_pMenuBar\)'; Message = 'CSandMan installs the M3 shell' },
     [pscustomobject]@{ Pass = $hostCpp -match 'm3ShellInstalled'; Message = 'installation is idempotent' },
     [pscustomobject]@{ Pass = $hostCpp -match 'FramelessWindowHint'; Message = 'native chrome is replaced' }
-    , [pscustomobject]@{ Pass = $boxCpp -match 'M3ShellHost::InstallDialog'; Message = 'BoxImageWindow uses the M3 dialog surface' }
+    , [pscustomobject]@{ Pass = ($boxCpp -match 'M3ShellHost::InstallDialog' -or $boxCpp -match 'M3DialogHost::Install\(this\)'); Message = 'BoxImageWindow uses the M3 dialog surface' }
     , [pscustomobject]@{ Pass = ($proxyCpp -match 'M3ShellHost::InstallDialog' -or $proxyCpp -match 'M3DialogHost::Install\(this\)'); Message = 'TestProxyDialog uses the M3 dialog surface' }
 )
 foreach ($check in $checks) {
