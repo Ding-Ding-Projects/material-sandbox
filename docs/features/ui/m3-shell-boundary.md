@@ -132,6 +132,10 @@ Resource Access now uses a native M3 tab host for Files, Registry, IPC, Wnd,
 COM, and Access Policies pages while preserving page order, state, icons, and
 migrated child behavior.
 
+Stop Options now uses native M3 controls for lingering-window and leniency
+switches while preserving stop-change handlers, persistence, and the later
+stop-tab merge.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
