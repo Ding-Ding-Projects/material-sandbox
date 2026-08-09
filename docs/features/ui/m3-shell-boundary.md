@@ -21,6 +21,13 @@ continues to style data controls but is no longer allowed to own product
 chrome. Follow-up migrations should move one view at a time behind this host,
 then remove its legacy form and proxy-style dependency.
 
+`M3ShellHost::InstallDialog` is the first dialog migration slice. `BoxImageWindow`
+and `TestProxyDialog` now retain their tested controls and async behavior while
+their native dialog chrome is replaced by the same frameless M3 header, close
+control, focus styling, and 40×32px target contract. The Designer forms remain
+content-only migration inputs until their controls can be rewritten without
+changing password or network-test semantics.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls

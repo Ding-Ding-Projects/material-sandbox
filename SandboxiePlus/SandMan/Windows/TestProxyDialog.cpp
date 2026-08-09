@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "TestProxyDialog.h"
+#include "M3ShellHost.h"
 #include <QtConcurrent>
 
 constexpr auto TestProgressMax = 90;
@@ -23,6 +24,7 @@ CTestProxyDialog::CTestProxyDialog(const QString& IP, const QString& Port, COpti
 	ui.setupUi(this);
 	RestoreDefaults();
 	this->setWindowTitle(tr("Sandboxie-Plus - Test Proxy"));
+	M3ShellHost::InstallDialog(this, windowTitle());
 	this->setFixedSize(this->size());
 	ui.stackedWidget->setCurrentIndex(0);
 

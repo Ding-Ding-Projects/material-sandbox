@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "BoxImageWindow.h"
+#include "M3ShellHost.h"
 #include "SandMan.h"
 #include "../MiscHelpers/Common/Settings.h"
 #include "../MiscHelpers/Common/Common.h"
@@ -21,6 +22,7 @@ CBoxImageWindow::CBoxImageWindow(EAction Action, QWidget *parent)
 
 	ui.setupUi(this);
 	this->setWindowTitle(tr("Sandboxie-Plus - Password Entry"));
+	M3ShellHost::InstallDialog(this, windowTitle());
 
 	m_Action = Action;
 

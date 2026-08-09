@@ -50,7 +50,6 @@ HEADERS += ./stdafx.h \
     ./Wizards/TemplateWizard.h \
     ./Wizards/SetupWizard.h \
     ./Wizards/BoxAssistant.h \
-    ./Windows/BoxImageWindow.h \
     ./Windows/CompressDialog.h \
     ./Windows/ExtractDialog.h \
     ./Windows/RenameSandboxDialog.h \
@@ -119,7 +118,6 @@ SOURCES += ./main.cpp \
     ./Wizards/TemplateWizard.cpp \
     ./Wizards/SetupWizard.cpp \
     ./Wizards/BoxAssistant.cpp \
-    ./Windows/BoxImageWindow.cpp \
     ./Windows/CompressDialog.cpp \
     ./Windows/ExtractDialog.cpp \
     ./Windows/RenameSandboxDialog.cpp \
