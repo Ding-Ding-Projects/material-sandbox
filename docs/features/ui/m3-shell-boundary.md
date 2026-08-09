@@ -41,7 +41,9 @@ their native dialog chrome is replaced by the same frameless M3 header, close
 control, focus styling, and 40×32px target contract. `SelectBoxWindow` now also
 owns its sandbox-selection controls in code, preserving grouped tree selection,
 double-click launch, force-child/admin actions, and geometry persistence without
-the retired Designer form.
+the retired Designer form. `BoxImageWindow` likewise owns its password, image
+size, cipher, and protection controls in code while retaining action-specific
+visibility and validation behavior.
 
 ## Failure and accessibility notes
 

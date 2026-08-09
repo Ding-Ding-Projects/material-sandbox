@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native box image password dialog
+
+Commit: [cabbef7aae1019c95e81e10e4997a9b25a3f0155](https://github.com/Ding-Ding-Projects/material-sandbox/commit/cabbef7aae1019c95e81e10e4997a9b25a3f0155)
+
+- Replaced `BoxImageWindow.ui` with native Material 3 password, image-size, cipher, and protection controls.
+- Preserved action-specific visibility, password validation, image-size checks, and force-protection behavior.
+
 ## 2026-08-09 · Native sandbox picker dialog
 
 Commit: [032a3b0b71d6a949e55f17fe51ff55342a123609](https://github.com/Ding-Ding-Projects/material-sandbox/commit/032a3b0b71d6a949e55f17fe51ff55342a123609)
