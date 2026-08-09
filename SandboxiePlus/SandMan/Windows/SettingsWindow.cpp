@@ -237,6 +237,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		presentationForm->addRow(tr("Language mode"), languageMode);
 
 		QList<QWidget*> playfulControls;
+		QList<QWidget*> playfulLabels;
 		auto addFunnyLevel = [&](const QString& label, int value, std::function<void(int)> setter) {
 			QWidget* row = new QWidget(presentation);
 			QHBoxLayout* rowLayout = new QHBoxLayout(row);
@@ -256,6 +257,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			row->setToolTip(tr("Level 1 is fully serious; level 5 adds the most playful voice without changing facts."));
 			presentationForm->addRow(label, row);
 			playfulControls.append(row);
+			if (QWidget* rowLabel = presentationForm->labelForField(row))
+				playfulLabels.append(rowLabel);
 		};
 		addFunnyLevel(tr("English funny level"), UserPresentationSettings::funnyEnglish(theConf), [](int level) { UserPresentationSettings::setFunnyEnglish(theConf, level); });
 		addFunnyLevel(tr("Cantonese funny level"), UserPresentationSettings::funnyCantonese(theConf), [](int level) { UserPresentationSettings::setFunnyCantonese(theConf, level); });
@@ -280,11 +283,13 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		resetSchoolName->setToolTip(tr("Restore the shipped name, School mode."));
 		presentationForm->addRow(QString(), resetSchoolName);
 
-		auto updateSchoolVisibility = [schoolMode, languageMode, playfulControls, schoolName, resetSchoolName]() {
+		auto updateSchoolVisibility = [schoolMode, languageMode, playfulControls, playfulLabels, schoolName, resetSchoolName]() {
 			const bool enabled = schoolMode->isChecked();
 			languageMode->setVisible(!enabled);
 			for (QWidget* control : playfulControls)
 				control->setVisible(!enabled);
+			for (QWidget* label : playfulLabels)
+				label->setVisible(!enabled);
 			schoolName->setVisible(true);
 			resetSchoolName->setVisible(true);
 		};
