@@ -1,0 +1,37 @@
+# Material 3 shell boundary
+
+## Behaviour
+
+`M3ShellHost::Install` is the single chrome boundary for the SandMan desktop
+window. It replaces the platform title bar with a frameless Material 3 title
+bar, keeps the existing menu bar routable, and provides keyboard/touch-sized
+minimize, maximize/restore, and close controls. Dragging the title surface
+moves the window while maximized windows remain stable.
+
+The host is idempotent (`m3ShellInstalled`) so `RebuildUI()` can recreate
+content without stacking title bars. Existing views remain children beneath the
+host and can be migrated one at a time; new screens should attach to the host
+instead of creating another `QMainWindow` or custom title bar.
+
+## Migration boundary
+
+The legacy seams are `CSandMan` (`QMainWindow`), `SettingsWindow.ui`,
+`OptionsWindow.ui`, and the dialogs under `SandMan/Windows`. `CustomStyles.h`
+continues to style data controls but is no longer allowed to own product
+chrome. Follow-up migrations should move one view at a time behind this host,
+then remove its legacy form and proxy-style dependency.
+
+## Failure and accessibility notes
+
+The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
+have accessible names, tooltips, visible focus styling, and a minimum 40×32px
+target. The host never blocks startup or opens a dialog. If a platform window
+manager rejects frameless flags, Qt keeps the same central content and the
+controls remain available through the host surface.
+
+## Verification
+
+The source validator checks that the host is present in `SandMan.pri`, that the
+constructor installs it after `setCentralWidget`, and that the host is guarded
+against duplicate installation. A native compile remains part of the Windows
+CI gate because this checkout does not guarantee a Qt SDK on every agent.

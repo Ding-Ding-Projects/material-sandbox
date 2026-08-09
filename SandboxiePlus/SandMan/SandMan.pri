@@ -44,6 +44,7 @@ HEADERS += ./stdafx.h \
     ./Windows/ColorTranslatorDialog.h \
     ./Windows/AppearanceEditorDialog.h \
     ./Windows/DestructiveConfirmationDialog.h \
+    ./Windows/M3ShellHost.h \
     ./OnlineUpdater.h \
     ./Wizards/NewBoxWizard.h \
     ./Wizards/TemplateWizard.h \
@@ -112,6 +113,7 @@ SOURCES += ./main.cpp \
     ./Windows/ColorTranslatorDialog.cpp \
     ./Windows/AppearanceEditorDialog.cpp \
     ./Windows/DestructiveConfirmationDialog.cpp \
+    ./Windows/M3ShellHost.cpp \
     ./OnlineUpdater.cpp \
     ./Wizards/NewBoxWizard.cpp \
     ./Wizards/TemplateWizard.cpp \
