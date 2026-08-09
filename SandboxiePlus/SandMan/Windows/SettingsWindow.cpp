@@ -1619,6 +1619,28 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Local Templates and App Compatibility are native pages; replace their
+	// remaining Designer tab host while preserving order and current selection.
+	if (ui.tabsTemplates) {
+		auto* legacyTemplateTabs = ui.tabsTemplates;
+		auto* nativeTemplateTabs = new QTabWidget(legacyTemplateTabs->parentWidget());
+		nativeTemplateTabs->setObjectName(QStringLiteral("tabsTemplates"));
+		nativeTemplateTabs->setTabPosition(QTabWidget::West);
+		nativeTemplateTabs->setAccessibleName(tr("Template settings pages"));
+		const int currentTemplateIndex = legacyTemplateTabs->currentIndex();
+		while (legacyTemplateTabs->count() > 0) {
+			const int index = legacyTemplateTabs->count() - 1;
+			nativeTemplateTabs->insertTab(0, legacyTemplateTabs->widget(index), legacyTemplateTabs->tabText(index));
+			legacyTemplateTabs->removeTab(index);
+		}
+		nativeTemplateTabs->setCurrentIndex(qBound(0, currentTemplateIndex, nativeTemplateTabs->count() - 1));
+		nativeTemplateTabs->setProperty("m3NativeSurface", true);
+		if (auto* templateHostLayout = legacyTemplateTabs->parentWidget()->layout())
+			templateHostLayout->replaceWidget(legacyTemplateTabs, nativeTemplateTabs);
+		legacyTemplateTabs->deleteLater();
+		ui.tabsTemplates = nativeTemplateTabs;
+	}
+
 	// Replace the self-contained Sandboxie.ini child tab with native M3 controls
 	// while preserving portable-box actions and config-protection handlers.
 	if (ui.tabsAdvanced && ui.tabLock) {
