@@ -418,7 +418,7 @@ void CTabStateManager::showScopedTabSearch(SearchScope scope, const QPoint& posi
     layout->addWidget(buttons);
     connect(buttons, &QDialogButtonBox::rejected, dialog, &QDialog::close);
 
-    auto refresh = [this, query, regex, caseSensitive, pattern, sample, regexStatus, results, count]() {
+    auto refresh = [this, query, regex, caseSensitive, pattern, sample, regexStatus, results, count, groupScoped, groupName, groupNames]() {
         const QString needle = query->text().left(4096);
         const bool useRegex = regex->isChecked();
         const Qt::CaseSensitivity sensitivity = caseSensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
