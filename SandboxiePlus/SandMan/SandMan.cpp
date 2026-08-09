@@ -5018,9 +5018,9 @@ void CSandMan::SetUITheme()
 	const int customStyle = theConf->GetInt("UIConfig/UIFontStyle", -1);
 	if (customStyle >= QFont::StyleNormal && customStyle <= QFont::StyleOblique)
 		font.setStyle(static_cast<QFont::Style>(customStyle));
-	const int customUnderline = theConf->GetInt("UIConfig/UIFontUnderline", QFont::NoUnderline);
-	if (customUnderline >= QFont::NoUnderline && customUnderline <= QFont::WaveUnderline)
-		font.setUnderline(static_cast<QFont::UnderlineStyle>(customUnderline));
+	const int customUnderline = theConf->GetInt("UIConfig/UIFontUnderline", 0);
+	if (customUnderline >= 0 && customUnderline <= 6)
+		font.setUnderline(customUnderline != 0);
 	font.setStrikeOut(theConf->GetInt("UIConfig/UIFontStrikeOut", 0) != 0);
 	font.setOverline(theConf->GetInt("UIConfig/UIFontOverline", 0) != 0);
 	font.setCapitalization(static_cast<QFont::Capitalization>(theConf->GetInt("UIConfig/UIFontCapitalization", QFont::MixedCase)));

@@ -674,7 +674,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		connect(editAppearance, &QPushButton::clicked, this, [this, editAppearance]() {
 			Q_UNUSED(editAppearance);
 			QFont initial = QApplication::font();
-			initial.setUnderline(static_cast<QFont::UnderlineStyle>(theConf->GetInt("UIConfig/UIFontUnderline", QFont::NoUnderline)));
+			initial.setUnderline(theConf->GetInt("UIConfig/UIFontUnderline", 0) != 0);
 			initial.setStrikeOut(theConf->GetInt("UIConfig/UIFontStrikeOut", 0) != 0);
 			initial.setOverline(theConf->GetInt("UIConfig/UIFontOverline", 0) != 0);
 			initial.setCapitalization(static_cast<QFont::Capitalization>(theConf->GetInt("UIConfig/UIFontCapitalization", QFont::MixedCase)));
@@ -699,7 +699,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			theConf->SetValue("UIConfig/UIFontFamily", chosen.family());
 			theConf->SetValue("UIConfig/UIFontWeight", static_cast<int>(chosen.weight()));
 			theConf->SetValue("UIConfig/UIFontStyle", static_cast<int>(chosen.style()));
-			theConf->SetValue("UIConfig/UIFontUnderline", static_cast<int>(chosen.underline()));
+			theConf->SetValue("UIConfig/UIFontUnderline", editor.selectedUnderlineStyle());
 			theConf->SetValue("UIConfig/UIFontStrikeOut", chosen.strikeOut() ? 1 : 0);
 			theConf->SetValue("UIConfig/UIFontOverline", chosen.overline() ? 1 : 0);
 			theConf->SetValue("UIConfig/UIFontCapitalization", static_cast<int>(chosen.capitalization()));

@@ -23,6 +23,7 @@ public:
         const QColor& initialTextColor = QColor(), const QColor& initialHighlight = QColor(), QWidget* parent = nullptr);
 
     QFont selectedFont() const;
+    int selectedUnderlineStyle() const;
     QColor selectedAccent() const { return m_accent; }
     QColor selectedTextColor() const { return m_textColor; }
     QColor selectedHighlightColor() const { return m_highlight; }
