@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SandMan.h"
+#include "Windows/M3DialogHost.h"
 #include <QtWidgets/QApplication>
 #include "../QSbieAPI/SbieAPI.h"
 #include "../QtSingleApp/src/qtsingleapplication.h"
@@ -85,6 +86,7 @@ int main(int argc, char *argv[])
 
 	QtSingleApplication app(argc, argv);
 	app.setQuitOnLastWindowClosed(false);
+	M3DialogHost::InstallForApplication(&app);
 
 	// MaterialTheme owns application chrome; legacy Windows style selection is
 	// intentionally ignored for existing profiles.

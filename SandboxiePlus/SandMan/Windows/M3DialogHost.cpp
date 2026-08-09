@@ -2,6 +2,8 @@
 #include "M3DialogHost.h"
 
 #include <QDialog>
+#include <QApplication>
+#include <QEvent>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMouseEvent>
@@ -9,6 +11,22 @@
 #include <QVBoxLayout>
 
 namespace {
+
+class M3DialogFilter final : public QObject
+{
+public:
+    using QObject::QObject;
+
+protected:
+    bool eventFilter(QObject* watched, QEvent* event) override
+    {
+        if (event->type() == QEvent::Show) {
+            if (auto* dialog = qobject_cast<QDialog*>(watched))
+                M3DialogHost::Install(dialog);
+        }
+        return QObject::eventFilter(watched, event);
+    }
+};
 
 QPoint GlobalPoint(const QMouseEvent* event)
 {
@@ -106,6 +124,14 @@ void Install(QDialog* dialog)
     auto* rootLayout = new QVBoxLayout(dialog);
     rootLayout->setContentsMargins(0, 0, 0, 0);
     rootLayout->addWidget(shell);
+}
+
+void InstallForApplication(QApplication* application)
+{
+    if (!application || application->property("m3DialogFilterInstalled").toBool())
+        return;
+    application->setProperty("m3DialogFilterInstalled", true);
+    application->installEventFilter(new M3DialogFilter(application));
 }
 
 }
