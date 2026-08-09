@@ -165,6 +165,10 @@ Settings Shell now uses a native M3 tab host around Windows Shell, System Tray,
 and Run Menu pages, preserving page order, labels, current selection, and
 settings pointer wiring.
 
+Settings General now uses a native M3 tab host around General Options and
+Notifications pages, preserving page order, labels, current selection, and
+settings wiring.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
