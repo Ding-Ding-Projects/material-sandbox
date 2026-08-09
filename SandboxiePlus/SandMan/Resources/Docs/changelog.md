@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-09 · Contributor update channels
+
+Commit: [4b37c38e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4b37c38ed68644f5860af6e28d54138347a4d9c4)
+
+- Opened the Setup Wizard Insider channel for contributor builds without a certificate-type gate.
+
 ## 2026-08-09 · Contributor update surface
 
 Commit: [d2dc8ddc](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d2dc8ddc78899fe95163d96f3d57e9259e950d60)
