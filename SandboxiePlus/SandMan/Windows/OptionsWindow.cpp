@@ -929,6 +929,41 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Resource Access > Access Policies with native M3 controls while
+	// retaining privacy/rule-specificity dependencies and boxed-access policy.
+	if (ui.tabsAccess && ui.tabPolicy) {
+		const int policyIndex = ui.tabsAccess->indexOf(ui.tabPolicy);
+		if (policyIndex >= 0) {
+			auto* legacyPolicy = ui.tabPolicy;
+			auto* nativePolicy = new QWidget(ui.tabsAccess);
+			auto* policyLayout = new QVBoxLayout(nativePolicy);
+			ui.lblMode = new QLabel(tr("Access Mode"), nativePolicy);
+			ui.lblMode->setProperty("m3NativeSurface", true);
+			ui.lblMode->setStyleSheet("font-weight: 600;");
+			policyLayout->addWidget(ui.lblMode);
+			ui.chkPrivacy = new QCheckBox(tr("Privacy Mode: block file and registry access except generic system locations"), nativePolicy);
+			ui.chkPrivacy->setToolTip(tr("Privacy Mode allows only generic Windows locations unless explicit access is granted."));
+			policyLayout->addWidget(ui.chkPrivacy);
+			ui.lblPolicy = new QLabel(tr("Rule Policies"), nativePolicy);
+			ui.lblPolicy->setProperty("m3NativeSurface", true);
+			ui.lblPolicy->setStyleSheet("font-weight: 600;");
+			policyLayout->addWidget(ui.lblPolicy);
+			ui.chkUseSpecificity = new QCheckBox(tr("Prioritize rules by specificity and process match level"), nativePolicy);
+			ui.chkUseSpecificity->setToolTip(tr("More specific paths and stronger process matches take precedence."));
+			policyLayout->addWidget(ui.chkUseSpecificity);
+			policyLayout->addWidget(new QLabel(tr("Rule specificity measures the matching path; process-name or group matches have higher priority than global matches."), nativePolicy));
+			ui.chkCloseForBox = new QCheckBox(tr("Apply Close rules to binaries located inside the sandbox"), nativePolicy);
+			ui.chkNoOpenForBox = new QCheckBox(tr("Apply Open rules only to binaries located outside the sandbox"), nativePolicy);
+			policyLayout->addWidget(ui.chkCloseForBox);
+			policyLayout->addWidget(ui.chkNoOpenForBox);
+			policyLayout->addStretch();
+			ui.tabsAccess->removeTab(policyIndex);
+			ui.tabsAccess->insertTab(policyIndex, nativePolicy, tr("Access Policies"));
+			ui.tabPolicy = nativePolicy;
+			legacyPolicy->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
