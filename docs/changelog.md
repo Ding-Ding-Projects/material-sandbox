@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Day Teet Hui keyboard and overlay semantics
+
+Commit: [693e09d16f8d1f86a2ecc144eb050a657131ea76](https://github.com/Ding-Ding-Projects/material-sandbox/commit/693e09d16f8d1f86a2ecc144eb050a657131ea76)
+
+- Tab navigation now exposes explicit horizontal semantics, roving focus, Home/End movement, and semantically hidden inactive panels.
+- The command palette now exposes its open state, traps focus, locks background scrolling, and restores focus after close.
+
 ## 2026-08-09 · Complete Day Teet Hui feature inventory
 
 Commit: [c84586d554191d4d7a0bcfc402215375e915665c](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c84586d554191d4d7a0bcfc402215375e915665c)
@@ -236,4 +243,5 @@ Commit: [bd9aea138f9a401cebea1b854cd84f69cb9494b6](https://github.com/Ding-Ding-
 - Added the Material 3 desktop baseline.
 - Added contributor capability mode and quiet support handling.
 - Published the Material 3 Pages landing site.
+
 
