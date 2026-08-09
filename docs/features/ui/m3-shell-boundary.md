@@ -459,6 +459,13 @@ while receiving an accessible name, West docking, document-mode chrome, and
 `m3NativeSurface` metadata. Replacing the widget would invalidate the manager,
 so this manager-safe repair preserves page order and tab-state persistence.
 
+The Settings GUI tab now rebuilds its nine behavior checkboxes (`chkDarkTheme`,
+`chkAltRows`, `chkBackground`, `chkLargeIcons`, `chkNoIcons`, `chkOptTree`,
+`chkNewLayout`, `chkColorIcons`, and `chkHighlightPendingChanges`) as native
+Material 3 controls in-place. Their object names, tri-state/check states,
+accessible names, signal routes, persistence keys, and pending-change handling
+remain intact; `chkMonitorSize` stays on its separate General-settings path.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls

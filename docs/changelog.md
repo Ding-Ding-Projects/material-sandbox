@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings GUI behavior controls
+
+Commit: [cbffce483d10b66478e159a8d3c1e13cef870e4e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/cbffce483d10b66478e159a8d3c1e13cef870e4e)
+
+- Rebuilt the nine GUI behavior checkboxes as native Material 3 controls while preserving object names, tri-state/check state, signal routing, persistence keys, and pending-change highlighting.
+- Kept `chkMonitorSize` on its separate General-settings path and recorded the remaining Designer boundary honestly.
+
 ## 2026-08-09 · Manager-safe Options outer tab repair
 
 Commit: [858ce111472d02f92141a42127124788d4381fc4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/858ce111472d02f92141a42127124788d4381fc4)
@@ -899,4 +906,3 @@ Commit: [bd9aea138f9a401cebea1b854cd84f69cb9494b6](https://github.com/Ding-Ding-
 - Added the Material 3 desktop baseline.
 - Added contributor capability mode and quiet support handling.
 - Published the Material 3 Pages landing site.
-
