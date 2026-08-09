@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Manager-safe Options outer tab repair
+
+Commit: [858ce111472d02f92141a42127124788d4381fc4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/858ce111472d02f92141a42127124788d4381fc4)
+
+- Added an accessible name, West docking, document-mode chrome, and native Material 3 metadata to the existing Options outer tab widget.
+- Preserved `CTabStateManager`, page order, and tab-state persistence without replacing the owned widget.
+
 ## 2026-08-09 · Document remaining Designer boundary
 
 Commit: [60c60cbc3a2e27bd3f7e99151fee575b9991678b](https://github.com/Ding-Ding-Projects/material-sandbox/commit/60c60cbc3a2e27bd3f7e99151fee575b9991678b)
@@ -892,5 +899,4 @@ Commit: [bd9aea138f9a401cebea1b854cd84f69cb9494b6](https://github.com/Ding-Ding-
 - Added the Material 3 desktop baseline.
 - Added contributor capability mode and quiet support handling.
 - Published the Material 3 Pages landing site.
-
 
