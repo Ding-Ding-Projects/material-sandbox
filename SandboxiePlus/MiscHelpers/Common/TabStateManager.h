@@ -23,6 +23,8 @@ private slots:
     void showGroupPicker(const QString& tabName, const QPoint& position);
 
 private:
+    enum class SearchScope { CurrentStrip, CurrentGroup, GroupNames, MasterTabs };
+    void showScopedTabSearch(SearchScope scope, const QPoint& position, const QString& groupName = QString());
     bool eventFilter(QObject* watched, QEvent* event) override;
     QString tabKey(int index) const;
     QString tabKey(QWidget* page) const;

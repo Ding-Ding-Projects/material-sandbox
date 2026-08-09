@@ -22,6 +22,7 @@
 #include <QRegularExpressionMatch>
 #include <QSignalBlocker>
 #include <QPushButton>
+#include <QShortcut>
 #include <QSpinBox>
 #include <QTabBar>
 #include <QTabWidget>
@@ -43,6 +44,21 @@ CTabStateManager::CTabStateManager(QTabWidget* tabs, CSettings* settings, const 
     });
     connect(bar, &QTabBar::tabMoved, this, [this](int, int) { save(); });
     bar->installEventFilter(this);
+    auto anchor = [this]() {
+        const int index = m_tabs ? m_tabs->currentIndex() : -1;
+        return index >= 0 ? m_tabs->tabBar()->tabRect(index).center() : QPoint(1, 1);
+    };
+    auto addSearchShortcut = [this, anchor](const QKeySequence& sequence, SearchScope scope) {
+        QShortcut* shortcut = new QShortcut(sequence, m_tabs);
+        shortcut->setContext(Qt::WidgetWithChildrenShortcut);
+        connect(shortcut, &QShortcut::activated, this, [this, anchor, scope]() {
+            showScopedTabSearch(scope, anchor());
+        });
+    };
+    addSearchShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_T), SearchScope::CurrentStrip);
+    addSearchShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_G), SearchScope::CurrentGroup);
+    addSearchShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_N), SearchScope::GroupNames);
+    addSearchShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_O), SearchScope::MasterTabs);
     load();
     restoreOrder();
 }
@@ -147,15 +163,26 @@ void CTabStateManager::showContextMenu(const QPoint& position)
     searchAction->setDefaultWidget(filter);
     menu.addAction(searchAction);
     QAction* pin = menu.addAction(m_pinned.contains(name) ? tr("Unpin tab") : tr("Pin tab"));
-    QAction* searchTabs = menu.addAction(tr("Search open tabs…"));
+    QAction* currentStripSearch = menu.addAction(tr("Search current tab strip…"));
+    currentStripSearch->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_T));
+    QAction* currentGroupSearch = menu.addAction(tr("Search current tab group…"));
+    currentGroupSearch->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_G));
+    currentGroupSearch->setEnabled(!m_groups.value(name).isEmpty());
+    QAction* groupNameSearch = menu.addAction(tr("Search tab groups…"));
+    groupNameSearch->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_N));
+    QAction* searchTabs = menu.addAction(tr("Search all open tabs…"));
+    searchTabs->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_O));
     QAction* group = menu.addAction(tr("Move… into group…"));
     QAction* clearGroup = menu.addAction(tr("Remove from group"));
     QAction* edit = menu.addAction(tr("Edit tab appearance…"));
-    connect(filter, &QLineEdit::textChanged, &menu, [filter, pin, searchTabs, group, clearGroup, edit](const QString& query) {
-        for (QAction* action : { pin, searchTabs, group, clearGroup, edit })
+    connect(filter, &QLineEdit::textChanged, &menu, [filter, pin, currentStripSearch, currentGroupSearch, groupNameSearch, searchTabs, group, clearGroup, edit](const QString& query) {
+        for (QAction* action : { pin, currentStripSearch, currentGroupSearch, groupNameSearch, searchTabs, group, clearGroup, edit })
             action->setVisible(query.isEmpty() || action->text().contains(query, Qt::CaseInsensitive));
     });
-    connect(searchTabs, &QAction::triggered, this, [this, position]() { showTabSearch(position); });
+    connect(currentStripSearch, &QAction::triggered, this, [this, position]() { showScopedTabSearch(SearchScope::CurrentStrip, position); });
+    connect(currentGroupSearch, &QAction::triggered, this, [this, position, name]() { showScopedTabSearch(SearchScope::CurrentGroup, position, m_groups.value(name)); });
+    connect(groupNameSearch, &QAction::triggered, this, [this, position]() { showScopedTabSearch(SearchScope::GroupNames, position); });
+    connect(searchTabs, &QAction::triggered, this, [this, position]() { showScopedTabSearch(SearchScope::MasterTabs, position); });
     connect(pin, &QAction::triggered, &menu, [this, name]() {
         if (m_pinned.contains(name)) m_pinned.remove(name); else m_pinned.insert(name);
         save();
@@ -332,19 +359,27 @@ void CTabStateManager::showGroupPicker(const QString& tabName, const QPoint& pos
 
 void CTabStateManager::showTabSearch(const QPoint& position)
 {
+    showScopedTabSearch(SearchScope::MasterTabs, position);
+}
+
+void CTabStateManager::showScopedTabSearch(SearchScope scope, const QPoint& position, const QString& groupName)
+{
     if (!m_tabs)
         return;
 
     QDialog* dialog = new QDialog(m_tabs, Qt::Tool | Qt::WindowStaysOnTopHint);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->setWindowTitle(tr("Search open tabs"));
+    const bool groupNames = scope == SearchScope::GroupNames;
+    const bool groupScoped = scope == SearchScope::CurrentGroup;
+    const QString title = groupNames ? tr("Search tab groups") : groupScoped ? tr("Search current tab group") : scope == SearchScope::CurrentStrip ? tr("Search current tab strip") : tr("Search all open tabs");
+    dialog->setWindowTitle(title);
     dialog->setMinimumSize(440, 360);
 
     QVBoxLayout* layout = new QVBoxLayout(dialog);
     QHBoxLayout* searchRow = new QHBoxLayout();
     QLineEdit* query = new QLineEdit(dialog);
-    query->setPlaceholderText(tr("Search tab labels and groups"));
-    query->setAccessibleName(tr("Open tab search"));
+    query->setPlaceholderText(groupNames ? tr("Search group names") : groupScoped ? tr("Search tabs in group %1").arg(groupName) : scope == SearchScope::CurrentStrip ? tr("Search tabs in this strip") : tr("Search tab labels and groups"));
+    query->setAccessibleName(title);
     QCheckBox* regex = new QCheckBox(tr("Regex"), dialog);
     regex->setToolTip(tr("Use the regex builder for this tab search"));
     regex->setAccessibleName(tr("Enable regular expression search"));
@@ -360,6 +395,7 @@ void CTabStateManager::showTabSearch(const QPoint& position)
     QLineEdit* pattern = new QLineEdit(dialog);
     pattern->setPlaceholderText(tr("Raw pattern (for example: ^Settings)"));
     pattern->setAccessibleName(tr("Regex pattern"));
+    pattern->setEnabled(false);
     QLineEdit* sample = new QLineEdit(dialog);
     sample->setPlaceholderText(tr("Sample text for capture preview"));
     sample->setAccessibleName(tr("Regex sample text"));
@@ -372,7 +408,7 @@ void CTabStateManager::showTabSearch(const QPoint& position)
     layout->addWidget(builder);
 
     QListWidget* results = new QListWidget(dialog);
-    results->setAccessibleName(tr("Open tab search results"));
+    results->setAccessibleName(groupNames ? tr("Tab group search results") : tr("Open tab search results"));
     results->setSelectionMode(QAbstractItemView::SingleSelection);
     layout->addWidget(results, 1);
     QLabel* count = new QLabel(dialog);
@@ -402,20 +438,29 @@ void CTabStateManager::showTabSearch(const QPoint& position)
         regexStatus->setText(useRegex ? tr("Valid pattern. Capture preview: %1").arg(expression.match(sample->text()).capturedTexts().join(QStringLiteral(" · "))) : tr("Plain-text search is active."));
         results->clear();
         int matches = 0;
+        QSet<QString> seenGroups;
         for (int i = 0; i < m_tabs->count(); ++i) {
             const QString key = tabKey(i);
             const QString group = m_groups.value(key);
             const QString label = m_tabs->tabText(i);
+            if (groupScoped && group != groupName)
+                continue;
+            if (groupNames && group.isEmpty())
+                continue;
+            if (groupNames && seenGroups.contains(group))
+                continue;
+            if (groupNames)
+                seenGroups.insert(group);
             const QString haystack = label + QStringLiteral(" ") + key + QStringLiteral(" ") + group;
             bool matched = needle.isEmpty();
             if (!needle.isEmpty())
                 matched = useRegex ? expression.match(haystack).hasMatch() : haystack.contains(needle, sensitivity);
             if (!matched)
                 continue;
-            QString display = label.isEmpty() ? key : label;
-            if (!group.isEmpty())
+            QString display = groupNames ? group : (label.isEmpty() ? key : label);
+            if (!groupNames && !group.isEmpty())
                 display += tr("  · group: %1").arg(group);
-            if (m_pinned.contains(key))
+            if (!groupNames && m_pinned.contains(key))
                 display += tr("  · pinned");
             QListWidgetItem* item = new QListWidgetItem(display, results);
             item->setData(Qt::UserRole, i);

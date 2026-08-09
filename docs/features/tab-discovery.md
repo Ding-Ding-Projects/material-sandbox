@@ -1,6 +1,13 @@
 # Tab discovery
 
-The Settings and Options tab strips expose **Search open tabs…** from their tab context menu. The anchored Material dialog searches visible tab labels, stable tab IDs, and persisted group names. Plain text is the default; enabling **Regex** exposes the adjacent builder fields for a bounded raw pattern, sample text, validation, and capture preview. Case sensitivity is explicit, and results identify pinned and grouped tabs. Activating a result focuses the real tab and records it as the active tab.
+The Settings and Options tab strips expose four independent tab-discovery searches from their tab context menu and keyboard paths:
+
+1. **Search current tab strip…** (`Ctrl+Shift+T`) searches the tabs owned by the originating strip.
+2. **Search current tab group…** (`Ctrl+Shift+G`) searches only the selected tab's persisted group.
+3. **Search tab groups…** (`Ctrl+Shift+N`) searches group names and returns one result per group.
+4. **Search all open tabs…** (`Ctrl+Shift+O`) is the master search across every tab in the manager.
+
+Each invocation creates an anchored dialog with its own query, raw pattern, sample text, validation, capture preview, and case-sensitivity state. Plain text is the default; enabling **Regex** exposes the full local builder. Inputs are bounded to 4096 characters, invalid patterns produce no results, and activating a result focuses the real tab and records its stable ID as active. The current strip and master scopes intentionally share the manager's tab collection because each `CTabStateManager` owns one actual strip; they remain separate entry points and stateful dialogs.
 
 ## Moving tabs into groups
 
@@ -16,7 +23,7 @@ Patterns and sample text are bounded to 4096 characters and evaluated locally wi
 
 ## Verification
 
-Run `node scripts/validate-tab-discovery.mjs` to verify the manager, docs article, and both consumer windows retain the search entry point, anchored group picker, regex builder, member counts, and schema 2 active-state contract. Runtime capture remains a separate headless-app gate; this lane does not claim the full four-search or complete group-appearance contract.
+Run `node scripts/validate-tab-discovery.mjs` to verify the manager, docs article, and both consumer windows retain all four search entry points, keyboard shortcuts, anchored group picker, regex builder, bounded inputs, member counts, and schema 2 active-state contract. Runtime capture remains a separate headless-app gate; this lane does not claim full visual capture of every overlay or complete group-appearance editing.
 
 ## Suggested articles
 
