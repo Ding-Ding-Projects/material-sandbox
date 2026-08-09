@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options debug tab host
+
+Commit: [df101ff3854bb6ef94bacbbf9bd66ab3a80ad581](https://github.com/Ding-Ding-Projects/material-sandbox/commit/df101ff3854bb6ef94bacbbf9bd66ab3a80ad581)
+
+- Rebuilt the Debug Options and Config Dump tab host with native Material 3 controls.
+- Preserved current-page state, dynamic controls, and Config Dump refresh-on-tab-change behavior.
+
 ## 2026-08-09 · Native Options debug scroll host
 
 Commit: [1be2e9c618c279ffec6f8c309009d50181eae082](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1be2e9c618c279ffec6f8c309009d50181eae082)

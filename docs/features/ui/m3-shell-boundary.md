@@ -102,6 +102,10 @@ Advanced Options > Debug now wraps its dynamically generated debug switches in
 a native M3 scroll host while preserving the existing `dbgLayout` and runtime
 checkboxes.
 
+The Debug Options and Config Dump pages now share a native M3 tab host. Current
+page state, dynamic controls, and Config Dump refresh-on-tab-change behavior
+remain unchanged.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
