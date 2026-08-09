@@ -260,6 +260,60 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace the self-contained File Migration child tab with native M3
+	// controls while preserving OptionsGeneral's copy-rule model and handlers.
+	if (ui.tabsGeneral && ui.tabMigration) {
+		const int migrationIndex = ui.tabsGeneral->indexOf(ui.tabMigration);
+		if (migrationIndex >= 0) {
+			auto* nativeMigration = new QWidget(ui.tabsGeneral);
+			auto* migrationLayout = new QVBoxLayout(nativeMigration);
+			ui.lblMigration = new QLabel(tr("File Migration"), nativeMigration);
+			ui.lblMigration->setProperty("m3NativeSurface", true);
+			ui.lblMigration->setStyleSheet("font-weight: 600;");
+			migrationLayout->addWidget(ui.lblMigration);
+			auto* migrationHint = new QLabel(tr("Sandboxie copies host files into the sandbox when applications modify them; configure limits and wildcard-specific behavior here."), nativeMigration);
+			migrationHint->setWordWrap(true);
+			migrationLayout->addWidget(migrationHint);
+			auto* limitRow = new QHBoxLayout();
+			ui.chkCopyLimit = new QCheckBox(tr("Copy file size limit:"), nativeMigration);
+			ui.txtCopyLimit = new QLineEdit(nativeMigration);
+			ui.txtCopyLimit->setMaximumWidth(100);
+			ui.lblCopyLimit = new QLabel(tr("kilobytes"), nativeMigration);
+			limitRow->addWidget(ui.chkCopyLimit);
+			limitRow->addWidget(ui.txtCopyLimit);
+			limitRow->addWidget(ui.lblCopyLimit);
+			limitRow->addStretch();
+			migrationLayout->addLayout(limitRow);
+			ui.chkCopyPrompt = new QCheckBox(tr("Prompt user for large file migration"), nativeMigration);
+			ui.chkNoCopyWarn = new QCheckBox(tr("Issue message 2102 when a file is too large"), nativeMigration);
+			ui.chkDenyWrite = new QCheckBox(tr("When a file cannot be migrated, open it in read-only mode instead"), nativeMigration);
+			migrationLayout->addWidget(ui.chkCopyPrompt);
+			migrationLayout->addWidget(ui.chkNoCopyWarn);
+			migrationLayout->addWidget(ui.chkDenyWrite);
+			migrationLayout->addWidget(new QLabel(tr("Wildcard patterns can configure file-specific behavior:"), nativeMigration));
+			ui.treeCopy = new QTreeWidget(nativeMigration);
+			ui.treeCopy->setColumnCount(3);
+			ui.treeCopy->setHeaderLabels(QStringList() << tr("Action") << tr("Program") << tr("Pattern"));
+			ui.treeCopy->setSortingEnabled(true);
+			migrationLayout->addWidget(ui.treeCopy, 1);
+			auto* copyActions = new QHBoxLayout();
+			ui.btnAddCopy = new QPushButton(tr("Add Pattern"), nativeMigration);
+			ui.btnDelCopy = new QPushButton(tr("Remove Pattern"), nativeMigration);
+			ui.chkShowCopyTmpl = new QCheckBox(tr("Show Templates"), nativeMigration);
+			copyActions->addWidget(ui.btnAddCopy);
+			copyActions->addWidget(ui.btnDelCopy);
+			copyActions->addWidget(ui.chkShowCopyTmpl);
+			copyActions->addStretch();
+			migrationLayout->addLayout(copyActions);
+			ui.chkNoCopyMsg = new QCheckBox(tr("Issue message 2113/2114/2115 when a file is not fully migrated"), nativeMigration);
+			ui.chkNoCopyMsg->setToolTip(tr("2113: content discarded; 2114: write access denied; 2115: file opened read-only."));
+			migrationLayout->addWidget(ui.chkNoCopyMsg);
+			ui.tabsGeneral->removeTab(migrationIndex);
+			ui.tabsGeneral->insertTab(migrationIndex, nativeMigration, tr("File Migration"));
+			ui.tabMigration->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
