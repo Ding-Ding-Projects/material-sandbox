@@ -1170,6 +1170,9 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	}
 
 	ui.tabs->setTabPosition(QTabWidget::West);
+	ui.tabs->setAccessibleName(tr("Program options pages"));
+	ui.tabs->setDocumentMode(true);
+	ui.tabs->setProperty("m3NativeSurface", true);
 
 	ui.tabs->setCurrentIndex(0);
 	ui.tabs->setTabIcon(0, CSandMan::GetIcon("Config"));
