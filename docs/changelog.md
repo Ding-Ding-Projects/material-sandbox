@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-09 · Name and dock nested option tabs
+
+Commit: [5df08dcbaf189e575a9e710215346604c29b0b72](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5df08dcbaf189e575a9e710215346604c29b0b72)
+
+- Added accessible names and left-docked tab strips to every newly native nested Options tab host.
+- Covered Templates, Various, Advanced, General, Security, and Program Control pages with the M3 contract validator.
+
+巢狀設定頁籤全部有讀屏名稱同左邊泊位，六大頁面唔再各自走位。
+
 ## 2026-08-09 · Non-blocking empty export notices
 
 Commit: [137ccb70f0af7b7fb55a05141d3d351e099e10af](https://github.com/Ding-Ding-Projects/material-sandbox/commit/137ccb70f0af7b7fb55a05141d3d351e099e10af)

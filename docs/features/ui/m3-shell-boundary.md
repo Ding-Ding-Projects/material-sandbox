@@ -242,6 +242,11 @@ order, and both the tab host and scroll surface expose explicit accessible
 names. The M3 contract validator guards these choices so a bottom-only strip or
 unnamed surface cannot silently return.
 
+All nested Options tab hosts now expose localized accessible names and left-dock
+their strips consistently with the app-level tab contract. This keeps keyboard
+navigation and tab discovery predictable across Templates, Various, Advanced,
+General, Security, and Program Control pages.
+
 The Sandboxie Updater child tab is now another concrete native slice: channel
 radios, cadence, version links, and update toggles are created in code while
 certificate gating, release state, and updater handlers remain intact.
