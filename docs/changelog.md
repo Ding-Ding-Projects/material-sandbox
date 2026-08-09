@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native M3 options dialog shell
+
+Commit: [257440d19e43b025af0f0b1cc5ec5e79a4fbef4c](https://github.com/Ding-Ding-Projects/material-sandbox/commit/257440d19e43b025af0f0b1cc5ec5e79a4fbef4c)
+
+- Applied the shared frameless Material 3 dialog host to the large options surface.
+- Kept its 176 behavior-rich controls and `OptionsWindow.ui` intact as an explicit staged migration boundary; no controls were silently dropped.
+
 ## 2026-08-09 · Native notification popup
 
 Commit: [5424988941371677e9a983c859aadab01703602e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5424988941371677e9a983c859aadab01703602e)

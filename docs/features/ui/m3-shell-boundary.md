@@ -53,6 +53,10 @@ snapshot-operation behavior.
 `PopUpWindow` now owns its notification table in code and installs the shared
 M3 main-window shell while retaining message batching, prompts, recovery, and
 progress-entry behavior.
+`OptionsWindow` now uses the same native M3 dialog host around its large
+behavior-rich content. Its Designer form remains deliberately tracked as a
+staged migration boundary until all controls have programmatic replacements;
+this slice does not claim the old form is retired.
 
 ## Failure and accessibility notes
 
