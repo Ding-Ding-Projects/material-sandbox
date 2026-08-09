@@ -82,6 +82,10 @@ editor, and save/cancel controls as native M3 widgets. The later code-editor
 upgrade, INI validation, and persistence workflow continue using the same
 object names and pointers.
 
+Advanced Options > Processes now uses native M3 process-tree, hiding-switch,
+WMI guard, and add/remove controls. Templates, tooltips, event filters, and
+persisted process rules remain on the existing handlers and object names.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

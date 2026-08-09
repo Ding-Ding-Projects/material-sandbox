@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options process controls
+
+Commit: [19eb38a20bee83079bbb1ca1700f38c10093f516](https://github.com/Ding-Ding-Projects/material-sandbox/commit/19eb38a20bee83079bbb1ca1700f38c10093f516)
+
+- Rebuilt Advanced Options Processes tree, hiding switches, WMI guard, and actions with native Material 3 controls.
+- Preserved templates, tooltips, event filters, and persisted process rules.
+
 ## 2026-08-09 · Native Options ini editor controls
 
 Commit: [2426e44a4198cf22c484c971e94746e05f165c1d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2426e44a4198cf22c484c971e94746e05f165c1d)
