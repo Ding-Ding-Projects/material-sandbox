@@ -207,6 +207,12 @@
     <ClCompile Include="Windows\M3DialogHost.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\M3SearchField.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\RegexBuilderDialog.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
     <ClCompile Include="Windows\M3ShellHost.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
@@ -369,6 +375,12 @@
       <Filter>Windows</Filter>
     </QtMoc>
     <QtMoc Include="Windows\AppearanceEditorDialog.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\M3SearchField.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\RegexBuilderDialog.h">
       <Filter>Windows</Filter>
     </QtMoc>
     <ClInclude Include="Windows\M3DialogHost.h">

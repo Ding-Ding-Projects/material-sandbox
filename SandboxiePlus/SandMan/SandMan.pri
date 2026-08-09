@@ -47,6 +47,8 @@ HEADERS += ./stdafx.h \
     ./Windows/DestructiveConfirmationDialog.h \
     ./Windows/M3ShellHost.h \
     ./Windows/M3DialogHost.h \
+    ./Windows/M3SearchField.h \
+    ./Windows/RegexBuilderDialog.h \
     ./OnlineUpdater.h \
     ./Wizards/NewBoxWizard.h \
     ./Wizards/TemplateWizard.h \
@@ -117,6 +119,8 @@ SOURCES += ./main.cpp \
     ./Windows/DestructiveConfirmationDialog.cpp \
     ./Windows/M3ShellHost.cpp \
     ./Windows/M3DialogHost.cpp \
+    ./Windows/M3SearchField.cpp \
+    ./Windows/RegexBuilderDialog.cpp \
     ./OnlineUpdater.cpp \
     ./Wizards/NewBoxWizard.cpp \
     ./Wizards/TemplateWizard.cpp \

@@ -507,6 +507,8 @@
     <ClCompile Include="Windows\ColorTranslatorDialog.cpp" />
     <ClCompile Include="Windows\AppearanceEditorDialog.cpp" />
     <ClCompile Include="Windows\M3DialogHost.cpp" />
+    <ClCompile Include="Windows\M3SearchField.cpp" />
+    <ClCompile Include="Windows\RegexBuilderDialog.cpp" />
     <ClCompile Include="Windows\M3ShellHost.cpp" />
     <ClCompile Include="Windows\DestructiveConfirmationDialog.cpp" />
     <ClCompile Include="Windows\SnapshotsWindow.cpp" />
@@ -551,6 +553,8 @@
     <ClInclude Include="Windows\DimSumSurprise.h" />
     <QtMoc Include="Windows\ColorTranslatorDialog.h" />
     <QtMoc Include="Windows\AppearanceEditorDialog.h" />
+    <QtMoc Include="Windows\M3SearchField.h" />
+    <QtMoc Include="Windows\RegexBuilderDialog.h" />
     <ClInclude Include="Windows\M3DialogHost.h" />
     <ClInclude Include="Windows\M3ShellHost.h" />
     <ClInclude Include="..\MiscHelpers\Common\MaterialTheme.h" />
