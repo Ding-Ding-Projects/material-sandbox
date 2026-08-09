@@ -49,6 +49,11 @@ add/remove actions, and template toggle. Embedded per-row editors, selection
 filters, and template refresh behavior keep their existing object names and
 signals; the generated grid remains only as a temporary migration seam.
 
+Advanced Options > Users now uses a native M3 account list, add/remove actions,
+and administrator-only monitor toggle. Account selection and monitor settings
+continue to load and save through the existing handlers, with the surrounding
+Designer grid retained only as a bounded migration seam.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

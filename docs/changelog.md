@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options user controls
+
+Commit: [e8aae67f15c101869a1b4d509fd673e79711ab20](https://github.com/Ding-Ding-Projects/material-sandbox/commit/e8aae67f15c101869a1b4d509fd673e79711ab20)
+
+- Rebuilt the Advanced Options Users list, add/remove actions, and monitor toggle with native Material 3 controls.
+- Preserved account filtering, monitor persistence, and existing object-name wiring.
+
 ## 2026-08-09 · Native Options advanced miscellaneous controls
 
 Commit: [be73a59e1d9b3a8c510526ed0d4279639dd4b062](https://github.com/Ding-Ding-Projects/material-sandbox/commit/be73a59e1d9b3a8c510526ed0d4279639dd4b062)
