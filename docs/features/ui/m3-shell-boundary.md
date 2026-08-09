@@ -86,6 +86,10 @@ Advanced Options > Processes now uses native M3 process-tree, hiding-switch,
 WMI guard, and add/remove controls. Templates, tooltips, event filters, and
 persisted process rules remain on the existing handlers and object names.
 
+Advanced Options > Privacy now uses native M3 firmware, identifier, serial,
+MAC, locale, and dump controls. Privacy persistence and firmware-table export
+remain unchanged with the same object-name and signal wiring.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

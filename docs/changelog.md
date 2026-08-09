@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options privacy controls
+
+Commit: [73f44ea0f0f9354653e8f19af8ca928789c1ec88](https://github.com/Ding-Ding-Projects/material-sandbox/commit/73f44ea0f0f9354653e8f19af8ca928789c1ec88)
+
+- Rebuilt Advanced Options Privacy firmware, identifier, serial, MAC, locale, and dump controls with native Material 3 widgets.
+- Preserved privacy persistence, locale selection, and firmware-table export behavior.
+
 ## 2026-08-09 · Native Options process controls
 
 Commit: [19eb38a20bee83079bbb1ca1700f38c10093f516](https://github.com/Ding-Ding-Projects/material-sandbox/commit/19eb38a20bee83079bbb1ca1700f38c10093f516)
