@@ -359,7 +359,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 				const QString query = search->text().trimmed();
 				for (int i = entries.size() - 1; i >= 0; --i) {
 					const auto& entry = entries.at(i);
-					const QString text = QStringLiteral("%1 · %2 · %3").arg(entry.timestamp.toLocalTime().toString(Qt::DefaultLocaleShortDate), entry.action, entry.key);
+					const QString text = QStringLiteral("%1 · %2 · %3").arg(entry.timestamp.toLocalTime().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")), entry.action, entry.key);
 					if (!query.isEmpty() && !text.contains(query, Qt::CaseInsensitive))
 						continue;
 					QListWidgetItem* item = new QListWidgetItem(text, revisions);
