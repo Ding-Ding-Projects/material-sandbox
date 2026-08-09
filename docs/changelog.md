@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings Sandboxie.ini tab
+
+Commit: [6aab5ced3541c34725c33dfc57f565d235f6c86b](https://github.com/Ding-Ding-Projects/material-sandbox/commit/6aab5ced3541c34725c33dfc57f565d235f6c86b)
+
+- Rebuilt the Sandboxie.ini child tab with native Material 3 import, portable-box, config-protection, and password controls.
+- Preserved portable-box actions, protection persistence, and existing handlers.
+
 ## 2026-08-09 · Native Settings App Compatibility tab
 
 Commit: [dab079866c9160de106328cc5dba37c69b68c585](https://github.com/Ding-Ding-Projects/material-sandbox/commit/dab079866c9160de106328cc5dba37c69b68c585)

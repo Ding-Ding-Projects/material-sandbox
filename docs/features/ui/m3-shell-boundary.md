@@ -125,6 +125,10 @@ The App Compatibility child tab is now another concrete native slice: its
 detected-app tree, enable/disable actions, update link, and preference toggle
 are created in code while compatibility-template handlers remain intact.
 
+The Sandboxie.ini child tab is now another concrete native slice: portable-box
+imports, config protection, and password actions are created in code while
+protection persistence and handlers remain intact.
+
 The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.
