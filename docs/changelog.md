@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Complete Day Teet Hui article inventory
+
+Commit: [afffeccc09c69f76651d635f510491cfb26b530f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/afffeccc09c69f76651d635f510491cfb26b530f)
+
+- The landing page now exposes all 21 bundled feature articles, including the changelog viewer and Pages language/accessibility contracts.
+- The validator requires that exact indexed list, preventing new articles from disappearing from the first surface users see.
+
 ## 2026-08-09 · Native Settings Add-On Configuration tab
 
 Commit: [27525843940b9acb2efd9af6597bb0c97d8ceeef](https://github.com/Ding-Ding-Projects/material-sandbox/commit/27525843940b9acb2efd9af6597bb0c97d8ceeef)
