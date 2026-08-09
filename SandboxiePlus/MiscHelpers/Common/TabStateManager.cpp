@@ -3,19 +3,30 @@
 
 #include "Settings.h"
 #include <QAction>
+#include <QCheckBox>
+#include <QAbstractItemView>
 #include <QDialog>
+#include <QDialogButtonBox>
 #include <QFontComboBox>
 #include <QFormLayout>
+#include <QGroupBox>
 #include <QInputDialog>
+#include <QLabel>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QMenu>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#include <QSignalBlocker>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QTabBar>
 #include <QTabWidget>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QWidgetAction>
 
 CTabStateManager::CTabStateManager(QTabWidget* tabs, CSettings* settings, const QString& key, QObject* parent)
@@ -26,7 +37,10 @@ CTabStateManager::CTabStateManager(QTabWidget* tabs, CSettings* settings, const 
     QTabBar* bar = m_tabs->tabBar();
     bar->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(bar, &QTabBar::customContextMenuRequested, this, &CTabStateManager::showContextMenu);
-    connect(m_tabs, &QTabWidget::currentChanged, this, [this](int) { save(); });
+    connect(m_tabs, &QTabWidget::currentChanged, this, [this](int index) {
+        m_active = tabKey(index);
+        save();
+    });
     connect(bar, &QTabBar::tabMoved, this, [this](int, int) { save(); });
     bar->installEventFilter(this);
     load();
@@ -55,13 +69,16 @@ void CTabStateManager::load()
         return;
     QJsonParseError error;
     const QJsonObject root = QJsonDocument::fromJson(data, &error).object();
-    if (error.error != QJsonParseError::NoError || root.value(QStringLiteral("schema")).toInt() != 1)
+    const int schema = root.value(QStringLiteral("schema")).toInt();
+    if (error.error != QJsonParseError::NoError || (schema != 1 && schema != 2))
         return;
     for (const QJsonValue& value : root.value(QStringLiteral("pinned")).toArray())
         m_pinned.insert(value.toString());
     const QJsonObject groups = root.value(QStringLiteral("groups")).toObject();
     for (auto it = groups.begin(); it != groups.end(); ++it)
         m_groups.insert(it.key(), it.value().toString());
+    if (schema >= 2)
+        m_active = root.value(QStringLiteral("active")).toString();
 }
 
 void CTabStateManager::save() const
@@ -69,7 +86,7 @@ void CTabStateManager::save() const
     if (!m_settings || !m_tabs)
         return;
     QJsonObject root;
-    root.insert(QStringLiteral("schema"), 1);
+    root.insert(QStringLiteral("schema"), 2);
     QJsonArray order;
     for (int i = 0; i < m_tabs->count(); ++i)
         order.append(tabKey(i));
@@ -82,6 +99,7 @@ void CTabStateManager::save() const
     for (auto it = m_groups.cbegin(); it != m_groups.cend(); ++it)
         groups.insert(it.key(), it.value());
     root.insert(QStringLiteral("groups"), groups);
+    root.insert(QStringLiteral("active"), m_active.isEmpty() ? tabKey(m_tabs->currentIndex()) : m_active);
     m_settings->SetBlob(m_key, QJsonDocument(root).toJson(QJsonDocument::Compact));
 }
 
@@ -91,7 +109,8 @@ void CTabStateManager::restoreOrder()
         return;
     const QJsonDocument document = QJsonDocument::fromJson(m_settings->GetBlob(m_key));
     const QJsonObject root = document.object();
-    if (root.value(QStringLiteral("schema")).toInt() != 1)
+    const int schema = root.value(QStringLiteral("schema")).toInt();
+    if (schema != 1 && schema != 2)
         return;
     const QJsonArray order = root.value(QStringLiteral("order")).toArray();
     QTabBar* bar = m_tabs->tabBar();
@@ -101,6 +120,14 @@ void CTabStateManager::restoreOrder()
         for (int i = target; i < m_tabs->count(); ++i) if (tabKey(i) == wanted) { current = i; break; }
         if (current >= 0 && current != target)
             bar->moveTab(current, target);
+    }
+    if (!m_active.isEmpty()) {
+        for (int i = 0; i < m_tabs->count(); ++i) {
+            if (tabKey(i) == m_active) {
+                m_tabs->setCurrentIndex(i);
+                break;
+            }
+        }
     }
 }
 
@@ -120,13 +147,15 @@ void CTabStateManager::showContextMenu(const QPoint& position)
     searchAction->setDefaultWidget(filter);
     menu.addAction(searchAction);
     QAction* pin = menu.addAction(m_pinned.contains(name) ? tr("Unpin tab") : tr("Pin tab"));
+    QAction* searchTabs = menu.addAction(tr("Search open tabs…"));
     QAction* group = menu.addAction(tr("Move… into group…"));
     QAction* clearGroup = menu.addAction(tr("Remove from group"));
     QAction* edit = menu.addAction(tr("Edit tab appearance…"));
-    connect(filter, &QLineEdit::textChanged, &menu, [filter, pin, group, clearGroup, edit](const QString& query) {
-        for (QAction* action : { pin, group, clearGroup, edit })
+    connect(filter, &QLineEdit::textChanged, &menu, [filter, pin, searchTabs, group, clearGroup, edit](const QString& query) {
+        for (QAction* action : { pin, searchTabs, group, clearGroup, edit })
             action->setVisible(query.isEmpty() || action->text().contains(query, Qt::CaseInsensitive));
     });
+    connect(searchTabs, &QAction::triggered, this, [this, position]() { showTabSearch(position); });
     connect(pin, &QAction::triggered, &menu, [this, name]() {
         if (m_pinned.contains(name)) m_pinned.remove(name); else m_pinned.insert(name);
         save();
@@ -169,6 +198,141 @@ void CTabStateManager::showContextMenu(const QPoint& position)
         editor->show();
     });
     menu.exec(m_tabs->tabBar()->mapToGlobal(position));
+}
+
+void CTabStateManager::showTabSearch(const QPoint& position)
+{
+    if (!m_tabs)
+        return;
+
+    QDialog* dialog = new QDialog(m_tabs, Qt::Tool | Qt::WindowStaysOnTopHint);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setWindowTitle(tr("Search open tabs"));
+    dialog->setMinimumSize(440, 360);
+
+    QVBoxLayout* layout = new QVBoxLayout(dialog);
+    QHBoxLayout* searchRow = new QHBoxLayout();
+    QLineEdit* query = new QLineEdit(dialog);
+    query->setPlaceholderText(tr("Search tab labels and groups"));
+    query->setAccessibleName(tr("Open tab search"));
+    QCheckBox* regex = new QCheckBox(tr("Regex"), dialog);
+    regex->setToolTip(tr("Use the regex builder for this tab search"));
+    regex->setAccessibleName(tr("Enable regular expression search"));
+    QCheckBox* caseSensitive = new QCheckBox(tr("Case sensitive"), dialog);
+    caseSensitive->setAccessibleName(tr("Case sensitive tab search"));
+    searchRow->addWidget(query, 1);
+    searchRow->addWidget(regex);
+    searchRow->addWidget(caseSensitive);
+    layout->addLayout(searchRow);
+
+    QGroupBox* builder = new QGroupBox(tr("Regex builder"), dialog);
+    QFormLayout* builderLayout = new QFormLayout(builder);
+    QLineEdit* pattern = new QLineEdit(dialog);
+    pattern->setPlaceholderText(tr("Raw pattern (for example: ^Settings)"));
+    pattern->setAccessibleName(tr("Regex pattern"));
+    QLineEdit* sample = new QLineEdit(dialog);
+    sample->setPlaceholderText(tr("Sample text for capture preview"));
+    sample->setAccessibleName(tr("Regex sample text"));
+    QLabel* regexStatus = new QLabel(tr("Plain-text search is active."), dialog);
+    regexStatus->setWordWrap(true);
+    regexStatus->setAccessibleName(tr("Regex validation and capture preview"));
+    builderLayout->addRow(tr("Pattern"), pattern);
+    builderLayout->addRow(tr("Sample"), sample);
+    builderLayout->addRow(tr("Validation"), regexStatus);
+    layout->addWidget(builder);
+
+    QListWidget* results = new QListWidget(dialog);
+    results->setAccessibleName(tr("Open tab search results"));
+    results->setSelectionMode(QAbstractItemView::SingleSelection);
+    layout->addWidget(results, 1);
+    QLabel* count = new QLabel(dialog);
+    count->setAccessibleName(tr("Matching tab count"));
+    layout->addWidget(count);
+    QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Close, dialog);
+    layout->addWidget(buttons);
+    connect(buttons, &QDialogButtonBox::rejected, dialog, &QDialog::close);
+
+    auto refresh = [this, query, regex, caseSensitive, pattern, sample, regexStatus, results, count]() {
+        const QString needle = query->text().left(4096);
+        const bool useRegex = regex->isChecked();
+        const Qt::CaseSensitivity sensitivity = caseSensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
+        QRegularExpression expression;
+        if (useRegex) {
+            QRegularExpression::PatternOptions options = QRegularExpression::NoPatternOption;
+            if (!caseSensitive->isChecked())
+                options |= QRegularExpression::CaseInsensitiveOption;
+            expression = QRegularExpression(pattern->text().left(4096), options);
+            if (!expression.isValid()) {
+                regexStatus->setText(tr("Invalid pattern: %1").arg(expression.errorString()));
+                results->clear();
+                count->setText(tr("0 matching tabs"));
+                return;
+            }
+        }
+        regexStatus->setText(useRegex ? tr("Valid pattern. Capture preview: %1").arg(expression.match(sample->text()).capturedTexts().join(QStringLiteral(" · "))) : tr("Plain-text search is active."));
+        results->clear();
+        int matches = 0;
+        for (int i = 0; i < m_tabs->count(); ++i) {
+            const QString key = tabKey(i);
+            const QString group = m_groups.value(key);
+            const QString label = m_tabs->tabText(i);
+            const QString haystack = label + QStringLiteral(" ") + key + QStringLiteral(" ") + group;
+            bool matched = needle.isEmpty();
+            if (!needle.isEmpty())
+                matched = useRegex ? expression.match(haystack).hasMatch() : haystack.contains(needle, sensitivity);
+            if (!matched)
+                continue;
+            QString display = label.isEmpty() ? key : label;
+            if (!group.isEmpty())
+                display += tr("  · group: %1").arg(group);
+            if (m_pinned.contains(key))
+                display += tr("  · pinned");
+            QListWidgetItem* item = new QListWidgetItem(display, results);
+            item->setData(Qt::UserRole, i);
+            ++matches;
+        }
+        count->setText(tr("%1 matching tabs").arg(matches));
+        if (results->count() > 0)
+            results->setCurrentRow(0);
+    };
+    connect(query, &QLineEdit::textChanged, dialog, [pattern, regex, refresh](const QString& value) {
+        if (!regex->isChecked()) {
+            QSignalBlocker blocker(pattern);
+            pattern->setText(value);
+        }
+        refresh();
+    });
+    connect(pattern, &QLineEdit::textChanged, dialog, [query, regex, refresh](const QString& value) {
+        if (regex->isChecked()) {
+            QSignalBlocker blocker(query);
+            query->setText(value);
+        }
+        refresh();
+    });
+    connect(regex, &QCheckBox::toggled, dialog, [query, pattern, refresh](bool enabled) {
+        QSignalBlocker blocker(pattern);
+        pattern->setText(query->text());
+        refresh();
+        pattern->setEnabled(enabled);
+    });
+    connect(caseSensitive, &QCheckBox::toggled, dialog, [refresh](bool) { refresh(); });
+    connect(sample, &QLineEdit::textChanged, dialog, [refresh](const QString&) { refresh(); });
+    connect(results, &QListWidget::itemActivated, dialog, [this, dialog](QListWidgetItem* item) {
+        const int index = item ? item->data(Qt::UserRole).toInt() : -1;
+        if (index >= 0 && index < m_tabs->count()) {
+            m_tabs->setCurrentIndex(index);
+            m_active = tabKey(index);
+            save();
+            dialog->close();
+        }
+    });
+    query->setFocus();
+    refresh();
+    const int anchorIndex = m_tabs->tabBar()->tabAt(position);
+    const QRect anchorRect = anchorIndex >= 0 ? m_tabs->tabBar()->tabRect(anchorIndex) : QRect(QPoint(0, 0), QSize(1, 1));
+    const QPoint anchor = m_tabs->tabBar()->mapToGlobal(anchorRect.bottomLeft());
+    dialog->move(anchor);
+    dialog->show();
 }
 
 bool CTabStateManager::eventFilter(QObject* watched, QEvent* event)

@@ -19,6 +19,7 @@ public:
 
 private slots:
     void showContextMenu(const QPoint& position);
+    void showTabSearch(const QPoint& position);
 
 private:
     bool eventFilter(QObject* watched, QEvent* event) override;
@@ -33,4 +34,5 @@ private:
     QString m_key;
     QSet<QString> m_pinned;
     QHash<QString, QString> m_groups;
+    QString m_active;
 };

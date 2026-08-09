@@ -26,6 +26,7 @@ jobs:
           node scripts/validate-appearance-editor.mjs
           node scripts/validate-screenshot-links.mjs
           node scripts/validate-scheduled-settings.mjs
+          node scripts/validate-tab-discovery.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs

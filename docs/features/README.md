@@ -9,3 +9,4 @@ This category documents local, user-controlled recovery behavior. Each article n
 - [Material appearance editor](appearance-editor.md)
 - [School mode](school-mode.md)
 - [Scheduled settings](scheduled-settings.md)
+- [Tab discovery](tab-discovery.md)

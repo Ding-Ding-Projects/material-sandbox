@@ -4,6 +4,10 @@
 
 - Added a delayed, non-blocking 10% startup draw that can display a bilingual dim-sum photo from a validated application-data cache sourced from the public catalog; offline or unsafe caches are skipped without interrupting startup. Commit: `2da9260b` (integration pending).
 
+## Unreleased — tab discovery
+
+- Added an anchored open-tab search with plain text and bounded regex-builder modes, result activation, and persisted active tab metadata. Commit: pending integration.
+
 ## 2026-08-09 · Filtered history exports
 
 Commit: [6a19a278](https://github.com/Ding-Ding-Projects/material-sandbox/commit/6a19a27803a08397908316e6c2d3b8f371268450)
