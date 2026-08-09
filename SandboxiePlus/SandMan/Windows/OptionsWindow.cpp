@@ -1080,6 +1080,47 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Network Options > Internet Proxy with native M3 controls while
+	// preserving embedded proxy editors, ordering, testing, and persistence.
+	if (ui.tabsInternet && ui.tabNetProxy) {
+		const int proxyIndex = ui.tabsInternet->indexOf(ui.tabNetProxy);
+		if (proxyIndex >= 0) {
+			auto* legacyProxy = ui.tabNetProxy;
+			auto* nativeProxy = new QWidget(ui.tabsInternet);
+			auto* proxyLayout = new QVBoxLayout(nativeProxy);
+			auto* proxyHint = new QLabel(tr("Sandboxed programs can be forced through preset SOCKS5 proxies."), nativeProxy);
+			proxyHint->setWordWrap(true);
+			proxyLayout->addWidget(proxyHint);
+			ui.treeProxy = new QTreeWidget(nativeProxy);
+			ui.treeProxy->setColumnCount(7);
+			ui.treeProxy->setHeaderLabels(QStringList() << tr("Program") << tr("IP") << tr("Port") << tr("Auth") << tr("Login") << tr("Password") << tr("Bypass IPs"));
+			proxyLayout->addWidget(ui.treeProxy, 1);
+			auto* proxyActions = new QHBoxLayout();
+			ui.btnAddProxy = new QPushButton(tr("Add Proxy"), nativeProxy);
+			ui.btnTestProxy = new QPushButton(tr("Test Proxy"), nativeProxy);
+			ui.btnMoveProxyUp = new QPushButton(tr("Move Up"), nativeProxy);
+			ui.btnMoveProxyDown = new QPushButton(tr("Move Down"), nativeProxy);
+			ui.btnDelProxy = new QPushButton(tr("Remove"), nativeProxy);
+			proxyActions->addWidget(ui.btnAddProxy);
+			proxyActions->addWidget(ui.btnTestProxy);
+			proxyActions->addWidget(ui.btnMoveProxyUp);
+			proxyActions->addWidget(ui.btnMoveProxyDown);
+			proxyActions->addWidget(ui.btnDelProxy);
+			proxyActions->addStretch();
+			proxyLayout->addLayout(proxyActions);
+			ui.chkProxyResolveHostnames = new QCheckBox(tr("Resolve hostnames via proxy"), nativeProxy);
+			ui.chkUseProxyThreads = new QCheckBox(tr("Use in-process proxy relay threads for compatibility"), nativeProxy);
+			ui.chkProxyResolveHostnames->setVisible(false);
+			ui.chkUseProxyThreads->setVisible(false);
+			proxyLayout->addWidget(ui.chkProxyResolveHostnames);
+			proxyLayout->addWidget(ui.chkUseProxyThreads);
+			ui.tabsInternet->removeTab(proxyIndex);
+			ui.tabsInternet->insertTab(proxyIndex, nativeProxy, tr("Internet Proxy"));
+			ui.tabNetProxy = nativeProxy;
+			legacyProxy->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
