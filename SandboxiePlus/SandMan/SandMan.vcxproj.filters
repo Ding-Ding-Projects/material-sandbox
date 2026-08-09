@@ -192,6 +192,9 @@
     <ClCompile Include="Windows\BoxImageWindow.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\NotificationCenter.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
     <ClCompile Include="Wizards\BoxAssistant.cpp">
       <Filter>Wizards</Filter>
     </ClCompile>
@@ -330,6 +333,9 @@
       <Filter>Windows</Filter>
     </QtMoc>
     <QtMoc Include="Windows\SettingsWindow.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\NotificationCenter.h">
       <Filter>Windows</Filter>
     </QtMoc>
     <QtMoc Include="Windows\SnapshotsWindow.h">

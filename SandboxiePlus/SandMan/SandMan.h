@@ -22,6 +22,7 @@ class CSbieTemplatesEx;
 class CTraceView;
 class CScriptManager;
 class CAddonManager;
+class CNotificationCenter;
 
 struct ToolBarAction {
 	// Identifier of action stored in ini. Empty for separator.
@@ -375,6 +376,7 @@ private:
 	CPanelWidgetEx*		m_pMessageLog;
 	CTraceView*			m_pTraceView;
 	CPanelWidgetEx*		m_pRecoveryLog;
+	CNotificationCenter* m_pNotificationCenter;
 	class CRecoveryLogWnd* m_pRecoveryLogWnd;
 
 	QMenuBar*			m_pMenuBar;

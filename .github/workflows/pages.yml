@@ -21,6 +21,7 @@ jobs:
           test -s docs/index.html
           node scripts/validate-docs.mjs
           node scripts/validate-settings-history.mjs
+          node scripts/validate-notifications.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs

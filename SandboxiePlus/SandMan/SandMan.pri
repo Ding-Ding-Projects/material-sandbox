@@ -39,6 +39,7 @@ HEADERS += ./stdafx.h \
     ./Windows/SupportDialog.h \
     ./Windows/TestProxyDialog.h \
     ./Windows/DocumentationBrowser.h \
+    ./Windows/NotificationCenter.h \
     ./OnlineUpdater.h \
     ./Wizards/NewBoxWizard.h \
     ./Wizards/TemplateWizard.h \
@@ -101,6 +102,7 @@ SOURCES += ./main.cpp \
     ./Windows/SupportDialog.cpp \
     ./Windows/TestProxyDialog.cpp \
     ./Windows/DocumentationBrowser.cpp \
+    ./Windows/NotificationCenter.cpp \
     ./OnlineUpdater.cpp \
     ./Wizards/NewBoxWizard.cpp \
     ./Wizards/TemplateWizard.cpp \

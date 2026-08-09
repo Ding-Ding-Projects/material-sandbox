@@ -43,6 +43,7 @@
 #include "AddonManager.h"
 #include "Windows/PopUpWindow.h"
 #include "Windows/DocumentationBrowser.h"
+#include "Windows/NotificationCenter.h"
 #include "CustomStyles.h"
 #include "../MiscHelpers/Common/MaterialTheme.h"
 #include "../MiscHelpers/Common/UserPresentationSettings.h"
@@ -1605,6 +1606,7 @@ void CSandMan::CreateView(int iViewMode)
 		m_pMessageLog = NULL;
 		m_pTraceView = NULL;
 		m_pRecoveryLog = NULL;
+		m_pNotificationCenter = NULL;
 
 		return;
 	}
@@ -1692,6 +1694,8 @@ void CSandMan::CreateView(int iViewMode)
 		m_pRecoveryLog->GetView()->setSortingEnabled(false);
 
 		m_pLogTabs->addTab(m_pRecoveryLog, tr("Recovery Log"));
+		m_pNotificationCenter = new CNotificationCenter(theConf, this);
+		m_pLogTabs->addTab(m_pNotificationCenter, tr("Notifications"));
 		//
 
 		//
@@ -1704,6 +1708,7 @@ void CSandMan::CreateView(int iViewMode)
 		m_pMessageLog = NULL;
 		m_pTraceView = NULL;
 		m_pRecoveryLog = NULL;
+		m_pNotificationCenter = NULL;
 	}
 }
 
@@ -3318,6 +3323,8 @@ void CSandMan::OnHotKey(size_t id)
 void CSandMan::OnLogMessage(const QString& Message, bool bNotify)
 {
 	AddLogMessage(Message);
+	if (bNotify && m_pNotificationCenter)
+		m_pNotificationCenter->post(CNotificationCenter::Info, tr("Sandboxie-Plus"), Message);
 
 	if (bNotify) {
 		statusBar()->showMessage(Message);

@@ -248,6 +248,7 @@
         <file alias="Docs/contributor-build.md">Docs/contributor-build.md</file>
         <file alias="Docs/changelog.md">Docs/changelog.md</file>
         <file alias="Docs/settings-history.md">Docs/settings-history.md</file>
+        <file alias="Docs/notifications.md">Docs/notifications.md</file>
     </qresource>
     <qresource prefix="/Boxes">
         <file alias="Busy">Boxes/BusyOverlay.png</file>

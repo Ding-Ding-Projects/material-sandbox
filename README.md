@@ -11,6 +11,17 @@ Sandboxie is a Windows desktop sandbox manager built with Qt. This checkout carr
 
 See [`docs/material-design.md`](docs/material-design.md) and [`docs/contributor-build.md`](docs/contributor-build.md) for behavior, boundaries, and verification.
 
+## Screenshots
+
+The [Material desktop screenshot gallery](docs/screenshots.md) contains a large catalog of real bundled visual assets, organized by surface and labeled honestly. Built-window captures will be appended when the Qt/MSVC headless capture lane produces them.
+
+![Sandboxie desktop mark](SandboxiePlus/SandMan/Resources/SandMan.png)
+![Simple theme asset](SandboxiePlus/SandMan/Resources/Simple.png)
+![Configuration action](SandboxiePlus/SandMan/Resources/Actions/Config.png)
+![Material design action](SandboxiePlus/SandMan/Resources/Actions/Design.png)
+![Notification action](SandboxiePlus/SandMan/Resources/Actions/Notification.png)
+![Recovery action](SandboxiePlus/SandMan/Resources/Actions/recover.png)
+
 ## Shared-instructions mirror
 
 This repository also follows the sanitized shared agent instructions: preserve user work, use isolated checkouts, verify builds and runtime evidence separately, keep user-facing surfaces accessible and localized, and never expose credentials. The canonical instructions remain in the private agent-global-memory repository.

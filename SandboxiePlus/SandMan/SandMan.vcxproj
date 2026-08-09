@@ -497,6 +497,7 @@
     <ClCompile Include="Windows\RecoveryWindow.cpp" />
     <ClCompile Include="Windows\SelectBoxWindow.cpp" />
     <ClCompile Include="Windows\SettingsWindow.cpp" />
+    <ClCompile Include="Windows\NotificationCenter.cpp" />
     <ClCompile Include="Windows\SnapshotsWindow.cpp" />
     <ClCompile Include="Windows\SupportDialog.cpp" />
     <ClCompile Include="Wizards\BoxAssistant.cpp" />
@@ -527,6 +528,7 @@
     <QtMoc Include="Windows\PopUpWindow.h" />
     <QtMoc Include="Windows\SnapshotsWindow.h" />
     <QtMoc Include="Windows\SettingsWindow.h" />
+    <QtMoc Include="Windows\NotificationCenter.h" />
     <QtMoc Include="Windows\OptionsWindow.h" />
     <QtMoc Include="Windows\EditorSettingsWindow.h" />
     <QtMoc Include="Views\SbieView.h" />
