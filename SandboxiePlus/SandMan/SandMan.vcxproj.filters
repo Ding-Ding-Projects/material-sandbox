@@ -522,9 +522,6 @@
     <QtUic Include="Forms\TestProxyDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="Forms\ExtractDialog.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="Forms\RenameSandboxDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>

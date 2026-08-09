@@ -1,8 +1,12 @@
 #pragma once
 
-#include <QtWidgets/QMainWindow>
-#include "ui_ExtractDialog.h"
+#include <QDialog>
 #include "SbiePlusAPI.h"
+
+class QComboBox;
+class QLineEdit;
+class QCheckBox;
+class QPushButton;
 
 class CExtractDialog : public QDialog
 {
@@ -12,14 +16,17 @@ public:
 	CExtractDialog(const QString& Name, QWidget *parent = Q_NULLPTR);
 	~CExtractDialog();
 
-	QString GetName() const { return ui.txtName->text(); }
+	QString GetName() const { return m_name->text(); }
 	QString GetRoot() const;
-	void ShowNoCrypt() const { ui.chkNoCrypt->setVisible(true); }
-	bool IsNoCrypt() const { return ui.chkNoCrypt->isChecked(); }
+	void ShowNoCrypt() const { m_noCrypt->setVisible(true); }
+	bool IsNoCrypt() const { return m_noCrypt->isChecked(); }
 
 private slots:
 	void OnAccept();
 
 private:
-	Ui::ExtractDialog ui;
+	QLineEdit* m_name = nullptr;
+	QComboBox* m_root = nullptr;
+	QPushButton* m_browse = nullptr;
+	QCheckBox* m_noCrypt = nullptr;
 };
