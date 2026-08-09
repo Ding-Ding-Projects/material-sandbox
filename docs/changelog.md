@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Quick Recovery controls
+
+Commit: [407a82e0ba35f1880de792fe3c6fe58687613536](https://github.com/Ding-Ding-Projects/material-sandbox/commit/407a82e0ba35f1880de792fe3c6fe58687613536)
+
+- Rebuilt the Quick Recovery folder tree, template toggle, and actions with native Material 3 controls.
+- Preserved folder-list models, template refresh behavior, event filters, and the existing recovery-tab merge.
+
 ## 2026-08-09 · Native Options Immediate Recovery controls
 
 Commit: [4acc2e1b7e79018b03e6349ad323f2537e2f3261](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4acc2e1b7e79018b03e6349ad323f2537e2f3261)

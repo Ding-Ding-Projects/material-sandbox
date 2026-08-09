@@ -34,6 +34,11 @@ Material 3 surface metadata. The existing object names, recovery handlers,
 template persistence, and recovery-tab merge remain unchanged, so the
 Designer layout can be retired incrementally without changing user data.
 
+Quick Recovery now follows the same path for its folder tree, template toggle,
+and add/remove actions. The recovery list still feeds the existing model and
+event filters; only the visible controls are native M3, leaving the surrounding
+tab merge as a clearly bounded follow-up.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
