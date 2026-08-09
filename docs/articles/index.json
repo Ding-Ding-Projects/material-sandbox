@@ -18,6 +18,7 @@
     ,{"slug":"native-ci-evidence","path":"../features/native-ci-evidence.md","related":["contributor-build","material-design","destructive-confirmation"]}
     ,{"slug":"build-entrypoints","path":"../features/build-entrypoints.md","related":["native-ci-evidence","contributor-build","material-design"]}
     ,{"slug":"m3-shell-boundary","path":"../features/ui/m3-shell-boundary.md","related":["material-design","appearance-editor","tab-discovery"]}
+    ,{"slug":"editor-settings","path":"../features/editor-settings.md","related":["m3-shell-boundary","settings-history","appearance-editor"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"88181375fdc0d38478aaa3b7d19b75121d1ab760"}
+  "changelog": {"path":"../changelog.md","commit":"a371d3d674db6d49c8928ef98bd8b91d5e6dc696"}
 }

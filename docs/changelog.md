@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native editor settings dialog
+
+Commit: [a371d3d674db6d49c8928ef98bd8b91d5e6dc696](https://github.com/Ding-Ding-Projects/material-sandbox/commit/a371d3d674db6d49c8928ef98bd8b91d5e6dc696)
+
+- Replaced `EditorSettingsWindow.ui` with a native Material 3 settings table.
+- Preserved tri-state editor options, dependency handling, reset semantics, and cancel restoration.
+
 ## 2026-08-09 · Native archive export dialog
 
 Commit: [88181375fdc0d38478aaa3b7d19b75121d1ab760](https://github.com/Ding-Ding-Projects/material-sandbox/commit/88181375fdc0d38478aaa3b7d19b75121d1ab760)
