@@ -47,6 +47,9 @@ visibility and validation behavior.
 `RecoveryWindow` now also owns its tree, target picker, filters, and recovery
 actions in code while retaining the existing model, remembered targets, and
 delete/recovery menu semantics.
+`SnapshotsWindow` now likewise owns its snapshot tree, editable details, and
+action group in code while retaining selection, defaults, autosave, and
+snapshot-operation behavior.
 
 ## Failure and accessibility notes
 

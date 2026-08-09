@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native snapshots dialog
+
+Commit: [dd8d085ba7e51d405b59fe4c22acc863fb611ec9](https://github.com/Ding-Ding-Projects/material-sandbox/commit/dd8d085ba7e51d405b59fe4c22acc863fb611ec9)
+
+- Replaced `SnapshotsWindow.ui` with native Material 3 snapshot tree, details editor, and action controls.
+- Preserved snapshot selection, default toggling, info autosave, take/remove operations, and geometry persistence.
+
 ## 2026-08-09 · Native recovery dialog
 
 Commit: [2731f5c79014350fae265fa58fe3bb9d588a2996](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2731f5c79014350fae265fa58fe3bb9d588a2996)
