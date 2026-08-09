@@ -1553,6 +1553,61 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.chkScreenReaders = nativeScreenReaders;
 	}
 
+	// Edit ini Section controls are native M3 while the existing code-editor
+	// upgrade and save/cancel workflow continue to replace/use these pointers.
+	{
+		auto replaceIniControl = [](QWidget* oldControl, QWidget* nativeControl, QGridLayout* layout) {
+			if (oldControl && nativeControl && layout) {
+				layout->replaceWidget(oldControl, nativeControl);
+				oldControl->deleteLater();
+			}
+		};
+		auto makeIniCheck = [this](QCheckBox* oldControl) {
+			auto* native = new QCheckBox(oldControl->text(), this);
+			native->setObjectName(oldControl->objectName());
+			native->setCheckState(oldControl->checkState());
+			native->setToolTip(oldControl->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			return native;
+		};
+		auto makeIniButton = [this](QPushButton* oldControl) {
+			auto* native = new QPushButton(oldControl->text(), this);
+			native->setObjectName(oldControl->objectName());
+			native->setEnabled(oldControl->isEnabled());
+			native->setToolTip(oldControl->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			return native;
+		};
+		auto* nativeIniTooltips = makeIniCheck(ui.chkEnableTooltips);
+		auto* nativeIniComplete = makeIniCheck(ui.chkEnableAutoCompletion);
+		auto* nativeIniValidate = makeIniCheck(ui.chkValidateIniKeys);
+		auto* nativeEditIni = makeIniButton(ui.btnEditIni);
+		auto* nativeSaveIni = makeIniButton(ui.btnSaveIni);
+		auto* nativeCancelIni = makeIniButton(ui.btnCancelEdit);
+		auto* nativeEditorSettings = makeIniButton(ui.btnEditorSettings);
+		auto* nativeIniText = new QPlainTextEdit(this);
+		nativeIniText->setObjectName(QStringLiteral("txtIniSection"));
+		nativeIniText->setLineWrapMode(QPlainTextEdit::NoWrap);
+		nativeIniText->setPlainText(ui.txtIniSection->toPlainText());
+		nativeIniText->setProperty("m3NativeSurface", true);
+		replaceIniControl(ui.chkEnableTooltips, nativeIniTooltips, ui.gridLayout);
+		replaceIniControl(ui.chkEnableAutoCompletion, nativeIniComplete, ui.gridLayout);
+		replaceIniControl(ui.chkValidateIniKeys, nativeIniValidate, ui.gridLayout);
+		replaceIniControl(ui.btnEditIni, nativeEditIni, ui.gridLayout);
+		replaceIniControl(ui.btnSaveIni, nativeSaveIni, ui.gridLayout);
+		replaceIniControl(ui.btnCancelEdit, nativeCancelIni, ui.gridLayout);
+		replaceIniControl(ui.btnEditorSettings, nativeEditorSettings, ui.gridLayout);
+		replaceIniControl(ui.txtIniSection, nativeIniText, ui.gridLayout);
+		ui.chkEnableTooltips = nativeIniTooltips;
+		ui.chkEnableAutoCompletion = nativeIniComplete;
+		ui.chkValidateIniKeys = nativeIniValidate;
+		ui.btnEditIni = nativeEditIni;
+		ui.btnSaveIni = nativeSaveIni;
+		ui.btnCancelEdit = nativeCancelIni;
+		ui.btnEditorSettings = nativeEditorSettings;
+		ui.txtIniSection = nativeIniText;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
