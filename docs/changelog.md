@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-09 · Native Material 3 surface token consumption
+
+Commit: [69a8c1a0fe310bb26d0f44f345395150e67d7ecb](https://github.com/Ding-Ding-Projects/material-sandbox/commit/69a8c1a0fe310bb26d0f44f345395150e67d7ecb)
+
+- MaterialTheme now consumes the native settings-surface marker with a dedicated M3 group treatment, making appearance metadata affect rendered chrome.
+
 ## 2026-08-09 · Retired legacy theme controls
 
 Commit: [2081b5d9ab793667acf710066a81ba62dceda6e6](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2081b5d9ab793667acf710066a81ba62dceda6e6)

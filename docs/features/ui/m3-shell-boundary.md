@@ -65,6 +65,9 @@ The Window Options child tab is now a concrete native slice: six monitor
 selectors and the fallback hint are created in code and wired to the existing
 settings handlers; the remaining child tabs stay staged rather than being
 claimed as complete.
+The shared MaterialTheme consumes the native-surface marker with a dedicated
+group treatment, so the appearance slice changes rendered chrome rather than
+only carrying validator metadata.
 
 ## Failure and accessibility notes
 
