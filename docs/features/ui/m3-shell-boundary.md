@@ -83,6 +83,11 @@ alias limits, tri-state status tips, and close behavior are created in code and
 retain the existing persistence and update handlers; the remaining Settings
 tabs stay explicitly staged.
 
+The Run Menu child tab is now another concrete native slice: its editable
+command tree and add/move/remove actions are created in code and retain the
+existing command serialization and signal handlers; the remaining Settings
+tabs stay explicitly staged.
+
 The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.

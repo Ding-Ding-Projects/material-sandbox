@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings Run Menu tab
+
+Commit: [00810801287f84a2f228b3d222c763ea7a71ab7d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/00810801287f84a2f228b3d222c763ea7a71ab7d)
+
+- Rebuilt the Settings Run Menu child tab with native Material 3 command tree and reorder actions.
+- Preserved custom command serialization, selection behavior, and existing signal handlers.
+
 ## 2026-08-09 · Native Settings System Tray tab
 
 Commit: [00b68f7d93e602816d42db6376f3d5a5de834adf](https://github.com/Ding-Ding-Projects/material-sandbox/commit/00b68f7d93e602816d42db6376f3d5a5de834adf)
