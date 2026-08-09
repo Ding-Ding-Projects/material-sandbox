@@ -105,6 +105,10 @@ The Optional Add-Ons child tab is now another concrete native slice: its
 add-on tree, install/remove actions, and update link are created in code while
 the existing model and selection behavior remain intact.
 
+The Program Alerts child tab is now another concrete native slice: warning-list
+editing, alert actions, and message toggles are created in code while global
+settings and signal handlers remain intact.
+
 The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings Program Alerts tab
+
+Commit: [55213da2d0ec319baae5ef961d66929434bed47d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/55213da2d0ec319baae5ef961d66929434bed47d)
+
+- Rebuilt the Program Alerts child tab with native Material 3 warning tree, actions, and message toggles.
+- Preserved global settings, warning-list editing, and existing signal handlers.
+
 ## 2026-08-09 · Native Settings Optional Add-Ons list
 
 Commit: [dddeb77dad72ef484f58dae938edd07e94b7d0a4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/dddeb77dad72ef484f58dae938edd07e94b7d0a4)
