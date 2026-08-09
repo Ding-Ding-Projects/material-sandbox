@@ -112,8 +112,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
 
 .workspace { display: grid; gap: var(--space); margin-top: var(--space); }
-.workspace[data-dock="left"] { grid-template-columns: minmax(220px, 280px) minmax(0, 1fr); }
-.workspace[data-dock="right"] { grid-template-columns: minmax(0, 1fr) minmax(220px, 280px); }
+.workspace[data-dock="left"] { grid-template-columns: minmax(324px, 368px) minmax(0, 1fr); }
+.workspace[data-dock="right"] { grid-template-columns: minmax(0, 1fr) minmax(324px, 368px); }
 .workspace[data-dock="right"] .tab-rail { order: 2; }
 .workspace[data-dock="top"], .workspace[data-dock="bottom"] { grid-template-columns: minmax(0, 1fr); }
 .workspace[data-dock="bottom"] .tab-rail { order: 2; }
