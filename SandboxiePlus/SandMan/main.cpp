@@ -86,9 +86,8 @@ int main(int argc, char *argv[])
 	QtSingleApplication app(argc, argv);
 	app.setQuitOnLastWindowClosed(false);
 
-	bool UseW11Style = theConf->GetBool("Options/UseW11Style", false);
-	if (app.style()->name() == "windows11" && !UseW11Style)
-		app.setStyle("windowsvista");
+	// MaterialTheme owns application chrome; legacy Windows style selection is
+	// intentionally ignored for existing profiles.
 
 	//InitConsole(false);
 

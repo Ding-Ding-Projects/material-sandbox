@@ -24,6 +24,10 @@ no longer constructs `Fusion` or wraps the application in the old proxy chrome;
 data-view factories remain an explicitly tracked follow-up until each view is
 rebuilt as a native M3 component.
 
+The old Windows 11 style preference is hidden and written as `false` during
+migration. Existing profiles therefore cannot bring a second product chrome
+back after a restart.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls

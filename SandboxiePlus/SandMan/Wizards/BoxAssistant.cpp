@@ -260,8 +260,7 @@ void CBeginPage::initializePage()
         pIssue->setIcon(CSandMan::GetIcon(Issue["icon"].toString()));
         pIssue->setIconSize(QSize(32, 32));
         pIssue->setProperty("leftButton", true);
-        pIssue->setStyle(new MyButtonStyle(pIssue->style()));
-        m_pLayout->addWidget(pIssue, row++, 1);
+		m_pLayout->addWidget(pIssue, row++, 1);
         m_pWidgets.append(pIssue);
         return pIssue;
     };

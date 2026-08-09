@@ -1231,10 +1231,10 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	connect(ui.chkCheckDelete, SIGNAL(stateChanged(int)), this, SLOT(OnOptChanged()));
 	connect(ui.chkRecoveryTop, SIGNAL(stateChanged(int)), this, SLOT(OnOptChanged()));
 
-	connect(ui.chkUseW11Style, SIGNAL(stateChanged(int)), this, SLOT(OnOptChanged()));
+	ui.chkUseW11Style->hide();
+	ui.chkUseW11Style->setChecked(false);
 	connect(ui.chkRandomGuidName, SIGNAL(stateChanged(int)), this, SLOT(OnOptChanged()));
-	QOperatingSystemVersion current = QOperatingSystemVersion::current();
-	ui.chkUseW11Style->setEnabled(current.majorVersion() == 10 && current.microVersion() >= 22000); // Windows 10 22000+ (Windows 11)
+	// The old Windows 11 style switch is retained only for profile migration.
 	//
 
 	// Shell Integration
@@ -2252,7 +2252,7 @@ void CSettingsWindow::LoadSettings()
 	ui.cmbFallbackActiveMonitor->setCurrentIndex(fallbackIndex);
 	ui.chkSingleShow->setChecked(theConf->GetBool("Options/TraySingleClick", false));
 
-	ui.chkUseW11Style->setChecked(theConf->GetBool("Options/UseW11Style", false));
+	ui.chkUseW11Style->setChecked(false);
 	ui.chkRandomGuidName->setChecked(theConf->GetBool("Options/UseRandomBoxName", false));
 
 	OnLoadAddon();
@@ -2861,7 +2861,7 @@ void CSettingsWindow::SaveSettings()
 	theConf->SetValue("Options/WindowMonitorFallback", ui.cmbFallbackActiveMonitor->currentData().toInt());
 	theConf->SetValue("Options/TraySingleClick", ui.chkSingleShow->isChecked());
 
-	theConf->SetValue("Options/UseW11Style", ui.chkUseW11Style->isChecked());
+	theConf->SetValue("Options/UseW11Style", false);
 	theConf->SetValue("Options/UseRandomBoxName", ui.chkRandomGuidName->isChecked());
 
 	if (theAPI->IsConnected())

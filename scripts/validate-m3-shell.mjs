@@ -8,6 +8,8 @@ const cpp = read('SandboxiePlus/SandMan/SandMan.cpp');
 const host = read('SandboxiePlus/SandMan/Windows/M3ShellHost.cpp');
 const theme = read('SandboxiePlus/MiscHelpers/Common/MaterialTheme.cpp');
 const sandman = read('SandboxiePlus/SandMan/SandMan.cpp');
+const main = read('SandboxiePlus/SandMan/main.cpp');
+const settings = read('SandboxiePlus/SandMan/Windows/SettingsWindow.cpp');
 const migratedViews = [
   'SandboxiePlus/SandMan/Views/FileView.cpp',
   'SandboxiePlus/SandMan/Views/NtObjectView.cpp',
@@ -28,6 +30,8 @@ const checks = [
   [!theme.includes('QStyleFactory::create'), 'theme does not reset to a legacy style'],
   [!sandman.includes('QApplication::setStyle(new KeepSubMenusVisibleStyle'), 'main window does not re-wrap legacy chrome'],
   [migratedViews.every((source) => !source.includes('QStyleFactory::create')), 'data views inherit Material 3 instead of forcing Windows style'],
+  [!main.includes('app.setStyle("windowsvista")'), 'startup does not select legacy Windows chrome'],
+  [settings.includes('ui.chkUseW11Style->hide()') && settings.includes('SetValue("Options/UseW11Style", false)'), 'legacy Windows style setting is hidden and migrated off'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);
