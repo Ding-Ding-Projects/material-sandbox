@@ -1050,6 +1050,36 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Network Options > DNS Filter with native M3 controls while
+	// preserving per-process domain rules, delegates, and edit/delete behavior.
+	if (ui.tabsInternet && ui.tabDNS) {
+		const int dnsIndex = ui.tabsInternet->indexOf(ui.tabDNS);
+		if (dnsIndex >= 0) {
+			auto* legacyDns = ui.tabDNS;
+			auto* nativeDns = new QWidget(ui.tabsInternet);
+			auto* dnsLayout = new QVBoxLayout(nativeDns);
+			auto* dnsHint = new QLabel(tr("Block individual domains per process; leave IP empty to block or enter an IP address to redirect."), nativeDns);
+			dnsHint->setWordWrap(true);
+			dnsLayout->addWidget(dnsHint);
+			ui.treeDns = new QTreeWidget(nativeDns);
+			ui.treeDns->setColumnCount(3);
+			ui.treeDns->setHeaderLabels(QStringList() << tr("Program") << tr("Domain") << tr("IP"));
+			ui.treeDns->setSortingEnabled(true);
+			dnsLayout->addWidget(ui.treeDns, 1);
+			auto* dnsActions = new QHBoxLayout();
+			ui.btnAddDns = new QPushButton(tr("Add Filter"), nativeDns);
+			ui.btnDelDns = new QPushButton(tr("Remove"), nativeDns);
+			dnsActions->addWidget(ui.btnAddDns);
+			dnsActions->addWidget(ui.btnDelDns);
+			dnsActions->addStretch();
+			dnsLayout->addLayout(dnsActions);
+			ui.tabsInternet->removeTab(dnsIndex);
+			ui.tabsInternet->insertTab(dnsIndex, nativeDns, tr("DNS Filter"));
+			ui.tabDNS = nativeDns;
+			legacyDns->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
