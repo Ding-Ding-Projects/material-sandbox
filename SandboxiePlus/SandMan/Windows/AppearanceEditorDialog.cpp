@@ -72,10 +72,8 @@ CAppearanceEditorDialog::CAppearanceEditorDialog(const QFont& initialFont, const
     form->addRow(tr("Style"), m_style);
 
     const QList<QPair<QString, int>> underlines = {
-        {tr("None"), QFont::NoUnderline}, {tr("Single"), QFont::SingleUnderline},
-        {tr("Dash"), QFont::DashUnderline}, {tr("Dot"), QFont::DotLine},
-        {tr("Dash-dot"), QFont::DashDotLine}, {tr("Dash-dot-dot"), QFont::DashDotDotLine},
-        {tr("Wave"), QFont::WaveUnderline}
+        {tr("None"), 0}, {tr("Single"), 1}, {tr("Dash"), 2}, {tr("Dot"), 3},
+        {tr("Dash-dot"), 4}, {tr("Dash-dot-dot"), 5}, {tr("Wave"), 6}
     };
     for (const auto& value : underlines) m_underline->addItem(value.first, value.second);
     m_underline->setAccessibleName(tr("Underline style"));
@@ -196,13 +194,20 @@ QFont CAppearanceEditorDialog::selectedFont() const
     font.setPointSize(m_size->value());
     font.setWeight(static_cast<QFont::Weight>(m_weight->currentData().toInt()));
     font.setStyle(static_cast<QFont::Style>(m_style->currentData().toInt()));
-    font.setUnderline(static_cast<QFont::UnderlineStyle>(m_underline->currentData().toInt()));
+    // Qt 6 exposes only a boolean QFont underline; retain the richer style
+    // identifier in the editor/configuration while applying its enabled state.
+    font.setUnderline(m_underline->currentData().toInt() != 0);
     font.setStrikeOut(m_strikeOut->isChecked());
     font.setOverline(m_overline->isChecked());
     font.setCapitalization(static_cast<QFont::Capitalization>(m_capitalization->currentData().toInt()));
     font.setLetterSpacing(QFont::AbsoluteSpacing, m_letterSpacing->value());
     font.setWordSpacing(m_wordSpacing->value());
     return font;
+}
+
+int CAppearanceEditorDialog::selectedUnderlineStyle() const
+{
+    return m_underline->currentData().toInt();
 }
 
 void CAppearanceEditorDialog::updatePreview()
