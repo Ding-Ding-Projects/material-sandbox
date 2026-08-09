@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-09 · Correct native shell tab ownership
+
+Commit: [8c1f71ff1f527f8a25b3a65a1fabc838a72a9e77](https://github.com/Ding-Ding-Projects/material-sandbox/commit/8c1f71ff1f527f8a25b3a65a1fabc838a72a9e77)
+
+- Tray and Run Menu native replacement widgets now use `tabsShell` as their owner, matching their actual tab container and preventing a parent/lifetime mismatch.
+
 ## 2026-08-09 · Activate native Shell child tabs
 
 Commit: [cf86c95a182f4a9f49db9dd58191c732d043fa7e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/cf86c95a182f4a9f49db9dd58191c732d043fa7e)
