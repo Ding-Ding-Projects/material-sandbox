@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SettingsWindow.h"
+#include "M3DialogHost.h"
 #include "EditorSettingsWindow.h"
 #include "SandMan.h"
 #include "../MiscHelpers/Common/Settings.h"
@@ -310,6 +311,10 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	scheduledRefresh->start();
 	new CTabStateManager(ui.tabs, theConf, QStringLiteral("SettingsWindow/Tabs"), this);
 	this->setWindowTitle(tr("Sandboxie Plus - Global Settings"));
+	// Keep the large settings content behavior intact while the shared native
+	// M3 host replaces platform dialog chrome; tab-by-tab control migration is
+	// tracked separately because this form owns hundreds of controls.
+	M3DialogHost::Install(this);
 
 	// Global presentation settings live beside the existing interface controls
 	// so they persist with the profile and are discoverable by the settings
