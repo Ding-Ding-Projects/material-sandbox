@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options File Migration tab
+
+Commit: [6ffcaed5b82c9eaf1fc97813ce8e3c2e271efaad](https://github.com/Ding-Ding-Projects/material-sandbox/commit/6ffcaed5b82c9eaf1fc97813ce8e3c2e271efaad)
+
+- Rebuilt the File Migration child tab with native Material 3 copy-limit, prompt, wildcard-tree, and action controls.
+- Preserved copy-rule persistence, selection behavior, and handlers.
+
 ## 2026-08-09 · Native Options File tab
 
 Commit: [6fbd0e4f649c015fead2f7e5e875497e7d249ed3](https://github.com/Ding-Ding-Projects/material-sandbox/commit/6fbd0e4f649c015fead2f7e5e875497e7d249ed3)
