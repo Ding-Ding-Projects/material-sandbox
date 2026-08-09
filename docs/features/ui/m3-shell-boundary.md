@@ -109,6 +109,9 @@ remain unchanged.
 The App Templates surface now uses a native M3 tab host for Templates, Template
 Folders, and Accessibility, preserving page order and each page's controls.
 
+Various Options now uses a native M3 tab host for Compatibility and Dlls &
+Extensions, preserving page state and the migrated child controls.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

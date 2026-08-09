@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options various-options tab host
+
+Commit: [91c859709a3b8197ca38cb7607ea6a51588802b8](https://github.com/Ding-Ding-Projects/material-sandbox/commit/91c859709a3b8197ca38cb7607ea6a51588802b8)
+
+- Rebuilt the Various Options Compatibility and Dlls & Extensions tab host with native Material 3 tabs.
+- Preserved page state and migrated child controls.
+
 ## 2026-08-09 · Non-blocking update success notifications
 
 Commit: [4938fa8bb8ae100ed9eb112a7d598ba88dadc77b](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4938fa8bb8ae100ed9eb112a7d598ba88dadc77b)
