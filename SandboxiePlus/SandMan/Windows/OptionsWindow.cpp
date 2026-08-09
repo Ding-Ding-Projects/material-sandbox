@@ -716,6 +716,50 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Start Restrictions with native M3 controls while preserving
+	// radio semantics, program-list delegates, and start-policy persistence.
+	if (ui.tabs && ui.tabStart) {
+		const int startIndex = ui.tabs->indexOf(ui.tabStart);
+		if (startIndex >= 0) {
+			auto* legacyStart = ui.tabStart;
+			auto* nativeStart = new QWidget(ui.tabs);
+			auto* startLayout = new QVBoxLayout(nativeStart);
+			auto* startHint = new QLabel(tr("Choose which programs may start in this sandbox; installed programs cannot start when selection-only mode is active."), nativeStart);
+			startHint->setWordWrap(true);
+			startLayout->addWidget(startHint);
+			ui.radStartAll = new QRadioButton(tr("Allow all programs to start in this sandbox."), nativeStart);
+			ui.radStartExcept = new QRadioButton(tr("Prevent selected programs from starting in this sandbox."), nativeStart);
+			ui.radStartSelected = new QRadioButton(tr("Allow only selected programs to start in this sandbox."), nativeStart);
+			startLayout->addWidget(ui.radStartAll);
+			startLayout->addWidget(ui.radStartExcept);
+			startLayout->addWidget(ui.radStartSelected);
+			ui.treeStart = new QTreeWidget(nativeStart);
+			ui.treeStart->setColumnCount(1);
+			ui.treeStart->setHeaderLabels(QStringList() << tr("Name"));
+			ui.treeStart->setSortingEnabled(true);
+			startLayout->addWidget(ui.treeStart, 1);
+			auto* startActions = new QHBoxLayout();
+			ui.btnAddStartProg = new QPushButton(tr("Add Program"), nativeStart);
+			ui.btnDelStartProg = new QPushButton(tr("Remove"), nativeStart);
+			ui.chkShowStartTmpl = new QCheckBox(tr("Show Templates"), nativeStart);
+			ui.chkShowStartTmpl->setVisible(false);
+			startActions->addWidget(ui.btnAddStartProg);
+			startActions->addWidget(ui.btnDelStartProg);
+			startActions->addWidget(ui.chkShowStartTmpl);
+			startActions->addStretch();
+			startLayout->addLayout(startActions);
+			ui.chkStartBlockMsg = new QCheckBox(tr("Issue message 1308 when a program fails to start"), nativeStart);
+			ui.chkAlertBeforeStart = new QCheckBox(tr("Display a warning before starting a process in this sandbox from an external source"), nativeStart);
+			ui.chkAlertBeforeStart->setToolTip(tr("Helps prevent programs from running without the user's knowledge or consent."));
+			startLayout->addWidget(ui.chkStartBlockMsg);
+			startLayout->addWidget(ui.chkAlertBeforeStart);
+			ui.tabs->removeTab(startIndex);
+			ui.tabs->insertTab(startIndex, nativeStart, tr("Start Restrictions"));
+			ui.tabStart = nativeStart;
+			legacyStart->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
