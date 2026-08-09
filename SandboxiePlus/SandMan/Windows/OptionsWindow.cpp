@@ -826,6 +826,39 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Resource Access > IPC with native M3 controls while preserving
+	// IPC path columns, add-menu semantics, templates, and deletion handlers.
+	if (ui.tabsAccess && ui.tabIPC) {
+		const int ipcIndex = ui.tabsAccess->indexOf(ui.tabIPC);
+		if (ipcIndex >= 0) {
+			auto* legacyIPC = ui.tabIPC;
+			auto* nativeIPC = new QWidget(ui.tabsAccess);
+			auto* ipcLayout = new QVBoxLayout(nativeIPC);
+			auto* ipcHint = new QLabel(tr("Configure access to NT IPC objects such as ALPC ports and process context. Use $:program.exe to target a process."), nativeIPC);
+			ipcHint->setWordWrap(true);
+			ipcLayout->addWidget(ipcHint);
+			ui.treeIPC = new QTreeWidget(nativeIPC);
+			ui.treeIPC->setColumnCount(4);
+			ui.treeIPC->setHeaderLabels(QStringList() << tr("Type") << tr("Program") << tr("Access") << tr("Path"));
+			ui.treeIPC->setSortingEnabled(true);
+			ipcLayout->addWidget(ui.treeIPC, 1);
+			auto* ipcActions = new QHBoxLayout();
+			ui.btnAddIPC = new QToolButton(nativeIPC);
+			ui.btnAddIPC->setText(tr("Add IPC Path"));
+			ui.btnDelIPC = new QPushButton(tr("Remove"), nativeIPC);
+			ui.chkShowIPCTmpl = new QCheckBox(tr("Show Templates"), nativeIPC);
+			ipcActions->addWidget(ui.btnAddIPC);
+			ipcActions->addWidget(ui.btnDelIPC);
+			ipcActions->addWidget(ui.chkShowIPCTmpl);
+			ipcActions->addStretch();
+			ipcLayout->addLayout(ipcActions);
+			ui.tabsAccess->removeTab(ipcIndex);
+			ui.tabsAccess->insertTab(ipcIndex, nativeIPC, tr("IPC"));
+			ui.tabIPC = nativeIPC;
+			legacyIPC->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
