@@ -1382,6 +1382,37 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.chkShowOptionsTmpl = nativeShowOptions;
 	}
 
+	// Advanced Options > Users uses native M3 list and actions while retaining
+	// the account-selection and monitor persistence handlers.
+	{
+		auto replaceUserControl = [](QWidget* oldControl, QWidget* nativeControl, QGridLayout* layout) {
+			if (oldControl && nativeControl && layout) {
+				layout->replaceWidget(oldControl, nativeControl);
+				oldControl->deleteLater();
+			}
+		};
+		auto* nativeUsers = new QListWidget(this);
+		nativeUsers->setObjectName(QStringLiteral("lstUsers"));
+		nativeUsers->setProperty("m3NativeSurface", true);
+		auto* nativeAddUser = new QPushButton(tr("Add User"), this);
+		nativeAddUser->setObjectName(QStringLiteral("btnAddUser"));
+		nativeAddUser->setProperty("m3NativeSurface", true);
+		auto* nativeDelUser = new QPushButton(tr("Remove"), this);
+		nativeDelUser->setObjectName(QStringLiteral("btnDelUser"));
+		nativeDelUser->setProperty("m3NativeSurface", true);
+		auto* nativeMonitorAdmin = new QCheckBox(tr("Restrict Resource Access monitor to administrators only"), this);
+		nativeMonitorAdmin->setObjectName(QStringLiteral("chkMonitorAdminOnly"));
+		nativeMonitorAdmin->setProperty("m3NativeSurface", true);
+		replaceUserControl(ui.lstUsers, nativeUsers, ui.gridLayout_25);
+		replaceUserControl(ui.btnAddUser, nativeAddUser, ui.gridLayout_25);
+		replaceUserControl(ui.btnDelUser, nativeDelUser, ui.gridLayout_25);
+		replaceUserControl(ui.chkMonitorAdminOnly, nativeMonitorAdmin, ui.gridLayout_25);
+		ui.lstUsers = nativeUsers;
+		ui.btnAddUser = nativeAddUser;
+		ui.btnDelUser = nativeDelUser;
+		ui.chkMonitorAdminOnly = nativeMonitorAdmin;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
