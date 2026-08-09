@@ -1788,6 +1788,19 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.chkShowTriggersTmpl = nativeShowTemplates;
 	}
 
+	// Debug Options keeps its dynamically generated checkbox grid but replaces
+	// the Designer scroll host with a native M3 surface, preserving dbgLayout.
+	{
+		auto* nativeDebugScroll = new QScrollArea(this);
+		nativeDebugScroll->setObjectName(QStringLiteral("scrollArea"));
+		nativeDebugScroll->setWidgetResizable(true);
+		nativeDebugScroll->setProperty("m3NativeSurface", true);
+		nativeDebugScroll->setWidget(ui.dbgWidget);
+		ui.gridLayout_87->replaceWidget(ui.scrollArea, nativeDebugScroll);
+		ui.scrollArea->deleteLater();
+		ui.scrollArea = nativeDebugScroll;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
