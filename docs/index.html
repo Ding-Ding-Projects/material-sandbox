@@ -109,8 +109,10 @@ h3 { margin-top: 0; }
 .section-heading { display: flex; gap: 16px; align-items: end; justify-content: space-between; flex-wrap: wrap; }
 .section-heading p { max-width: 680px; color: var(--md-sys-color-on-surface-variant); }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--space, 16px); }
+.grid > *, .settings-grid > *, .panel { min-width: 0; }
 .card { min-height: 170px; padding: 22px; border-radius: var(--md-sys-shape-large); background: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface); transition: box-shadow 160ms var(--md-sys-motion-standard), transform 160ms var(--md-sys-motion-standard); }
 .card:hover { transform: translateY(-2px); box-shadow: var(--md-sys-elevation-1); }
+.card h3, .card p, .card a, .docs-list li, .helper { overflow-wrap: anywhere; }
 .card p { color: var(--md-sys-color-on-surface-variant); }
 .meta { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--md-sys-color-tertiary-container); color: var(--md-sys-color-on-tertiary-container); font-size: .78rem; font-weight: 700; }
 .search-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 14px 0 20px; }
