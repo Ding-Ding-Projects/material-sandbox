@@ -454,6 +454,13 @@ network restriction toggles, adapter binding, and IPv4/IPv6 fields are created
 in code while OptionsNetwork keeps adapter population, read-only rules, and
 persistence intact; other OptionsWindow tabs remain staged.
 
+The Network Options tab host is now rebuilt as a native Material 3
+`QTabWidget` after its five child pages are migrated. It preserves the
+`tabsInternet` object name, Process Restrictions, Network Firewall, DNS Filter,
+Internet Proxy, and Other Options page order, labels, icons, enabled state, and
+current index while adding left docking, document mode, native-surface metadata,
+and the accessible name `Network option pages`.
+
 The Options outer tab widget now keeps its existing `CTabStateManager` pointer
 while receiving an accessible name, West docking, document-mode chrome, and
 `m3NativeSurface` metadata. Replacing the widget would invalidate the manager,

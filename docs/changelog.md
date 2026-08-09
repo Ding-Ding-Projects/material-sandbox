@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-09 · Native Network Options tab host
+
+Commit: [b1e2000ccd473ab9663fc70e601d55d5fae0d97c](https://github.com/Ding-Ding-Projects/material-sandbox/commit/b1e2000ccd473ab9663fc70e601d55d5fae0d97c)
+
+- Rebuilt the five-page Network Options host as a native Material 3 tab widget with left docking, document mode, native-surface metadata, and an accessible name.
+- Preserved the host object name, child page order, labels, icons, enabled state, selected page, and all existing child control behavior.
+- Added a completeness contract covering every page and required host property; its negative-path test fails when a required accessible name is removed.
+
 ## 2026-08-09 · Native Settings GUI labels
 
 Commit: [c1bed0471a7ff2034d4b9241038ad24d045f0e82](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c1bed0471a7ff2034d4b9241038ad24d045f0e82)
