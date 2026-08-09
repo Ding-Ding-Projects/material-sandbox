@@ -157,12 +157,12 @@ code, kbd { padding: 2px 6px; border-radius: 4px; background: var(--md-sys-color
 
   <section class="hero" aria-labelledby="hero-title">
     <div>
-      <p class="eyebrow">Windows sandbox manager · contributor build</p>
-      <h1 id="hero-title">Safer work, calmer chrome.</h1>
-      <p class="hero-copy">A contributor-ready Sandboxie surface rebuilt from the ground up with Material Design 3 tokens, honest status, accessible navigation, and no unsolicited support or purchase prompts.</p>
+      <p class="eyebrow" data-i18n="eyebrow">Windows sandbox manager · contributor build</p>
+      <h1 id="hero-title" data-i18n="heroTitle">Safer work, calmer chrome.</h1>
+      <p class="hero-copy" data-i18n="heroCopy">A contributor-ready Sandboxie surface rebuilt from the ground up with Material Design 3 tokens, honest status, accessible navigation, and no unsolicited support or purchase prompts.</p>
       <div class="hero-actions"><button class="filled" type="button" data-tab="features">Explore features</button><a class="outlined" href="screenshots.md">View screenshot index</a></div>
     </div>
-    <aside class="status-card" aria-label="Publication status"><span class="meta">● Source verified</span><strong>Static Pages source</strong><small>Native runtime and installer evidence remain labelled separately. A download control appears only after a verified release asset exists.</small></aside>
+    <aside class="status-card" aria-label="Publication status"><span class="meta">● Source verified</span><strong data-i18n="statusTitle">Static Pages source</strong><small data-i18n="statusCopy">Native runtime and installer evidence remain labelled separately. A download control appears only after a verified release asset exists.</small></aside>
   </section>
 
   <nav class="site-tabs" role="tablist" aria-label="Documentation sections">
@@ -267,12 +267,40 @@ code, kbd { padding: 2px 6px; border-radius: 4px; background: var(--md-sys-color
   tabs.forEach((tab) => tab.addEventListener('click', () => openTab(tab.dataset.tab)));
   document.querySelectorAll('.site-tab').forEach((tab) => tab.addEventListener('keydown', (event) => { const all = [...document.querySelectorAll('.site-tab')]; const index = all.indexOf(tab); if (event.key === 'ArrowRight' || event.key === 'ArrowDown') { event.preventDefault(); all[(index + 1) % all.length].focus(); } if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') { event.preventDefault(); all[(index - 1 + all.length) % all.length].focus(); } if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openTab(tab.dataset.tab); } }));
   document.querySelectorAll('[data-tab]').forEach((button) => { if (!button.classList.contains('site-tab')) button.addEventListener('click', () => openTab(button.dataset.tab)); });
+  const copy = {
+    en: {
+      eyebrow: 'Windows sandbox manager · contributor build', heroTitle: 'Safer work, calmer chrome.',
+      heroCopy: 'A contributor-ready Sandboxie surface rebuilt from the ground up with Material Design 3 tokens, honest status, accessible navigation, and no unsolicited support or purchase prompts.',
+      statusTitle: 'Static Pages source', statusCopy: 'Native runtime and installer evidence remain labelled separately. A download control appears only after a verified release asset exists.',
+      saved: 'Language and tone preferences saved locally.'
+    },
+    zh: {
+      eyebrow: 'Windows 沙盒管理器 · 貢獻者版本', heroTitle: '工作更安全，介面更平靜。',
+      heroCopy: 'Sandboxie 貢獻者版本以 Material Design 3 重新打造，保留誠實狀態、無障礙導覽，以及不打擾使用者的體驗。',
+      statusTitle: '靜態 Day Teet Hui 來源', statusCopy: '原生執行與安裝程式證據分開標示；只有驗證過的發行資產才會出現下載按鈕。',
+      saved: '語言與幽默程度已儲存於本機。'
+    }
+  };
+  const funnyTail = (mode, level) => {
+    if (level < 3) return '';
+    if (mode === 'zh') return level >= 5 ? '（介面唔再扮木口木面啦。）' : '（少少輕鬆，事實照樣清楚。）';
+    return level >= 5 ? ' The chrome has put on its tiny party hat.' : ' A little warmth, with the facts still wearing a seatbelt.';
+  };
+  function applyPresentation() {
+    const mode = language.value;
+    const en = copy.en; const zh = copy.zh;
+    const englishLevel = Number($('funnyEnglish').value);
+    const cantoneseLevel = Number($('funnyCantonese').value);
+    const english = { eyebrow: en.eyebrow, heroTitle: en.heroTitle, heroCopy: en.heroCopy + funnyTail('en', englishLevel), statusTitle: en.statusTitle, statusCopy: en.statusCopy };
+    const cantonese = { eyebrow: zh.eyebrow, heroTitle: zh.heroTitle, heroCopy: zh.heroCopy + funnyTail('zh', cantoneseLevel), statusTitle: zh.statusTitle, statusCopy: zh.statusCopy };
+    document.querySelectorAll('[data-i18n]').forEach((node) => { const key = node.dataset.i18n; const value = mode === 'zh' ? cantonese[key] : mode === 'bi' ? english[key] + ' · ' + cantonese[key] : english[key]; if (value) node.textContent = value; });
+  }
   const savedTheme = read('theme', 'light'); root.dataset.theme = savedTheme; $('themeButton').setAttribute('aria-pressed', String(savedTheme === 'dark')); $('themeButton').textContent = savedTheme === 'dark' ? 'Light theme' : 'Dark theme';
   $('themeButton').addEventListener('click', () => { const dark = root.dataset.theme !== 'dark'; root.dataset.theme = dark ? 'dark' : 'light'; save('theme', root.dataset.theme); $('themeButton').setAttribute('aria-pressed', String(dark)); $('themeButton').textContent = dark ? 'Light theme' : 'Dark theme'; notify(dark ? 'Dark theme applied.' : 'Light theme applied.'); });
-  const language = $('language'); language.value = read('language', 'en'); language.addEventListener('change', () => { save('language', language.value); notify('Language preference saved locally.'); });
+  const language = $('language'); language.value = read('language', 'en'); language.addEventListener('change', () => { save('language', language.value); applyPresentation(); notify(copy[language.value === 'zh' ? 'zh' : 'en'].saved); });
   const density = $('density'); density.value = read('density', 'standard'); body.dataset.density = density.value; density.addEventListener('change', () => { body.dataset.density = density.value; save('density', density.value); notify('Density preference saved locally.'); });
   const bindRange = (id, output, key, suffix = '') => { const input = $(id); input.value = read(key, input.value); $(output).value = input.value + suffix; input.addEventListener('input', () => { $(output).value = input.value + suffix; save(key, input.value); }); };
-  bindRange('funnyEnglish', 'funnyEnglishValue', 'funnyEnglish'); bindRange('funnyCantonese', 'funnyCantoneseValue', 'funnyCantonese'); bindRange('fontScale', 'fontScaleValue', 'fontScale', '%'); body.style.fontSize = read('fontScale', '100') + '%'; $('fontScale').addEventListener('input', () => { body.style.fontSize = $('fontScale').value + '%'; });
+  bindRange('funnyEnglish', 'funnyEnglishValue', 'funnyEnglish'); bindRange('funnyCantonese', 'funnyCantoneseValue', 'funnyCantonese'); bindRange('fontScale', 'fontScaleValue', 'fontScale', '%'); body.style.fontSize = read('fontScale', '100') + '%'; $('fontScale').addEventListener('input', () => { body.style.fontSize = $('fontScale').value + '%'; }); $('funnyEnglish').addEventListener('input', applyPresentation); $('funnyCantonese').addEventListener('input', applyPresentation);
   const emoji = $('emojiToggle'); emoji.checked = read('emoji', 'true') === 'true'; emoji.addEventListener('change', () => { save('emoji', emoji.checked); notify('Message decoration preference saved locally.'); });
   $('resetSettings').addEventListener('click', () => { ['theme','language','density','funnyEnglish','funnyCantonese','fontScale','emoji'].forEach((key) => localStorage.removeItem(storage + key)); location.reload(); });
   const search = $('featureSearch'); const regexPattern = $('regexPattern'); const regexFlags = $('regexFlags'); const cards = [...document.querySelectorAll('.feature-card')];
@@ -286,7 +314,7 @@ code, kbd { padding: 2px 6px; border-radius: 4px; background: var(--md-sys-color
   function openPalette() { $('paletteSurface').classList.add('open'); $('paletteSearch').value = ''; renderPalette(); $('paletteSearch').focus(); }
   function closePalette() { $('paletteSurface').classList.remove('open'); $('paletteButton').focus(); }
   $('paletteButton').addEventListener('click', openPalette); $('paletteClose').addEventListener('click', closePalette); $('paletteSearch').addEventListener('input', renderPalette); $('paletteSurface').addEventListener('click', (event) => { if (event.target === $('paletteSurface')) closePalette(); }); document.addEventListener('keydown', (event) => { if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'f') { event.preventDefault(); openPalette(); } if (event.key === 'Escape' && $('paletteSurface').classList.contains('open')) closePalette(); }); $('notificationClose').addEventListener('click', () => $('notification').classList.remove('show'));
-  const hash = location.hash.slice(1); if (hash && $(hash)) openTab(hash); else openTab('overview');
+  applyPresentation(); const hash = location.hash.slice(1); if (hash && $(hash)) openTab(hash); else openTab('overview');
 })();
 </script>
 </body>
