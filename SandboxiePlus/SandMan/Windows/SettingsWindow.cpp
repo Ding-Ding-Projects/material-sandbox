@@ -1337,6 +1337,36 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained Optional Add-Ons child tab with native M3
+	// controls while preserving the add-on model, actions and update link.
+	if (ui.tabsAddons && ui.tabAddonList) {
+		const int addonListIndex = ui.tabsAddons->indexOf(ui.tabAddonList);
+		if (addonListIndex >= 0) {
+			auto* nativeAddonList = new QWidget(ui.tabsAddons);
+			auto* addonListLayout = new QVBoxLayout(nativeAddonList);
+			ui.lblUpdateAddons = new QLabel(tr("<a href=\"sbie://addons\">update add-on list now</a>"), nativeAddonList);
+			ui.lblUpdateAddons->setOpenExternalLinks(false);
+			ui.lblUpdateAddons->setWordWrap(true);
+			ui.treeAddons = new QTreeWidget(nativeAddonList);
+			ui.treeAddons->setColumnCount(4);
+			ui.treeAddons->setHeaderLabels(QStringList() << tr("Name") << tr("Status") << tr("Version") << tr("Description"));
+			ui.treeAddons->setRootIsDecorated(false);
+			addonListLayout->addWidget(new QLabel(tr("Sandboxie-Plus supports optional add-ons, plugins, and third-party components."), nativeAddonList));
+			addonListLayout->addWidget(ui.treeAddons, 1);
+			auto* addonActions = new QHBoxLayout();
+			ui.btnInstallAddon = new QPushButton(tr("Install"), nativeAddonList);
+			ui.btnRemoveAddon = new QPushButton(tr("Remove"), nativeAddonList);
+			addonActions->addWidget(ui.btnInstallAddon);
+			addonActions->addWidget(ui.btnRemoveAddon);
+			addonActions->addStretch();
+			addonActions->addWidget(ui.lblUpdateAddons);
+			addonListLayout->addLayout(addonActions);
+			ui.tabsAddons->removeTab(addonListIndex);
+			ui.tabsAddons->insertTab(addonListIndex, nativeAddonList, tr("Optional Add-Ons"));
+			ui.tabAddonList->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.
