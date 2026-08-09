@@ -1930,6 +1930,24 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.tabsForce = nativeForceTabs;
 	}
 
+	// Resource Access now uses a native M3 tab host for Files, Registry, IPC,
+	// Wnd, COM, and Access Policies pages while preserving state and order.
+	{
+		auto* nativeAccessTabs = new QTabWidget(this);
+		nativeAccessTabs->setObjectName(QStringLiteral("tabsAccess"));
+		nativeAccessTabs->addTab(ui.tabFiles, tr("Files"));
+		nativeAccessTabs->addTab(ui.tabKeys, tr("Registry"));
+		nativeAccessTabs->addTab(ui.tabIPC, tr("IPC"));
+		nativeAccessTabs->addTab(ui.tabWnd, tr("Wnd"));
+		nativeAccessTabs->addTab(ui.tabCOM, tr("COM"));
+		nativeAccessTabs->addTab(ui.tabPolicy, tr("Access Policies"));
+		nativeAccessTabs->setCurrentIndex(ui.tabsAccess->currentIndex());
+		nativeAccessTabs->setProperty("m3NativeSurface", true);
+		ui.gridLayout_11->replaceWidget(ui.tabsAccess, nativeAccessTabs);
+		ui.tabsAccess->deleteLater();
+		ui.tabsAccess = nativeAccessTabs;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
