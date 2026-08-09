@@ -504,6 +504,55 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Box Protection with native M3 controls while preserving host
+	// process rules, template toggles, and existing protection persistence.
+	if (ui.tabsSecurity && ui.tabPrivate) {
+		const int protectionIndex = ui.tabsSecurity->indexOf(ui.tabPrivate);
+		if (protectionIndex >= 0) {
+			auto* nativeProtection = new QWidget(ui.tabsSecurity);
+			auto* protectionLayout = new QVBoxLayout(nativeProtection);
+			auto* protectionHint = new QLabel(tr("Confidential sandboxes protect processes and files from unauthorized host access."), nativeProtection);
+			protectionHint->setWordWrap(true);
+			protectionLayout->addWidget(protectionHint);
+			ui.lblBoxProtection = new QLabel(tr("Box Protection"), nativeProtection);
+			ui.lblBoxProtection->setProperty("m3NativeSurface", true);
+			ui.lblBoxProtection->setStyleSheet("font-weight: 600;");
+			protectionLayout->addWidget(ui.lblBoxProtection);
+			ui.chkConfidential = new QCheckBox(tr("Protect processes within this box from host processes"), nativeProtection);
+			ui.chkLessConfidential = new QCheckBox(tr("Allow useful Windows processes access to protected processes"), nativeProtection);
+			ui.chkProtectWindow = new QCheckBox(tr("Prevent processes from capturing window images from sandboxed windows"), nativeProtection);
+			ui.chkProtectAdminOnly = new QCheckBox(tr("Require SandMan to run as Administrator to access protected box files"), nativeProtection);
+			ui.chkAdminOnly = new QCheckBox(tr("Only Administrator user accounts can make changes to this sandbox"), nativeProtection);
+			ui.chkNotifyProtect = new QCheckBox(tr("Issue message 1318/1317 when a host process tries to access a sandboxed process or the box root"), nativeProtection);
+			protectionLayout->addWidget(ui.chkConfidential);
+			protectionLayout->addWidget(ui.chkLessConfidential);
+			protectionLayout->addWidget(ui.chkProtectWindow);
+			protectionLayout->addWidget(ui.chkProtectAdminOnly);
+			protectionLayout->addWidget(ui.chkAdminOnly);
+			protectionLayout->addWidget(ui.chkNotifyProtect);
+			protectionLayout->addWidget(new QLabel(tr("Protected host processes"), nativeProtection));
+			ui.treeHostProc = new QTreeWidget(nativeProtection);
+			ui.treeHostProc->setColumnCount(3);
+			ui.treeHostProc->setHeaderLabels(QStringList() << tr("Process") << tr("Action") << QString());
+			ui.treeHostProc->setSortingEnabled(true);
+			protectionLayout->addWidget(ui.treeHostProc, 1);
+			auto* hostActions = new QHBoxLayout();
+			ui.btnHostProcessAllow = new QPushButton(tr("Allow Process"), nativeProtection);
+			ui.btnHostProcessDeny = new QPushButton(tr("Deny Process"), nativeProtection);
+			ui.btnDelHostProcess = new QPushButton(tr("Remove"), nativeProtection);
+			ui.chkShowHostProcTmpl = new QCheckBox(tr("Show Templates"), nativeProtection);
+			hostActions->addWidget(ui.btnHostProcessAllow);
+			hostActions->addWidget(ui.btnHostProcessDeny);
+			hostActions->addWidget(ui.btnDelHostProcess);
+			hostActions->addWidget(ui.chkShowHostProcTmpl);
+			hostActions->addStretch();
+			protectionLayout->addLayout(hostActions);
+			ui.tabsSecurity->removeTab(protectionIndex);
+			ui.tabsSecurity->insertTab(protectionIndex, nativeProtection, tr("Box Protection"));
+			ui.tabPrivate->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
