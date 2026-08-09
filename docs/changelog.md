@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-09 · Keep Sandboxie.ini actions visible at narrow widths
+
+Commit: [cf400a7c70c955dddcf24dc304dffdbdd3b145a4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/cf400a7c70c955dddcf24dc304dffdbdd3b145a4)
+
+- Reflowed the portable-box action row into a two-column Material 3 grid so compact and bilingual layouts do not clip actions.
+- Stretched the import-path header and added an accessible tree name for reliable keyboard and screen-reader navigation.
+
+窄畫面唔再食按鈕：Sandboxie.ini 個操作列改成兩欄 Material 3 網格，路徑欄拉滿，鍵盤同讀屏都搵得到。
+
 ## 2026-08-09 · Native Settings Sandboxie.ini tab
 
 Commit: [6aab5ced3541c34725c33dfc57f565d235f6c86b](https://github.com/Ding-Ding-Projects/material-sandbox/commit/6aab5ced3541c34725c33dfc57f565d235f6c86b)

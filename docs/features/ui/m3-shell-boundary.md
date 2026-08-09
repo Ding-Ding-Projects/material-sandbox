@@ -129,6 +129,10 @@ The Sandboxie.ini child tab is now another concrete native slice: portable-box
 imports, config protection, and password actions are created in code while
 protection persistence and handlers remain intact.
 
+Its portable-box action row uses a two-column grid and its import-path column
+stretches to the available width, preventing the final action or long bilingual
+paths from clipping on compact windows.
+
 The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.
