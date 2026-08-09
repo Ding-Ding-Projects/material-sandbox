@@ -461,9 +461,13 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		QPushButton* addSchedule = new QPushButton(tr("Add rule"), scheduled);
 		QPushButton* editSchedule = new QPushButton(tr("Edit rule"), scheduled);
 		QPushButton* deleteSchedule = new QPushButton(tr("Delete rule"), scheduled);
+		QPushButton* refreshExternalSources = new QPushButton(tr("Refresh external sources"), scheduled);
+		refreshExternalSources->setAccessibleName(tr("Refresh scheduled external sources safely"));
+		refreshExternalSources->setToolTip(tr("Reads an existing Windows Credential Manager entry by opaque reference. No token is shown, saved in the schedule, or written to logs."));
 		scheduledButtons->addWidget(addSchedule);
 		scheduledButtons->addWidget(editSchedule);
 		scheduledButtons->addWidget(deleteSchedule);
+		scheduledButtons->addWidget(refreshExternalSources);
 		scheduledLayout->addLayout(scheduledButtons);
 		uiLayout->addWidget(scheduled, 3, 0);
 
@@ -620,6 +624,10 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			}
 		};
 		refreshScheduledRules();
+		connect(refreshExternalSources, &QPushButton::clicked, this, [refreshScheduledRules]() {
+			ScheduledSettings::refreshExternalSources(theConf, true, refreshScheduledRules);
+			refreshScheduledRules();
+		});
 		connect(addSchedule, &QPushButton::clicked, this, [this, editScheduledRule, refreshScheduledRules]() mutable {
 			bool accepted = false;
 			ScheduledSettings::Rule rule = editScheduledRule(ScheduledSettings::Rule(), &accepted);

@@ -7,13 +7,91 @@
 #include <QSet>
 #include <QUuid>
 #include <QColor>
+#include <QCoreApplication>
+#include <QHash>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QSslError>
 #include <QUrl>
 #include <QRegularExpression>
+#include <QTimer>
+
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <wincred.h>
+#endif
 
 namespace {
 constexpr int kSchemaVersion = 1;
 constexpr const char* kStorageKey = "UIConfig/ScheduledRules";
 const QStringList kKeys = {QStringLiteral("language"), QStringLiteral("theme"), QStringLiteral("density"), QStringLiteral("accent")};
+constexpr int kExternalResponseLimit = 64 * 1024;
+constexpr int kExternalTimeoutMs = 10000;
+
+struct ExternalState
+{
+	bool active = false;
+	bool inFlight = false;
+	QDateTime nextRefresh;
+	QString status = QStringLiteral("external-source-not-activated");
+};
+
+QHash<QString, ExternalState> s_externalStates;
+
+bool hasValidCredentialRef(const QString& ref)
+{
+	// The reference is an identifier, never a free-form secret. Keeping its
+	// namespace fixed prevents a schedule from probing arbitrary credentials.
+	return QRegularExpression(QStringLiteral("^os-vault://scheduled-settings/[A-Za-z0-9_-]{1,128}$")).match(ref).hasMatch();
+}
+
+bool validExternalUrl(const QString& text, const QString& kind)
+{
+	const QUrl url(text);
+	if (!url.isValid() || url.scheme() != QStringLiteral("https") || url.host().isEmpty()
+		|| !url.userName().isEmpty() || !url.password().isEmpty() || !url.query().isEmpty()
+		|| !url.fragment().isEmpty() || (url.port() != -1 && url.port() != 443) || text.size() > 2048)
+		return false;
+	// Home Assistant sources are an origin, not an arbitrary API endpoint.
+	return kind != QStringLiteral("home-assistant") || url.path().isEmpty() || url.path() == QStringLiteral("/");
+}
+
+QByteArray readVaultCredential(const QString& ref)
+{
+#ifdef Q_OS_WIN
+	if (!hasValidCredentialRef(ref)) return {};
+	PCREDENTIALW credential = nullptr;
+	if (!CredReadW(reinterpret_cast<LPCWSTR>(ref.utf16()), CRED_TYPE_GENERIC, 0, &credential) || !credential)
+		return {};
+	QByteArray secret;
+	if (credential->CredentialBlob && credential->CredentialBlobSize > 0 && credential->CredentialBlobSize <= 4096)
+		secret = QByteArray(reinterpret_cast<const char*>(credential->CredentialBlob), credential->CredentialBlobSize);
+	CredFree(credential);
+	// Header injection and non-text blob values are never valid bearer tokens.
+	if (secret.isEmpty() || secret.contains('\0') || secret.contains('\r') || secret.contains('\n')) {
+		secret.fill('\0');
+		return {};
+	}
+	return secret;
+#else
+	Q_UNUSED(ref);
+	return {};
+#endif
+}
+
+bool credentialAvailable(const QString& ref)
+{
+	QByteArray secret = readVaultCredential(ref);
+	const bool available = !secret.isEmpty();
+	secret.fill('\0');
+	return available;
+}
+
+QString stateKey(const ScheduledSettings::Rule& rule)
+{
+	return rule.id + QLatin1Char('|') + rule.source.credentialRef;
+}
 
 QJsonObject toJson(const ScheduledSettings::Rule& rule)
 {
@@ -166,11 +244,10 @@ QStringList validate(const Rule& rule)
 		if (!source.url.isEmpty() || !source.entityId.isEmpty() || !source.credentialRef.isEmpty())
 			issues << QObject::tr("Local sources cannot include network or credential metadata.");
 	} else {
-		const QUrl url(source.url);
-		if (!url.isValid() || url.scheme() != QStringLiteral("https") || url.host().isEmpty() || !url.userName().isEmpty() || !url.password().isEmpty() || source.url.size() > 2048)
-			issues << QObject::tr("External sources require a bounded HTTPS URL without embedded credentials.");
-		if (source.credentialRef.isEmpty() || !source.credentialRef.startsWith(QStringLiteral("os-vault://")) || source.credentialRef.size() > 256)
-			issues << QObject::tr("External sources require an opaque OS credential-vault reference; tokens are not accepted.");
+		if (!validExternalUrl(source.url, source.kind))
+			issues << QObject::tr("External sources require a bounded HTTPS URL without credentials, query, fragment, redirects, or a non-standard port.");
+		if (!hasValidCredentialRef(source.credentialRef))
+			issues << QObject::tr("External sources require an opaque os-vault://scheduled-settings/ credential reference; tokens are not accepted.");
 		if (source.kind == QStringLiteral("https-api") && !source.entityId.isEmpty())
 			issues << QObject::tr("HTTPS API sources cannot include a Home Assistant entity.");
 		if (source.kind == QStringLiteral("home-assistant") && !QRegularExpression(QStringLiteral("^(binary_sensor|input_boolean)\\.[a-z0-9_]+$")).match(source.entityId).hasMatch())
@@ -182,14 +259,100 @@ QStringList validate(const Rule& rule)
 QString sourceStatus(const Source& source)
 {
 	if (source.kind == QStringLiteral("local")) return QStringLiteral("local");
-	return QStringLiteral("unsupported-external-source");
+	if (!validExternalUrl(source.url, source.kind) || !hasValidCredentialRef(source.credentialRef))
+		return QStringLiteral("invalid-external-source");
+	for (auto it = s_externalStates.cbegin(); it != s_externalStates.cend(); ++it) {
+		if (!it.key().endsWith(QLatin1Char('|') + source.credentialRef)) continue;
+		if (it->inFlight) return QStringLiteral("external-source-refreshing");
+		if (it->status == QStringLiteral("external-source-active") || it->status == QStringLiteral("external-source-off") || it->status == QStringLiteral("external-source-failed"))
+			return it->status;
+	}
+	if (!credentialAvailable(source.credentialRef)) return QStringLiteral("vault-credential-missing");
+	return QStringLiteral("external-source-ready");
 }
 
 QString sourceStatusDescription(const Source& source)
 {
 	if (source.kind == QStringLiteral("local"))
 		return QObject::tr("Local source · active");
-	return QObject::tr("External source · saved, not active (credential vault/network adapter unavailable)");
+	const QString status = sourceStatus(source);
+	if (status == QStringLiteral("external-source-refreshing")) return QObject::tr("External source · refreshing safely");
+	if (status == QStringLiteral("external-source-active")) return QObject::tr("External source · active (last bounded refresh returned on)");
+	if (status == QStringLiteral("external-source-off")) return QObject::tr("External source · inactive (last bounded refresh returned off)");
+	if (status == QStringLiteral("external-source-failed")) return QObject::tr("External source · not active (last refresh failed safely)");
+	if (status == QStringLiteral("external-source-ready")) return QObject::tr("External source · ready to activate (Windows Credential Manager credential found)");
+	if (status == QStringLiteral("vault-credential-missing")) return QObject::tr("External source · not active (Windows Credential Manager credential is missing)");
+	return QObject::tr("External source · not active (invalid HTTPS or credential reference)");
+}
+
+void refreshExternalSources(CSettings* settings, bool force, const std::function<void()>& changed)
+{
+	if (!settings || !QCoreApplication::instance()) return;
+	const QDateTime now = QDateTime::currentDateTimeUtc();
+	for (const Rule& rule : load(settings)) {
+		if (!rule.enabled || rule.source.kind == QStringLiteral("local") || !rule.matches(QDateTime::currentDateTime())) continue;
+		const Source& source = rule.source;
+		if (!validExternalUrl(source.url, source.kind) || !hasValidCredentialRef(source.credentialRef)) continue;
+		const QString key = stateKey(rule);
+		ExternalState& state = s_externalStates[key];
+		if (state.inFlight || (!force && state.nextRefresh.isValid() && state.nextRefresh > now)) continue;
+		QByteArray secret = readVaultCredential(source.credentialRef);
+		if (secret.isEmpty()) {
+			state.active = false;
+			state.status = QStringLiteral("vault-credential-missing");
+			state.nextRefresh = now.addSecs(source.refreshSeconds);
+			if (changed) changed();
+			continue;
+		}
+		QUrl requestUrl(source.url);
+		if (source.kind == QStringLiteral("home-assistant")) {
+			requestUrl.setPath(QStringLiteral("/api/states/") + QString::fromLatin1(QUrl::toPercentEncoding(source.entityId)));
+		}
+		QNetworkRequest request(requestUrl);
+		request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
+		request.setRawHeader("Authorization", QByteArray("Bearer ") + secret);
+		request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
+		secret.fill('\0');
+		state.inFlight = true;
+		state.active = false;
+		state.status = QStringLiteral("external-source-refreshing");
+		QNetworkAccessManager* manager = new QNetworkAccessManager(QCoreApplication::instance());
+		QNetworkReply* reply = manager->get(request);
+		QTimer* timeout = new QTimer(reply);
+		timeout->setSingleShot(true);
+		QObject::connect(timeout, &QTimer::timeout, reply, &QNetworkReply::abort);
+		timeout->start(kExternalTimeoutMs);
+		QObject::connect(reply, &QNetworkReply::sslErrors, reply, [reply](const QList<QSslError>&) { reply->abort(); });
+		QObject::connect(reply, &QNetworkReply::finished, reply, [settings, rule, key, manager, reply, changed]() {
+			ExternalState& finished = s_externalStates[key];
+			finished.inFlight = false;
+			finished.active = false;
+			finished.nextRefresh = QDateTime::currentDateTimeUtc().addSecs(rule.source.refreshSeconds);
+			const QByteArray body = reply->readAll();
+			const bool redirect = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).isValid();
+			const QByteArray contentType = reply->header(QNetworkRequest::ContentTypeHeader).toByteArray().toLower();
+			if (reply->error() == QNetworkReply::NoError && !redirect && body.size() <= kExternalResponseLimit && contentType.startsWith("application/json")) {
+				QJsonParseError error;
+				const QJsonDocument document = QJsonDocument::fromJson(body, &error);
+				if (error.error == QJsonParseError::NoError && document.isObject()) {
+					const QJsonObject object = document.object();
+					if (rule.source.kind == QStringLiteral("home-assistant")) {
+						const QString value = object.value(QStringLiteral("state")).toString();
+						finished.active = value == QStringLiteral("on");
+						finished.status = finished.active ? QStringLiteral("external-source-active") : QStringLiteral("external-source-off");
+					} else if (object.size() == 1 && object.value(QStringLiteral("active")).isBool()) {
+						finished.active = object.value(QStringLiteral("active")).toBool();
+						finished.status = finished.active ? QStringLiteral("external-source-active") : QStringLiteral("external-source-off");
+					}
+				}
+			}
+			if (!finished.active && finished.status == QStringLiteral("external-source-refreshing")) finished.status = QStringLiteral("external-source-failed");
+			reply->deleteLater();
+			manager->deleteLater();
+			apply(settings);
+			if (changed) changed();
+		});
+	}
 }
 
 Rule effectiveRule(CSettings* settings, const QDateTime& local)
@@ -211,9 +374,12 @@ void apply(CSettings* settings, const QDateTime& local)
 	if (!settings) return;
 	const Rule rule = effectiveRule(settings, local);
 	if (rule.id.isEmpty()) return;
-	// External source metadata is deliberately inert until the credential-vault
-	// and bounded network client are available. Never block or partially apply.
-	if (sourceStatus(rule.source) != QStringLiteral("local")) return;
+	if (rule.source.kind != QStringLiteral("local")) {
+		refreshExternalSources(settings);
+		const auto state = s_externalStates.constFind(stateKey(rule));
+		// A missing/off/failed source never applies a partial or stale override.
+		if (state == s_externalStates.cend() || !state->active) return;
+	}
 	const QString language = rule.values.value(QStringLiteral("language"));
 	if (!UserPresentationSettings::schoolModeEnabled(settings) && !language.isEmpty()) {
 		const QString current = settings->GetString(QStringLiteral("Options/LanguageMode"), QStringLiteral("english"));
