@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Isolation tab
+
+Commit: [82cd160e7955fa6e8bd8beff952eacac347a4793](https://github.com/Ding-Ding-Projects/material-sandbox/commit/82cd160e7955fa6e8bd8beff952eacac347a4793)
+
+- Rebuilt the Isolation child tab with native Material 3 access-isolation controls and safety guidance.
+- Preserved OptionsAdvanced persistence, enablement rules, and signal handlers.
+
 ## 2026-08-09 · Native Options Restrictions tab
 
 Commit: [d79b138ff97d1bc99c34c426963f89e69ee41812](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d79b138ff97d1bc99c34c426963f89e69ee41812)

@@ -162,6 +162,11 @@ OptionsWindow Restrictions is now another native slice: printing and
 system-protection controls are created in code while the existing persistence
 and handlers remain intact; other OptionsWindow tabs remain staged.
 
+OptionsWindow Isolation is now another native slice: access-isolation toggles
+and their safety guidance are created in code while OptionsAdvanced keeps the
+existing persistence, enablement, and signal behavior; other OptionsWindow
+tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
