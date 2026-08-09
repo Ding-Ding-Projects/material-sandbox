@@ -7,6 +7,8 @@
 #include <QSet>
 #include <QUuid>
 #include <QColor>
+#include <QUrl>
+#include <QRegularExpression>
 
 namespace {
 constexpr int kSchemaVersion = 1;
@@ -31,6 +33,13 @@ QJsonObject toJson(const ScheduledSettings::Rule& rule)
 	for (auto it = rule.values.cbegin(); it != rule.values.cend(); ++it)
 		if (kKeys.contains(it.key())) values.insert(it.key(), it.value());
 	object.insert(QStringLiteral("values"), values);
+	QJsonObject source;
+	source.insert(QStringLiteral("kind"), rule.source.kind);
+	if (!rule.source.url.isEmpty()) source.insert(QStringLiteral("url"), rule.source.url);
+	if (!rule.source.entityId.isEmpty()) source.insert(QStringLiteral("entityId"), rule.source.entityId);
+	if (!rule.source.credentialRef.isEmpty()) source.insert(QStringLiteral("credentialRef"), rule.source.credentialRef);
+	source.insert(QStringLiteral("refreshSeconds"), rule.source.refreshSeconds);
+	object.insert(QStringLiteral("source"), source);
 	return object;
 }
 
@@ -55,6 +64,14 @@ ScheduledSettings::Rule fromJson(const QJsonObject& object)
 	const QJsonObject values = object.value(QStringLiteral("values")).toObject();
 	for (const QString& key : kKeys)
 		if (values.contains(key)) rule.values.insert(key, values.value(key).toString());
+	const QJsonObject source = object.value(QStringLiteral("source")).toObject();
+	if (!source.isEmpty()) {
+		rule.source.kind = source.value(QStringLiteral("kind")).toString(QStringLiteral("local"));
+		rule.source.url = source.value(QStringLiteral("url")).toString();
+		rule.source.entityId = source.value(QStringLiteral("entityId")).toString();
+		rule.source.credentialRef = source.value(QStringLiteral("credentialRef")).toString();
+		rule.source.refreshSeconds = source.value(QStringLiteral("refreshSeconds")).toInt(300);
+	}
 	return rule;
 }
 }
@@ -140,7 +157,32 @@ QStringList validate(const Rule& rule)
 		else if (it.key() == QStringLiteral("accent") && !QColor(it.value()).isValid())
 			issues << QObject::tr("Accent seed must be a valid color.");
 	}
+	const Source& source = rule.source;
+	if (source.kind != QStringLiteral("local") && source.kind != QStringLiteral("https-api") && source.kind != QStringLiteral("home-assistant"))
+		issues << QObject::tr("Source must be local, HTTPS API, or Home Assistant.");
+	if (source.refreshSeconds < 15 || source.refreshSeconds > 86400)
+		issues << QObject::tr("Source refresh must be between 15 seconds and 24 hours.");
+	if (source.kind == QStringLiteral("local")) {
+		if (!source.url.isEmpty() || !source.entityId.isEmpty() || !source.credentialRef.isEmpty())
+			issues << QObject::tr("Local sources cannot include network or credential metadata.");
+	} else {
+		const QUrl url(source.url);
+		if (!url.isValid() || url.scheme() != QStringLiteral("https") || url.host().isEmpty() || !url.userName().isEmpty() || !url.password().isEmpty() || source.url.size() > 2048)
+			issues << QObject::tr("External sources require a bounded HTTPS URL without embedded credentials.");
+		if (source.credentialRef.isEmpty() || !source.credentialRef.startsWith(QStringLiteral("os-vault://")) || source.credentialRef.size() > 256)
+			issues << QObject::tr("External sources require an opaque OS credential-vault reference; tokens are not accepted.");
+		if (source.kind == QStringLiteral("https-api") && !source.entityId.isEmpty())
+			issues << QObject::tr("HTTPS API sources cannot include a Home Assistant entity.");
+		if (source.kind == QStringLiteral("home-assistant") && !QRegularExpression(QStringLiteral("^(binary_sensor|input_boolean)\\.[a-z0-9_]+$")).match(source.entityId).hasMatch())
+			issues << QObject::tr("Home Assistant entity must be binary_sensor.* or input_boolean.*.");
+	}
 	return issues;
+}
+
+QString sourceStatus(const Source& source)
+{
+	if (source.kind == QStringLiteral("local")) return QStringLiteral("local");
+	return QStringLiteral("unsupported-external-source");
 }
 
 Rule effectiveRule(CSettings* settings, const QDateTime& local)
@@ -162,6 +204,9 @@ void apply(CSettings* settings, const QDateTime& local)
 	if (!settings) return;
 	const Rule rule = effectiveRule(settings, local);
 	if (rule.id.isEmpty()) return;
+	// External source metadata is deliberately inert until the credential-vault
+	// and bounded network client are available. Never block or partially apply.
+	if (sourceStatus(rule.source) != QStringLiteral("local")) return;
 	const QString language = rule.values.value(QStringLiteral("language"));
 	if (!UserPresentationSettings::schoolModeEnabled(settings) && !language.isEmpty()) {
 		const QString current = settings->GetString(QStringLiteral("Options/LanguageMode"), QStringLiteral("english"));
