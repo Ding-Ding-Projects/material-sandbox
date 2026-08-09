@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options debug scroll host
+
+Commit: [1be2e9c618c279ffec6f8c309009d50181eae082](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1be2e9c618c279ffec6f8c309009d50181eae082)
+
+- Rebuilt the Advanced Options Debug scroll host with a native Material 3 surface.
+- Preserved the dynamic `dbgLayout` and runtime debug switches.
+
 ## 2026-08-09 · Native Options trigger controls
 
 Commit: [52da4dd9bbf5060d34fa965d7e5a493b68a90ce6](https://github.com/Ding-Ding-Projects/material-sandbox/commit/52da4dd9bbf5060d34fa965d7e5a493b68a90ce6)

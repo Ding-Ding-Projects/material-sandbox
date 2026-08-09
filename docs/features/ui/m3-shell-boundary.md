@@ -98,6 +98,10 @@ Advanced Options > Triggers now uses a native M3 event tree, trigger actions,
 remove action, and template toggle. Popup menus, template filtering, event
 signals, and persistence continue through the existing object names.
 
+Advanced Options > Debug now wraps its dynamically generated debug switches in
+a native M3 scroll host while preserving the existing `dbgLayout` and runtime
+checkboxes.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
