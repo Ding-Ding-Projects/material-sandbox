@@ -6,7 +6,7 @@ const settings = fs.readFileSync(path.join(root, 'SandboxiePlus/SandMan/Windows/
 const theme = fs.readFileSync(path.join(root, 'SandboxiePlus/MiscHelpers/Common/MaterialTheme.cpp'), 'utf8');
 const docs = fs.readFileSync(path.join(root, 'docs/material-design.md'), 'utf8');
 const checks = [
-  ['legacy Fusion control hidden', settings.includes('ui.chkFusionTheme->setVisible(false)') && settings.includes('ui.chkFusionTheme->setEnabled(false)')],
+  ['legacy Fusion control removed', !settings.includes('ui.chkFusionTheme')],
   ['legacy Fusion preference cannot re-enable style', settings.includes('theConf->SetValue("Options/UseFusionTheme", 0);')],
   ['shared Material theme remains applied', theme.includes('MaterialTheme::Apply') || theme.includes('BuildStyleSheet')],
   ['migration boundary documented', docs.includes('Fusion') && docs.includes('legacy') && docs.includes('Material 3')],
