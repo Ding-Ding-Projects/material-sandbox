@@ -118,9 +118,14 @@ void CColorTranslatorDialog::updateFromHsl()
     if (!values[1].trimmed().endsWith('%') || !values[2].trimmed().endsWith('%') || (values.size() == 4 && !values[3].trimmed().endsWith('%'))) { setInputValid(false, tr("HSL saturation, lightness, and alpha must use percent units.")); return; }
     bool ok[4] = { false, false, false, true };
     const double h = values[0].toDouble(&ok[0]);
-    const double s = values[1].remove('%').toDouble(&ok[1]);
-    const double l = values[2].remove('%').toDouble(&ok[2]);
-    const double a = values.size() == 4 ? values[3].remove('%').toDouble(&ok[3]) : 100.0;
+    const auto parsePercent = [](const QString& value, bool* ok) {
+        QString normalized = value.trimmed();
+        normalized.remove('%');
+        return normalized.toDouble(ok);
+    };
+    const double s = parsePercent(values[1], &ok[1]);
+    const double l = parsePercent(values[2], &ok[2]);
+    const double a = values.size() == 4 ? parsePercent(values[3], &ok[3]) : 100.0;
     if (ok[0] && ok[1] && ok[2] && ok[3] && h >= 0 && h <= 360 && s >= 0 && s <= 100 && l >= 0 && l <= 100 && a >= 0 && a <= 100)
         setColor(QColor::fromHslF(h / 360.0, s / 100.0, l / 100.0, a / 100.0));
     else setInputValid(false, tr("HSL hue must be 0–360; other channels must be 0–100%."));

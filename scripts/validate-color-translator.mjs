@@ -8,6 +8,7 @@ const checks = [
   ['SandboxiePlus/SandMan/Windows/ColorTranslatorDialog.h', 'updateFromHex'],
   ['SandboxiePlus/SandMan/Windows/ColorTranslatorDialog.cpp', 'contrastRatio'],
   ['SandboxiePlus/SandMan/Windows/ColorTranslatorDialog.cpp', 'QColor::fromHslF'],
+  ['SandboxiePlus/SandMan/Windows/ColorTranslatorDialog.cpp', 'QString normalized = value.trimmed()'],
   ['SandboxiePlus/SandMan/Windows/SettingsWindow.cpp', 'CColorTranslatorDialog'],
   ['SandboxiePlus/SandMan/SandMan.pri', 'ColorTranslatorDialog.cpp'],
   ['SandboxiePlus/SandMan/Resources/SandMan.qrc', 'Docs/color-translator.md'],
