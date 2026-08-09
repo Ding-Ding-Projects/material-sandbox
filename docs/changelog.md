@@ -72,6 +72,13 @@ Commit: [70227058f1a1b50e3c3e7017daafe8267cf6782a](https://github.com/Ding-Ding-
 - Rebuilt the Settings GUI tab host with native Material 3 controls around its existing native child pages.
 - Preserved page order, labels, current selection, and icon/state wiring.
 
+## 2026-08-09 · Native Settings shell tab host
+
+Commit: [17e496c247804a05ee03bc489df6a5d7a24e9708](https://github.com/Ding-Ding-Projects/material-sandbox/commit/17e496c247804a05ee03bc489df6a5d7a24e9708)
+
+- Rebuilt the Settings Shell tab host with native Material 3 controls around Windows Shell, System Tray, and Run Menu pages.
+- Preserved page order, labels, current selection, and settings pointer wiring.
+
 ## 2026-08-09 · Native Options resource-access tab host
 
 Commit: [01cf568a6d36d64b7e2450e532ffc3785cf0d0b1](https://github.com/Ding-Ding-Projects/material-sandbox/commit/01cf568a6d36d64b7e2450e532ffc3785cf0d0b1)

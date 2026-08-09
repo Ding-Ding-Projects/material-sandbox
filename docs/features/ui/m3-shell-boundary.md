@@ -161,6 +161,10 @@ event flow.
 Settings GUI now uses a native M3 tab host around its native child pages,
 preserving page order, labels, current selection, and icon/state wiring.
 
+Settings Shell now uses a native M3 tab host around Windows Shell, System Tray,
+and Run Menu pages, preserving page order, labels, current selection, and
+settings pointer wiring.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
