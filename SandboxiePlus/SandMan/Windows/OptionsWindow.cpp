@@ -1948,6 +1948,23 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.tabsAccess = nativeAccessTabs;
 	}
 
+	// Stop Options now uses native M3 controls for its two persisted behavior
+	// switches; the surrounding stop-tab merge remains unchanged.
+	{
+		auto migrateStopCheck = [&](QCheckBox*& control) {
+			auto* native = new QCheckBox(control->text(), this);
+			native->setObjectName(control->objectName());
+			native->setCheckState(control->checkState());
+			native->setToolTip(control->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			ui.gridLayout_37->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		migrateStopCheck(ui.chkNoStopWnd);
+		migrateStopCheck(ui.chkLingerLeniency);
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
