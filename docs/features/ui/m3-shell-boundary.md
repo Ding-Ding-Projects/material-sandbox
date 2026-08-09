@@ -61,6 +61,10 @@ this slice does not claim the old form is retired.
 existing behavior while the native M3 host owns dialog chrome, and the exposed
 Fusion style switch remains retired. The Designer form is still tracked until
 all of its controls have safe programmatic replacements.
+The Window Options child tab is now a concrete native slice: six monitor
+selectors and the fallback hint are created in code and wired to the existing
+settings handlers; the remaining child tabs stay staged rather than being
+claimed as complete.
 
 ## Failure and accessibility notes
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native settings window-options tab
+
+Commit: [3e2b189577bb18a629c72f1d0e9c4e95db01b1ad](https://github.com/Ding-Ding-Projects/material-sandbox/commit/3e2b189577bb18a629c72f1d0e9c4e95db01b1ad)
+
+- Rebuilt the Settings window's Window Options tab with six native Material 3 monitor selectors and a wrapped explanatory hint.
+- Kept generated object names, monitor option persistence, and existing change handlers; the other Settings tabs remain an explicit staged boundary.
+
 ## 2026-08-09 · Native M3 settings dialog shell
 
 Commit: [dcd3f5f45ad2e6fc61cbb9f83803ee590feea6a0](https://github.com/Ding-Ding-Projects/material-sandbox/commit/dcd3f5f45ad2e6fc61cbb9f83803ee590feea6a0)
