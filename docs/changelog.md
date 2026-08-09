@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options config dump controls
+
+Commit: [1534b9ab507ce95e82d96d81e0c63d09b62f9bd2](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1534b9ab507ce95e82d96d81e0c63d09b62f9bd2)
+
+- Rebuilt Config Dump filter switches and Refresh action with native Material 3 controls.
+- Preserved the dynamic configuration tree and exact dump/refresh semantics.
+
 ## 2026-08-09 · Native Options tracing controls
 
 Commit: [d77784d1444c922ffc0fcb262705694517460a34](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d77784d1444c922ffc0fcb262705694517460a34)

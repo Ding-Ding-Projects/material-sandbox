@@ -59,6 +59,11 @@ checkbox, copying the shipped labels and tooltips. Trace signal wiring and
 configuration persistence remain unchanged while the generated grid stays a
 temporary, explicit migration seam.
 
+The Config Dump child surface now uses native M3 filter switches and Refresh
+action while retaining its dynamically supplied configuration tree and exact
+dump semantics. The tree remains a data view; only its surrounding controls
+are part of this bounded migration slice.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
