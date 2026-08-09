@@ -771,7 +771,12 @@ void CSBUpdate::UpdateOptions()
 
     m_pStable->setEnabled(m_pVersion->isChecked());
     m_pPreview->setEnabled(m_pVersion->isChecked());
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+    // Contributor builds do not gate release channels on certificate type.
+    m_pInsider->setEnabled(m_pVersion->isChecked());
+#else
     m_pInsider->setEnabled(CERT_IS_INSIDER(g_CertInfo) && m_pVersion->isChecked());
+#endif
 
     m_pHotfixes->setEnabled(m_pVersion->isChecked());
 }

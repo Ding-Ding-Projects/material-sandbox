@@ -133,6 +133,13 @@ requireWindow(
   'setup wizard license-choice neutralization',
 );
 requireWindow(
+  'SandboxiePlus/SandMan/Wizards/SetupWizard.cpp',
+  'void CSBUpdate::UpdateOptions()',
+  'int CSBUpdate::nextId() const',
+  ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'm_pInsider->setEnabled(m_pVersion->isChecked());', '#else', 'CERT_IS_INSIDER', '#endif'],
+  'setup insider channel certificate bypass',
+);
+requireWindow(
   'SandboxiePlus/SandMan/Windows/OptionsGeneral.cpp',
   'void COptionsWindow::CreateGeneral()',
   '\tm_HoldBoxType = false;',
