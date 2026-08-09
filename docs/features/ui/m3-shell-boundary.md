@@ -471,6 +471,12 @@ The same tab now also rebuilds `chkOverlayIcons`, `chkHideCore`, and
 signal routes, and `Options/UseOverlayIcons`, `Options/HideSbieProcesses`, and
 `Options/BoxGroupHandling` persistence keys remain unchanged.
 
+Its `lblInterface`, tri-state guidance, and grouping caption labels are now
+rebuilt in-place as native Material 3 surfaces too. Object names, text,
+typography, alignment, buddy relationships, layout cells, and accessible names
+are preserved; the remaining vertical spacer is layout structure rather than
+rendered legacy chrome.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
@@ -484,6 +490,7 @@ controls remain available through the host surface.
 The source validator checks that the shell and dialog hosts are present in
 `SandMan.pri`, that the constructor installs the shell after
 `setCentralWidget`, that migrated dialogs install the dialog host, and that both
-hosts are guarded against duplicate installation. A native compile remains part
-of the Windows CI gate because this checkout does not guarantee a Qt SDK on
-every agent.
+hosts are guarded against duplicate installation. Both the Node and PowerShell
+contracts recognize the current `M3DialogHost::Install(this)` path used by
+`BoxImageWindow`. A native compile remains part of the Windows CI gate because
+this checkout does not guarantee a Qt SDK on every agent.
