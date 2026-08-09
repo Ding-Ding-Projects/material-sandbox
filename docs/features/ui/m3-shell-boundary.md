@@ -172,6 +172,11 @@ and add/remove/reorder action rail are created in code while the existing
 command serialization, sorting, and handlers remain intact; other
 OptionsWindow tabs remain staged.
 
+OptionsWindow Advanced Security is now another native slice: privilege and
+Sandboxie-token controls are created in code while OptionsAdvanced keeps the
+existing persistence, tristate semantics, and dependency rules; other
+OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls

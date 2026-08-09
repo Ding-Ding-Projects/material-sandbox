@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Advanced Security tab
+
+Commit: [d49220ce900358a2b37aaf03909c52782326d9fe](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d49220ce900358a2b37aaf03909c52782326d9fe)
+
+- Rebuilt the Advanced Security child tab with native Material 3 privilege and Sandboxie-token controls.
+- Preserved OptionsAdvanced persistence, tristate token semantics, and dependency rules.
+
 ## 2026-08-09 · Native Options Run Menu tab
 
 Commit: [2bcbec08a9bb1cd90fb4df83a846187e35df992d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2bcbec08a9bb1cd90fb4df83a846187e35df992d)
