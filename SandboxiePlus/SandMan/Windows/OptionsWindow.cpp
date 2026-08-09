@@ -1835,6 +1835,20 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.tabsTemplates = nativeTemplateTabs;
 	}
 
+	// Various Options now uses a native M3 tab host for Compatibility and
+	// Dlls & Extensions while preserving both migrated pages and their state.
+	{
+		auto* nativeOtherTabs = new QTabWidget(this);
+		nativeOtherTabs->setObjectName(QStringLiteral("tabsOther"));
+		nativeOtherTabs->addTab(ui.tabCompat, tr("Compatibility"));
+		nativeOtherTabs->addTab(ui.tabDlls, tr("Dlls && Extensions"));
+		nativeOtherTabs->setCurrentIndex(ui.tabsOther->currentIndex());
+		nativeOtherTabs->setProperty("m3NativeSurface", true);
+		ui.gridLayout_12->replaceWidget(ui.tabsOther, nativeOtherTabs);
+		ui.tabsOther->deleteLater();
+		ui.tabsOther = nativeOtherTabs;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
