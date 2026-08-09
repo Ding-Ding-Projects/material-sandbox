@@ -88,6 +88,11 @@ command tree and add/move/remove actions are created in code and retain the
 existing command serialization and signal handlers; the remaining Settings
 tabs stay explicitly staged.
 
+The Windows Shell child tab is now another concrete native slice: startup,
+context-menu, integration, and desktop controls are created in code while the
+contributor-sensitive context-menu replacement and handlers remain intact; the
+remaining Settings tabs stay explicitly staged.
+
 The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.

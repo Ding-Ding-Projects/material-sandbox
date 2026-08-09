@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings Windows Shell tab
+
+Commit: [5c4d93534be1115adf2bc15b1c0e0efaa2d9a02f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5c4d93534be1115adf2bc15b1c0e0efaa2d9a02f)
+
+- Rebuilt the Settings Windows Shell child tab with native Material 3 startup, context-menu, integration, and desktop controls.
+- Preserved contributor-sensitive context-menu replacement, settings persistence, and existing handlers.
+
 ## 2026-08-09 · Native Settings Run Menu tab
 
 Commit: [00810801287f84a2f228b3d222c763ea7a71ab7d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/00810801287f84a2f228b3d222c763ea7a71ab7d)
