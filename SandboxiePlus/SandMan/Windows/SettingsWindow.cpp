@@ -1165,7 +1165,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	if (ui.tabsShell && ui.tabTray) {
 		const int trayIndex = ui.tabsShell->indexOf(ui.tabTray);
 		if (trayIndex >= 0) {
-			auto* nativeTray = new QWidget(ui.tabsGeneral);
+			auto* nativeTray = new QWidget(ui.tabsShell);
 			auto* trayForm = new QFormLayout(nativeTray);
 			ui.lblSysTray = new QLabel(tr("Systray options"), nativeTray);
 			ui.lblSysTray->setProperty("m3NativeSurface", true);
@@ -1213,7 +1213,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	if (ui.tabsShell && ui.tabRun) {
 		const int runIndex = ui.tabsShell->indexOf(ui.tabRun);
 		if (runIndex >= 0) {
-			auto* nativeRun = new QWidget(ui.tabsGeneral);
+			auto* nativeRun = new QWidget(ui.tabsShell);
 			auto* runLayout = new QVBoxLayout(nativeRun);
 			auto* runHint = new QLabel(tr("You can configure custom entries for all sandboxes run menus."), nativeRun);
 			runHint->setWordWrap(true);
