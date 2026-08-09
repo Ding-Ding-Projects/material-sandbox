@@ -6,7 +6,9 @@ and makes certificate checks succeed without asking the user to purchase,
 renew, donate, or wait through a supporter reminder.
 
 The Settings support page is removed from the contributor build and its
-certificate-refresh slot is inert. Setup Wizard skips the certificate page;
+certificate-refresh slot is inert. Options and troubleshooting surfaces compile
+out supporter badges and certificate footers, and the Setup Wizard's update
+footer is hidden at compile time. Setup Wizard skips the certificate page;
 certificate-error popups, expiry logs, and support dialogs are all enclosed by
 the contributor preprocessor boundary. The normal certificate workflow remains
 available in non-contributor builds.
@@ -34,7 +36,8 @@ node scripts/validate-contributor-build.mjs
 ```
 
 The validator checks every reminder boundary, certificate feature gate, Setup
-Wizard route, support-tab removal, and the legal-notice boundary. A Qt/MSVC
+Wizard route, support-tab removal, Options and troubleshooting footer guards,
+and the legal-notice boundary. A Qt/MSVC
 runtime build remains a separate gate; static source evidence must not be
 reported as runtime proof.
 

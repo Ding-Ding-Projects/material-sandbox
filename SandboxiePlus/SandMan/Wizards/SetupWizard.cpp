@@ -725,7 +725,12 @@ void CSBUpdate::initializePage()
     m_pUpdate->setChecked(true);
     m_pStable->setChecked(true);
 
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+    // Contributor builds never expose certificate or purchase guidance.
+    m_pBottomLabel->setVisible(false);
+#else
     m_pBottomLabel->setVisible(!g_CertInfo.active || g_CertInfo.expired);
+#endif
 
     UpdateOptions();
 }
