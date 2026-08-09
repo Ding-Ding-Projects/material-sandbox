@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Non-blocking image password success notification
+
+Commit: [37315f1bb53535cbed5b0afb6e6bc0aeae4236a7](https://github.com/Ding-Ding-Projects/material-sandbox/commit/37315f1bb53535cbed5b0afb6e6bc0aeae4236a7)
+
+- Routed the successful image-password change message through the notification center instead of a blocking information box.
+- Preserved the critical failure path and the password operation semantics.
+
 ## 2026-08-09 · Manager-safe Options outer tab repair
 
 Commit: [858ce111472d02f92141a42127124788d4381fc4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/858ce111472d02f92141a42127124788d4381fc4)
@@ -899,4 +906,3 @@ Commit: [bd9aea138f9a401cebea1b854cd84f69cb9494b6](https://github.com/Ding-Ding-
 - Added the Material 3 desktop baseline.
 - Added contributor capability mode and quiet support handling.
 - Published the Material 3 Pages landing site.
-
