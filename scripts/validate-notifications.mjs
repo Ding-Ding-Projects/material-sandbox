@@ -15,6 +15,7 @@ const checks = [
   ['SandboxiePlus/SandMan/Windows/NotificationCenter.cpp', 'CaseInsensitiveOption'],
   ['SandboxiePlus/SandMan/SandMan.cpp', 'm_pNotificationCenter->post'],
   ['SandboxiePlus/SandMan/OnlineUpdater.cpp', 'OnLogMessage(tr("No new updates found'],
+  ['SandboxiePlus/SandMan/BoxTransfer.cpp', 'OnLogMessage(CBoxTransferDialog::tr("Nothing selected for export."), true)'],
   ['SandboxiePlus/SandMan/SandMan.pri', 'NotificationCenter.cpp'],
   ['README.md', 'docs/screenshots.md'],
   ['docs/screenshots.md', 'Material desktop screenshot gallery'],
@@ -26,4 +27,7 @@ for (const [file, needle] of checks) {
 const updater = read('SandboxiePlus/SandMan/OnlineUpdater.cpp');
 if (updater.includes('QMessageBox::information(theGUI') && updater.includes('No new updates found'))
   throw new Error('manual update success must use the non-blocking notification center');
+const transfer = read('SandboxiePlus/SandMan/BoxTransfer.cpp');
+if (transfer.includes('QMessageBox::information(parent, "Sandboxie-Plus", CBoxTransferDialog::tr("Nothing selected for export."))'))
+  throw new Error('empty export selection must use the non-blocking notification center');
 console.log(`notification-and-gallery-contract checks=${checks.length}`);
