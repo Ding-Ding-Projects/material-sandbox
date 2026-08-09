@@ -1710,6 +1710,30 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.btnDumpFW = nativeDump;
 	}
 
+	// Various Options > Compatibility now owns native M3 switches for each
+	// compatibility workaround while retaining existing persistence handlers.
+	{
+		auto migrateCompatCheck = [&](QCheckBox*& control) {
+			auto* native = new QCheckBox(control->text(), this);
+			native->setObjectName(control->objectName());
+			native->setCheckState(control->checkState());
+			native->setToolTip(control->toolTip());
+			native->setProperty("m3NativeSurface", true);
+		ui.gridLayout_62->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		migrateCompatCheck(ui.chkPreferExternalManifest);
+		migrateCompatCheck(ui.chkRestartOnPCA);
+		migrateCompatCheck(ui.chkUseSbieWndStation);
+		migrateCompatCheck(ui.chkNoPanic);
+		migrateCompatCheck(ui.chkForceRestart);
+		migrateCompatCheck(ui.chkUseSbieDeskHack);
+		migrateCompatCheck(ui.chkElevateCreateProcessFix);
+		migrateCompatCheck(ui.chkComTimeout);
+		migrateCompatCheck(ui.chkUseElectronDetection);
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
