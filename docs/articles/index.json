@@ -19,5 +19,5 @@
     ,{"slug":"build-entrypoints","path":"../features/build-entrypoints.md","related":["native-ci-evidence","contributor-build","material-design"]}
     ,{"slug":"m3-shell-boundary","path":"../features/ui/m3-shell-boundary.md","related":["material-design","appearance-editor","tab-discovery"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"fefd451cef268a46f507f6bdd6ce790d70b659b4"}
+  "changelog": {"path":"../changelog.md","commit":"fefd451cec268a46f507f6bdd6ce790d70b659b4"}
 }
