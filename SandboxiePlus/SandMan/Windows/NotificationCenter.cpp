@@ -14,6 +14,8 @@
 #include <QJsonObject>
 #include <QLabel>
 #include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QComboBox>
 #include <QLocale>
 #include <QListWidget>
 #include <QPushButton>
@@ -191,24 +193,75 @@ void CNotificationCenter::openRegexBuilder()
     pattern.setText(m_regexEnabled ? m_regex.pattern() : m_filter->text());
     pattern.setMaxLength(512);
     pattern.setAccessibleName(tr("Regular-expression pattern"));
+    QLineEdit flags(&dialog);
+    flags.setText(m_regexFlags);
+    flags.setMaxLength(8);
+    flags.setPlaceholderText(QStringLiteral("imxsU"));
+    flags.setAccessibleName(tr("Regular-expression flags"));
+    QPlainTextEdit sample(&dialog);
+    sample.setPlainText(m_filter->text());
+    sample.setMaximumHeight(72);
+    sample.setAccessibleName(tr("Regular-expression sample text"));
+    QLabel status(&dialog);
+    status.setWordWrap(true);
     QLabel help(tr("Qt QRegularExpression; plain text remains the default."), &dialog);
     help.setWordWrap(true);
     form.addRow(tr("Pattern"), &pattern);
+    form.addRow(tr("Flags"), &flags);
+    form.addRow(tr("Sample text"), &sample);
     form.addRow(QString(), &help);
+    form.addRow(tr("Validation"), &status);
     QDialogButtonBox buttons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
     form.addRow(QString(), &buttons);
     connect(&buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
     connect(&buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    auto updateStatus = [&]() {
+        QRegularExpression::PatternOptions options;
+        const QString value = flags.text();
+        bool validFlags = true;
+        for (const QChar flag : value) {
+            if (flag == QLatin1Char('i')) options |= QRegularExpression::CaseInsensitiveOption;
+            else if (flag == QLatin1Char('m')) options |= QRegularExpression::MultilineOption;
+            else if (flag == QLatin1Char('s')) options |= QRegularExpression::DotMatchesEverythingOption;
+            else if (flag == QLatin1Char('U')) options |= QRegularExpression::InvertedGreedinessOption;
+            else if (flag == QLatin1Char('x')) options |= QRegularExpression::ExtendedPatternSyntaxOption;
+            else validFlags = false;
+        }
+        const QRegularExpression candidate(pattern.text(), options);
+        if (!validFlags || !candidate.isValid()) {
+            status.setText(tr("Invalid pattern or flags: %1").arg(!validFlags ? tr("use only i, m, s, x, U") : candidate.errorString()));
+            return;
+        }
+        int matches = 0;
+        QRegularExpressionMatchIterator iterator = candidate.globalMatch(sample.toPlainText());
+        while (iterator.hasNext()) { iterator.next(); ++matches; }
+        status.setText(tr("Valid Qt QRegularExpression. Sample contains at least %1 match(es).").arg(matches));
+    };
+    connect(&pattern, &QLineEdit::textChanged, &dialog, updateStatus);
+    connect(&flags, &QLineEdit::textChanged, &dialog, updateStatus);
+    connect(&sample, &QPlainTextEdit::textChanged, &dialog, updateStatus);
+    updateStatus();
     if (dialog.exec() != QDialog::Accepted)
         return;
-    const QRegularExpression candidate(pattern.text());
-    if (!candidate.isValid()) {
+    QRegularExpression::PatternOptions options;
+    bool validFlags = true;
+    for (const QChar flag : flags.text()) {
+        if (flag == QLatin1Char('i')) options |= QRegularExpression::CaseInsensitiveOption;
+        else if (flag == QLatin1Char('m')) options |= QRegularExpression::MultilineOption;
+        else if (flag == QLatin1Char('s')) options |= QRegularExpression::DotMatchesEverythingOption;
+        else if (flag == QLatin1Char('U')) options |= QRegularExpression::InvertedGreedinessOption;
+        else if (flag == QLatin1Char('x')) options |= QRegularExpression::ExtendedPatternSyntaxOption;
+        else validFlags = false;
+    }
+    const QRegularExpression candidate(pattern.text(), options);
+    if (!validFlags || !candidate.isValid()) {
         m_regexEnabled = false;
         m_filter->setToolTip(candidate.errorString());
         applyFilter();
         return;
     }
     m_regex = candidate;
+    m_regexFlags = flags.text();
     m_regexEnabled = !pattern.text().isEmpty();
     m_filter->setText(pattern.text());
     m_filter->setToolTip(m_regexEnabled ? tr("Regex mode enabled") : tr("Plain-text mode enabled"));

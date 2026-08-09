@@ -9,6 +9,8 @@ class CSettings;
 class QLineEdit;
 class QListWidget;
 class QPushButton;
+class QPlainTextEdit;
+class QLabel;
 
 class CNotificationCenter : public QWidget
 {
@@ -45,6 +47,7 @@ private:
     QPushButton* m_regexButton;
     QPushButton* m_dismissSelected;
     QPushButton* m_dismissAll;
+    QString m_regexFlags;
     QRegularExpression m_regex;
     bool m_regexEnabled = false;
 };
