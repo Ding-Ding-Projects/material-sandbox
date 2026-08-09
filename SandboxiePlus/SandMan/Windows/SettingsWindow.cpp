@@ -15,6 +15,7 @@
 #include "../OnlineUpdater.h"
 #include "../MiscHelpers/Archive/ArchiveFS.h"
 #include <QJsonDocument>
+#include <QJsonArray>
 #include "../Helpers/StorageInfo.h"
 #include "../Wizards/TemplateWizard.h"
 #include "../AddonManager.h"
@@ -31,6 +32,10 @@
 #include <functional>
 #include <QColorDialog>
 #include <QLocale>
+#include <QFile>
+#include <QFileDialog>
+#include <QSaveFile>
+#include <QTextStream>
 #include "ColorTranslatorDialog.h"
 #include <QListWidget>
 #include <QToolTip>
@@ -354,6 +359,12 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			QPushButton* restore = new QPushButton(tr("Restore selected revision"), dialog);
 			restore->setEnabled(false);
 			layout->addWidget(restore);
+			QHBoxLayout* exportLayout = new QHBoxLayout();
+			QPushButton* exportJson = new QPushButton(tr("Export JSON"), dialog);
+			QPushButton* exportMarkdown = new QPushButton(tr("Export Markdown"), dialog);
+			exportLayout->addWidget(exportJson);
+			exportLayout->addWidget(exportMarkdown);
+			layout->addLayout(exportLayout);
 			const QVector<CLocalSettingsHistory::Entry> entries = theConf->History()->entries();
 			auto refill = [entries, revisions, search]() {
 				revisions->clear();
@@ -370,6 +381,24 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			refill();
 			connect(search, &QLineEdit::textChanged, dialog, refill);
 			connect(revisions, &QListWidget::currentItemChanged, dialog, [restore](QListWidgetItem* item) { restore->setEnabled(item != nullptr); });
+			auto exportHistory = [entries, search](const QString& path, bool markdown) {
+				QSaveFile file(path);
+				if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return;
+				QJsonArray array;
+				QString markdownText = QStringLiteral("# Settings history\n\nSearch: `%1`\n\n").arg(search->text().trimmed().replace('`', "'"));
+				const auto escape = [](QString value) { return value.replace('\\', "\\\\").replace('\n', " ").replace('*', "\\*").replace('[', "\\["); };
+				for (int i = entries.size() - 1; i >= 0; --i) {
+					const auto& entry = entries.at(i);
+					const QString text = QStringLiteral("%1 · %2 · %3").arg(QLocale().toString(entry.timestamp.toLocalTime(), QLocale::ShortFormat), entry.action, entry.key);
+					if (!search->text().trimmed().isEmpty() && !text.contains(search->text().trimmed(), Qt::CaseInsensitive)) continue;
+					if (markdown) markdownText += QStringLiteral("- **%1** — %2 (%3)\n").arg(escape(entry.action), escape(entry.key), entry.timestamp.toUTC().toString(Qt::ISODate));
+					else { QJsonObject object; object.insert("id", entry.id); object.insert("timestamp", entry.timestamp.toUTC().toString(Qt::ISODate)); object.insert("key", entry.key); object.insert("action", entry.action); array.append(object); }
+				}
+				file.write(markdown ? markdownText.toUtf8() : QJsonDocument(array).toJson(QJsonDocument::Indented));
+				file.commit();
+			};
+			connect(exportJson, &QPushButton::clicked, dialog, [dialog, exportHistory]() { const QString path = QFileDialog::getSaveFileName(dialog, QObject::tr("Export settings history"), QString(), QObject::tr("JSON files (*.json)")); if (!path.isEmpty()) exportHistory(path, false); });
+			connect(exportMarkdown, &QPushButton::clicked, dialog, [dialog, exportHistory]() { const QString path = QFileDialog::getSaveFileName(dialog, QObject::tr("Export settings history"), QString(), QObject::tr("Markdown files (*.md)")); if (!path.isEmpty()) exportHistory(path, true); });
 			connect(restore, &QPushButton::clicked, dialog, [this, dialog, revisions]() {
 				QListWidgetItem* item = revisions->currentItem();
 				if (!item)

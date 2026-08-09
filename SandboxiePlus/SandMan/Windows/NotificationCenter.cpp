@@ -6,6 +6,8 @@
 #include <QAbstractItemView>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QFile>
+#include <QFileDialog>
 #include <QFormLayout>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -15,7 +17,9 @@
 #include <QLocale>
 #include <QListWidget>
 #include <QPushButton>
+#include <QSaveFile>
 #include <QVBoxLayout>
+#include <QTextStream>
 
 CNotificationCenter::CNotificationCenter(CSettings* settings, QWidget* parent)
     : QWidget(parent), m_settings(settings), m_key(QStringLiteral("UIConfig/NotificationHistory"))
@@ -40,9 +44,13 @@ CNotificationCenter::CNotificationCenter(CSettings* settings, QWidget* parent)
     m_dismissSelected = new QPushButton(tr("Dismiss selected"), this);
     m_dismissAll = new QPushButton(tr("Dismiss all"), this);
     QPushButton* clear = new QPushButton(tr("Clear history"), this);
+    QPushButton* exportJsonButton = new QPushButton(tr("Export JSON"), this);
+    QPushButton* exportMarkdownButton = new QPushButton(tr("Export Markdown"), this);
     actions->addWidget(m_dismissSelected);
     actions->addWidget(m_dismissAll);
     actions->addWidget(clear);
+    actions->addWidget(exportJsonButton);
+    actions->addWidget(exportMarkdownButton);
     actions->addStretch(1);
     layout->addLayout(actions);
 
@@ -51,6 +59,8 @@ CNotificationCenter::CNotificationCenter(CSettings* settings, QWidget* parent)
     connect(m_dismissSelected, &QPushButton::clicked, this, &CNotificationCenter::dismissSelected);
     connect(m_dismissAll, &QPushButton::clicked, this, &CNotificationCenter::dismissAll);
     connect(clear, &QPushButton::clicked, this, &CNotificationCenter::clearHistory);
+    connect(exportJsonButton, &QPushButton::clicked, this, &CNotificationCenter::exportJson);
+    connect(exportMarkdownButton, &QPushButton::clicked, this, &CNotificationCenter::exportMarkdown);
     connect(m_list, &QListWidget::itemDoubleClicked, this, [this](QListWidgetItem* item) {
         if (item && item->data(Qt::UserRole + 1).toString().startsWith(QStringLiteral("http")))
             emit activated(item->data(Qt::UserRole + 1).toString());
@@ -101,6 +111,45 @@ void CNotificationCenter::dismissAll()
 void CNotificationCenter::clearHistory()
 {
     dismissAll();
+}
+
+void CNotificationCenter::exportJson()
+{
+    const QString path = QFileDialog::getSaveFileName(this, tr("Export notification history"), QString(), tr("JSON files (*.json)"));
+    if (path.isEmpty()) return;
+    QJsonArray array;
+    for (int i = 0; i < m_list->count(); ++i) {
+        QListWidgetItem* item = m_list->item(i);
+        if (item->isHidden()) continue;
+        QJsonObject object;
+        object.insert(QStringLiteral("severity"), item->data(Qt::UserRole).toInt());
+        object.insert(QStringLiteral("title"), item->data(Qt::UserRole + 2).toString());
+        object.insert(QStringLiteral("body"), item->data(Qt::UserRole + 3).toString());
+        object.insert(QStringLiteral("link"), item->data(Qt::UserRole + 1).toString());
+        object.insert(QStringLiteral("timestamp"), item->data(Qt::UserRole + 4).toString());
+        array.append(object);
+    }
+    QSaveFile file(path);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+        file.write(QJsonDocument(array).toJson(QJsonDocument::Indented)), file.commit();
+}
+
+void CNotificationCenter::exportMarkdown()
+{
+    const QString path = QFileDialog::getSaveFileName(this, tr("Export notification history"), QString(), tr("Markdown files (*.md)"));
+    if (path.isEmpty()) return;
+    QSaveFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return;
+    QTextStream stream(&file);
+    stream << "# Notification history\n\n" << "Search: `" << m_filter->text().replace('`', "'") << "`\n\n";
+    const auto escape = [](QString value) { return value.replace('\\', "\\\\").replace('\n', " ").replace('*', "\\*").replace('[', "\\["); };
+    for (int i = 0; i < m_list->count(); ++i) {
+        QListWidgetItem* item = m_list->item(i);
+        if (item->isHidden()) continue;
+        stream << "- **" << escape(item->data(Qt::UserRole + 2).toString()) << "** — " << escape(item->data(Qt::UserRole + 3).toString()) << " (" << item->data(Qt::UserRole + 4).toString() << ")\n";
+    }
+    stream.flush();
+    file.commit();
 }
 
 void CNotificationCenter::applyFilter()

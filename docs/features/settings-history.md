@@ -6,6 +6,8 @@ Sandboxie records bounded, append-only setting changes in a local JSONL file und
 
 The Settings window exposes **Open settings history**. The panel filters revisions by key, action, or date, and restores the selected setting's previous value. Restoring is itself a new setting write, so the recovery action remains reversible through a later revision.
 
+The panel exports the active filtered view as JSON metadata or Markdown. Before/after values are deliberately excluded from exports because settings may contain sensitive data.
+
 ## Configuration
 
 - File: `<profile>/history/settings-history.jsonl`

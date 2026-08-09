@@ -23,6 +23,8 @@ public slots:
     void dismissSelected();
     void dismissAll();
     void clearHistory();
+    void exportJson();
+    void exportMarkdown();
 
 signals:
     void activated(const QString& link);
