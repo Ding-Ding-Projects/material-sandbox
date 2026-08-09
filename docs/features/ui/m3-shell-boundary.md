@@ -112,6 +112,10 @@ Folders, and Accessibility, preserving page order and each page's controls.
 Various Options now uses a native M3 tab host for Compatibility and Dlls &
 Extensions, preserving page state and the migrated child controls.
 
+Advanced Options now uses a native M3 tab host for Miscellaneous, Triggers,
+Processes, Privacy, Users, Tracing, and Debug. Dynamic Debug removal, page
+order, icons, and migrated child controls remain intact.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

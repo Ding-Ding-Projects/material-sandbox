@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options advanced tab host
+
+Commit: [f79390ea140113787d80be18ad2184735fc0fe94](https://github.com/Ding-Ding-Projects/material-sandbox/commit/f79390ea140113787d80be18ad2184735fc0fe94)
+
+- Rebuilt the Advanced Options tab host with native Material 3 tabs.
+- Preserved dynamic Debug removal, page order, icons, and migrated child controls.
+
 ## 2026-08-09 · Native Options various-options tab host
 
 Commit: [91c859709a3b8197ca38cb7607ea6a51588802b8](https://github.com/Ding-Ding-Projects/material-sandbox/commit/91c859709a3b8197ca38cb7607ea6a51588802b8)
