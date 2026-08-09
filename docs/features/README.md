@@ -7,3 +7,4 @@ This category documents local, user-controlled recovery behavior. Each article n
 - [Dim-sum startup surprise](dim-sum-surprise.md)
 - [Material color translator](color-translator.md)
 - [School mode](school-mode.md)
+- [Scheduled settings](scheduled-settings.md)

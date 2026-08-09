@@ -252,6 +252,7 @@
         <file alias="Docs/dim-sum-surprise.md">Docs/dim-sum-surprise.md</file>
         <file alias="Docs/color-translator.md">Docs/color-translator.md</file>
         <file alias="Docs/school-mode.md">Docs/school-mode.md</file>
+        <file alias="Docs/scheduled-settings.md">Docs/scheduled-settings.md</file>
     </qresource>
     <qresource prefix="/Boxes">
         <file alias="Busy">Boxes/BusyOverlay.png</file>

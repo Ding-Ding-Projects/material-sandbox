@@ -63,6 +63,7 @@ HEADERS += ./stdafx.h \
     ./CustomStyles.h \
     ../MiscHelpers/Common/MaterialTheme.h \
     ../MiscHelpers/Common/UserPresentationSettings.h \
+    ../MiscHelpers/Common/ScheduledSettings.h \
     ./AddonManager.h \
     ./BoxTransfer.h
 
@@ -126,7 +127,8 @@ SOURCES += ./main.cpp \
     ./AddonManager.cpp \
     ./BoxTransfer.cpp \
     ../MiscHelpers/Common/MaterialTheme.cpp \
-    ../MiscHelpers/Common/UserPresentationSettings.cpp
+    ../MiscHelpers/Common/UserPresentationSettings.cpp \
+    ../MiscHelpers/Common/ScheduledSettings.cpp
 
 FORMS += ./Forms/EditorSettingsWindow.ui \
     ./Forms/SelectBoxWindow.ui \

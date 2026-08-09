@@ -20,5 +20,5 @@ if (!fs.existsSync(changelogPath)) throw new Error('missing changelog');
 const changelog = fs.readFileSync(changelogPath, 'utf8');
 if (!new RegExp(`\\b${manifest.changelog.commit}\\b`).test(changelog)) throw new Error('changelog commit is missing from changelog.md');
 const qrc = fs.readFileSync(path.join(root, 'SandboxiePlus', 'SandMan', 'Resources', 'SandMan.qrc'), 'utf8');
-for (const resource of ['Docs/material-design.md', 'Docs/contributor-build.md', 'Docs/changelog.md']) if (!qrc.includes(resource)) throw new Error(`missing Qt resource: ${resource}`);
+for (const resource of ['Docs/material-design.md', 'Docs/contributor-build.md', 'Docs/changelog.md', 'Docs/scheduled-settings.md']) if (!qrc.includes(resource)) throw new Error(`missing Qt resource: ${resource}`);
 console.log(`docs-valid articles=${manifest.articles.length} changelog=${manifest.changelog.commit}`);

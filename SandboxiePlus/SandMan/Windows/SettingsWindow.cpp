@@ -6,6 +6,7 @@
 #include "../MiscHelpers/Common/LocalSettingsHistory.h"
 #include "../MiscHelpers/Common/TabStateManager.h"
 #include "../MiscHelpers/Common/UserPresentationSettings.h"
+#include "../MiscHelpers/Common/ScheduledSettings.h"
 #include "../MiscHelpers/Common/Common.h"
 #include "../MiscHelpers/Common/OtherFunctions.h"
 #include "Helpers/WinAdmin.h"
@@ -39,6 +40,8 @@
 #include "ColorTranslatorDialog.h"
 #include <QListWidget>
 #include <QToolTip>
+#include <QUuid>
+#include <QTimer>
 
 
 #include <windows.h>
@@ -216,6 +219,16 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	this->setWindowFlag(Qt::WindowStaysOnTopHint, theGUI->IsAlwaysOnTop());
 
 	ui.setupUi(this);
+	// Apply the highest-priority local schedule before controls read their values.
+	// School mode remains the final presentation gate inside ScheduledSettings.
+	ScheduledSettings::apply(theConf);
+	QTimer* scheduledRefresh = new QTimer(this);
+	scheduledRefresh->setInterval(60000);
+	connect(scheduledRefresh, &QTimer::timeout, this, [this]() {
+		ScheduledSettings::apply(theConf);
+		if (!UserPresentationSettings::schoolModeEnabled(theConf)) theGUI->UpdateTheme();
+	});
+	scheduledRefresh->start();
 	new CTabStateManager(ui.tabs, theConf, QStringLiteral("SettingsWindow/Tabs"), this);
 	this->setWindowTitle(tr("Sandboxie Plus - Global Settings"));
 
@@ -356,6 +369,212 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		historyButton->setToolTip(tr("Review and restore local settings revisions. History stays on this device."));
 		appearanceForm->addRow(QString(), historyButton);
 		uiLayout->addWidget(appearance, 2, 0);
+
+		QGroupBox* scheduled = new QGroupBox(tr("Scheduled presentation and appearance"), ui.tabUI);
+		QVBoxLayout* scheduledLayout = new QVBoxLayout(scheduled);
+		QLabel* scheduledHelp = new QLabel(tr("Rules use local time. The highest priority matching rule wins; equal priorities use the stable rule id. Empty weekdays means every day. School mode remains the final presentation gate."), scheduled);
+		scheduledHelp->setWordWrap(true);
+		scheduledHelp->setProperty("secondary", true);
+		scheduledLayout->addWidget(scheduledHelp);
+		QListWidget* scheduledRules = new QListWidget(scheduled);
+		scheduledRules->setSelectionMode(QAbstractItemView::SingleSelection);
+		scheduledRules->setAccessibleName(tr("Scheduled settings rules"));
+		scheduledLayout->addWidget(scheduledRules, 1);
+		QHBoxLayout* scheduledButtons = new QHBoxLayout();
+		QPushButton* addSchedule = new QPushButton(tr("Add rule"), scheduled);
+		QPushButton* editSchedule = new QPushButton(tr("Edit rule"), scheduled);
+		QPushButton* deleteSchedule = new QPushButton(tr("Delete rule"), scheduled);
+		scheduledButtons->addWidget(addSchedule);
+		scheduledButtons->addWidget(editSchedule);
+		scheduledButtons->addWidget(deleteSchedule);
+		scheduledLayout->addLayout(scheduledButtons);
+		uiLayout->addWidget(scheduled, 3, 0);
+
+		auto editScheduledRule = [this](ScheduledSettings::Rule rule, bool* accepted) {
+			QDialog dialog(this);
+			dialog.setWindowTitle(rule.id.isEmpty() ? tr("Add scheduled rule") : tr("Edit scheduled rule"));
+			dialog.setModal(true);
+			dialog.resize(560, 520);
+			QVBoxLayout* root = new QVBoxLayout(&dialog);
+			QFormLayout* form = new QFormLayout();
+			QLineEdit* label = new QLineEdit(rule.label, &dialog);
+			label->setMaxLength(80);
+			label->setAccessibleName(tr("Rule label"));
+			form->addRow(tr("Label"), label);
+			QCheckBox* enabled = new QCheckBox(tr("Rule enabled"), &dialog);
+			enabled->setChecked(rule.id.isEmpty() ? true : rule.enabled);
+			form->addRow(QString(), enabled);
+			QSpinBox* priority = new QSpinBox(&dialog);
+			priority->setRange(-1000, 1000);
+			priority->setValue(rule.priority);
+			priority->setToolTip(tr("Higher values win when multiple rules match."));
+			form->addRow(tr("Priority"), priority);
+			QComboBox* key = new QComboBox(&dialog);
+			for (const QString& candidate : ScheduledSettings::valueKeys()) key->addItem(ScheduledSettings::valueLabel(candidate), candidate);
+			const int keyIndex = qMax(0, key->findData(rule.values.isEmpty() ? QStringLiteral("language") : rule.values.firstKey()));
+			key->setCurrentIndex(keyIndex);
+			form->addRow(tr("Value"), key);
+			QStackedWidget* valueStack = new QStackedWidget(&dialog);
+			QComboBox* language = new QComboBox(valueStack);
+			language->addItem(tr("English"), "english");
+			language->addItem(tr("Playful Hong Kong Cantonese"), "cantonese");
+			language->addItem(tr("Bilingual"), "bilingual");
+			QComboBox* theme = new QComboBox(valueStack);
+			theme->addItem(tr("Light"), "light");
+			theme->addItem(tr("Dark"), "dark");
+			theme->addItem(tr("System"), "system");
+			QComboBox* densityValue = new QComboBox(valueStack);
+			densityValue->addItem(tr("Compact"), "0");
+			densityValue->addItem(tr("Comfortable"), "1");
+			densityValue->addItem(tr("Spacious"), "2");
+			QLineEdit* accentValue = new QLineEdit(valueStack);
+			accentValue->setPlaceholderText(QStringLiteral("#6750A4 or #AARRGGBB"));
+			valueStack->addWidget(language);
+			valueStack->addWidget(theme);
+			valueStack->addWidget(densityValue);
+			valueStack->addWidget(accentValue);
+			form->addRow(tr("Scheduled value"), valueStack);
+			auto syncValue = [key, valueStack](int index) { valueStack->setCurrentIndex(index); };
+			connect(key, qOverload<int>(&QComboBox::currentIndexChanged), &dialog, syncValue);
+			syncValue(key->currentIndex());
+			const QString initialValue = rule.values.value(key->currentData().toString());
+			language->setCurrentIndex(qMax(0, language->findData(initialValue)));
+			theme->setCurrentIndex(qMax(0, theme->findData(initialValue)));
+			densityValue->setCurrentIndex(qMax(0, densityValue->findData(initialValue)));
+			accentValue->setText(initialValue);
+
+			QCheckBox* hasStartDate = new QCheckBox(tr("Start date"), &dialog);
+			QDateEdit* startDate = new QDateEdit(rule.startDate.isValid() ? rule.startDate : QDate::currentDate(), &dialog);
+			startDate->setCalendarPopup(true);
+			startDate->setEnabled(rule.startDate.isValid());
+			QWidget* startDateRow = new QWidget(&dialog);
+			QHBoxLayout* startDateLayout = new QHBoxLayout(startDateRow);
+			startDateLayout->setContentsMargins(0, 0, 0, 0);
+			startDateLayout->addWidget(hasStartDate);
+			startDateLayout->addWidget(startDate);
+			form->addRow(QString(), startDateRow);
+			connect(hasStartDate, &QCheckBox::toggled, startDate, &QDateEdit::setEnabled);
+			hasStartDate->setChecked(rule.startDate.isValid());
+
+			QCheckBox* hasEndDate = new QCheckBox(tr("End date"), &dialog);
+			QDateEdit* endDate = new QDateEdit(rule.endDate.isValid() ? rule.endDate : QDate::currentDate(), &dialog);
+			endDate->setCalendarPopup(true);
+			endDate->setEnabled(rule.endDate.isValid());
+			QWidget* endDateRow = new QWidget(&dialog);
+			QHBoxLayout* endDateLayout = new QHBoxLayout(endDateRow);
+			endDateLayout->setContentsMargins(0, 0, 0, 0);
+			endDateLayout->addWidget(hasEndDate);
+			endDateLayout->addWidget(endDate);
+			form->addRow(QString(), endDateRow);
+			connect(hasEndDate, &QCheckBox::toggled, endDate, &QDateEdit::setEnabled);
+			hasEndDate->setChecked(rule.endDate.isValid());
+
+			QTimeEdit* startTime = new QTimeEdit(rule.startTime, &dialog);
+			startTime->setDisplayFormat(QStringLiteral("HH:mm:ss"));
+			QTimeEdit* endTime = new QTimeEdit(rule.endTime, &dialog);
+			endTime->setDisplayFormat(QStringLiteral("HH:mm:ss"));
+			QWidget* timeRow = new QWidget(&dialog);
+			QHBoxLayout* timeLayout = new QHBoxLayout(timeRow);
+			timeLayout->setContentsMargins(0, 0, 0, 0);
+			timeLayout->addWidget(new QLabel(tr("From"), timeRow));
+			timeLayout->addWidget(startTime);
+			timeLayout->addWidget(new QLabel(tr("to"), timeRow));
+			timeLayout->addWidget(endTime);
+			form->addRow(tr("Local time"), timeRow);
+
+			QWidget* weekdays = new QWidget(&dialog);
+			QHBoxLayout* weekdayLayout = new QHBoxLayout(weekdays);
+			weekdayLayout->setContentsMargins(0, 0, 0, 0);
+			QList<QCheckBox*> dayChecks;
+			const QStringList dayNames = {tr("Mon"), tr("Tue"), tr("Wed"), tr("Thu"), tr("Fri"), tr("Sat"), tr("Sun")};
+			for (int i = 0; i < dayNames.size(); ++i) {
+				QCheckBox* check = new QCheckBox(dayNames.at(i), weekdays);
+				check->setChecked(rule.weekdays.contains(i + 1));
+				dayChecks.append(check);
+				weekdayLayout->addWidget(check);
+			}
+			form->addRow(tr("Weekdays (empty = every day)"), weekdays);
+			root->addLayout(form);
+			QLabel* error = new QLabel(&dialog);
+			error->setWordWrap(true);
+			error->setStyleSheet(QStringLiteral("color:#B3261E;"));
+			root->addWidget(error);
+			QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Save | QDialogButtonBox::Cancel, &dialog);
+			root->addWidget(box);
+			connect(box, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+			connect(box, &QDialogButtonBox::accepted, &dialog, [&]() {
+				ScheduledSettings::Rule candidate = rule;
+				if (candidate.id.isEmpty()) candidate.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+				candidate.label = label->text().trimmed();
+				candidate.enabled = enabled->isChecked();
+				candidate.priority = priority->value();
+				candidate.startDate = hasStartDate->isChecked() ? startDate->date() : QDate();
+				candidate.endDate = hasEndDate->isChecked() ? endDate->date() : QDate();
+				candidate.startTime = startTime->time();
+				candidate.endTime = endTime->time();
+				candidate.weekdays.clear();
+				for (int i = 0; i < dayChecks.size(); ++i) if (dayChecks.at(i)->isChecked()) candidate.weekdays.append(i + 1);
+				candidate.values.clear();
+				const QString selectedKey = key->currentData().toString();
+				QString selectedValue;
+				if (selectedKey == QStringLiteral("language")) selectedValue = language->currentData().toString();
+				else if (selectedKey == QStringLiteral("theme")) selectedValue = theme->currentData().toString();
+				else if (selectedKey == QStringLiteral("density")) selectedValue = densityValue->currentData().toString();
+				else selectedValue = accentValue->text().trimmed();
+				candidate.values.insert(selectedKey, selectedValue);
+				const QStringList issues = ScheduledSettings::validate(candidate);
+				if (!issues.isEmpty()) { error->setText(issues.join(QStringLiteral("\n"))); return; }
+				rule = candidate;
+				if (accepted) *accepted = true;
+				dialog.accept();
+			});
+			dialog.exec();
+			return rule;
+		};
+
+		auto refreshScheduledRules = [scheduledRules]() {
+			scheduledRules->clear();
+			for (const ScheduledSettings::Rule& rule : ScheduledSettings::load(theConf)) {
+				const QString key = rule.values.isEmpty() ? QString() : rule.values.firstKey();
+				const QString value = rule.values.isEmpty() ? QString() : rule.values.first();
+				QListWidgetItem* item = new QListWidgetItem(QStringLiteral("%1 · %2 · %3 · %4").arg(rule.enabled ? QStringLiteral("✓") : QStringLiteral("×"), rule.label, ScheduledSettings::valueLabel(key), value), scheduledRules);
+				item->setData(Qt::UserRole, rule.id);
+			}
+		};
+		refreshScheduledRules();
+		connect(addSchedule, &QPushButton::clicked, this, [editScheduledRule, refreshScheduledRules]() mutable {
+			bool accepted = false;
+			ScheduledSettings::Rule rule = editScheduledRule(ScheduledSettings::Rule(), &accepted);
+			if (!accepted) return;
+			QList<ScheduledSettings::Rule> rules = ScheduledSettings::load(theConf);
+			rules.append(rule);
+			QString error;
+			if (ScheduledSettings::save(theConf, rules, &error)) { ScheduledSettings::apply(theConf); refreshScheduledRules(); theGUI->LoadLanguage(); theGUI->UpdateTheme(); }
+			else QMessageBox::warning(this, "Sandboxie-Plus", error);
+		});
+		connect(editSchedule, &QPushButton::clicked, this, [scheduledRules, editScheduledRule, refreshScheduledRules]() mutable {
+			QListWidgetItem* item = scheduledRules->currentItem();
+			if (!item) return;
+			QList<ScheduledSettings::Rule> rules = ScheduledSettings::load(theConf);
+			const int index = std::find_if(rules.cbegin(), rules.cend(), [item](const ScheduledSettings::Rule& rule) { return rule.id == item->data(Qt::UserRole).toString(); }) - rules.cbegin();
+			if (index < 0 || index >= rules.size()) return;
+			bool accepted = false;
+			rules[index] = editScheduledRule(rules.at(index), &accepted);
+			if (!accepted) return;
+			QString error;
+			if (ScheduledSettings::save(theConf, rules, &error)) { ScheduledSettings::apply(theConf); refreshScheduledRules(); theGUI->LoadLanguage(); theGUI->UpdateTheme(); }
+			else QMessageBox::warning(this, "Sandboxie-Plus", error);
+		});
+		connect(deleteSchedule, &QPushButton::clicked, this, [scheduledRules, refreshScheduledRules]() mutable {
+			QListWidgetItem* item = scheduledRules->currentItem();
+			if (!item) return;
+			QList<ScheduledSettings::Rule> rules = ScheduledSettings::load(theConf);
+			rules.erase(std::remove_if(rules.begin(), rules.end(), [item](const ScheduledSettings::Rule& rule) { return rule.id == item->data(Qt::UserRole).toString(); }), rules.end());
+			QString error;
+			if (ScheduledSettings::save(theConf, rules, &error)) { ScheduledSettings::apply(theConf); refreshScheduledRules(); theGUI->LoadLanguage(); theGUI->UpdateTheme(); }
+			else QMessageBox::warning(this, "Sandboxie-Plus", error);
+		});
+		connect(scheduledRules, &QListWidget::itemDoubleClicked, editSchedule, &QPushButton::click);
 
 		connect(appName, &QLineEdit::editingFinished, this, [appName]() {
 			QString value = appName->text().trimmed();

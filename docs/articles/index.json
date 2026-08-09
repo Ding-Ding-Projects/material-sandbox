@@ -7,7 +7,8 @@
     {"slug":"notifications","path":"../features/notifications.md","related":["settings-history","material-design"]},
     {"slug":"color-translator","path":"../features/color-translator.md","related":["material-design","settings-history"]},
     {"slug":"school-mode","path":"../features/school-mode.md","related":["material-design","notifications"]},
-    {"slug":"dim-sum-surprise","path":"../features/dim-sum-surprise.md","related":["notifications","material-design","school-mode"]}
+    {"slug":"dim-sum-surprise","path":"../features/dim-sum-surprise.md","related":["notifications","material-design","school-mode"]},
+    {"slug":"scheduled-settings","path":"../features/scheduled-settings.md","related":["material-design","school-mode","settings-history"]}
   ],
   "changelog": {"path":"../changelog.md","commit":"6a19a278"}
 }

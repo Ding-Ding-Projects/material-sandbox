@@ -11,6 +11,7 @@ Sandboxie is a Windows desktop sandbox manager built with Qt. This checkout carr
 - Informational events have a non-blocking Notifications tab with local history, extended selection, bulk dismissal, plain search, opt-in regex search, and filtered export.
 - Material appearance includes a keyboard-accessible HEX/HEX8, RGB/RGBA, and HSL/HSLA translator with alpha preservation, preview, validation, contrast feedback, and live persistence.
 - Settings and Options tabs persist order, active tab, pin/group metadata, and per-tab appearance edits; the full tab-discovery and group-editor expansion remains in progress.
+- Scheduled presentation and appearance rules are persisted locally as schema-versioned JSON with native date/time/weekday editing, cross-midnight semantics, deterministic priority/id precedence, and School mode as the final language gate.
 - GPL, LGPL, Qt, and upstream license notices remain intact; “remove license checks” refers only to runtime supporter gating, not copyright notices.
 
 See [`docs/material-design.md`](docs/material-design.md) and [`docs/contributor-build.md`](docs/contributor-build.md) for behavior, boundaries, and verification.
