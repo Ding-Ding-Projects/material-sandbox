@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Breakout Programs tab
+
+Commit: [6b247642cc9b9ca32d62c6e7ae8b859247d5277b](https://github.com/Ding-Ding-Projects/material-sandbox/commit/6b247642cc9b9ca32d62c6e7ae8b859247d5277b)
+
+- Rebuilt the Breakout Programs child tab with native Material 3 rule, browse, and advisory controls.
+- Preserved delegates, browse menus, template toggle, handlers, persistence, and security warning semantics.
+
 ## 2026-08-09 · Native Options Force Programs tab
 
 Commit: [72cc5fa4ae6acfe2f66dd649aaf43569f29cdd46](https://github.com/Ding-Ding-Projects/material-sandbox/commit/72cc5fa4ae6acfe2f66dd649aaf43569f29cdd46)

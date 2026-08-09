@@ -202,6 +202,11 @@ browse actions, template toggle, and disable switch are created in code while
 the existing delegates, menus, handlers, and persistence remain intact; other
 OptionsWindow tabs remain staged.
 
+OptionsWindow Breakout Programs is now another native slice: its breakout-rule
+tree, browse actions, template toggle, remove action, and security advisory are
+created in code while the existing delegates, menus, handlers, and persistence
+remain intact; other OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
