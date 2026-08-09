@@ -46,6 +46,9 @@
 #include <QToolTip>
 #include <QUuid>
 #include <QTimer>
+#include <QProcess>
+#include <QDir>
+#include <QFileInfo>
 
 
 #include <windows.h>
@@ -205,6 +208,63 @@ quint32 g_FeatureFlags = 0;
 
 QByteArray g_Certificate;
 SCertInfo g_CertInfo = { 0 };
+
+// External editor support deliberately accepts only one executable path or
+// command name.  Arguments are supplied by Qt, so profile paths cannot turn
+// into shell syntax or carry credentials into a child process.
+static QString CFindExternalEditor(const QString& configured)
+{
+	QStringList candidates;
+	const QString requested = configured.trimmed();
+	if (!requested.isEmpty()) {
+		QFileInfo requestedInfo(requested);
+		if (requestedInfo.isFile() && requestedInfo.isReadable())
+			candidates.append(requestedInfo.absoluteFilePath());
+		else {
+			const QString resolved = QStandardPaths::findExecutable(requested);
+			if (!resolved.isEmpty()) candidates.append(resolved);
+		}
+	}
+	const QString pathCode = QStandardPaths::findExecutable(QStringLiteral("code"));
+	if (!pathCode.isEmpty()) candidates.append(pathCode);
+	const QString pathCodeCmd = QStandardPaths::findExecutable(QStringLiteral("code.cmd"));
+	if (!pathCodeCmd.isEmpty()) candidates.append(pathCodeCmd);
+	const QString localAppData = qEnvironmentVariable("LOCALAPPDATA");
+	const QString programFiles = qEnvironmentVariable("ProgramFiles");
+	const QString programFilesX86 = qEnvironmentVariable("ProgramFiles(x86)");
+	for (const QString& root : {localAppData + QStringLiteral("/Programs/Microsoft VS Code"),
+		programFiles + QStringLiteral("/Microsoft VS Code"),
+		programFilesX86 + QStringLiteral("/Microsoft VS Code")}) {
+		if (root.startsWith('/')) continue;
+		candidates.append(root + QStringLiteral("/bin/code.cmd"));
+		candidates.append(root + QStringLiteral("/bin/code.exe"));
+		candidates.append(root + QStringLiteral("/Code.exe"));
+	}
+	for (const QString& candidate : candidates) {
+		QFileInfo info(candidate);
+		if (info.isFile() && info.isReadable()) return info.absoluteFilePath();
+	}
+	return QString();
+}
+
+static bool COpenFolderInExternalEditor(const QString& configured, const QString& folder, QString* error)
+{
+	const QString cleanFolder = QDir::cleanPath(folder);
+	if (cleanFolder.isEmpty() || !QDir(cleanFolder).exists()) {
+		if (error) *error = QObject::tr("The profile folder does not exist: %1").arg(cleanFolder);
+		return false;
+	}
+	const QString editor = CFindExternalEditor(configured);
+	if (editor.isEmpty()) {
+		if (error) *error = QObject::tr("Visual Studio Code was not found. Install it or choose its code command in Settings.");
+		return false;
+	}
+	if (!QProcess::startDetached(editor, {QStringLiteral("--reuse-window"), cleanFolder})) {
+		if (error) *error = QObject::tr("Visual Studio Code could not be started for %1.").arg(cleanFolder);
+		return false;
+	}
+	return true;
+}
 
 void COptionsWindow__AddCertIcon(QWidget* pOriginalWidget, bool bAdvanced = false);
 
@@ -730,6 +790,54 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 				}
 			});
 			dialog->show();
+		});
+
+		QGroupBox* externalEditor = new QGroupBox(tr("External editor"), ui.tabUI);
+		QFormLayout* externalForm = new QFormLayout(externalEditor);
+		QLineEdit* editorCommand = new QLineEdit(theConf->GetString("UIConfig/ExternalEditorCommand"), externalEditor);
+		editorCommand->setPlaceholderText(tr("Automatic: detect VS Code or the code command"));
+		editorCommand->setAccessibleName(tr("VS Code command or executable"));
+		editorCommand->setToolTip(tr("Store one executable path or command name. No arguments or credentials are saved."));
+		externalForm->addRow(tr("VS Code command"), editorCommand);
+		QHBoxLayout* editorButtons = new QHBoxLayout();
+		QPushButton* detectEditor = new QPushButton(tr("Detect VS Code"), externalEditor);
+		detectEditor->setToolTip(tr("Find code on PATH or in common Windows VS Code installation folders."));
+		QPushButton* browseEditor = new QPushButton(tr("Browse…"), externalEditor);
+		browseEditor->setToolTip(tr("Choose the VS Code executable or code command file."));
+		QPushButton* openProfile = new QPushButton(tr("Open profile folder in VS Code"), externalEditor);
+		openProfile->setToolTip(tr("Open this app's profile folder in VS Code. The profile path is never sent anywhere else."));
+		editorButtons->addWidget(detectEditor);
+		editorButtons->addWidget(browseEditor);
+		editorButtons->addWidget(openProfile);
+		externalForm->addRow(QString(), editorButtons);
+		uiLayout->addWidget(externalEditor, 4, 0);
+		connect(editorCommand, &QLineEdit::editingFinished, this, [editorCommand]() {
+			theConf->SetValue("UIConfig/ExternalEditorCommand", editorCommand->text().trimmed());
+		});
+		connect(detectEditor, &QPushButton::clicked, this, [this, editorCommand]() {
+			const QString detected = CFindExternalEditor(QString());
+			if (detected.isEmpty()) {
+				QToolTip::showText(QCursor::pos(), tr("Visual Studio Code was not found on PATH or in its common Windows installation folders."), this);
+				return;
+			}
+			editorCommand->setText(detected);
+			theConf->SetValue("UIConfig/ExternalEditorCommand", detected);
+			QToolTip::showText(QCursor::pos(), tr("Detected: %1").arg(detected), this);
+		});
+		connect(browseEditor, &QPushButton::clicked, this, [this, editorCommand]() {
+			const QString path = QFileDialog::getOpenFileName(this, tr("Select VS Code executable"), QString(), tr("Programs and command files (*.exe *.cmd *.bat)"));
+			if (path.isEmpty()) return;
+			editorCommand->setText(QDir::toNativeSeparators(path));
+			theConf->SetValue("UIConfig/ExternalEditorCommand", editorCommand->text());
+		});
+		connect(openProfile, &QPushButton::clicked, this, [this, editorCommand]() {
+			QString error;
+			if (COpenFolderInExternalEditor(editorCommand->text(), theConf->GetConfigDir(), &error)) {
+				theConf->SetValue("UIConfig/ExternalEditorCommand", CFindExternalEditor(editorCommand->text()));
+				QToolTip::showText(QCursor::pos(), tr("Opened the profile folder in Visual Studio Code."), this);
+			} else {
+				QToolTip::showText(QCursor::pos(), error, this);
+			}
 		});
 	}
 

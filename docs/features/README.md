@@ -11,3 +11,4 @@ This category documents local, user-controlled recovery behavior. Each article n
 - [Scheduled settings](scheduled-settings.md)
 - [Tab discovery](tab-discovery.md)
 - [Contributor capability and quiet certificate boundary](contributor-build-audit.md)
+- [External editor integration](external-editor.md)
