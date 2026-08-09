@@ -18,5 +18,5 @@
     ,{"slug":"native-ci-evidence","path":"../features/native-ci-evidence.md","related":["contributor-build","material-design","destructive-confirmation"]}
     ,{"slug":"build-entrypoints","path":"../features/build-entrypoints.md","related":["native-ci-evidence","contributor-build","material-design"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"adeeeab94c098ee16ec65b2c484bdda575babd84"}
+  "changelog": {"path":"../changelog.md","commit":"d7012a106615c8b1033580d7500e92805a3c5b04"}
 }
