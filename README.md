@@ -8,7 +8,7 @@ Sandboxie is a Windows desktop sandbox manager. This repository contains the Qt 
 
 **Project site:** [ding-ding-projects.github.io/material-sandbox](https://ding-ding-projects.github.io/material-sandbox/)
 
-**Source baseline documented here:** `59a26591` (the current contributor-safe Material desktop integration baseline with runtime smoke, Qt typography controls, Day Teet Hui settings search, notification regex tooling, aggregate cleanup confirmation, and vault-backed scheduled sources).
+**Source baseline documented here:** `d7383f9a` (the current contributor-safe Material desktop integration baseline with runtime smoke, Qt typography controls, Day Teet Hui settings search, notification regex tooling, aggregate cleanup confirmation, vault-backed scheduled sources, and truthful settings provenance).
 
 ## Quick index
 
@@ -75,6 +75,7 @@ This profile does **not** remove copyright notices, third-party attributions, or
 | Area | Shipped behavior | Evidence and details |
 | --- | --- | --- |
 | Material Design 3 shell | Shared light/dark roles, typography baseline, shape, elevation, focus, and responsive control styling | [`docs/material-design.md`](docs/material-design.md) |
+| Settings provenance | Shows whether presentation and Material values come from the user's profile or compiled-in fallback, with live refresh after edits and reset | [`docs/features/settings-provenance.md`](docs/features/settings-provenance.md) |
 | Appearance editor | Persisted theme, density, accent, display name, per-page Qt typography controls, live preview, and reset; unsupported properties are disclosed | [`docs/features/appearance-editor.md`](docs/features/appearance-editor.md) |
 | Color translator | Validated HEX/HEX8, RGB/RGBA, HSL/HSLA, alpha, preview, contrast feedback, and keyboard-safe editing | [`docs/features/color-translator.md`](docs/features/color-translator.md) |
 | Presentation preferences | English, playful Hong Kong Cantonese, bilingual mode, independent funny-level controls, and dialog/message emoji preference | [`docs/features/scheduled-settings.md`](docs/features/scheduled-settings.md) |
