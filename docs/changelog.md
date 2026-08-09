@@ -86,6 +86,13 @@ Commit: [e56b7a4497a6faa1b1f3ddbc336514b3c45a03ae](https://github.com/Ding-Ding-
 - Rebuilt the Settings General tab host with native Material 3 controls around General Options and Notifications pages.
 - Preserved page order, labels, current selection, and settings wiring.
 
+## 2026-08-09 · Native Settings add-on tab host
+
+Commit: [8f2c41f3c7b97aac0a2b2a4b97c9eeb194bb7fa1](https://github.com/Ding-Ding-Projects/material-sandbox/commit/8f2c41f3c7b97aac0a2b2a4b97c9eeb194bb7fa1)
+
+- Rebuilt the Settings Add-Ons tab host with native Material 3 controls around Optional Add-Ons and Add-On Configuration pages.
+- Preserved page order, labels, current selection, and add-on model wiring.
+
 ## 2026-08-09 · Native Options resource-access tab host
 
 Commit: [01cf568a6d36d64b7e2450e532ffc3785cf0d0b1](https://github.com/Ding-Ding-Projects/material-sandbox/commit/01cf568a6d36d64b7e2450e532ffc3785cf0d0b1)

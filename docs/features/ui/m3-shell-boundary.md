@@ -169,6 +169,10 @@ Settings General now uses a native M3 tab host around General Options and
 Notifications pages, preserving page order, labels, current selection, and
 settings wiring.
 
+Settings Add-Ons now uses a native M3 tab host around Optional Add-Ons and
+Add-On Configuration pages, preserving page order, labels, current selection,
+and add-on model wiring.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
