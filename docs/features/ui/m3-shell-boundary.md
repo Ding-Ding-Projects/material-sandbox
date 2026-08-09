@@ -44,6 +44,11 @@ protection toggles in code as well. Existing enablement signals, explanatory
 tooltips, sorting, and persisted protection values are retained while the
 Designer controls are retired incrementally.
 
+Advanced Options > Miscellaneous now does the same for its option tree,
+add/remove actions, and template toggle. Embedded per-row editors, selection
+filters, and template refresh behavior keep their existing object names and
+signals; the generated grid remains only as a temporary migration seam.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

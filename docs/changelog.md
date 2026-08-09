@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options advanced miscellaneous controls
+
+Commit: [be73a59e1d9b3a8c510526ed0d4279639dd4b062](https://github.com/Ding-Ding-Projects/material-sandbox/commit/be73a59e1d9b3a8c510526ed0d4279639dd4b062)
+
+- Rebuilt the Advanced Options miscellaneous tree, actions, and template toggle with native Material 3 controls.
+- Preserved per-row editors, selection filters, template refresh, and existing object-name wiring.
+
 ## 2026-08-09 · Native Options DLL extension controls
 
 Commit: [ae34fe85f2a31c136efa226397ed9521cba279b2](https://github.com/Ding-Ding-Projects/material-sandbox/commit/ae34fe85f2a31c136efa226397ed9521cba279b2)
