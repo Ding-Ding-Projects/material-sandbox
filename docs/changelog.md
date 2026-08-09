@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Start Restrictions tab
+
+Commit: [4d7ef2bf0f10833b6f16ee85b01579f184e24523](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4d7ef2bf0f10833b6f16ee85b01579f184e24523)
+
+- Rebuilt the Start Restrictions child tab with native Material 3 policy, program-list, and warning controls.
+- Preserved radio semantics, delegates, persistence, and the intentionally hidden template toggle.
+
 ## 2026-08-09 · Native Options Breakout Programs tab
 
 Commit: [6b247642cc9b9ca32d62c6e7ae8b859247d5277b](https://github.com/Ding-Ding-Projects/material-sandbox/commit/6b247642cc9b9ca32d62c6e7ae8b859247d5277b)

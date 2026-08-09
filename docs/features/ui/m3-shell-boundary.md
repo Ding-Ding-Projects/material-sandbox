@@ -207,6 +207,12 @@ tree, browse actions, template toggle, remove action, and security advisory are
 created in code while the existing delegates, menus, handlers, and persistence
 remain intact; other OptionsWindow tabs remain staged.
 
+OptionsWindow Start Restrictions is now another native slice: start-policy
+radios, the editable program list, and warning controls are created in code
+while the existing radio semantics, delegate, and persistence remain intact;
+the intentionally hidden template toggle and other OptionsWindow tabs remain
+staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
