@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native sandbox picker dialog
+
+Commit: [032a3b0b71d6a949e55f17fe51ff55342a123609](https://github.com/Ding-Ding-Projects/material-sandbox/commit/032a3b0b71d6a949e55f17fe51ff55342a123609)
+
+- Replaced `SelectBoxWindow.ui` with native Material 3 controls for sandbox selection, new-box, outside-sandbox, force-child, and administrator actions.
+- Preserved grouped tree selection, double-click launch, geometry persistence, and the existing run semantics.
+
 ## 2026-08-09 · Native proxy and image dialogs
 
 Commit: [3f2dfb141f76a3acce2ff9c51ea210455d9d23b4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/3f2dfb141f76a3acce2ff9c51ea210455d9d23b4)

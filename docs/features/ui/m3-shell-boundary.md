@@ -36,11 +36,12 @@ surface, accessible close action, keyboard-sized target, and drag behavior while
 preserving each dialog's existing content and decision semantics.
 
 `M3ShellHost::InstallDialog` is the first dialog migration slice. `BoxImageWindow`
-and `TestProxyDialog` now retain their tested controls and async behavior while
+and `TestProxyDialog` retain their tested controls and async behavior while
 their native dialog chrome is replaced by the same frameless M3 header, close
-control, focus styling, and 40×32px target contract. The Designer forms remain
-content-only migration inputs until their controls can be rewritten without
-changing password or network-test semantics.
+control, focus styling, and 40×32px target contract. `SelectBoxWindow` now also
+owns its sandbox-selection controls in code, preserving grouped tree selection,
+double-click launch, force-child/admin actions, and geometry persistence without
+the retired Designer form.
 
 ## Failure and accessibility notes
 
