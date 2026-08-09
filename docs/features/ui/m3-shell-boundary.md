@@ -39,6 +39,11 @@ and add/remove actions. The recovery list still feeds the existing model and
 event filters; only the visible controls are native M3, leaving the surrounding
 tab merge as a clearly bounded follow-up.
 
+The Dlls & Extensions child tab now constructs its DLL tree and host-image
+protection toggles in code as well. Existing enablement signals, explanatory
+tooltips, sorting, and persisted protection values are retained while the
+Designer controls are retired incrementally.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

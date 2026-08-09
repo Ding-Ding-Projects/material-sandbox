@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options DLL extension controls
+
+Commit: [ae34fe85f2a31c136efa226397ed9521cba279b2](https://github.com/Ding-Ding-Projects/material-sandbox/commit/ae34fe85f2a31c136efa226397ed9521cba279b2)
+
+- Rebuilt the Dlls & Extensions tree and host-image protection toggles with native Material 3 controls.
+- Preserved DLL enablement signals, explanatory tooltips, sorting, and persisted protection values.
+
 ## 2026-08-09 · Native Options Quick Recovery controls
 
 Commit: [407a82e0ba35f1880de792fe3c6fe58687613536](https://github.com/Ding-Ding-Projects/material-sandbox/commit/407a82e0ba35f1880de792fe3c6fe58687613536)
