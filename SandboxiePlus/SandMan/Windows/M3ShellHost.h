@@ -3,6 +3,7 @@
 #include <QMainWindow>
 
 class QMenuBar;
+class QDialog;
 
 // Material 3 application chrome boundary.
 //
@@ -15,5 +16,9 @@ namespace M3ShellHost {
 /// Install the frameless M3 title bar and menu surface on a QMainWindow.
 /// The operation is idempotent and safe to call during UI rebuilds.
 void Install(QMainWindow* window, QMenuBar* menuBar);
+
+/// Replace native dialog chrome while preserving the dialog's existing
+/// content layout. Safe to call once per Designer-backed dialog.
+void InstallDialog(QDialog* dialog, const QString& title);
 
 }

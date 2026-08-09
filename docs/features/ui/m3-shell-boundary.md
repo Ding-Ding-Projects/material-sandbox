@@ -35,6 +35,13 @@ dialogs now use the reusable `M3DialogHost`. It supplies a frameless title
 surface, accessible close action, keyboard-sized target, and drag behavior while
 preserving each dialog's existing content and decision semantics.
 
+`M3ShellHost::InstallDialog` is the first dialog migration slice. `BoxImageWindow`
+and `TestProxyDialog` now retain their tested controls and async behavior while
+their native dialog chrome is replaced by the same frameless M3 header, close
+control, focus styling, and 40×32px target contract. The Designer forms remain
+content-only migration inputs until their controls can be rewritten without
+changing password or network-test semantics.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls

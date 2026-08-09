@@ -2,6 +2,8 @@
 #include "M3ShellHost.h"
 
 #include <QHBoxLayout>
+#include <QBoxLayout>
+#include <QDialog>
 #include <QLabel>
 #include <QMenuBar>
 #include <QMouseEvent>
@@ -124,6 +126,37 @@ void Install(QMainWindow* window, QMenuBar* menuBar)
     QObject::connect(window, &QMainWindow::windowTitleChanged, window, [window] {
         if (auto* title = window->findChild<QLabel*>(QStringLiteral("m3TitleBarLabel"))) title->setText(window->windowTitle());
     });
+}
+
+void InstallDialog(QDialog* dialog, const QString& title)
+{
+    if (!dialog || dialog->property("m3DialogInstalled").toBool()) return;
+    auto* layout = qobject_cast<QBoxLayout*>(dialog->layout());
+    if (!layout) return;
+
+    dialog->setProperty("m3DialogInstalled", true);
+    dialog->setWindowFlags(dialog->windowFlags() | Qt::FramelessWindowHint);
+    auto* header = new QWidget(dialog);
+    header->setObjectName(QStringLiteral("m3DialogHeader"));
+    auto* headerLayout = new QHBoxLayout(header);
+    headerLayout->setContentsMargins(16, 8, 8, 8);
+    auto* label = new QLabel(title, header);
+    label->setObjectName(QStringLiteral("m3DialogTitle"));
+    headerLayout->addWidget(label, 1);
+    auto* close = new QToolButton(header);
+    close->setText(QStringLiteral("×"));
+    close->setToolTip(QObject::tr("Close"));
+    close->setAccessibleName(close->toolTip());
+    close->setMinimumSize(40, 32);
+    headerLayout->addWidget(close);
+    QObject::connect(close, &QToolButton::clicked, dialog, &QDialog::reject);
+    header->setStyleSheet(QStringLiteral(
+        "#m3DialogHeader { background: palette(window); border-bottom: 1px solid palette(mid); }"
+        "#m3DialogTitle { color: palette(window-text); font-weight: 600; }"
+        "#m3DialogHeader QToolButton { border: 0; border-radius: 16px; padding: 4px 10px; }"
+        "#m3DialogHeader QToolButton:hover { background: palette(alternate-base); }"
+        "#m3DialogHeader QToolButton:focus-visible { outline: 2px solid palette(highlight); }"));
+    layout->insertWidget(0, header);
 }
 
 }
