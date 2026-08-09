@@ -285,12 +285,6 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	this->setWindowFlag(Qt::WindowStaysOnTopHint, theGUI->IsAlwaysOnTop());
 
 	ui.setupUi(this);
-	// Material 3 owns the application chrome and widget tokens.  Keep the old
-	// Fusion preference readable for profile migration, but never expose a
-	// second legacy style switch that can make the UI diverge from the shared
-	// MaterialTheme contract.
-	ui.chkFusionTheme->setVisible(false);
-	ui.chkFusionTheme->setEnabled(false);
 	#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
 	// Contributor builds expose capabilities without a certificate workflow.
 	// Remove the entire support/certificate page so static UI copy cannot turn
@@ -1265,8 +1259,6 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	connect(ui.chkCheckDelete, SIGNAL(stateChanged(int)), this, SLOT(OnOptChanged()));
 	connect(ui.chkRecoveryTop, SIGNAL(stateChanged(int)), this, SLOT(OnOptChanged()));
 
-	ui.chkUseW11Style->hide();
-	ui.chkUseW11Style->setChecked(false);
 	connect(ui.chkRandomGuidName, SIGNAL(stateChanged(int)), this, SLOT(OnOptChanged()));
 	// The old Windows 11 style switch is retained only for profile migration.
 	//
@@ -1336,7 +1328,6 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	// Interface Config
 	connect(ui.cmbDPI, SIGNAL(currentIndexChanged(int)), this, SLOT(OnChangeGUI()));
 	connect(ui.chkDarkTheme, SIGNAL(stateChanged(int)), this, SLOT(OnChangeGUI()));
-	connect(ui.chkFusionTheme, SIGNAL(stateChanged(int)), this, SLOT(OnChangeGUI()));
 	connect(ui.chkAltRows, SIGNAL(stateChanged(int)), this, SLOT(OnChangeGUI()));
 	connect(ui.chkBackground, SIGNAL(stateChanged(int)), this, SLOT(OnChangeGUI()));
 	connect(ui.chkLargeIcons, SIGNAL(stateChanged(int)), this, SLOT(OnChangeGUI()));
@@ -2145,7 +2136,6 @@ void CSettingsWindow::LoadSettings()
 	ui.cmbDPI->setCurrentIndex(theConf->GetInt("Options/DPIScaling", 1));
 
 	ui.chkDarkTheme->setCheckState(CSettingsWindow__Int2Chk(theConf->GetInt("Options/UseDarkTheme", 2)));
-	ui.chkFusionTheme->setCheckState(CSettingsWindow__Int2Chk(theConf->GetInt("Options/UseFusionTheme", 2)));
 	ui.chkAltRows->setChecked(theConf->GetBool("Options/AltRowColors", false));
 	ui.chkBackground->setCheckState(CSettingsWindow__Int2Chk(theConf->GetInt("Options/UseBackground", 2)));
 	ui.chkLargeIcons->setCheckState(CSettingsWindow__Int2Chk(theConf->GetInt("Options/LargeIcons", 2)));
@@ -2286,7 +2276,6 @@ void CSettingsWindow::LoadSettings()
 	ui.cmbFallbackActiveMonitor->setCurrentIndex(fallbackIndex);
 	ui.chkSingleShow->setChecked(theConf->GetBool("Options/TraySingleClick", false));
 
-	ui.chkUseW11Style->setChecked(false);
 	ui.chkRandomGuidName->setChecked(theConf->GetBool("Options/UseRandomBoxName", false));
 
 	OnLoadAddon();
@@ -2722,6 +2711,9 @@ void CSettingsWindow::WriteTextList(const QString& Setting, const QStringList& L
 
 void CSettingsWindow::SaveSettings()
 {
+	// Legacy chrome switches are migrated off once, but are no longer rendered.
+	theConf->SetValue("Options/UseFusionTheme", 0);
+	theConf->SetValue("Options/UseW11Style", false);
 	QString Lang = ui.uiLang->currentData().toString();
 	theConf->SetValue("Options/UiLanguage", Lang);
 	quint32 LangId = LocaleNameToLCID(Lang.toStdWString().c_str(), 0);
@@ -2732,7 +2724,6 @@ void CSettingsWindow::SaveSettings()
 	theConf->SetValue("Options/UseDarkTheme", CSettingsWindow__Chk2Int(ui.chkDarkTheme->checkState()));
 	// Preserve the key for older profiles while making the Material 3 style the
 	// only user-facing route.  Do not let a stale checkbox state re-enable Fusion.
-	theConf->SetValue("Options/UseFusionTheme", 0);
 	theConf->SetValue("Options/AltRowColors", ui.chkAltRows->isChecked());
 	theConf->SetValue("Options/UseBackground", CSettingsWindow__Chk2Int(ui.chkBackground->checkState()));
 	theConf->SetValue("Options/LargeIcons", CSettingsWindow__Chk2Int(ui.chkLargeIcons->checkState()));
@@ -2895,7 +2886,6 @@ void CSettingsWindow::SaveSettings()
 	theConf->SetValue("Options/WindowMonitorFallback", ui.cmbFallbackActiveMonitor->currentData().toInt());
 	theConf->SetValue("Options/TraySingleClick", ui.chkSingleShow->isChecked());
 
-	theConf->SetValue("Options/UseW11Style", false);
 	theConf->SetValue("Options/UseRandomBoxName", ui.chkRandomGuidName->isChecked());
 
 	if (theAPI->IsConnected())

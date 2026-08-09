@@ -60,7 +60,7 @@ const checks = [
   [!sandman.includes('QApplication::setStyle(new KeepSubMenusVisibleStyle'), 'main window does not re-wrap legacy chrome'],
   [migratedViews.every((source) => !source.includes('QStyleFactory::create')), 'data views inherit Material 3 instead of forcing Windows style'],
   [!main.includes('app.setStyle("windowsvista")'), 'startup does not select legacy Windows chrome'],
-  [settings.includes('ui.chkUseW11Style->hide()') && settings.includes('SetValue("Options/UseW11Style", false)'), 'legacy Windows style setting is hidden and migrated off'],
+  [!settings.includes('chkUseW11Style') && settings.includes('SetValue("Options/UseW11Style", false)'), 'legacy Windows style control is removed and migrated off'],
   [!fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/CustomStyles.h')) && !read('SandboxiePlus/SandMan/SandMan.pri').includes('CustomStyles.h'), 'obsolete proxy chrome source is removed from the build'],
   [sandmanPri.includes('Windows/M3DialogHost.h') && sandmanPri.includes('Windows/M3DialogHost.cpp'), 'dialog host is registered in qmake'],
   [dialogHost.includes('FramelessWindowHint') && dialogHost.includes('m3DialogInstalled'), 'dialog host is frameless and idempotent'],
@@ -78,7 +78,7 @@ const checks = [
   [snapshotsHeader.includes('struct Controls') && snapshotsSource.includes('QGridLayout') && snapshotsSource.includes('M3DialogHost::Install(this)') && !snapshotsSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/SnapshotsWindow.ui')), 'snapshots dialog is rebuilt without a legacy .ui form'],
   [popupHeader.includes('QTableWidget* table') && popupSource.includes('QTableWidget') && popupSource.includes('M3ShellHost::Install(this, nullptr)') && !popupSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/PopUpWindow.ui')), 'notification popup is rebuilt without a legacy .ui form'],
   [optionsSource.includes('M3DialogHost::Install(this)') && optionsSource.includes('ui.setupUi') && fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/OptionsWindow.ui')), 'options dialog uses native M3 chrome while its large content remains an explicit migration boundary'],
-  [settingsSource.includes('M3DialogHost::Install(this)') && settingsSource.includes('ui.setupUi') && settingsSource.includes('ui.chkFusionTheme->setVisible(false)') && fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/SettingsWindow.ui')), 'settings dialog uses native M3 chrome while its large content remains an explicit migration boundary'],
+  [settingsSource.includes('M3DialogHost::Install(this)') && settingsSource.includes('ui.setupUi') && !settingsSource.includes('chkFusionTheme') && fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/SettingsWindow.ui')), 'settings dialog uses native M3 chrome while its large content remains an explicit migration boundary'],
   [settingsSource.includes('nativeLocation') && settingsSource.includes('ui.tabsGUI->insertTab') && settingsSource.includes('ui.cmbFallbackActiveMonitor = new QComboBox(nativeLocation)'), 'settings window options tab is rebuilt with native controls'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
