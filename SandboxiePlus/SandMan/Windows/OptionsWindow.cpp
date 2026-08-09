@@ -389,6 +389,43 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace the Run Menu child tab with native M3 controls while retaining
+	// OptionsGeneral's command model, menu population, and reorder handlers.
+	if (ui.tabsGeneral && ui.tabRun) {
+		const int runIndex = ui.tabsGeneral->indexOf(ui.tabRun);
+		if (runIndex >= 0) {
+			auto* nativeRun = new QWidget(ui.tabsGeneral);
+			auto* runLayout = new QVBoxLayout(nativeRun);
+			auto* runHint = new QLabel(tr("Configure custom entries for the sandbox run menu."), nativeRun);
+			runHint->setWordWrap(true);
+			runLayout->addWidget(runHint);
+			ui.treeRun = new QTreeWidget(nativeRun);
+			ui.treeRun->setColumnCount(2);
+			ui.treeRun->setHeaderLabels(QStringList() << tr("Name") << tr("Command Line"));
+			ui.treeRun->setSortingEnabled(true);
+			runLayout->addWidget(ui.treeRun, 1);
+			auto* runActions = new QHBoxLayout();
+			ui.btnAddCmd = new QToolButton(nativeRun);
+			ui.btnAddCmd->setText(tr("Add program"));
+			ui.btnAddCmd->setPopupMode(QToolButton::MenuButtonPopup);
+			ui.btnDelCmd = new QToolButton(nativeRun);
+			ui.btnDelCmd->setText(tr("Remove"));
+			ui.btnCmdUp = new QToolButton(nativeRun);
+			ui.btnCmdUp->setText(tr("Move Up"));
+			ui.btnCmdDown = new QToolButton(nativeRun);
+			ui.btnCmdDown->setText(tr("Move Down"));
+			runActions->addWidget(ui.btnAddCmd);
+			runActions->addWidget(ui.btnDelCmd);
+			runActions->addWidget(ui.btnCmdUp);
+			runActions->addWidget(ui.btnCmdDown);
+			runActions->addStretch();
+			runLayout->addLayout(runActions);
+			ui.tabsGeneral->removeTab(runIndex);
+			ui.tabsGeneral->insertTab(runIndex, nativeRun, tr("Run Menu"));
+			ui.tabRun->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
