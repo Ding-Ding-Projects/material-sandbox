@@ -1405,6 +1405,27 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained Force Process child tab with native M3 controls
+	// while preserving the model-populated sandbox selector and global settings.
+	if (ui.tabsControl && ui.tabForce) {
+		const int forceIndex = ui.tabsControl->indexOf(ui.tabForce);
+		if (forceIndex >= 0) {
+			auto* nativeForce = new QWidget(ui.tabsControl);
+			auto* forceForm = new QFormLayout(nativeForce);
+			ui.chkSandboxMoTW = new QCheckBox(tr("Force files with a Mark of The Web into a sandbox"), nativeForce);
+			ui.cmbMoTWSandbox = new QComboBox(nativeForce);
+			ui.cmbMoTWSandbox->setToolTip(tr("Choose the sandbox for files carrying Mark of The Web metadata."));
+			ui.chkForceBoxDocs = new QCheckBox(tr("Force programs opening boxed files into their sandbox"), nativeForce);
+			ui.chkForceBoxDocs->setToolTip(tr("Force programs opening files from a sandbox to run in that sandbox."));
+			forceForm->addRow(ui.chkSandboxMoTW, ui.cmbMoTWSandbox);
+			forceForm->addRow(QString(), ui.chkForceBoxDocs);
+			forceForm->addRow(new QLabel(tr("These controls apply to force-process and Mark of The Web handling."), nativeForce));
+			ui.tabsControl->removeTab(forceIndex);
+			ui.tabsControl->insertTab(forceIndex, nativeForce, tr("Force Process Options"));
+			ui.tabForce->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.
