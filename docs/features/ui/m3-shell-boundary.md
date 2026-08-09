@@ -454,6 +454,11 @@ network restriction toggles, adapter binding, and IPv4/IPv6 fields are created
 in code while OptionsNetwork keeps adapter population, read-only rules, and
 persistence intact; other OptionsWindow tabs remain staged.
 
+The Options outer tab widget now keeps its existing `CTabStateManager` pointer
+while receiving an accessible name, West docking, document-mode chrome, and
+`m3NativeSurface` metadata. Replacing the widget would invalidate the manager,
+so this manager-safe repair preserves page order and tab-state persistence.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
