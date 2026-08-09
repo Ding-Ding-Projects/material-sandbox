@@ -10,3 +10,4 @@ This category documents local, user-controlled recovery behavior. Each article n
 - [School mode](school-mode.md)
 - [Scheduled settings](scheduled-settings.md)
 - [Tab discovery](tab-discovery.md)
+- [Contributor capability and quiet certificate boundary](contributor-build-audit.md)

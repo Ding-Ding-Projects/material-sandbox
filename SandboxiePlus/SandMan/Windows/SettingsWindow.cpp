@@ -223,6 +223,14 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	this->setWindowFlag(Qt::WindowStaysOnTopHint, theGUI->IsAlwaysOnTop());
 
 	ui.setupUi(this);
+	#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	// Contributor builds expose capabilities without a certificate workflow.
+	// Remove the entire support/certificate page so static UI copy cannot turn
+	// into an unsolicited purchase, renewal, or expiry prompt.
+	const int supportTabIndex = ui.tabs->indexOf(ui.tabSupport);
+	if (supportTabIndex >= 0)
+		ui.tabs->removeTab(supportTabIndex);
+	#endif
 	// Apply the highest-priority local schedule before controls read their values.
 	// School mode remains the final presentation gate inside ScheduledSettings.
 	ScheduledSettings::apply(theConf);
@@ -3778,6 +3786,24 @@ void CSettingsWindow::LoadCertificate(QString CertPath)
 
 void CSettingsWindow::UpdateCert()
 {
+	#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	// The support page is removed above; keep this slot inert for stale signals
+	// and older profiles that still contain certificate settings.
+	ui.lblCertExp->clear();
+	ui.lblEvalCert->clear();
+	ui.lblCert->clear();
+	ui.lblCertOpt->clear();
+	ui.lblCertExp->setVisible(false);
+	ui.lblEvalCert->setVisible(false);
+	ui.lblCertGuide->setVisible(false);
+	ui.lblSupport->setVisible(false);
+	ui.lblSupportCert->setVisible(false);
+	ui.txtCertificate->setVisible(false);
+	ui.txtSerial->setVisible(false);
+	ui.btnGetCert->setVisible(false);
+	ui.chkNoCheck->setVisible(false);
+	return;
+	#endif
 	ui.lblCertExp->setVisible(false);
 	ui.lblEvalCert->setVisible(g_Certificate.isEmpty());
 
