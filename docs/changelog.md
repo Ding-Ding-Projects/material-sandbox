@@ -7,6 +7,13 @@ Commit: [60c60cbc3a2e27bd3f7e99151fee575b9991678b](https://github.com/Ding-Ding-
 - Documented why `OptionsWindow.ui` and `SettingsWindow.ui` remain registered while live generated controls still back model and persistence paths.
 - Kept the boundary explicit instead of removing forms without a native compile proof.
 
+## 2026-08-09 · Native Stop and Leader guidance labels
+
+Commit: [18cdad374ca0b0ec14f13f0231d13101c602610d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/18cdad374ca0b0ec14f13f0231d13101c602610d)
+
+- Rebuilt Stop and Leader guidance labels with native Material 3 metadata while preserving object names, text, wrapping, and formatting.
+- Kept model-backed trees and controls on the documented generated-form boundary.
+
 ## 2026-08-09 · Name and dock nested option tabs
 
 Commit: [5df08dcbaf189e575a9e710215346604c29b0b72](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5df08dcbaf189e575a9e710215346604c29b0b72)

@@ -197,6 +197,10 @@ and persistence paths that have not yet been replaced. Removing either `.ui`
 from `SandMan.pri` before those controls move would break compilation, so the
 remaining boundary is limited to those documented control clusters.
 
+Stop and Leader guidance labels (`label_2` and `label_71`) are now rebuilt by
+object name with native M3 metadata while preserving text, wrapping, and
+formatting; model-backed trees and controls remain the deliberate form boundary.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
