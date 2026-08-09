@@ -102,6 +102,27 @@ requireWindow(
   ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'return CSetupWizard::Page_UI;', '#else', '#endif'],
   'setup certificate route exclusion',
 );
+requireWindow(
+  'SandboxiePlus/SandMan/Windows/OptionsGeneral.cpp',
+  'void COptionsWindow::CreateGeneral()',
+  '\tm_HoldBoxType = false;',
+  ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'ui.lblSupportCert->setVisible(false);', '#else', '#endif'],
+  'options supporter copy and capability badge exclusion',
+);
+requireWindow(
+  'SandboxiePlus/SandMan/Wizards/BoxAssistant.cpp',
+  'void CBeginPage::initializePage()',
+  'void CBeginPage::OnCategory()',
+  ['#ifndef SANDBOXIE_CONTRIBUTOR_BUILD', 'supporter certificate', '#endif'],
+  'troubleshooting supporter footer exclusion',
+);
+requireWindow(
+  'SandboxiePlus/SandMan/Wizards/SetupWizard.cpp',
+  'void CSBUpdate::initializePage()',
+  'void CSBUpdate::UpdateOptions()',
+  ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'm_pBottomLabel->setVisible(false);', '#else', '#endif'],
+  'setup update supporter footer exclusion',
+);
 
 // Keep the legal boundary explicit: contributor capability changes must never
 // delete GPL/LGPL/Qt/upstream notices or their source files.

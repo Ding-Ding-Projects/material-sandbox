@@ -12,6 +12,7 @@
 #include "AddonManager.h"
 #include "../../../SandboxieTools/ImBox/ImBox.h"
 
+#ifndef SANDBOXIE_CONTRIBUTOR_BUILD
 class CCertBadge: public QLabel
 {
 public:
@@ -48,6 +49,7 @@ void COptionsWindow__AddCertIcon(QWidget* pOriginalWidget, bool bAdvanced = fals
 	pOriginalWidget->parentWidget()->layout()->replaceWidget(pOriginalWidget, pWidget);
 	pLayout->insertWidget(0, pOriginalWidget);
 }
+#endif
 
 void COptionsWindow::CreateGeneral()
 {
@@ -79,6 +81,11 @@ void COptionsWindow::CreateGeneral()
 
 	connect(ui.lblBoxInfo, SIGNAL(linkActivated(const QString&)), theGUI, SLOT(OpenUrl(const QString&)));
 
+	#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	// Contributor capability is unconditional: do not leave a stale profile or
+	// an early certificate state a chance to paint purchase/evaluation copy.
+	ui.lblSupportCert->setVisible(false);
+	#else
 	ui.lblSupportCert->setVisible(false);
 	if (!g_CertInfo.active)
 	{
@@ -108,6 +115,7 @@ void COptionsWindow::CreateGeneral()
 		COptionsWindow__AddCertIcon(ui.chkEncrypt, true);
 		COptionsWindow__AddCertIcon(ui.chkAllowEfs, true);
 	}
+	#endif
 
 
 	m_HoldBoxType = false;
