@@ -1062,6 +1062,50 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	ui.cmbOnClose->addItem(tr("Close"), "Close");
 	ui.cmbOnClose->addItem(tr("Hide (Run invisible in Background)"), "Hide");
 
+	// Replace the self-contained Notifications child tab with a native M3
+	// surface while preserving its generated member pointers and handlers.
+	if (ui.tabsGeneral && ui.tab_4) {
+		const int notificationIndex = ui.tabsGeneral->indexOf(ui.tab_4);
+		if (notificationIndex >= 0) {
+			auto* nativeNotifications = new QWidget(ui.tabsGeneral);
+			auto* notificationsLayout = new QVBoxLayout(nativeNotifications);
+			ui.lblNotify = new QLabel(tr("Notification Options"), nativeNotifications);
+			ui.lblMessages = new QLabel(tr("SBIE Messages"), nativeNotifications);
+			ui.chkSilentMode = new QCheckBox(tr("Suppress pop-up notifications in game / presentation mode"), nativeNotifications);
+			ui.chkCopyProgress = new QCheckBox(tr("Show file migration progress when copying large files into a sandbox"), nativeNotifications);
+			ui.chkNotifyRecovery = new QCheckBox(tr("Show recoverable files as notifications"), nativeNotifications);
+			ui.chkShowRecovery = new QCheckBox(tr("Show file recovery window when emptying sandboxes"), nativeNotifications);
+			ui.chkNoMessages = new QCheckBox(tr("Disable SBIE message popups (they will still be logged to the Messages tab)"), nativeNotifications);
+			ui.treeMessages = new QTreeWidget(nativeNotifications);
+			ui.treeMessages->setColumnCount(2);
+			ui.treeMessages->setHeaderLabels(QStringList() << tr("Message ID") << tr("Message Text (optional)"));
+			ui.treeMessages->setRootIsDecorated(false);
+			ui.btnAddMessage = new QToolButton(nativeNotifications);
+			ui.btnAddMessage->setText(tr("Add Entry"));
+			ui.btnDelMessage = new QToolButton(nativeNotifications);
+			ui.btnDelMessage->setText(tr("Delete Entry"));
+			notificationsLayout->addWidget(ui.lblNotify);
+			notificationsLayout->addWidget(ui.chkSilentMode);
+			notificationsLayout->addWidget(ui.chkCopyProgress);
+			notificationsLayout->addWidget(ui.chkNotifyRecovery);
+			notificationsLayout->addWidget(ui.chkShowRecovery);
+			notificationsLayout->addWidget(ui.chkNoMessages);
+			notificationsLayout->addWidget(ui.lblMessages);
+			auto* explanation = new QLabel(tr("Sandboxie messages are shown in the log and can appear as popups. Hide selected messages using the list below."), nativeNotifications);
+			explanation->setWordWrap(true);
+			notificationsLayout->addWidget(explanation);
+			notificationsLayout->addWidget(ui.treeMessages, 1);
+			auto* messageActions = new QHBoxLayout();
+			messageActions->addWidget(ui.btnAddMessage);
+			messageActions->addWidget(ui.btnDelMessage);
+			messageActions->addStretch();
+			notificationsLayout->addLayout(messageActions);
+			ui.tabsGeneral->removeTab(notificationIndex);
+			ui.tabsGeneral->insertTab(notificationIndex, nativeNotifications, tr("Notifications"));
+			ui.tab_4->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.
