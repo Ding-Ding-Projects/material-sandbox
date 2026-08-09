@@ -1904,6 +1904,20 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.tabsSecurity = nativeSecurityTabs;
 	}
 
+	// Program Control now uses a native M3 tab host for Force and Breakout
+	// pages; later dynamic Group/Stop/Start pages continue to append normally.
+	{
+		auto* nativeForceTabs = new QTabWidget(this);
+		nativeForceTabs->setObjectName(QStringLiteral("tabsForce"));
+		nativeForceTabs->addTab(ui.tabForceProgs, tr("Force Programs"));
+		nativeForceTabs->addTab(ui.tabBreakout, tr("Breakout Programs"));
+		nativeForceTabs->setCurrentIndex(ui.tabsForce->currentIndex());
+		nativeForceTabs->setProperty("m3NativeSurface", true);
+		ui.gridLayout_6->replaceWidget(ui.tabsForce, nativeForceTabs);
+		ui.tabsForce->deleteLater();
+		ui.tabsForce = nativeForceTabs;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
