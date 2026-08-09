@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PopUpWindow.h"
+#include "M3ShellHost.h"
 #include <windows.h>
 #include <QWindow>
 #include <QElapsedTimer>
@@ -9,6 +10,8 @@
 #include "../MiscHelpers/Common/Settings.h"
 #include "../SbiePlusAPI.h"
 #include "RecoveryWindow.h"
+#include <QTableWidget>
+#include <QVBoxLayout>
 
 bool CPopUpWindow__DarkMode = false;
 
@@ -27,9 +30,14 @@ CPopUpWindow::CPopUpWindow(QWidget* parent) : QMainWindow(parent)
 
 	this->setWindowTitle(tr("Sandboxie-Plus Notifications"));
 
-	QWidget* centralWidget = new QWidget();
-	ui.setupUi(centralWidget);
-	this->setCentralWidget(centralWidget);
+	QWidget* centralWidget = new QWidget(this);
+	ui.table = new QTableWidget(centralWidget);
+	ui.table->setAccessibleName(tr("Notifications"));
+	auto* root = new QVBoxLayout(centralWidget);
+	root->setContentsMargins(16, 16, 16, 16);
+	root->addWidget(ui.table);
+	setCentralWidget(centralWidget);
+	M3ShellHost::Install(this, nullptr);
 
 	//setWindowFlags(Qt::Tool);
 

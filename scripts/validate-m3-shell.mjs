@@ -35,6 +35,8 @@ const recoveryHeader = read('SandboxiePlus/SandMan/Windows/RecoveryWindow.h');
 const recoverySource = read('SandboxiePlus/SandMan/Windows/RecoveryWindow.cpp');
 const snapshotsHeader = read('SandboxiePlus/SandMan/Windows/SnapshotsWindow.h');
 const snapshotsSource = read('SandboxiePlus/SandMan/Windows/SnapshotsWindow.cpp');
+const popupHeader = read('SandboxiePlus/SandMan/Windows/PopUpWindow.h');
+const popupSource = read('SandboxiePlus/SandMan/Windows/PopUpWindow.cpp');
 const migratedViews = [
   'SandboxiePlus/SandMan/Views/FileView.cpp',
   'SandboxiePlus/SandMan/Views/NtObjectView.cpp',
@@ -72,6 +74,7 @@ const checks = [
   [boxImageHeader.includes('struct Controls') && boxImageSource.includes('QGridLayout') && boxImageSource.includes('M3DialogHost::Install(this)') && !boxImageSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/BoxImageWindow.ui')), 'box image dialog is rebuilt without a legacy .ui form'],
   [recoveryHeader.includes('struct Controls') && recoverySource.includes('QGridLayout') && recoverySource.includes('M3DialogHost::Install(this)') && !recoverySource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/RecoveryWindow.ui')), 'recovery dialog is rebuilt without a legacy .ui form'],
   [snapshotsHeader.includes('struct Controls') && snapshotsSource.includes('QGridLayout') && snapshotsSource.includes('M3DialogHost::Install(this)') && !snapshotsSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/SnapshotsWindow.ui')), 'snapshots dialog is rebuilt without a legacy .ui form'],
+  [popupHeader.includes('QTableWidget* table') && popupSource.includes('QTableWidget') && popupSource.includes('M3ShellHost::Install(this, nullptr)') && !popupSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/PopUpWindow.ui')), 'notification popup is rebuilt without a legacy .ui form'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);

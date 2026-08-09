@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
-#include "ui_PopUpWindow.h"
 #include "../SbiePlusAPI.h"
 #include "../SbieProcess.h"
 #include "../SandMan.h"
+
+class QTableWidget;
 
 class CPopUpEntry: public QWidget
 {
@@ -500,5 +501,7 @@ private:
 	bool				m_EntryFlushPending;
 	bool				m_FlushingPendingEntries;
 	QList<CPopUpEntry*>	m_PendingEntries;
-	Ui::PopUpWindow ui;
+	struct Controls {
+		QTableWidget* table = nullptr;
+	} ui;
 };

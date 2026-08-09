@@ -136,7 +136,6 @@ SOURCES += ./main.cpp \
     ../MiscHelpers/Common/ScheduledSettings.cpp
 
     ./Forms/OptionsWindow.ui \
-    ./Forms/PopUpWindow.ui \
     ./Forms/SettingsWindow.ui \
 
 TRANSLATIONS += sandman_ar.ts \

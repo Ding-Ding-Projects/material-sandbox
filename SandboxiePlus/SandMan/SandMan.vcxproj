@@ -590,7 +590,6 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="Forms\OptionsWindow.ui" />
-    <QtUic Include="Forms\PopUpWindow.ui" />
     <QtUic Include="Forms\SettingsWindow.ui" />
   </ItemGroup>
   <ItemGroup>
