@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Job Object tab
+
+Commit: [7203cf4fa9260dd487ec276cabef3f3d3bf4fbe2](https://github.com/Ding-Ding-Projects/material-sandbox/commit/7203cf4fa9260dd487ec276cabef3f3d3bf4fbe2)
+
+- Rebuilt the Job Object child tab with native Material 3 job-policy and resource-limit controls.
+- Preserved OptionsAdvanced numeric validation, dynamic enablement, and persistence.
+
 ## 2026-08-09 · Native Options Box Protection tab
 
 Commit: [31225c08d34f96f30340a82444ce0bfb8ca84c11](https://github.com/Ding-Ding-Projects/material-sandbox/commit/31225c08d34f96f30340a82444ce0bfb8ca84c11)

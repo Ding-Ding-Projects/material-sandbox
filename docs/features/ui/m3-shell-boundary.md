@@ -187,6 +187,11 @@ protected-window policy, host-process rules, and template actions are created
 in code while OptionsAdvanced keeps the existing access-entry handlers and
 persistence; other OptionsWindow tabs remain staged.
 
+OptionsWindow Job Object is now another native slice: nested-job policy and
+memory, process-count, and CPU limits are created in code with responsive
+label/value rows while OptionsAdvanced keeps numeric validation, dynamic
+enablement, and persistence; other OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
