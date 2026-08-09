@@ -95,6 +95,7 @@ const checks = [
   [settingsSource.includes('nativeTemplates') && settingsSource.includes('ui.tabsTemplates->insertTab(templateIndex, nativeTemplates') && settingsSource.includes('ui.txtTemplates = new QLineEdit(nativeTemplates)') && settingsSource.includes('ui.treeTemplates = new QTreeWidget(nativeTemplates)'), 'settings local templates child tab is rebuilt with native controls'],
   [settingsSource.includes('nativeCompat') && settingsSource.includes('ui.tabsTemplates->insertTab(compatIndex, nativeCompat') && settingsSource.includes('ui.treeCompat = new QTreeWidget(nativeCompat)') && settingsSource.includes('ui.btnAddCompat = new QPushButton'), 'settings app compatibility child tab is rebuilt with native controls'],
   [settingsSource.includes('nativeLock') && settingsSource.includes('ui.tabsAdvanced->insertTab(lockIndex, nativeLock') && settingsSource.includes('ui.treeImport = new QTreeWidget(nativeLock)') && settingsSource.includes('ui.btnSetPassword = new QPushButton'), 'settings Sandboxie.ini child tab is rebuilt with native controls'],
+  [settingsSource.includes('nativeUpdate') && settingsSource.includes('ui.tabsSupport->insertTab(updateIndex, nativeUpdate') && settingsSource.includes('ui.cmbInterval = new QComboBox(nativeUpdate)') && settingsSource.includes('ui.radStable = new QRadioButton'), 'settings updater child tab is rebuilt with native controls'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);

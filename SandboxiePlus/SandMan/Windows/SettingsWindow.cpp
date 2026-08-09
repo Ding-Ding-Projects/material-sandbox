@@ -1579,6 +1579,66 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained Sandboxie Updater child tab with native M3
+	// controls while preserving channel, certificate and update handlers.
+	if (ui.tabsSupport && ui.tabUpdate) {
+		const int updateIndex = ui.tabsSupport->indexOf(ui.tabUpdate);
+		if (updateIndex >= 0) {
+			auto* nativeUpdate = new QWidget(ui.tabsSupport);
+			auto* updateLayout = new QVBoxLayout(nativeUpdate);
+			ui.lblUpdates = new QLabel(tr("Update Settings"), nativeUpdate);
+			ui.lblUpdates->setProperty("m3NativeSurface", true);
+			ui.lblUpdates->setStyleSheet("font-weight: 600;");
+			updateLayout->addWidget(ui.lblUpdates);
+			ui.chkAutoUpdate = new QCheckBox(tr("Check periodically for new Sandboxie-Plus versions"), nativeUpdate);
+			updateLayout->addWidget(ui.chkAutoUpdate);
+			auto* intervalRow = new QHBoxLayout();
+			intervalRow->addWidget(new QLabel(tr("Update Check Interval"), nativeUpdate));
+			ui.cmbInterval = new QComboBox(nativeUpdate);
+			intervalRow->addWidget(ui.cmbInterval);
+			updateLayout->addLayout(intervalRow);
+			ui.radStable = new QRadioButton(tr("Search in the Stable channel"), nativeUpdate);
+			ui.radPreview = new QRadioButton(tr("Search in the Preview channel"), nativeUpdate);
+			ui.radInsider = new QRadioButton(tr("Search in the Insider channel"), nativeUpdate);
+			updateLayout->addWidget(ui.radStable);
+			updateLayout->addWidget(ui.radPreview);
+			updateLayout->addWidget(ui.radInsider);
+			ui.lblCurrent = new QLabel(nativeUpdate);
+			ui.lblStable = new QLabel(nativeUpdate);
+			ui.lblPreview = new QLabel(nativeUpdate);
+			ui.lblInsider = new QLabel(nativeUpdate);
+			ui.lblRevision = new QLabel(nativeUpdate);
+			ui.lblRelease = new QLabel(nativeUpdate);
+			updateLayout->addWidget(ui.lblCurrent);
+			updateLayout->addWidget(ui.lblStable);
+			updateLayout->addWidget(ui.lblPreview);
+			updateLayout->addWidget(ui.lblInsider);
+			updateLayout->addWidget(ui.lblRevision);
+			updateLayout->addWidget(ui.lblRelease);
+			auto* incrementalRow = new QHBoxLayout();
+			incrementalRow->addWidget(new QLabel(tr("Incremental Updates"), nativeUpdate));
+			ui.cmbUpdate = new QComboBox(nativeUpdate);
+			incrementalRow->addWidget(ui.cmbUpdate);
+			updateLayout->addLayout(incrementalRow);
+			auto* releaseRow = new QHBoxLayout();
+			releaseRow->addWidget(new QLabel(tr("Full Upgrades"), nativeUpdate));
+			ui.cmbRelease = new QComboBox(nativeUpdate);
+			releaseRow->addWidget(ui.cmbRelease);
+			updateLayout->addLayout(releaseRow);
+			ui.chkUpdateIssues = new QCheckBox(tr("Keep Troubleshooting scripts up to date"), nativeUpdate);
+			ui.chkUpdateAddons = new QCheckBox(tr("Keep add-on list up to date"), nativeUpdate);
+			updateLayout->addWidget(ui.chkUpdateIssues);
+			updateLayout->addWidget(ui.chkUpdateAddons);
+			ui.lblInsiderInfo = new QLabel(tr("More about the <a href=\"https://sandboxie-plus.com/go.php?to=sbie-insider\">Insider Channel</a>"), nativeUpdate);
+			ui.lblInsiderInfo->setOpenExternalLinks(false);
+			updateLayout->addWidget(ui.lblInsiderInfo);
+			updateLayout->addStretch();
+			ui.tabsSupport->removeTab(updateIndex);
+			ui.tabsSupport->insertTab(updateIndex, nativeUpdate, tr("Sandboxie Updater"));
+			ui.tabUpdate->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.
