@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options IPC tab
+
+Commit: [3b7577e28f449ddffd6a0cbc797221b6c14d4aea](https://github.com/Ding-Ding-Projects/material-sandbox/commit/3b7577e28f449ddffd6a0cbc797221b6c14d4aea)
+
+- Rebuilt the Resource Access > IPC child tab with native Material 3 IPC-rule and action controls.
+- Preserved process targeting, four-column access data, add-menu semantics, template toggles, and deletion handlers.
+
 ## 2026-08-09 · Native Options Registry tab
 
 Commit: [10315f478ad20e47bc3cb858a8282b3a7cf0b86c](https://github.com/Ding-Ding-Projects/material-sandbox/commit/10315f478ad20e47bc3cb858a8282b3a7cf0b86c)
