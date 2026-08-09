@@ -1869,6 +1869,24 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.tabsAdvanced = nativeAdvancedTabs;
 	}
 
+	// General Options now uses a native M3 tab host for Box, File, Migration,
+	// Restrictions, Isolation, and Run pages while preserving page order/state.
+	{
+		auto* nativeGeneralTabs = new QTabWidget(this);
+		nativeGeneralTabs->setObjectName(QStringLiteral("tabsGeneral"));
+		nativeGeneralTabs->addTab(ui.tabOptions, tr("Box Options"));
+		nativeGeneralTabs->addTab(ui.tabFile, tr("File Options"));
+		nativeGeneralTabs->addTab(ui.tabMigration, tr("File Migration"));
+		nativeGeneralTabs->addTab(ui.tabRestrictions, tr("Restrictions"));
+		nativeGeneralTabs->addTab(ui.tabOtherRestrictions, tr("Isolation"));
+		nativeGeneralTabs->addTab(ui.tabRun, tr("Run Menu"));
+		nativeGeneralTabs->setCurrentIndex(ui.tabsGeneral->currentIndex());
+		nativeGeneralTabs->setProperty("m3NativeSurface", true);
+		ui.gridLayout_9->replaceWidget(ui.tabsGeneral, nativeGeneralTabs);
+		ui.tabsGeneral->deleteLater();
+		ui.tabsGeneral = nativeGeneralTabs;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
