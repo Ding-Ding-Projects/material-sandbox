@@ -1664,6 +1664,52 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.btnDelProcess = nativeDelProcess;
 	}
 
+	// Advanced Options > Privacy now builds its data-protection controls as
+	// native M3 widgets while retaining locale selection and firmware-dump flow.
+	{
+		auto replacePrivacyControl = [](QWidget* oldControl, QWidget* nativeControl, QGridLayout* layout) {
+			if (oldControl && nativeControl && layout) {
+				layout->replaceWidget(oldControl, nativeControl);
+				oldControl->deleteLater();
+			}
+		};
+		auto makePrivacyCheck = [this](QCheckBox* oldControl) {
+			auto* native = new QCheckBox(oldControl->text(), this);
+			native->setObjectName(oldControl->objectName());
+			native->setCheckState(oldControl->checkState());
+			native->setToolTip(oldControl->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			return native;
+		};
+		auto* nativeHideFirmware = makePrivacyCheck(ui.chkHideFirmware);
+		auto* nativeHideSerial = makePrivacyCheck(ui.chkHideSerial);
+		auto* nativeHideUid = makePrivacyCheck(ui.chkHideUID);
+		auto* nativeHideMac = makePrivacyCheck(ui.chkHideMac);
+		auto* nativeLang = new QComboBox(this);
+		nativeLang->setObjectName(QStringLiteral("cmbLangID"));
+		nativeLang->setProperty("m3NativeSurface", true);
+		for (int i = 0; i < ui.cmbLangID->count(); ++i)
+			nativeLang->addItem(ui.cmbLangID->itemText(i), ui.cmbLangID->itemData(i));
+		nativeLang->setCurrentIndex(ui.cmbLangID->currentIndex());
+		auto* nativeDump = new QToolButton(this);
+		nativeDump->setObjectName(QStringLiteral("btnDumpFW"));
+		nativeDump->setText(ui.btnDumpFW->text());
+		nativeDump->setToolTip(ui.btnDumpFW->toolTip());
+		nativeDump->setProperty("m3NativeSurface", true);
+		replacePrivacyControl(ui.chkHideFirmware, nativeHideFirmware, ui.gridLayout_29);
+		replacePrivacyControl(ui.chkHideSerial, nativeHideSerial, ui.gridLayout_29);
+		replacePrivacyControl(ui.chkHideUID, nativeHideUid, ui.gridLayout_29);
+		replacePrivacyControl(ui.chkHideMac, nativeHideMac, ui.gridLayout_29);
+		replacePrivacyControl(ui.cmbLangID, nativeLang, ui.gridLayout_29);
+		replacePrivacyControl(ui.btnDumpFW, nativeDump, ui.gridLayout_29);
+		ui.chkHideFirmware = nativeHideFirmware;
+		ui.chkHideSerial = nativeHideSerial;
+		ui.chkHideUID = nativeHideUid;
+		ui.chkHideMac = nativeHideMac;
+		ui.cmbLangID = nativeLang;
+		ui.btnDumpFW = nativeDump;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
