@@ -12,8 +12,14 @@ rules use the real `Options/UseDarkTheme` setting with `light`, `dark`, or
 
 Matching is deterministic: the highest priority wins; equal priorities use the
 lexically smallest stable rule id. Invalid rules are ignored on load and are
-rejected on save. The scheduler is local-only and never reads a URL, token, or
-Home Assistant entity. A future schema version is ignored rather than guessed.
+rejected on save. Schema-v1 rules carry a `source` object. `local` is the only
+source currently applied. `https-api` accepts only a bounded HTTPS URL without
+embedded credentials; `home-assistant` accepts only `binary_sensor.*` or
+`input_boolean.*`. Both require an opaque `os-vault://...` credential reference
+and a 15-second-to-24-hour refresh bound. External metadata is retained but
+reports `unsupported-external-source` and remains inert: no network I/O,
+blocking wait, or partial setting change is claimed. Tokens are never stored in
+the schedule. A future schema version is ignored rather than guessed.
 
 School mode remains the final presentation gate. A matching language rule cannot
 turn Cantonese or bilingual presentation back on while School mode is enabled;
