@@ -533,6 +533,27 @@ _FX LONGLONG KphGetDateInterval(CSHORT days, CSHORT months, CSHORT years)
 
 SCertInfo Verify_CertInfo = { 0 };
 
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+// Contributor binaries do not require Certificate.dat.  Initialize the
+// capability record before any certificate I/O so every early-return path
+// (missing file, malformed file, or allocation failure) still exposes the
+// same unrestricted feature set to the driver and service.
+static void KphSetContributorCapabilities(void)
+{
+    Verify_CertInfo.active = 1;
+    Verify_CertInfo.expired = 0;
+    Verify_CertInfo.outdated = 0;
+    Verify_CertInfo.grace_period = 0;
+    Verify_CertInfo.lock_req = 0;
+    Verify_CertInfo.type = eCertContributor;
+    Verify_CertInfo.level = eCertMaxLevel;
+    Verify_CertInfo.opt_sec = 1;
+    Verify_CertInfo.opt_enc = 1;
+    Verify_CertInfo.opt_net = 1;
+    Verify_CertInfo.opt_desk = 1;
+}
+#endif
+
 _FX NTSTATUS KphValidateCertificate()
 {
     BOOLEAN CertDbg = FALSE;
@@ -566,6 +587,14 @@ _FX NTSTATUS KphValidateCertificate()
     BOOLEAN node_pass = FALSE;
 
     Verify_CertInfo.State = 0; // clear
+
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+    // Do not make contributor capability depend on an optional certificate
+    // file.  Returning here also prevents certificate parsing from changing
+    // the unrestricted runtime contract later in this function.
+    KphSetContributorCapabilities();
+    return STATUS_SUCCESS;
+#endif
 
     if(!NT_SUCCESS(status = MyInitHash(&hashObj)))
         goto CleanupExit;
@@ -1089,17 +1118,7 @@ _FX NTSTATUS KphValidateCertificate()
     // Contributor builds intentionally do not enforce supporter certificates.
     // Normalize the validated state once here so driver, service, and UI
     // consumers all observe the same unrestricted capability set.
-    Verify_CertInfo.active = 1;
-    Verify_CertInfo.expired = 0;
-    Verify_CertInfo.outdated = 0;
-    Verify_CertInfo.grace_period = 0;
-    Verify_CertInfo.lock_req = 0;
-    Verify_CertInfo.type = eCertContributor;
-    Verify_CertInfo.level = eCertMaxLevel;
-    Verify_CertInfo.opt_sec = 1;
-    Verify_CertInfo.opt_enc = 1;
-    Verify_CertInfo.opt_net = 1;
-    Verify_CertInfo.opt_desk = 1;
+    KphSetContributorCapabilities();
     status = STATUS_SUCCESS;
 #endif
 
