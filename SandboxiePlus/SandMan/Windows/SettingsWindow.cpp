@@ -1302,6 +1302,28 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Windows Shell, System Tray, and Run Menu pages are native; replace their
+	// remaining Designer tab host while preserving order and current selection.
+	if (ui.tabsShell) {
+		auto* legacyShellTabs = ui.tabsShell;
+		auto* nativeShellTabs = new QTabWidget(legacyShellTabs->parentWidget());
+		nativeShellTabs->setObjectName(QStringLiteral("tabsShell"));
+		nativeShellTabs->setTabPosition(QTabWidget::West);
+		nativeShellTabs->setAccessibleName(tr("Shell settings pages"));
+		const int currentShellIndex = legacyShellTabs->currentIndex();
+		while (legacyShellTabs->count() > 0) {
+			const int index = legacyShellTabs->count() - 1;
+			nativeShellTabs->insertTab(0, legacyShellTabs->widget(index), legacyShellTabs->tabText(index));
+			legacyShellTabs->removeTab(index);
+		}
+		nativeShellTabs->setCurrentIndex(qBound(0, currentShellIndex, nativeShellTabs->count() - 1));
+		nativeShellTabs->setProperty("m3NativeSurface", true);
+		if (auto* shellHostLayout = legacyShellTabs->parentWidget()->layout())
+			shellHostLayout->replaceWidget(legacyShellTabs, nativeShellTabs);
+		legacyShellTabs->deleteLater();
+		ui.tabsShell = nativeShellTabs;
+	}
+
 	// Replace the self-contained add-on configuration child tab with native M3
 	// controls while retaining the Ram Disk persistence and enablement handlers.
 	if (ui.tabsAddons && ui.tabAddonConfig) {
