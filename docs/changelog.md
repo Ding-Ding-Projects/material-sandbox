@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings General tab
+
+Commit: [454ff6e40ebb33bdddc5c77d6860b175d6de68e2](https://github.com/Ding-Ding-Projects/material-sandbox/commit/454ff6e40ebb33bdddc5c77d6860b175d6de68e2)
+
+- Rebuilt the Settings General Options child tab with native Material 3 language, checkbox, hotkey, and recovery controls.
+- Preserved the existing settings keys, shortcut editors, signal handlers, and elevation behavior.
+
 ## 2026-08-09 · Day Teet Hui keyboard and overlay semantics
 
 Commit: [693e09d16f8d1f86a2ecc144eb050a657131ea76](https://github.com/Ding-Ding-Projects/material-sandbox/commit/693e09d16f8d1f86a2ecc144eb050a657131ea76)
