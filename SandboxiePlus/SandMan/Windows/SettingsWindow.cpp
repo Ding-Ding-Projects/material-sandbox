@@ -284,6 +284,12 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	this->setWindowFlag(Qt::WindowStaysOnTopHint, theGUI->IsAlwaysOnTop());
 
 	ui.setupUi(this);
+	// Material 3 owns the application chrome and widget tokens.  Keep the old
+	// Fusion preference readable for profile migration, but never expose a
+	// second legacy style switch that can make the UI diverge from the shared
+	// MaterialTheme contract.
+	ui.chkFusionTheme->setVisible(false);
+	ui.chkFusionTheme->setEnabled(false);
 	#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
 	// Contributor builds expose capabilities without a certificate workflow.
 	// Remove the entire support/certificate page so static UI copy cannot turn
@@ -2690,7 +2696,9 @@ void CSettingsWindow::SaveSettings()
 	theConf->SetValue("Options/DPIScaling", ui.cmbDPI->currentData());
 
 	theConf->SetValue("Options/UseDarkTheme", CSettingsWindow__Chk2Int(ui.chkDarkTheme->checkState()));
-	theConf->SetValue("Options/UseFusionTheme", CSettingsWindow__Chk2Int(ui.chkFusionTheme->checkState()));
+	// Preserve the key for older profiles while making the Material 3 style the
+	// only user-facing route.  Do not let a stale checkbox state re-enable Fusion.
+	theConf->SetValue("Options/UseFusionTheme", 0);
 	theConf->SetValue("Options/AltRowColors", ui.chkAltRows->isChecked());
 	theConf->SetValue("Options/UseBackground", CSettingsWindow__Chk2Int(ui.chkBackground->checkState()));
 	theConf->SetValue("Options/LargeIcons", CSettingsWindow__Chk2Int(ui.chkLargeIcons->checkState()));

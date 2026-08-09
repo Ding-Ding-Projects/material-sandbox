@@ -8,13 +8,18 @@ The stylesheet covers the desktop shell's common controls: menus, buttons, field
 
 ## Configuration
 
-The existing `Options/UseDarkTheme`, `Options/UseFusionTheme`, `Options/UIFont`, and `Options/FontScaling` values remain the source of truth. Material styling is applied at runtime and does not move the application's data directory or package identity.
+The existing `Options/UseDarkTheme`, `Options/UIFont`, and `Options/FontScaling` values remain the source of truth. `Options/UseFusionTheme` is retained only as a migration key and is forced off when settings are saved. Material styling is applied at runtime and does not move the application's data directory or package identity.
 
 ## Failure modes and security
 
 If the Qt Fusion style cannot be created, Qt falls back to its normal style object; the application remains usable. No network resources, fonts, analytics, or credentials are introduced by the theme service.
 
 ## Verification
+
+The legacy `Use Fusion Theme` preference remains readable for migration but is
+no longer exposed as a user-facing switch. Saving settings writes `0` to that
+key so a stale profile cannot re-enable a second style path; the shared
+Material 3 theme remains the only presented chrome contract.
 
 Run `git diff --check`, configure `SandboxiePlus/SandMan/SandMan-Qt6.qc.pro` with the repository Qt toolchain, build SandMan, and inspect light/dark Settings and Options windows at 100% and 200% scale. A missing `qmake` executable is an environment blocker, not a green build result.
 
