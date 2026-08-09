@@ -1,4 +1,4 @@
-# Day Teet Hui language and tone controls
+# GitHub Pages language and tone controls
 
 ## Behaviour
 

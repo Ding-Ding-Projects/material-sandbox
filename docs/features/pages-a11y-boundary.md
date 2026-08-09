@@ -1,4 +1,4 @@
-# Day Teet Hui keyboard and overlay boundary
+# GitHub Pages keyboard and overlay boundary
 
 ## Behaviour
 
