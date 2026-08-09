@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Run Menu tab
+
+Commit: [2bcbec08a9bb1cd90fb4df83a846187e35df992d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2bcbec08a9bb1cd90fb4df83a846187e35df992d)
+
+- Rebuilt the Run Menu child tab with native Material 3 command-tree and action controls.
+- Preserved command serialization, sorting, add/remove/reorder handlers, and persistence.
+
 ## 2026-08-09 · Native Options Isolation tab
 
 Commit: [82cd160e7955fa6e8bd8beff952eacac347a4793](https://github.com/Ding-Ding-Projects/material-sandbox/commit/82cd160e7955fa6e8bd8beff952eacac347a4793)

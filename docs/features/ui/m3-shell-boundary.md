@@ -167,6 +167,11 @@ and their safety guidance are created in code while OptionsAdvanced keeps the
 existing persistence, enablement, and signal behavior; other OptionsWindow
 tabs remain staged.
 
+OptionsWindow Run Menu is now another native slice: its editable command tree
+and add/remove/reorder action rail are created in code while the existing
+command serialization, sorting, and handlers remain intact; other
+OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
