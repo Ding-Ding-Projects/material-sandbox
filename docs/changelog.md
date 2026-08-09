@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options trigger controls
+
+Commit: [52da4dd9bbf5060d34fa965d7e5a493b68a90ce6](https://github.com/Ding-Ding-Projects/material-sandbox/commit/52da4dd9bbf5060d34fa965d7e5a493b68a90ce6)
+
+- Rebuilt Advanced Options Triggers tree, actions, remove control, and template toggle with native Material 3 controls.
+- Preserved popup menus, template filtering, event signals, and persistence.
+
 ## 2026-08-09 · Native Options compatibility controls
 
 Commit: [1a158c67e885741bedc3bfa6a2bb34a30581b6aa](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1a158c67e885741bedc3bfa6a2bb34a30581b6aa)
