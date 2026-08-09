@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings GUI grouping controls
+
+Commit: [5f0abd18f5b76e764a910c49f783b02140782800](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5f0abd18f5b76e764a910c49f783b02140782800)
+
+- Rebuilt overlay icon visibility, core-process visibility, and group-start behavior controls as native Material 3 widgets.
+- Preserved object names, signal routes, option values, and persistence keys while shrinking the remaining Designer-backed cluster.
+
 ## 2026-08-09 · Native Settings GUI behavior controls
 
 Commit: [cbffce483d10b66478e159a8d3c1e13cef870e4e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/cbffce483d10b66478e159a8d3c1e13cef870e4e)
