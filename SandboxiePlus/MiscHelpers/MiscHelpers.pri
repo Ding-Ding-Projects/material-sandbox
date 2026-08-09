@@ -23,6 +23,7 @@ HEADERS += ./MiscHelpers.h \
     ./Common/PanelView.h \
     ./Common/ProgressDialog.h \
     ./Common/Settings.h \
+    ./Common/LocalSettingsHistory.h \
     ./Common/SettingsWidgets.h \
     ./Common/SmartGridWidget.h \
     ./Common/SortFilterProxyModel.h \
@@ -67,6 +68,7 @@ SOURCES += ./MiscHelpers.cpp \
     ./Common/PanelView.cpp \
     ./Common/NetworkAccessManager.cpp \
     ./Common/Settings.cpp \
+    ./Common/LocalSettingsHistory.cpp \
     ./Common/SettingsWidgets.cpp \
     ./Common/SmartGridWidget.cpp \
     ./Common/SplitTreeView.cpp \

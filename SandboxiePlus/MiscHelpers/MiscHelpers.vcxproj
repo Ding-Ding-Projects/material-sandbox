@@ -321,6 +321,7 @@
     <ClCompile Include="Common\PanelView.cpp" />
     <ClCompile Include="Common\NetworkAccessManager.cpp" />
     <ClCompile Include="Common\Settings.cpp" />
+    <ClCompile Include="Common\LocalSettingsHistory.cpp" />
     <ClCompile Include="Common\SettingsWidgets.cpp" />
     <ClCompile Include="Common\SmartGridWidget.cpp" />
     <ClCompile Include="Common\SplitTreeView.cpp" />
@@ -369,6 +370,7 @@
     <QtMoc Include="Common\PanelView.h" />
     <QtMoc Include="Common\ProgressDialog.h" />
     <QtMoc Include="Common\Settings.h" />
+    <ClInclude Include="Common\LocalSettingsHistory.h" />
     <QtMoc Include="Common\SettingsWidgets.h" />
     <QtMoc Include="Common\SmartGridWidget.h" />
     <QtMoc Include="Common\SortFilterProxyModel.h" />

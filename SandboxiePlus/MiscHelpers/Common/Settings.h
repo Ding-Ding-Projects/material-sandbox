@@ -12,6 +12,7 @@ class MISCHELPERS_EXPORT CSettings: public QObject
 	Q_OBJECT
 
 public:
+	class CLocalSettingsHistory* History() const { return m_History; }
 	struct SStrRef
 	{
 		SStrRef(const char* pRef)
@@ -152,4 +153,5 @@ protected:
 	bool				m_bPortable;
 
 	QSettings*			m_pConf;
+	class CLocalSettingsHistory* m_History = nullptr;
 };

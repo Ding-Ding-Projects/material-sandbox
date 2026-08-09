@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Settings.h"
+#include "LocalSettingsHistory.h"
 //#include "qzlib.h"
 #include "Common.h"
 #include <QStandardPaths>
@@ -32,6 +33,7 @@ CSettings::CSettings(const QString& AppDir, const QString& AppName, const QStrin
 	}
 
 	m_pConf = new QSettings(m_ConfigDir + "/" + AppName + ".ini", QSettings::IniFormat, this);
+	m_History = new CLocalSettingsHistory(m_ConfigDir + "/history/settings-history.jsonl");
 
 	m_pConf->sync();
 
@@ -52,20 +54,32 @@ CSettings::CSettings(const QString& AppDir, const QString& AppName, const QStrin
 CSettings::~CSettings()
 {
 	m_pConf->sync();
+	delete m_History;
 }
 
 void CSettings::DelValue(const QString& key)
 {
-	QMutexLocker Locker(&m_Mutex);
-
-	m_pConf->remove(key);
-
-	m_ValueCache.clear();
+	bool hadBefore = false;
+	QVariant before;
+	{
+		QMutexLocker Locker(&m_Mutex);
+		hadBefore = m_pConf->contains(key);
+		before = hadBefore ? m_pConf->value(key) : QVariant();
+		m_pConf->remove(key);
+		m_ValueCache.clear();
+	}
+	if (m_History)
+		m_History->record(key, hadBefore, before, false, QVariant(), QStringLiteral("setting deleted"));
 }
 
 bool CSettings::SetValue(const QString &key, const QVariant &value)
 {
-	QMutexLocker Locker(&m_Mutex);
+	bool hadBefore = false;
+	QVariant before;
+	{
+		QMutexLocker Locker(&m_Mutex);
+		hadBefore = m_pConf->contains(key);
+		before = hadBefore ? m_pConf->value(key) : QVariant();
 
 //	if (!m_DefaultValues.isEmpty())
 //	{
@@ -76,9 +90,11 @@ bool CSettings::SetValue(const QString &key, const QVariant &value)
 //#endif
 //	}
 
-	m_pConf->setValue(key, value);
-
-	m_ValueCache.clear();
+		m_pConf->setValue(key, value);
+		m_ValueCache.clear();
+	}
+	if (m_History)
+		m_History->record(key, hadBefore, before, true, value);
 	return true;
 }
 

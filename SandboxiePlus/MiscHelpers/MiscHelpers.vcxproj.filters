@@ -72,6 +72,9 @@
     <ClCompile Include="Common\Settings.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="Common\LocalSettingsHistory.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
     <ClCompile Include="Common\SettingsWidgets.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -243,6 +246,9 @@
     <QtMoc Include="Common\Settings.h">
       <Filter>Common</Filter>
     </QtMoc>
+    <ClInclude Include="Common\LocalSettingsHistory.h">
+      <Filter>Common</Filter>
+    </ClInclude>
     <QtMoc Include="Common\SettingsWidgets.h">
       <Filter>Common</Filter>
     </QtMoc>

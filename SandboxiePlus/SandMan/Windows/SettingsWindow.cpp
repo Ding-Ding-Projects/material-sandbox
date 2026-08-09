@@ -3,6 +3,7 @@
 #include "EditorSettingsWindow.h"
 #include "SandMan.h"
 #include "../MiscHelpers/Common/Settings.h"
+#include "../MiscHelpers/Common/LocalSettingsHistory.h"
 #include "../MiscHelpers/Common/TabStateManager.h"
 #include "../MiscHelpers/Common/UserPresentationSettings.h"
 #include "../MiscHelpers/Common/Common.h"
@@ -29,6 +30,8 @@
 #include <QSet>
 #include <functional>
 #include <QColorDialog>
+#include <QListWidget>
+#include <QToolTip>
 
 
 #include <windows.h>
@@ -298,6 +301,9 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		QPushButton* resetAppearance = new QPushButton(tr("Reset appearance identity"), appearance);
 		resetAppearance->setToolTip(tr("Restores the shipped display name, comfortable density, and Material purple accent."));
 		appearanceForm->addRow(QString(), resetAppearance);
+		QPushButton* historyButton = new QPushButton(tr("Open settings history"), appearance);
+		historyButton->setToolTip(tr("Review and restore local settings revisions. History stays on this device."));
+		appearanceForm->addRow(QString(), historyButton);
 		uiLayout->addWidget(appearance, 2, 0);
 
 		connect(appName, &QLineEdit::editingFinished, this, [appName]() {
@@ -326,6 +332,55 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			accent->setStyleSheet(QStringLiteral("background:#6750A4;"));
 			theGUI->OnStatusChanged();
 			theGUI->UpdateTheme();
+		});
+		connect(historyButton, &QPushButton::clicked, this, [this]() {
+			if (!theConf->History())
+				return;
+			QDialog* dialog = new QDialog(this, Qt::Tool | Qt::WindowStaysOnTopHint);
+			dialog->setAttribute(Qt::WA_DeleteOnClose);
+			dialog->setWindowTitle(tr("Settings history"));
+			dialog->resize(640, 420);
+			QVBoxLayout* layout = new QVBoxLayout(dialog);
+			QLineEdit* search = new QLineEdit(dialog);
+			search->setPlaceholderText(tr("Filter revisions by key, action, or date"));
+			search->setAccessibleName(tr("Settings history search"));
+			layout->addWidget(search);
+			QListWidget* revisions = new QListWidget(dialog);
+			revisions->setSelectionMode(QAbstractItemView::SingleSelection);
+			layout->addWidget(revisions, 1);
+			QPushButton* restore = new QPushButton(tr("Restore selected revision"), dialog);
+			restore->setEnabled(false);
+			layout->addWidget(restore);
+			const QVector<CLocalSettingsHistory::Entry> entries = theConf->History()->entries();
+			auto refill = [entries, revisions, search]() {
+				revisions->clear();
+				const QString query = search->text().trimmed();
+				for (int i = entries.size() - 1; i >= 0; --i) {
+					const auto& entry = entries.at(i);
+					const QString text = QStringLiteral("%1 · %2 · %3").arg(entry.timestamp.toLocalTime().toString(Qt::DefaultLocaleShortDate), entry.action, entry.key);
+					if (!query.isEmpty() && !text.contains(query, Qt::CaseInsensitive))
+						continue;
+					QListWidgetItem* item = new QListWidgetItem(text, revisions);
+					item->setData(Qt::UserRole, entry.id);
+				}
+			};
+			refill();
+			connect(search, &QLineEdit::textChanged, dialog, refill);
+			connect(revisions, &QListWidget::currentItemChanged, dialog, [restore](QListWidgetItem* item) { restore->setEnabled(item != nullptr); });
+			connect(restore, &QPushButton::clicked, dialog, [this, dialog, revisions]() {
+				QListWidgetItem* item = revisions->currentItem();
+				if (!item)
+					return;
+				QString error;
+				if (theConf->History()->restore(item->data(Qt::UserRole).toString(), theConf, &error)) {
+					theConf->Sync();
+					theGUI->UpdateSettings(true);
+					dialog->close();
+				} else {
+					QToolTip::showText(QCursor::pos(), error, dialog);
+				}
+			});
+			dialog->show();
 		});
 	}
 
