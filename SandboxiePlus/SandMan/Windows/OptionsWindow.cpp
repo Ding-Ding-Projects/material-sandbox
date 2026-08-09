@@ -894,6 +894,41 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Resource Access > COM with native M3 controls while retaining
+	// COM virtualization policy, access columns, templates, and deletion.
+	if (ui.tabsAccess && ui.tabCOM) {
+		const int comIndex = ui.tabsAccess->indexOf(ui.tabCOM);
+		if (comIndex >= 0) {
+			auto* legacyCOM = ui.tabCOM;
+			auto* nativeCOM = new QWidget(ui.tabsAccess);
+			auto* comLayout = new QVBoxLayout(nativeCOM);
+			auto* comHint = new QLabel(tr("Configure which processes can access COM objects."), nativeCOM);
+			comHint->setWordWrap(true);
+			comLayout->addWidget(comHint);
+			ui.treeCOM = new QTreeWidget(nativeCOM);
+			ui.treeCOM->setColumnCount(4);
+			ui.treeCOM->setHeaderLabels(QStringList() << tr("Type") << tr("Program") << tr("Access") << tr("Class Id"));
+			ui.treeCOM->setSortingEnabled(true);
+			comLayout->addWidget(ui.treeCOM, 1);
+			auto* comActions = new QHBoxLayout();
+			ui.btnAddCOM = new QToolButton(nativeCOM);
+			ui.btnAddCOM->setText(tr("Add COM Object"));
+			ui.btnDelCOM = new QPushButton(tr("Remove"), nativeCOM);
+			ui.chkShowCOMTmpl = new QCheckBox(tr("Show Templates"), nativeCOM);
+			comActions->addWidget(ui.btnAddCOM);
+			comActions->addWidget(ui.btnDelCOM);
+			comActions->addWidget(ui.chkShowCOMTmpl);
+			comActions->addStretch();
+			comLayout->addLayout(comActions);
+			ui.chkOpenCOM = new QCheckBox(tr("Do not virtualize COM; open access to the host COM infrastructure (not recommended)"), nativeCOM);
+			comLayout->addWidget(ui.chkOpenCOM);
+			ui.tabsAccess->removeTab(comIndex);
+			ui.tabsAccess->insertTab(comIndex, nativeCOM, tr("COM"));
+			ui.tabCOM = nativeCOM;
+			legacyCOM->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
