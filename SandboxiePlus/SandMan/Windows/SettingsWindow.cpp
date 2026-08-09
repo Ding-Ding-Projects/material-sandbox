@@ -1487,6 +1487,39 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained App Compatibility child tab with native M3
+	// controls while preserving template model, actions and preference storage.
+	if (ui.tabsTemplates && ui.tabAppCompat) {
+		const int compatIndex = ui.tabsTemplates->indexOf(ui.tabAppCompat);
+		if (compatIndex >= 0) {
+			auto* nativeCompat = new QWidget(ui.tabsTemplates);
+			auto* compatLayout = new QVBoxLayout(nativeCompat);
+			auto* compatHint = new QLabel(tr("Sandboxie has detected software applications in your system. Enable or disable compatibility settings for existing and new sandboxes."), nativeCompat);
+			compatHint->setWordWrap(true);
+			compatLayout->addWidget(compatHint);
+			ui.treeCompat = new QTreeWidget(nativeCompat);
+			ui.treeCompat->setColumnCount(1);
+			ui.treeCompat->setHeaderLabels(QStringList() << tr("Name"));
+			ui.treeCompat->setRootIsDecorated(false);
+			compatLayout->addWidget(ui.treeCompat, 1);
+			auto* compatActions = new QHBoxLayout();
+			ui.btnAddCompat = new QPushButton(tr("Enable"), nativeCompat);
+			ui.btnDelCompat = new QPushButton(tr("Disable"), nativeCompat);
+			compatActions->addWidget(ui.btnAddCompat);
+			compatActions->addWidget(ui.btnDelCompat);
+			compatActions->addStretch();
+			ui.lblUpdateTemplates = new QLabel(tr("<a href=\"sbie://templates\">update compatibility templates now</a>"), nativeCompat);
+			ui.lblUpdateTemplates->setOpenExternalLinks(false);
+			compatActions->addWidget(ui.lblUpdateTemplates);
+			compatLayout->addLayout(compatActions);
+			ui.chkNoCompat = new QCheckBox(tr("In the future, don't check software compatibility"), nativeCompat);
+			compatLayout->addWidget(ui.chkNoCompat);
+			ui.tabsTemplates->removeTab(compatIndex);
+			ui.tabsTemplates->insertTab(compatIndex, nativeCompat, tr("App Compatibility"));
+			ui.tabAppCompat->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.

@@ -93,6 +93,7 @@ const checks = [
   [settingsSource.includes('nativeForce') && settingsSource.includes('ui.tabsControl->insertTab(forceIndex, nativeForce') && settingsSource.includes('ui.cmbMoTWSandbox = new QComboBox(nativeForce)') && settingsSource.includes('ui.chkForceBoxDocs = new QCheckBox'), 'settings force process child tab is rebuilt with native controls'],
   [settingsSource.includes('nativeUsb') && settingsSource.includes('ui.tabsControl->insertTab(usbIndex, nativeUsb') && settingsSource.includes('ui.cmbUsbSandbox = new QComboBox(nativeUsb)') && settingsSource.includes('ui.treeVolumes = new QTreeWidget(nativeUsb)'), 'settings USB sandbox child tab is rebuilt with native controls'],
   [settingsSource.includes('nativeTemplates') && settingsSource.includes('ui.tabsTemplates->insertTab(templateIndex, nativeTemplates') && settingsSource.includes('ui.txtTemplates = new QLineEdit(nativeTemplates)') && settingsSource.includes('ui.treeTemplates = new QTreeWidget(nativeTemplates)'), 'settings local templates child tab is rebuilt with native controls'],
+  [settingsSource.includes('nativeCompat') && settingsSource.includes('ui.tabsTemplates->insertTab(compatIndex, nativeCompat') && settingsSource.includes('ui.treeCompat = new QTreeWidget(nativeCompat)') && settingsSource.includes('ui.btnAddCompat = new QPushButton'), 'settings app compatibility child tab is rebuilt with native controls'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);
