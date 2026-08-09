@@ -4,7 +4,8 @@
     {"slug":"material-design","path":"../material-design.md","related":["contributor-build"]},
     {"slug":"contributor-build","path":"../contributor-build.md","related":["material-design"]},
     {"slug":"settings-history","path":"../features/settings-history.md","related":["material-design","contributor-build"]},
-    {"slug":"notifications","path":"../features/notifications.md","related":["settings-history","material-design"]}
+    {"slug":"notifications","path":"../features/notifications.md","related":["settings-history","material-design"]},
+    {"slug":"color-translator","path":"../features/color-translator.md","related":["material-design","settings-history"]}
   ],
   "changelog": {"path":"../changelog.md","commit":"062426ff"}
 }

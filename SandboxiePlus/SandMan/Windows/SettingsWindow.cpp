@@ -30,6 +30,7 @@
 #include <QSet>
 #include <functional>
 #include <QColorDialog>
+#include "ColorTranslatorDialog.h"
 #include <QListWidget>
 #include <QToolTip>
 
@@ -317,8 +318,9 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			theGUI->UpdateTheme();
 		});
 		connect(accent, &QPushButton::clicked, this, [this, accent]() {
-			const QColor chosen = QColorDialog::getColor(QColor(theConf->GetString("UIConfig/AccentSeed", "#6750A4")), this, tr("Choose Material accent seed"), QColorDialog::ShowAlphaChannel);
-			if (!chosen.isValid()) return;
+			CColorTranslatorDialog editor(QColor(theConf->GetString("UIConfig/AccentSeed", "#6750A4")), this);
+			if (editor.exec() != QDialog::Accepted) return;
+			const QColor chosen = editor.color();
 			theConf->SetValue("UIConfig/AccentSeed", chosen.name(QColor::HexArgb));
 			accent->setStyleSheet(QStringLiteral("background:%1;").arg(chosen.name(QColor::HexArgb)));
 			theGUI->UpdateTheme();
