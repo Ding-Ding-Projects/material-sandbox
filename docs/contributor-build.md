@@ -16,7 +16,7 @@ Because the profile changes driver capability policy, it must only be used for a
 
 ## Verification
 
-Build the matching driver, service, and SandMan targets with the define enabled. Start without `Certificate.dat`, query driver feature flags, exercise the gated paths, and record the exact build SHA. This checkout currently has no Qt toolchain available, so that runtime proof remains pending.
+Build the matching driver, service, and SandMan targets with the define enabled. Start without `Certificate.dat`, query driver feature flags, exercise the gated paths, and record the exact build SHA. Hosted CI verifies x64 and ARM64 compilation plus a bounded x64 SandMan startup smoke; driver loading, feature-toggle exercise, and visual capture remain separate runtime gates. The local checkout still does not provide the Qt/MSVC toolchain.
 
 ## Suggested articles
 

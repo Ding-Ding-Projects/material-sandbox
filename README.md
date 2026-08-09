@@ -209,6 +209,6 @@ Commit subjects are concise and commit bodies explain the real behavior in Engli
 
 ## Known boundaries
 
-The full global feature contract is broader than the currently verified native surface. In particular, complete Word-depth per-element appearance editing, every tab-discovery/group action, full-state local snapshots for every account and record, scheduled external-source integration, dim-sum public-asset availability, native Qt/MSVC builds, loaded-driver smoke tests, and runtime screenshot capture require additional evidence or implementation. They are documented as pending rather than described as complete.
+The full global feature contract is broader than the currently verified native surface. Hosted CI now verifies x64/ARM64 Qt builds and a bounded x64 SandMan startup smoke. Complete Word-depth per-element appearance editing, every tab-discovery/group action, full-state local snapshots for every account and record, scheduled external-source integration, dim-sum public-asset availability, loaded-driver smoke tests, and runtime screenshot capture still require additional evidence or implementation. They are documented as pending rather than described as complete.
 
 The README is intentionally a navigable index: long reference material stays in collapsible sections and dedicated articles, while the compact links above keep the first screen useful. The project site provides the same content as browser-style tabs for readers who prefer a full documentation surface.
