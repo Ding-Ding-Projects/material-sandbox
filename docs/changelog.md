@@ -30,6 +30,13 @@ Commit: [c8ae278c6fcfd8dee77241c14aa729422e2664ec](https://github.com/Ding-Ding-
 - Rebuilt Leader Programs Add, Remove, and Show Templates controls with native Material 3 widgets.
 - Preserved the leader program tree, handlers, and template state.
 
+## 2026-08-09 · Native Options start restrictions
+
+Commit: [1b8f26db640cff9013259ba47bd96ea716aab72f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1b8f26db640cff9013259ba47bd96ea716aab72f)
+
+- Rebuilt Start Restrictions policy radios, actions, and warning switches with native Material 3 widgets.
+- Preserved start handlers, tree state, and the hidden template toggle.
+
 ## 2026-08-09 · Native Options resource-access tab host
 
 Commit: [01cf568a6d36d64b7e2450e532ffc3785cf0d0b1](https://github.com/Ding-Ding-Projects/material-sandbox/commit/01cf568a6d36d64b7e2450e532ffc3785cf0d0b1)

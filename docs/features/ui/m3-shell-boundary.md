@@ -139,6 +139,10 @@ stop-tab merge.
 Leader Programs now uses native M3 controls for Add, Remove, and Show
 Templates while preserving the program tree, handlers, and template state.
 
+Start Restrictions now uses native M3 policy radios, actions, and warning
+switches while preserving start handlers, tree state, and the hidden template
+toggle.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
