@@ -13,6 +13,16 @@ The native driver, service, and UI consume the same record; contributor builds
 also compile out debug certificate simulation so it cannot reintroduce a split
 state.
 
+## Build configuration coverage
+
+The SandMan Visual Studio project carries the contributor boundary in all six
+declared configurations: Debug and Release for Win32, x64, and ARM64. Each
+configuration preserves `%(PreprocessorDefinitions)` after adding the profile
+macro, so existing Qt, project, and toolchain definitions are not replaced.
+The Qt 5 and Qt 6 qmake projects define the same profile. The validator keeps a
+hand-maintained six-configuration inventory, compares it with the project file,
+and rejects a missing, duplicated, unexpected, or non-inheriting definition.
+
 The Settings certificate child page is removed from the contributor build while
 the updater child remains available under an **Updates** tab with
 certificate-independent access. Its certificate-refresh slot is inert. Options and troubleshooting surfaces compile
@@ -45,9 +55,10 @@ Run:
 node scripts/validate-contributor-build.mjs
 ```
 
-The validator checks the early native capability contract, every reminder boundary, certificate feature gate, Setup
-Wizard route, support-tab removal, Options and troubleshooting footer guards,
-and the legal-notice boundary. A Qt/MSVC
+The validator enumerates all six SandMan MSVC configurations, checks both Qt
+project definitions, and checks the early native capability contract, every
+reminder boundary, certificate feature gate, Setup Wizard route, support-tab
+removal, Options and troubleshooting footer guards, and the legal-notice boundary. A Qt/MSVC
 runtime build remains a separate gate; static source evidence must not be
 reported as runtime proof.
 

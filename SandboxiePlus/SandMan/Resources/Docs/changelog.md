@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Complete SandMan contributor build matrix
+
+Commit: [d7158326](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d715832683ed0ee3cc3de3fd653b84f38c78029f)
+
+- Enabled the contributor profile in Debug and Release for Win32, x64, and ARM64 without replacing inherited build definitions.
+- Added a complete six-configuration validator for the SandMan Visual Studio project and checks for both Qt projects.
+
 ## 2026-08-09 · Contributor update channels
 
 Commit: [4b37c38e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4b37c38ed68644f5860af6e28d54138347a4d9c4)

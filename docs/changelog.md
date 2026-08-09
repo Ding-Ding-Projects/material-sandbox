@@ -9,6 +9,21 @@ Commit: [bc61226eea96eece1645e3338866763f40bbfc00](https://github.com/Ding-Ding-
 - Rendered the canonical 22 feature articles plus changelog and image documentation into the same interactive shell, with exact bidirectional landing/output coverage and no raw Markdown routes.
 - Switched repository Pages publication to the workflow-only path so the stamped artifact is the sole deployment source.
 
+## 2026-08-09 · Native Network Options tab host
+
+Commit: [9f6c3051cc9d0e899f4807c63420aad0e738b090](https://github.com/Ding-Ding-Projects/material-sandbox/commit/9f6c3051cc9d0e899f4807c63420aad0e738b090)
+
+- Rebuilt the five-page Network Options host as a native Material 3 tab widget with left docking, document mode, native-surface metadata, and an accessible name.
+- Preserved the host object name, child page order, labels, icons, enabled state, selected page, and all existing child control behavior.
+- Added a completeness contract covering every page and required host property; its negative-path test fails when a required accessible name is removed.
+
+## 2026-08-09 · Complete SandMan contributor build matrix
+
+Commit: [d715832683ed0ee3cc3de3fd653b84f38c78029f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d715832683ed0ee3cc3de3fd653b84f38c78029f)
+
+- Enabled `SANDBOXIE_CONTRIBUTOR_BUILD` in the previously uncovered Debug/Release x64 and ARM64 SandMan Visual Studio configurations while preserving inherited definitions.
+- Added a validator that inventories all six supported SandMan MSVC configurations and also checks the Qt 5 and Qt 6 project definitions.
+
 ## 2026-08-09 · Native Settings GUI labels
 
 Commit: [c1bed0471a7ff2034d4b9241038ad24d045f0e82](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c1bed0471a7ff2034d4b9241038ad24d045f0e82)

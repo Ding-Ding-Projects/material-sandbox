@@ -2,13 +2,13 @@
 
 ## Behavior
 
-`SANDBOXIE_CONTRIBUTOR_BUILD` is defined by the Qt SandMan projects, the start helper, and the four native Sandboxie property sheets. The driver initializes the contributor capability record before any optional `Certificate.dat` I/O, so missing, malformed, or unreadable certificate files cannot disable the runtime contract. It sets `active=1`, clears expiry/outdated/grace/lock state, selects `eCertContributor`/`eCertMaxLevel`, and enables `opt_sec`, `opt_enc`, `opt_net`, and `opt_desk`. The service and driver feature gates therefore agree with the desktop UI from startup.
+`SANDBOXIE_CONTRIBUTOR_BUILD` is defined by both Qt SandMan projects, every SandMan Visual Studio configuration, the start helper, and the four native Sandboxie property sheets. The driver initializes the contributor capability record before any optional `Certificate.dat` I/O, so missing, malformed, or unreadable certificate files cannot disable the runtime contract. It sets `active=1`, clears expiry/outdated/grace/lock state, selects `eCertContributor`/`eCertMaxLevel`, and enables `opt_sec`, `opt_enc`, `opt_net`, and `opt_desk`. The service and driver feature gates therefore agree with the desktop UI from startup.
 
 The desktop manager also makes `CheckCertificate()` succeed without a modal purchase prompt, skips support/expiry reminder flows, and suppresses certificate-error popups. The Settings window removes only the certificate child tab and relabels its surviving updater parent as **Updates**, so contributor builds retain the full update controls without purchase copy. The Setup Wizard removes its personal/commercial license choice, clears stale usage markers, opens the Insider channel without certificate gating, and routes directly to UI setup. A legacy no-op support dialog returns an allowed result so old seat-check callers cannot interpret silence as a request to quit. The normal Help/support entry points remain available when a contributor explicitly asks for them.
 
 ## Configuration
 
-This is a build-time profile, not a hidden runtime switch. Distribution builds that omit the define retain their upstream certificate behavior. Copyright and third-party license notices are not removed.
+This is a build-time profile, not a hidden runtime switch. `SandMan.vcxproj` declares six supported configurations: Debug and Release for Win32, x64, and ARM64. Each configuration defines the contributor macro exactly once and preserves `%(PreprocessorDefinitions)`, so project, Qt, and toolchain definitions continue to compose normally. The validator compares that hand-maintained inventory with the project declarations and inspects the `ClCompile` block for every configuration. Distribution builds that intentionally omit the define outside this contributor profile retain their upstream certificate behavior. Copyright and third-party license notices are not removed.
 
 ## Failure modes and security
 
@@ -16,7 +16,7 @@ Because the profile changes driver capability policy, it must only be used for a
 
 ## Verification
 
-Build the matching driver, service, SandMan, and start-helper targets with the define enabled. Start without `Certificate.dat`, query driver feature flags, exercise the gated paths, and record the exact build SHA. Hosted CI verifies x64 and ARM64 compilation plus a bounded x64 SandMan startup smoke; driver loading, feature-toggle exercise, and visual capture remain separate runtime gates. The local checkout still does not provide the Qt/MSVC toolchain.
+Run `node scripts/validate-contributor-build.mjs`, then build the matching driver, service, SandMan, and start-helper targets with the define enabled. The validator reports all six SandMan MSVC configurations and checks both Qt project definitions; it is static source evidence, not a compiled runtime verdict. Start without `Certificate.dat`, query driver feature flags, exercise the gated paths, and record the exact build SHA. Hosted CI verifies x64 and ARM64 compilation plus a bounded x64 SandMan startup smoke; driver loading, feature-toggle exercise, and visual capture remain separate runtime gates. The local checkout still does not provide the Qt/MSVC toolchain.
 
 ## Suggested articles
 
