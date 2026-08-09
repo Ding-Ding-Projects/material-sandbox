@@ -4,9 +4,11 @@
 #include "Settings.h"
 #include <QAction>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QAbstractItemView>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QDoubleSpinBox>
 #include <QFontComboBox>
 #include <QFormLayout>
 #include <QFont>
@@ -223,7 +225,7 @@ void CTabStateManager::showContextMenu(const QPoint& position)
     searchTabs->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_O));
     QAction* group = menu.addAction(tr("Move… into group…"));
     QAction* clearGroup = menu.addAction(tr("Remove from group"));
-    QAction* edit = menu.addAction(tr("Edit tab appearance…"));
+    QAction* edit = menu.addAction(tr("Edit tab page typography…"));
     connect(filter, &QLineEdit::textChanged, &menu, [filter, pin, currentStripSearch, currentGroupSearch, groupNameSearch, searchTabs, group, clearGroup, edit](const QString& query) {
         for (QAction* action : { pin, currentStripSearch, currentGroupSearch, groupNameSearch, searchTabs, group, clearGroup, edit })
             action->setVisible(query.isEmpty() || action->text().contains(query, Qt::CaseInsensitive));
@@ -248,7 +250,7 @@ void CTabStateManager::showContextMenu(const QPoint& position)
             return;
         QDialog* editor = new QDialog(m_tabs, Qt::Tool | Qt::WindowStaysOnTopHint);
         editor->setAttribute(Qt::WA_DeleteOnClose);
-        editor->setWindowTitle(tr("Edit tab appearance"));
+        editor->setWindowTitle(tr("Edit tab page typography"));
         QFormLayout* form = new QFormLayout(editor);
         QFontComboBox* font = new QFontComboBox(editor);
         font->setCurrentFont(page->font());
@@ -259,11 +261,87 @@ void CTabStateManager::showContextMenu(const QPoint& position)
         size->setValue(page->font().pointSize() > 0 ? page->font().pointSize() : 10);
         size->setAccessibleName(tr("Tab font size"));
         form->addRow(tr("Size"), size);
+        QComboBox* weight = new QComboBox(editor);
+        const QList<QPair<QString, int>> weights = {
+            {tr("Thin"), QFont::Thin}, {tr("Extra light"), QFont::ExtraLight},
+            {tr("Light"), QFont::Light}, {tr("Normal"), QFont::Normal},
+            {tr("Medium"), QFont::Medium}, {tr("Demi bold"), QFont::DemiBold},
+            {tr("Bold"), QFont::Bold}, {tr("Extra bold"), QFont::ExtraBold},
+            {tr("Black"), QFont::Black}
+        };
+        for (const auto& option : weights)
+            weight->addItem(option.first, option.second);
+        const int weightIndex = weight->findData(page->font().weight());
+        if (weightIndex >= 0)
+            weight->setCurrentIndex(weightIndex);
+        weight->setAccessibleName(tr("Tab font weight"));
+        form->addRow(tr("Weight"), weight);
+        QComboBox* style = new QComboBox(editor);
+        style->addItem(tr("Normal"), QFont::StyleNormal);
+        style->addItem(tr("Italic"), QFont::StyleItalic);
+        style->addItem(tr("Oblique"), QFont::StyleOblique);
+        const int styleIndex = style->findData(page->font().style());
+        if (styleIndex >= 0)
+            style->setCurrentIndex(styleIndex);
+        style->setAccessibleName(tr("Tab font style"));
+        form->addRow(tr("Style"), style);
+        QCheckBox* underline = new QCheckBox(tr("Underline"), editor);
+        underline->setChecked(page->font().underline());
+        underline->setAccessibleName(tr("Tab underline"));
+        QCheckBox* strikeOut = new QCheckBox(tr("Strikeout"), editor);
+        strikeOut->setChecked(page->font().strikeOut());
+        strikeOut->setAccessibleName(tr("Tab strikeout"));
+        QCheckBox* overline = new QCheckBox(tr("Overline"), editor);
+        overline->setChecked(page->font().overline());
+        overline->setAccessibleName(tr("Tab overline"));
+        QHBoxLayout* decorations = new QHBoxLayout();
+        decorations->addWidget(underline);
+        decorations->addWidget(strikeOut);
+        decorations->addWidget(overline);
+        decorations->addStretch();
+        form->addRow(tr("Decorations"), decorations);
+        QComboBox* capitalization = new QComboBox(editor);
+        capitalization->addItem(tr("Mixed case"), QFont::MixedCase);
+        capitalization->addItem(tr("Small caps"), QFont::SmallCaps);
+        capitalization->addItem(tr("All uppercase"), QFont::AllUppercase);
+        capitalization->addItem(tr("All lowercase"), QFont::AllLowercase);
+        capitalization->addItem(tr("Capitalize words"), QFont::Capitalize);
+        const int capitalizationIndex = capitalization->findData(page->font().capitalization());
+        if (capitalizationIndex >= 0)
+            capitalization->setCurrentIndex(capitalizationIndex);
+        capitalization->setAccessibleName(tr("Tab capitalization"));
+        form->addRow(tr("Capitalization"), capitalization);
+        QDoubleSpinBox* letterSpacing = new QDoubleSpinBox(editor);
+        QDoubleSpinBox* wordSpacing = new QDoubleSpinBox(editor);
+        for (QDoubleSpinBox* spacing : {letterSpacing, wordSpacing}) {
+            spacing->setRange(-20.0, 100.0);
+            spacing->setDecimals(1);
+            spacing->setSingleStep(0.5);
+            spacing->setSuffix(tr(" px"));
+        }
+        letterSpacing->setValue(page->font().letterSpacing());
+        wordSpacing->setValue(page->font().wordSpacing());
+        letterSpacing->setAccessibleName(tr("Tab letter spacing"));
+        wordSpacing->setAccessibleName(tr("Tab word spacing"));
+        form->addRow(tr("Letter spacing"), letterSpacing);
+        form->addRow(tr("Word spacing"), wordSpacing);
+        QLabel* limitation = new QLabel(tr("This target applies to the tab page content, not the tab-bar label. It uses only QFont properties that Qt widgets can render consistently. Line-height, baseline offset, superscript, subscript, variable-font axes, underline variants, and text effects such as outline, shadow, and glow are not represented."), editor);
+        limitation->setWordWrap(true);
+        limitation->setProperty("secondary", true);
+        form->addRow(tr("Not represented"), limitation);
         QPushButton* apply = new QPushButton(tr("Apply"), editor);
         form->addRow(QString(), apply);
-        connect(apply, &QPushButton::clicked, editor, [this, page, font, size, editor, name]() {
+        connect(apply, &QPushButton::clicked, editor, [this, page, font, size, weight, style, underline, strikeOut, overline, capitalization, letterSpacing, wordSpacing, editor, name]() {
             QFont value = font->currentFont();
             value.setPointSize(size->value());
+            value.setWeight(static_cast<QFont::Weight>(weight->currentData().toInt()));
+            value.setStyle(static_cast<QFont::Style>(style->currentData().toInt()));
+            value.setUnderline(underline->isChecked());
+            value.setStrikeOut(strikeOut->isChecked());
+            value.setOverline(overline->isChecked());
+            value.setCapitalization(static_cast<QFont::Capitalization>(capitalization->currentData().toInt()));
+            value.setLetterSpacing(QFont::AbsoluteSpacing, letterSpacing->value());
+            value.setWordSpacing(wordSpacing->value());
             page->setFont(value);
             m_appearanceOverrides.insert(name);
             save();

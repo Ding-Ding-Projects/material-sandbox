@@ -72,12 +72,11 @@ CAppearanceEditorDialog::CAppearanceEditorDialog(const QFont& initialFont, const
     form->addRow(tr("Style"), m_style);
 
     const QList<QPair<QString, int>> underlines = {
-        {tr("None"), 0}, {tr("Single"), 1}, {tr("Dash"), 2}, {tr("Dot"), 3},
-        {tr("Dash-dot"), 4}, {tr("Dash-dot-dot"), 5}, {tr("Wave"), 6}
+        {tr("None"), 0}, {tr("Single"), 1}
     };
     for (const auto& value : underlines) m_underline->addItem(value.first, value.second);
     m_underline->setAccessibleName(tr("Underline style"));
-    form->addRow(tr("Underline"), m_underline);
+    form->addRow(tr("Underline (single line)"), m_underline);
     m_strikeOut->setAccessibleName(tr("Strikeout"));
     m_overline->setAccessibleName(tr("Overline"));
     QHBoxLayout* decorations = new QHBoxLayout();
@@ -115,7 +114,7 @@ CAppearanceEditorDialog::CAppearanceEditorDialog(const QFont& initialFont, const
     m_preview->setAccessibleName(tr("Material appearance live preview"));
     form->addRow(tr("Preview"), m_preview);
 
-    QLabel* unsupported = new QLabel(tr("Not represented by this global native slice: variable-font axes, line-height, baseline offset, superscript, subscript, text effects, and per-element overrides. Line-height, baseline, superscript, and subscript controls are intentionally not fabricated because Qt's application font cannot apply them consistently to every widget. Per-element font overrides are available from a tab's Edit tab appearance action and are persisted for that target."), this);
+    QLabel* unsupported = new QLabel(tr("Not represented by this global native slice: line-height, baseline offset, superscript, subscript, rich underline patterns, text effects, and per-element overrides. Line-height, baseline, superscript, and subscript controls are intentionally not fabricated because Qt's application font cannot apply them consistently to every widget. Qt 6.8 can represent font-specific variable axes, but this global editor does not expose or persist them until they are verified across application widget styles. Per-page font overrides are available from a tab's Edit tab page typography action and are persisted for that target."), this);
     unsupported->setWordWrap(true);
     unsupported->setProperty("secondary", true);
     form->addRow(tr("Unsupported properties"), unsupported);
@@ -212,7 +211,7 @@ int CAppearanceEditorDialog::selectedUnderlineStyle() const
 
 void CAppearanceEditorDialog::setUnderlineStyle(int style)
 {
-    const int index = m_underline->findData(qBound(0, style, 6));
+    const int index = m_underline->findData(qBound(0, style, 1));
     if (index >= 0)
         m_underline->setCurrentIndex(index);
 }
