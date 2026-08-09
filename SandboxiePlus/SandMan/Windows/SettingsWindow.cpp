@@ -398,9 +398,24 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		provenance->setWordWrap(true);
 		provenance->setProperty("secondary", true);
 		presentationForm->addRow(QString(), provenance);
+		auto refreshPresentationProvenance = [provenance, languageMode, emojis]() {
+			const QStringList keys = theConf->ListSettings();
+			auto source = [&keys](const char* key, const QString& value) {
+				return QObject::tr("%1 (%2)").arg(value, keys.contains(QString::fromLatin1(key)) ? QObject::tr("profile value") : QObject::tr("compiled-in value"));
+			};
+			provenance->setText(QObject::tr("Provenance: language %1; English funny level %2; Cantonese funny level %3; emojis %4. A profile value is restored from this profile; a compiled-in value is the shipped setting.")
+				.arg(source("Options/LanguageMode", languageMode->currentText()))
+				.arg(source("Options/FunnyLevelEnglish", QString::number(UserPresentationSettings::funnyEnglish(theConf))))
+				.arg(source("Options/FunnyLevelCantonese", QString::number(UserPresentationSettings::funnyCantonese(theConf))))
+				.arg(source("Options/ShowDialogEmojis", emojis->isChecked() ? QObject::tr("enabled") : QObject::tr("disabled")));
+		};
+		refreshPresentationProvenance();
+		connect(emojis, &QCheckBox::toggled, this, [refreshPresentationProvenance](bool) { refreshPresentationProvenance(); });
+		for (QSlider* slider : presentation->findChildren<QSlider*>())
+			connect(slider, &QSlider::valueChanged, this, [refreshPresentationProvenance](int) { refreshPresentationProvenance(); });
 		uiLayout->addWidget(presentation, 1, 0);
 
-		connect(languageMode, qOverload<int>(&QComboBox::currentIndexChanged), this, [languageMode](int index) {
+		connect(languageMode, qOverload<int>(&QComboBox::currentIndexChanged), this, [languageMode, refreshPresentationProvenance](int index) {
 			const auto mode = index == 1 ? UserPresentationSettings::LanguageMode::Cantonese : index == 2 ? UserPresentationSettings::LanguageMode::Bilingual : UserPresentationSettings::LanguageMode::English;
 			UserPresentationSettings::setLanguageMode(theConf, mode);
 			// Keep the existing translation picker in sync for the two catalog-backed modes.
@@ -409,6 +424,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			else if (index == 0 || index == 2)
 				theConf->SetValue("Options/UiLanguage", "native");
 			theGUI->LoadLanguage();
+			refreshPresentationProvenance();
 		});
 
 		QGroupBox* appearance = new QGroupBox(tr("Material appearance identity"), ui.tabUI);
@@ -439,6 +455,20 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		QLabel* appearanceProvenance = new QLabel(tr("Provenance: Sandboxie-Plus, comfortable density, and #6750A4 are the compiled-in values until this profile writes another choice."), appearance);
 		appearanceProvenance->setWordWrap(true);
 		appearanceForm->addRow(QString(), appearanceProvenance);
+		auto refreshAppearanceProvenance = [appearanceProvenance, appName, density, accent]() {
+			const QStringList keys = theConf->ListSettings();
+			auto source = [&keys](const char* key, const QString& value) {
+				return QObject::tr("%1 (%2)").arg(value, keys.contains(QString::fromLatin1(key)) ? QObject::tr("profile value") : QObject::tr("compiled-in value"));
+			};
+			const bool hasFont = keys.contains(QStringLiteral("UIConfig/UIFontFamily")) || keys.contains(QStringLiteral("UIConfig/UIFont"));
+			QString accentValue = theConf->GetString("UIConfig/AccentSeed", "#6750A4");
+			appearanceProvenance->setText(QObject::tr("Provenance: display name %1; density %2; accent %3; typography %4. A profile value is restored from this profile; a compiled-in value is the shipped setting.")
+				.arg(source("UIConfig/AppDisplayName", appName->text().trimmed().isEmpty() ? QStringLiteral("Sandboxie-Plus") : appName->text().trimmed()))
+				.arg(source("UIConfig/Density", density->currentText()))
+				.arg(source("UIConfig/AccentSeed", accentValue))
+				.arg(hasFont ? QObject::tr("profile value") : QObject::tr("compiled-in value"));
+		};
+		refreshAppearanceProvenance();
 		QPushButton* resetAppearance = new QPushButton(tr("Reset appearance identity"), appearance);
 		resetAppearance->setToolTip(tr("Restores the shipped display name, comfortable density, and Material purple accent."));
 		appearanceForm->addRow(QString(), resetAppearance);
@@ -662,25 +692,28 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		});
 		connect(scheduledRules, &QListWidget::itemDoubleClicked, editSchedule, &QPushButton::click);
 
-		connect(appName, &QLineEdit::editingFinished, this, [appName]() {
+		connect(appName, &QLineEdit::editingFinished, this, [appName, refreshAppearanceProvenance]() {
 			QString value = appName->text().trimmed();
 			if (value.isEmpty()) value = QStringLiteral("Sandboxie-Plus");
 			theConf->SetValue("UIConfig/AppDisplayName", value.left(80));
 			theGUI->OnStatusChanged();
+			refreshAppearanceProvenance();
 		});
-		connect(density, qOverload<int>(&QComboBox::currentIndexChanged), this, [density](int index) {
+		connect(density, qOverload<int>(&QComboBox::currentIndexChanged), this, [density, refreshAppearanceProvenance](int index) {
 			theConf->SetValue("UIConfig/Density", density->itemData(index).toInt());
 			theGUI->UpdateTheme();
+			refreshAppearanceProvenance();
 		});
-		connect(accent, &QPushButton::clicked, this, [this, accent]() {
+		connect(accent, &QPushButton::clicked, this, [this, accent, refreshAppearanceProvenance]() {
 			CColorTranslatorDialog editor(QColor(theConf->GetString("UIConfig/AccentSeed", "#6750A4")), this);
 			if (editor.exec() != QDialog::Accepted) return;
 			const QColor chosen = editor.color();
 			theConf->SetValue("UIConfig/AccentSeed", chosen.name(QColor::HexArgb));
 			accent->setStyleSheet(QStringLiteral("background:%1;").arg(chosen.name(QColor::HexArgb)));
 			theGUI->UpdateTheme();
+			refreshAppearanceProvenance();
 		});
-		connect(editAppearance, &QPushButton::clicked, this, [this, editAppearance]() {
+		connect(editAppearance, &QPushButton::clicked, this, [this, editAppearance, refreshAppearanceProvenance]() {
 			Q_UNUSED(editAppearance);
 			QFont initial = QApplication::font();
 			initial.setUnderline(theConf->GetInt("UIConfig/UIFontUnderline", 0) != 0);
@@ -721,8 +754,9 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			QApplication::setFont(chosen);
 			ui.lblUiFont->setText(chosen.family());
 			theGUI->UpdateTheme();
+			refreshAppearanceProvenance();
 		});
-		connect(resetAppearance, &QPushButton::clicked, this, [appName, density, accent]() {
+		connect(resetAppearance, &QPushButton::clicked, this, [appName, density, accent, refreshAppearanceProvenance]() {
 			theConf->SetValue("UIConfig/AppDisplayName", "Sandboxie-Plus");
 			theConf->SetValue("UIConfig/Density", 1);
 			theConf->SetValue("UIConfig/AccentSeed", "#6750A4");
@@ -733,6 +767,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			accent->setStyleSheet(QStringLiteral("background:#6750A4;"));
 			theGUI->OnStatusChanged();
 			theGUI->UpdateTheme();
+			refreshAppearanceProvenance();
 		});
 		connect(historyButton, &QPushButton::clicked, this, [this]() {
 			if (!theConf->History())
