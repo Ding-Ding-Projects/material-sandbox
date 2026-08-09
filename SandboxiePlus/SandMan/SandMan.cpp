@@ -42,8 +42,10 @@
 #include "Engine/ScriptManager.h"
 #include "AddonManager.h"
 #include "Windows/PopUpWindow.h"
+#include "Windows/DocumentationBrowser.h"
 #include "CustomStyles.h"
 #include "../MiscHelpers/Common/MaterialTheme.h"
+#include "../MiscHelpers/Common/UserPresentationSettings.h"
 #include <QElapsedTimer>
 #include <QScreen>
 
@@ -826,6 +828,46 @@ void CSandMan::CreateHelpMenu(bool bAdvanced)
 		//}
 		m_pContribution = m_pMenuHelp->addAction(CSandMan::GetIcon("Support"), tr("Contribute to Sandboxie-Plus"), this, SLOT(OnHelp()));
 		m_pBoxAssistant = m_pMenuHelp->addAction(CSandMan::GetIcon("FirstAid"), tr("Troubleshooting Wizard"), this, SLOT(OnBoxAssistant()));
+		QAction* commandPalette = m_pMenuHelp->addAction(tr("Command Palette"));
+		commandPalette->setShortcut(QKeySequence(QStringLiteral("Ctrl+Shift+F")));
+		commandPalette->setShortcutContext(Qt::ApplicationShortcut);
+		connect(commandPalette, &QAction::triggered, this, [this]() {
+			QDialog* palette = new QDialog(this);
+			palette->setAttribute(Qt::WA_DeleteOnClose);
+			palette->setWindowTitle(tr("Command Palette"));
+			palette->setMinimumWidth(420);
+			QVBoxLayout* layout = new QVBoxLayout(palette);
+			QLineEdit* query = new QLineEdit(palette);
+			query->setPlaceholderText(tr("Search commands and destinations"));
+			query->setAccessibleName(tr("Command palette search"));
+			QListWidget* results = new QListWidget(palette);
+			struct PaletteCommand { QString label; std::function<void()> run; };
+			const QVector<PaletteCommand> commands = {
+				{ tr("Open Global Settings"), [this]() { OpenSettings(); } },
+				{ tr("Offline Documentation"), [this]() { CDocumentationBrowser* browser = new CDocumentationBrowser(this); browser->setAttribute(Qt::WA_DeleteOnClose); browser->show(); } },
+				{ tr("Check for Updates"), [this]() { CheckForUpdates(); } },
+				{ tr("About Sandboxie-Plus"), [this]() { if (m_pAbout) m_pAbout->trigger(); } }
+			};
+			for (const PaletteCommand& command : commands) results->addItem(command.label);
+			connect(query, &QLineEdit::textChanged, palette, [results](const QString& text) {
+				for (int i = 0; i < results->count(); ++i)
+					results->item(i)->setHidden(!results->item(i)->text().contains(text, Qt::CaseInsensitive));
+			});
+			connect(results, &QListWidget::itemActivated, palette, [palette, results, commands](QListWidgetItem* item) {
+				const int index = results->row(item);
+				if (index >= 0 && index < commands.size()) { commands.at(index).run(); palette->close(); }
+			});
+			layout->addWidget(query);
+			layout->addWidget(results, 1);
+			palette->show();
+			query->setFocus();
+		});
+		QAction* offlineDocs = m_pMenuHelp->addAction(CSandMan::GetIcon("Help"), tr("Offline Documentation"));
+		connect(offlineDocs, &QAction::triggered, this, [this]() {
+			CDocumentationBrowser* browser = new CDocumentationBrowser(this);
+			browser->setAttribute(Qt::WA_DeleteOnClose);
+			browser->show();
+		});
 		m_pManual = m_pMenuHelp->addAction(CSandMan::GetIcon("Help"), tr("Online Documentation"), this, SLOT(OnHelp()));
 		m_pForum = m_pMenuHelp->addAction(CSandMan::GetIcon("Forum"), tr("Visit Support Forum"), this, SLOT(OnHelp()));
 		m_pMenuHelp->addSeparator();
@@ -3571,7 +3613,7 @@ void CSandMan::ShowMessageBox(QWidget* Widget, QMessageBox::Icon Icon, const QSt
 	msgBox.setTextFormat(Qt::RichText);
 	msgBox.setIcon(Icon);
 	msgBox.setWindowTitle("Sandboxie-Plus");
-	msgBox.setText(Message);
+	msgBox.setText(UserPresentationSettings::formatMessage(theConf, Message));
 	msgBox.setStandardButtons(QMessageBox::Ok);
 	msgBox.exec();
 }

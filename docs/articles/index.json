@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "articles": [
+    {"slug":"material-design","path":"../material-design.md","related":["contributor-build"]},
+    {"slug":"contributor-build","path":"../contributor-build.md","related":["material-design"]}
+  ],
+  "changelog": {"path":"../changelog.md","commit":"bd9aea13"}
+}

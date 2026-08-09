@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../mischelpers_global.h"
+#include <QRegularExpression>
 
 class MISCHELPERS_EXPORT CMultiLineEdit: public QPlainTextEdit
 {
@@ -447,6 +448,7 @@ public:
 
 public slots:
 	void OnSearchOption();
+	void OpenSearchBuilder();
 
 	void OnItemClicked(QTreeWidgetItem* pItem, int Column);
 
@@ -470,4 +472,6 @@ private:
 	int m_SearchJ;
 	int m_SearchP;
 	QWidget* m_LastFound;
+	QRegularExpression m_SearchExpression;
+	bool m_SearchRegexEnabled;
 };

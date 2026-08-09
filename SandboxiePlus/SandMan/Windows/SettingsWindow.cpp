@@ -3,6 +3,7 @@
 #include "EditorSettingsWindow.h"
 #include "SandMan.h"
 #include "../MiscHelpers/Common/Settings.h"
+#include "../MiscHelpers/Common/UserPresentationSettings.h"
 #include "../MiscHelpers/Common/Common.h"
 #include "../MiscHelpers/Common/OtherFunctions.h"
 #include "Helpers/WinAdmin.h"
@@ -25,6 +26,7 @@
 #include <QRegularExpression>
 #include <QScreen>
 #include <QSet>
+#include <functional>
 
 
 #include <windows.h>
@@ -203,6 +205,69 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 
 	ui.setupUi(this);
 	this->setWindowTitle(tr("Sandboxie Plus - Global Settings"));
+
+	// Global presentation settings live beside the existing interface controls
+	// so they persist with the profile and are discoverable by the settings
+	// search.  The explanatory text names the real defaults instead of hiding
+	// them behind an opaque "default" label.
+	if (QGridLayout* uiLayout = qobject_cast<QGridLayout*>(ui.tabUI->layout())) {
+		QGroupBox* presentation = new QGroupBox(tr("Language, tone, and message presentation"), ui.tabUI);
+		QFormLayout* presentationForm = new QFormLayout(presentation);
+
+		QComboBox* languageMode = new QComboBox(presentation);
+		languageMode->addItem(tr("English"), "english");
+		languageMode->addItem(tr("Playful Hong Kong Cantonese"), "cantonese");
+		languageMode->addItem(tr("Bilingual (English + Cantonese)"), "bilingual");
+		const UserPresentationSettings::LanguageMode currentMode = UserPresentationSettings::languageMode(theConf);
+		languageMode->setCurrentIndex(currentMode == UserPresentationSettings::LanguageMode::Cantonese ? 1 : currentMode == UserPresentationSettings::LanguageMode::Bilingual ? 2 : 0);
+		languageMode->setToolTip(tr("Controls app-authored copy. Translation catalog selection remains separate. The shipped default is English."));
+		presentationForm->addRow(tr("Language mode"), languageMode);
+
+		auto addFunnyLevel = [&](const QString& label, int value, std::function<void(int)> setter) {
+			QWidget* row = new QWidget(presentation);
+			QHBoxLayout* rowLayout = new QHBoxLayout(row);
+			rowLayout->setContentsMargins(0, 0, 0, 0);
+			QSlider* slider = new QSlider(Qt::Horizontal, row);
+			slider->setRange(1, 5);
+			slider->setValue(value);
+			slider->setAccessibleName(label);
+			QLabel* valueLabel = new QLabel(QString::number(value), row);
+			valueLabel->setMinimumWidth(18);
+			rowLayout->addWidget(slider, 1);
+			rowLayout->addWidget(valueLabel);
+			connect(slider, &QSlider::valueChanged, this, [setter, valueLabel](int level) {
+				setter(level);
+				valueLabel->setText(QString::number(level));
+			});
+			row->setToolTip(tr("Level 1 is fully serious; level 5 adds the most playful voice without changing facts."));
+			presentationForm->addRow(label, row);
+		};
+		addFunnyLevel(tr("English funny level"), UserPresentationSettings::funnyEnglish(theConf), [](int level) { UserPresentationSettings::setFunnyEnglish(theConf, level); });
+		addFunnyLevel(tr("Cantonese funny level"), UserPresentationSettings::funnyCantonese(theConf), [](int level) { UserPresentationSettings::setFunnyCantonese(theConf, level); });
+
+		QCheckBox* emojis = new QCheckBox(tr("Show emojis in dialogs and message boxes"), presentation);
+		emojis->setChecked(UserPresentationSettings::showDialogEmojis(theConf));
+		emojis->setToolTip(tr("Adds relevant decorative emojis to dialog copy; buttons, labels, and accessible names stay factual."));
+		connect(emojis, &QCheckBox::toggled, this, [](bool enabled) { UserPresentationSettings::setShowDialogEmojis(theConf, enabled); });
+		presentationForm->addRow(QString(), emojis);
+
+		QLabel* provenance = new QLabel(tr("Provenance: English, level 1/1, and emojis enabled are the compiled-in values until this profile writes another choice."), presentation);
+		provenance->setWordWrap(true);
+		provenance->setProperty("secondary", true);
+		presentationForm->addRow(QString(), provenance);
+		uiLayout->addWidget(presentation, 1, 0);
+
+		connect(languageMode, qOverload<int>(&QComboBox::currentIndexChanged), this, [languageMode](int index) {
+			const auto mode = index == 1 ? UserPresentationSettings::LanguageMode::Cantonese : index == 2 ? UserPresentationSettings::LanguageMode::Bilingual : UserPresentationSettings::LanguageMode::English;
+			UserPresentationSettings::setLanguageMode(theConf, mode);
+			// Keep the existing translation picker in sync for the two catalog-backed modes.
+			if (index == 1)
+				theConf->SetValue("Options/UiLanguage", "zh_TW");
+			else if (index == 0 || index == 2)
+				theConf->SetValue("Options/UiLanguage", "native");
+			theGUI->LoadLanguage();
+		});
+	}
 
 	if (theConf->GetBool("Options/AltRowColors", false)) {
 		foreach(QTreeWidget* pTree, this->findChildren<QTreeWidget*>()) 

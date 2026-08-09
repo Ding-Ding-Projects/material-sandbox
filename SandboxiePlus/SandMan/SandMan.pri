@@ -38,6 +38,7 @@ HEADERS += ./stdafx.h \
     ./Windows/SelectBoxWindow.h \
     ./Windows/SupportDialog.h \
     ./Windows/TestProxyDialog.h \
+    ./Windows/DocumentationBrowser.h \
     ./OnlineUpdater.h \
     ./Wizards/NewBoxWizard.h \
     ./Wizards/TemplateWizard.h \
@@ -58,6 +59,7 @@ HEADERS += ./stdafx.h \
     ./Engine/WizardObject.h \
     ./CustomStyles.h \
     ../MiscHelpers/Common/MaterialTheme.h \
+    ../MiscHelpers/Common/UserPresentationSettings.h \
     ./AddonManager.h \
     ./BoxTransfer.h
 
@@ -98,6 +100,7 @@ SOURCES += ./main.cpp \
     ./Windows/SelectBoxWindow.cpp \
     ./Windows/SupportDialog.cpp \
     ./Windows/TestProxyDialog.cpp \
+    ./Windows/DocumentationBrowser.cpp \
     ./OnlineUpdater.cpp \
     ./Wizards/NewBoxWizard.cpp \
     ./Wizards/TemplateWizard.cpp \
@@ -116,7 +119,8 @@ SOURCES += ./main.cpp \
     ./Engine/SysObject.cpp \
     ./AddonManager.cpp \
     ./BoxTransfer.cpp \
-    ../MiscHelpers/Common/MaterialTheme.cpp
+    ../MiscHelpers/Common/MaterialTheme.cpp \
+    ../MiscHelpers/Common/UserPresentationSettings.cpp
 
 FORMS += ./Forms/EditorSettingsWindow.ui \
     ./Forms/SelectBoxWindow.ui \

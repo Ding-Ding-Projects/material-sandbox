@@ -244,6 +244,9 @@
         <file>Actions/FakeShield.png</file>
         <file>Actions/Expand.png</file>
         <file>Actions/Quit.png</file>
+        <file alias="Docs/material-design.md">Docs/material-design.md</file>
+        <file alias="Docs/contributor-build.md">Docs/contributor-build.md</file>
+        <file alias="Docs/changelog.md">Docs/changelog.md</file>
     </qresource>
     <qresource prefix="/Boxes">
         <file alias="Busy">Boxes/BusyOverlay.png</file>
