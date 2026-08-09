@@ -283,7 +283,7 @@ void CTabStateManager::showGroupPicker(const QString& tabName, const QPoint& pos
             QListWidgetItem* item = new QListWidgetItem(tr("%1  · %2 tabs").arg(name).arg(members), groups);
             item->setData(Qt::UserRole, name);
             item->setToolTip(tr("Group %1 contains %2 tab(s)").arg(name).arg(members));
-            item->setBackground(QColor::fromHsv(qAbs(qHash(name)) % 360, 35, 245));
+            item->setBackground(QColor::fromHsv(static_cast<int>(qHash(name) % 360u), 35, 245));
         }
         if (groups->count() > 0)
             groups->setCurrentRow(0);
