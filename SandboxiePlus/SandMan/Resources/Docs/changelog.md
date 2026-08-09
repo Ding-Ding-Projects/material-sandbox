@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Contributor update surface
+
+Commit: [d2dc8ddc](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d2dc8ddc78899fe95163d96f3d57e9259e950d60)
+
+- Removed the contributor certificate child tab and retained the updater as a certificate-independent **Updates** surface.
+- Removed Setup Wizard license-choice copy and made legacy support-dialog no-ops explicitly non-blocking.
+
 ## 2026-08-09 · Filtered history exports
 
 Commit: [6a19a278](https://github.com/Ding-Ding-Projects/material-sandbox/commit/6a19a27803a08397908316e6c2d3b8f371268450)
