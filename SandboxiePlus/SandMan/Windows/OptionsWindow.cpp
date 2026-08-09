@@ -1734,6 +1734,60 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		migrateCompatCheck(ui.chkUseElectronDetection);
 	}
 
+	// Advanced Options > Triggers now uses a native M3 event tree and action
+	// buttons while preserving popup menus, template filtering, and handlers.
+	{
+		auto replaceTriggerControl = [](QWidget* oldControl, QWidget* nativeControl, QGridLayout* layout) {
+			if (oldControl && nativeControl && layout) {
+				layout->replaceWidget(oldControl, nativeControl);
+				oldControl->deleteLater();
+			}
+		};
+		auto* nativeTriggerTree = new QTreeWidget(this);
+		nativeTriggerTree->setObjectName(QStringLiteral("treeTriggers"));
+		nativeTriggerTree->setColumnCount(3);
+		nativeTriggerTree->setHeaderLabels(QStringList() << tr("Event") << tr("Action") << QString());
+		nativeTriggerTree->setSortingEnabled(true);
+		nativeTriggerTree->setProperty("m3NativeSurface", true);
+		auto makeTriggerButton = [this](QToolButton* oldControl) {
+			auto* native = new QToolButton(this);
+			native->setObjectName(oldControl->objectName());
+			native->setText(oldControl->text());
+			native->setToolTip(oldControl->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			return native;
+		};
+		auto* nativeAddRun = makeTriggerButton(ui.btnAddAutoRun);
+		auto* nativeAddExec = makeTriggerButton(ui.btnAddAutoExec);
+		auto* nativeAddSvc = makeTriggerButton(ui.btnAddAutoSvc);
+		auto* nativeAddRecovery = makeTriggerButton(ui.btnAddRecoveryCmd);
+		auto* nativeAddDelete = makeTriggerButton(ui.btnAddDeleteCmd);
+		auto* nativeAddTerminate = makeTriggerButton(ui.btnAddTerminateCmd);
+		auto* nativeDelAuto = makeTriggerButton(ui.btnDelAuto);
+		auto* nativeShowTemplates = new QCheckBox(ui.chkShowTriggersTmpl->text(), this);
+		nativeShowTemplates->setObjectName(QStringLiteral("chkShowTriggersTmpl"));
+		nativeShowTemplates->setCheckState(ui.chkShowTriggersTmpl->checkState());
+		nativeShowTemplates->setProperty("m3NativeSurface", true);
+		replaceTriggerControl(ui.treeTriggers, nativeTriggerTree, ui.gridLayout_4);
+		replaceTriggerControl(ui.btnAddAutoRun, nativeAddRun, ui.gridLayout_4);
+		replaceTriggerControl(ui.btnAddAutoExec, nativeAddExec, ui.gridLayout_4);
+		replaceTriggerControl(ui.btnAddAutoSvc, nativeAddSvc, ui.gridLayout_4);
+		replaceTriggerControl(ui.btnAddRecoveryCmd, nativeAddRecovery, ui.gridLayout_4);
+		replaceTriggerControl(ui.btnAddDeleteCmd, nativeAddDelete, ui.gridLayout_4);
+		replaceTriggerControl(ui.btnAddTerminateCmd, nativeAddTerminate, ui.gridLayout_4);
+		replaceTriggerControl(ui.btnDelAuto, nativeDelAuto, ui.gridLayout_4);
+		replaceTriggerControl(ui.chkShowTriggersTmpl, nativeShowTemplates, ui.gridLayout_4);
+		ui.treeTriggers = nativeTriggerTree;
+		ui.btnAddAutoRun = nativeAddRun;
+		ui.btnAddAutoExec = nativeAddExec;
+		ui.btnAddAutoSvc = nativeAddSvc;
+		ui.btnAddRecoveryCmd = nativeAddRecovery;
+		ui.btnAddDeleteCmd = nativeAddDelete;
+		ui.btnAddTerminateCmd = nativeAddTerminate;
+		ui.btnDelAuto = nativeDelAuto;
+		ui.chkShowTriggersTmpl = nativeShowTemplates;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
