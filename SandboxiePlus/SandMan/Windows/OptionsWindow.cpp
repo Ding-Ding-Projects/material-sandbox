@@ -1965,6 +1965,35 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		migrateStopCheck(ui.chkLingerLeniency);
 	}
 
+	// Leader Programs keeps its model/tree intact while replacing the
+	// Designer action controls with native M3 controls and the same handlers.
+	{
+		auto migrateLeaderButton = [&](QPushButton*& control) {
+			auto* native = new QPushButton(control->text(), this);
+			native->setObjectName(control->objectName());
+			native->setEnabled(control->isEnabled());
+			native->setToolTip(control->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			ui.gridLayout_58->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		auto migrateLeaderCheck = [&](QCheckBox*& control) {
+			auto* native = new QCheckBox(control->text(), this);
+			native->setObjectName(control->objectName());
+			native->setCheckState(control->checkState());
+			native->setEnabled(control->isEnabled());
+			native->setToolTip(control->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			ui.gridLayout_58->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		migrateLeaderButton(ui.btnAddLeader);
+		migrateLeaderButton(ui.btnDelLeader);
+		migrateLeaderCheck(ui.chkShowLeaderTmpl);
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
