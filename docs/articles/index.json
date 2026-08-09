@@ -10,7 +10,8 @@
     {"slug":"school-mode","path":"../features/school-mode.md","related":["material-design","notifications"]},
     {"slug":"dim-sum-surprise","path":"../features/dim-sum-surprise.md","related":["notifications","material-design","school-mode"]},
     {"slug":"scheduled-settings","path":"../features/scheduled-settings.md","related":["material-design","school-mode","settings-history"]},
-    {"slug":"tab-discovery","path":"../features/tab-discovery.md","related":["appearance-editor","settings-history","scheduled-settings"]}
+    {"slug":"tab-discovery","path":"../features/tab-discovery.md","related":["appearance-editor","settings-history","scheduled-settings"]},
+    {"slug":"command-palette","path":"../features/command-palette.md","related":["material-design","scheduled-settings","settings-history"]}
   ],
   "changelog": {"path":"../changelog.md","commit":"6a19a278"}
 }

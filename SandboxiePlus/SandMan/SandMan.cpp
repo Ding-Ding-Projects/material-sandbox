@@ -50,6 +50,8 @@
 #include "../MiscHelpers/Common/UserPresentationSettings.h"
 #include <QElapsedTimer>
 #include <QScreen>
+#include <QRegularExpression>
+#include <QSignalBlocker>
 
 CSbiePlusAPI* theAPI = NULL;
 
@@ -846,32 +848,133 @@ void CSandMan::CreateHelpMenu(bool bAdvanced)
 			QDialog* palette = new QDialog(this);
 			palette->setAttribute(Qt::WA_DeleteOnClose);
 			palette->setWindowTitle(tr("Command Palette"));
-			palette->setMinimumWidth(420);
+			const int savedSizeMode = qBound(0, theConf->GetInt("UIConfig/CommandPaletteSizeMode", 0), 1);
+			palette->setProperty("paletteSizeMode", savedSizeMode);
+			palette->resize(savedSizeMode ? QSize(760, 560) : QSize(460, 360));
 			QVBoxLayout* layout = new QVBoxLayout(palette);
+			QHBoxLayout* searchRow = new QHBoxLayout();
 			QLineEdit* query = new QLineEdit(palette);
 			query->setPlaceholderText(tr("Search commands and destinations"));
 			query->setAccessibleName(tr("Command palette search"));
+			QToolButton* regex = new QToolButton(palette);
+			regex->setText(tr("Regex…"));
+			regex->setToolTip(tr("Open the anchored regex builder for this palette"));
+			regex->setAccessibleName(tr("Command palette regex builder"));
+			QComboBox* sizeMode = new QComboBox(palette);
+			sizeMode->addItem(tr("Card"));
+			sizeMode->addItem(tr("Full window"));
+			sizeMode->setAccessibleName(tr("Command palette size"));
+			sizeMode->setCurrentIndex(savedSizeMode);
+			searchRow->addWidget(query, 1);
+			searchRow->addWidget(regex);
+			searchRow->addWidget(sizeMode);
 			QListWidget* results = new QListWidget(palette);
-			struct PaletteCommand { QString label; std::function<void()> run; };
+			results->setAccessibleName(tr("Command palette results"));
+			results->setSelectionMode(QAbstractItemView::SingleSelection);
+			struct PaletteCommand { QString label; QString keywords; std::function<void()> run; };
 			const QVector<PaletteCommand> commands = {
-				{ tr("Open Global Settings"), [this]() { OpenSettings(); } },
-				{ tr("Offline Documentation"), [this]() { CDocumentationBrowser* browser = new CDocumentationBrowser(this); browser->setAttribute(Qt::WA_DeleteOnClose); browser->show(); } },
-				{ tr("Check for Updates"), [this]() { CheckForUpdates(); } },
-				{ tr("About Sandboxie-Plus"), [this]() { if (m_pAbout) m_pAbout->trigger(); } }
+				{ tr("Open Global Settings"), tr("settings preferences configuration"), [this]() { OpenSettings(); } },
+				{ tr("General Settings"), tr("settings general sandbox"), [this]() { OpenSettings("General"); } },
+				{ tr("Appearance and Presentation Settings"), tr("settings appearance material theme language density"), [this]() { OpenSettings("UI"); } },
+				{ tr("Scheduled Settings"), tr("settings schedule appearance language"), [this]() { OpenSettings("UI"); } },
+				{ tr("Compatibility Settings"), tr("settings compatibility app compat"), [this]() { OpenSettings("Compat"); } },
+				{ tr("Offline Documentation"), tr("help docs articles changelog"), [this]() { CDocumentationBrowser* browser = new CDocumentationBrowser(this); browser->setAttribute(Qt::WA_DeleteOnClose); browser->show(); } },
+				{ tr("Check for Updates"), tr("update updater release"), [this]() { CheckForUpdates(); } },
+				{ tr("About Sandboxie-Plus"), tr("about version contributor"), [this]() { if (m_pAbout) m_pAbout->trigger(); } }
 			};
-			for (const PaletteCommand& command : commands) results->addItem(command.label);
-			connect(query, &QLineEdit::textChanged, palette, [results](const QString& text) {
-				for (int i = 0; i < results->count(); ++i)
-					results->item(i)->setHidden(!results->item(i)->text().contains(text, Qt::CaseInsensitive));
+			for (int i = 0; i < commands.size(); ++i) {
+				QListWidgetItem* item = new QListWidgetItem(commands.at(i).label, results);
+				item->setData(Qt::UserRole, i);
+				item->setToolTip(commands.at(i).keywords);
+			}
+			palette->setProperty("paletteRegexEnabled", false);
+			palette->setProperty("paletteRegexPattern", QString());
+			palette->setProperty("paletteRegexCaseInsensitive", true);
+			std::function<void()> updateResults;
+			updateResults = [palette, query, results, commands]() {
+				const QString text = query->text().left(512);
+				const bool regexEnabled = palette->property("paletteRegexEnabled").toBool();
+				const QString pattern = regexEnabled ? palette->property("paletteRegexPattern").toString() : text;
+				const auto options = palette->property("paletteRegexCaseInsensitive").toBool()
+					? QRegularExpression::CaseInsensitiveOption : QRegularExpression::NoPatternOption;
+				const QRegularExpression expression(pattern, options);
+				const bool valid = !regexEnabled || pattern.isEmpty() || expression.isValid();
+				for (int i = 0; i < results->count(); ++i) {
+					QListWidgetItem* item = results->item(i);
+					const int index = item->data(Qt::UserRole).toInt();
+					const QString haystack = item->text() + QStringLiteral(" ") + commands.at(index).keywords;
+					const bool match = pattern.isEmpty() || (regexEnabled ? (valid && expression.match(haystack).hasMatch()) : haystack.contains(pattern, Qt::CaseInsensitive));
+					item->setHidden(!match);
+				}
+				int firstVisible = -1;
+				for (int i = 0; i < results->count(); ++i) {
+					if (!results->item(i)->isHidden()) { firstVisible = i; break; }
+				}
+				results->setCurrentRow(firstVisible);
+			};
+			connect(query, &QLineEdit::textChanged, palette, [palette, updateResults](const QString& text) {
+				if (palette->property("paletteRegexEnabled").toBool())
+					palette->setProperty("paletteRegexPattern", text.left(512));
+				updateResults();
 			});
-			connect(results, &QListWidget::itemActivated, palette, [palette, results, commands](QListWidgetItem* item) {
-				const int index = results->row(item);
+			connect(query, &QLineEdit::returnPressed, palette, [results]() {
+				if (QListWidgetItem* item = results->currentItem())
+					emit results->itemActivated(item);
+			});
+			connect(results, &QListWidget::itemActivated, palette, [palette, commands](QListWidgetItem* item) {
+				const int index = item ? item->data(Qt::UserRole).toInt() : -1;
 				if (index >= 0 && index < commands.size()) { commands.at(index).run(); palette->close(); }
 			});
-			layout->addWidget(query);
+			connect(sizeMode, qOverload<int>(&QComboBox::currentIndexChanged), palette, [palette](int mode) {
+				theConf->SetValue("UIConfig/CommandPaletteSizeMode", mode);
+				palette->setProperty("paletteSizeMode", mode);
+				palette->resize(mode ? QSize(760, 560) : QSize(460, 360));
+			});
+			connect(regex, &QToolButton::clicked, palette, [palette, query, regex, updateResults]() {
+				QDialog* builder = new QDialog(palette, Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+				builder->setAttribute(Qt::WA_DeleteOnClose);
+				builder->setWindowTitle(QObject::tr("Command palette regex builder"));
+				QVBoxLayout* builderLayout = new QVBoxLayout(builder);
+				QLineEdit* pattern = new QLineEdit(builder);
+				pattern->setAccessibleName(QObject::tr("Regex pattern"));
+				pattern->setText(palette->property("paletteRegexEnabled").toBool() ? palette->property("paletteRegexPattern").toString() : query->text());
+				QCheckBox* insensitive = new QCheckBox(QObject::tr("Case insensitive"), builder);
+				insensitive->setChecked(palette->property("paletteRegexCaseInsensitive").toBool());
+				QLabel* help = new QLabel(QObject::tr("Qt QRegularExpression; plain text remains the default."), builder);
+				help->setWordWrap(true);
+				QPushButton* apply = new QPushButton(QObject::tr("Apply"), builder);
+				builderLayout->addWidget(new QLabel(QObject::tr("Pattern"), builder));
+				builderLayout->addWidget(pattern);
+				builderLayout->addWidget(insensitive);
+				builderLayout->addWidget(help);
+				builderLayout->addWidget(apply);
+				connect(apply, &QPushButton::clicked, builder, [builder, palette, query, pattern, insensitive, updateResults]() {
+					const QString candidate = pattern->text().left(512);
+					const auto options = insensitive->isChecked() ? QRegularExpression::CaseInsensitiveOption : QRegularExpression::NoPatternOption;
+					const QRegularExpression expression(candidate, options);
+					if (!candidate.isEmpty() && !expression.isValid()) {
+						pattern->setToolTip(QObject::tr("Invalid regular expression: %1").arg(expression.errorString()));
+						pattern->setFocus();
+						return;
+					}
+					palette->setProperty("paletteRegexEnabled", !candidate.isEmpty());
+					palette->setProperty("paletteRegexPattern", candidate);
+					palette->setProperty("paletteRegexCaseInsensitive", insensitive->isChecked());
+					{
+						QSignalBlocker blocker(query);
+						query->setText(candidate);
+					}
+					updateResults();
+					builder->close();
+				});
+				builder->move(regex->mapToGlobal(QPoint(0, regex->height())));
+				builder->show();
+			});
+			layout->addLayout(searchRow);
 			layout->addWidget(results, 1);
 			palette->show();
 			query->setFocus();
+			updateResults();
 		});
 		QAction* offlineDocs = m_pMenuHelp->addAction(CSandMan::GetIcon("Help"), tr("Offline Documentation"));
 		connect(offlineDocs, &QAction::triggered, this, [this]() {
