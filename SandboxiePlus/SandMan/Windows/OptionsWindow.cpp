@@ -1475,6 +1475,57 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.btnCfgUpdate = nativeCfgUpdate;
 	}
 
+	// App Templates > Templates now uses native M3 filters, tree, and actions;
+	// the existing popup menu and template model continue to bind to these
+	// object names after replacement.
+	{
+		auto replaceTemplateControl = [](QWidget* oldControl, QWidget* nativeControl, QGridLayout* layout) {
+			if (oldControl && nativeControl && layout) {
+				layout->replaceWidget(oldControl, nativeControl);
+				oldControl->deleteLater();
+			}
+		};
+		auto* nativeCategories = new QComboBox(this);
+		nativeCategories->setObjectName(QStringLiteral("cmbCategories"));
+		nativeCategories->setProperty("m3NativeSurface", true);
+		for (int i = 0; i < ui.cmbCategories->count(); ++i)
+			nativeCategories->addItem(ui.cmbCategories->itemText(i), ui.cmbCategories->itemData(i));
+		nativeCategories->setCurrentIndex(ui.cmbCategories->currentIndex());
+		auto* nativeTemplateFilter = new QLineEdit(this);
+		nativeTemplateFilter->setObjectName(QStringLiteral("txtTemplates"));
+		nativeTemplateFilter->setText(ui.txtTemplates->text());
+		nativeTemplateFilter->setProperty("m3NativeSurface", true);
+		auto* nativeTemplateTree = new QTreeWidget(this);
+		nativeTemplateTree->setObjectName(QStringLiteral("treeTemplates"));
+		nativeTemplateTree->setColumnCount(2);
+		nativeTemplateTree->setHeaderLabels(QStringList() << tr("Category") << tr("Name"));
+		nativeTemplateTree->setSelectionMode(QAbstractItemView::ExtendedSelection);
+		nativeTemplateTree->setSortingEnabled(true);
+		nativeTemplateTree->setProperty("m3NativeSurface", true);
+		auto makeTemplateButton = [this](QToolButton* oldControl) {
+			auto* native = new QToolButton(this);
+			native->setObjectName(oldControl->objectName());
+			native->setText(oldControl->text());
+			native->setProperty("m3NativeSurface", true);
+			return native;
+		};
+		auto* nativeAddTemplate = makeTemplateButton(ui.btnAddTemplate);
+		auto* nativeOpenTemplate = makeTemplateButton(ui.btnOpenTemplate);
+		auto* nativeDelTemplate = makeTemplateButton(ui.btnDelTemplate);
+		replaceTemplateControl(ui.cmbCategories, nativeCategories, ui.gridLayout_3);
+		replaceTemplateControl(ui.txtTemplates, nativeTemplateFilter, ui.gridLayout_3);
+		replaceTemplateControl(ui.treeTemplates, nativeTemplateTree, ui.gridLayout_3);
+		replaceTemplateControl(ui.btnAddTemplate, nativeAddTemplate, ui.gridLayout_3);
+		replaceTemplateControl(ui.btnOpenTemplate, nativeOpenTemplate, ui.gridLayout_3);
+		replaceTemplateControl(ui.btnDelTemplate, nativeDelTemplate, ui.gridLayout_3);
+		ui.cmbCategories = nativeCategories;
+		ui.txtTemplates = nativeTemplateFilter;
+		ui.treeTemplates = nativeTemplateTree;
+		ui.btnAddTemplate = nativeAddTemplate;
+		ui.btnOpenTemplate = nativeOpenTemplate;
+		ui.btnDelTemplate = nativeDelTemplate;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
