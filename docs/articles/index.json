@@ -4,7 +4,8 @@
     {"slug":"material-design","path":"../material-design.md","related":["contributor-build"]},
     {"slug":"appearance-editor","path":"../features/appearance-editor.md","related":["material-design","color-translator","settings-history"]},
     {"slug":"settings-provenance","path":"../features/settings-provenance.md","related":["appearance-editor","settings-history","scheduled-settings"]},
-    {"slug":"contributor-build","path":"../contributor-build.md","related":["material-design"]},
+    {"slug":"contributor-build","path":"../contributor-build.md","related":["contributor-build-audit","material-design"]},
+    {"slug":"contributor-build-audit","path":"../features/contributor-build-audit.md","related":["contributor-build","native-ci-evidence","material-design"]},
     {"slug":"settings-history","path":"../features/settings-history.md","related":["material-design","contributor-build"]},
     {"slug":"notifications","path":"../features/notifications.md","related":["settings-history","material-design"]},
     {"slug":"color-translator","path":"../features/color-translator.md","related":["material-design","settings-history"]},
@@ -23,7 +24,7 @@
     ,{"slug":"pages-language-tone","path":"../features/pages-language-tone.md","related":["material-design","school-mode","notifications"]}
     ,{"slug":"pages-a11y-boundary","path":"../features/pages-a11y-boundary.md","related":["material-design","tab-discovery","command-palette"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"9f6c3051cc9d0e899f4807c63420aad0e738b090"}
+  "changelog": {"path":"../changelog.md","commit":"bc61226eea96eece1645e3338866763f40bbfc00"}
 }
 
 

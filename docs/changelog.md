@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-09 · Interactive Material 3 GitHub Pages documentation
+
+Commit: [bc61226eea96eece1645e3338866763f40bbfc00](https://github.com/Ding-Ding-Projects/material-sandbox/commit/bc61226eea96eece1645e3338866763f40bbfc00)
+
+- Rebuilt the landing page with local-only Material 3 roles, four-edge accessible tabs, persisted language/tone/appearance preferences, three isolated regex builders, exact-target command discovery, and independent persistent notifications.
+- Added bounded worker evaluation, contrast-safe accent derivation, storage migration, source-revision stamping, and executable interaction, accessibility, mutation, and link-safety regressions.
+- Rendered the canonical 22 feature articles plus changelog and image documentation into the same interactive shell, with exact bidirectional landing/output coverage and no raw Markdown routes.
+- Switched repository Pages publication to the workflow-only path so the stamped artifact is the sole deployment source.
+
 ## 2026-08-09 · Native Network Options tab host
 
 Commit: [9f6c3051cc9d0e899f4807c63420aad0e738b090](https://github.com/Ding-Ding-Projects/material-sandbox/commit/9f6c3051cc9d0e899f4807c63420aad0e738b090)
@@ -706,7 +715,7 @@ Commit: [693e09d16f8d1f86a2ecc144eb050a657131ea76](https://github.com/Ding-Ding-
 - Tab navigation now exposes explicit horizontal semantics, roving focus, Home/End movement, and semantically hidden inactive panels.
 - The command palette now exposes its open state, traps focus, locks background scrolling, and restores focus after close.
 
-## 2026-08-09 · Complete GitHub Pages feature inventory
+## 2026-08-09 · Documented GitHub Pages feature inventory
 
 Commit: [c84586d554191d4d7a0bcfc402215375e915665c](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c84586d554191d4d7a0bcfc402215375e915665c)
 

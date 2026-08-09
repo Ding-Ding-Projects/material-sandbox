@@ -10,6 +10,10 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -24,6 +28,12 @@ jobs:
           node scripts/validate-ci-concurrency.mjs
           node scripts/validate-ci-artifacts.mjs --help
           node scripts/validate-pages-material.mjs
+          node scripts/validate-pages-material.mjs --self-test
+          pwsh -NoProfile -File scripts/validate-pages-a11y.ps1
+          pwsh -NoProfile -File scripts/validate-pages-a11y.ps1 -SelfTest
+          node --test scripts/test-pages-stamp.mjs
+          node --test scripts/test-pages-interactions.mjs
+          node --test scripts/test-pages-article-renderer.mjs
           node scripts/validate-m3-shell.mjs
           node scripts/validate-docs.mjs
           node scripts/validate-settings-history.mjs
@@ -39,9 +49,15 @@ jobs:
           node scripts/validate-school-mode.mjs
           node scripts/validate-contributor-build.mjs
           node scripts/validate-destructive-confirmation.mjs
+      - name: Stamp exact deployed revision
+        shell: bash
+        run: node scripts/stamp-pages-revision.mjs docs .pages-site "$GITHUB_SHA"
+      - name: Build local rendered documentation articles
+        shell: bash
+        run: node scripts/build-pages-articles.mjs docs .pages-site "$GITHUB_SHA"
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: .pages-site
   deploy:
     needs: build
     runs-on: ubuntu-24.04
