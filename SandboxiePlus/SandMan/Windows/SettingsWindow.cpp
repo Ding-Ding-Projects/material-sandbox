@@ -316,7 +316,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			theConf->SetValue("UIConfig/Density", density->itemData(index).toInt());
 			theGUI->UpdateTheme();
 		});
-		connect(accent, &QPushButton::clicked, this, [accent]() {
+		connect(accent, &QPushButton::clicked, this, [this, accent]() {
 			const QColor chosen = QColorDialog::getColor(QColor(theConf->GetString("UIConfig/AccentSeed", "#6750A4")), this, tr("Choose Material accent seed"), QColorDialog::ShowAlphaChannel);
 			if (!chosen.isValid()) return;
 			theConf->SetValue("UIConfig/AccentSeed", chosen.name(QColor::HexArgb));
