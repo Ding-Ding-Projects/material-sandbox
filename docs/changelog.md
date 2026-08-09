@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Complete SandMan contributor build matrix
+
+Commit: [d715832683ed0ee3cc3de3fd653b84f38c78029f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d715832683ed0ee3cc3de3fd653b84f38c78029f)
+
+- Enabled `SANDBOXIE_CONTRIBUTOR_BUILD` in the previously uncovered Debug/Release x64 and ARM64 SandMan Visual Studio configurations while preserving inherited definitions.
+- Added a validator that inventories all six supported SandMan MSVC configurations and also checks the Qt 5 and Qt 6 project definitions.
+
 ## 2026-08-09 · Native Settings GUI labels
 
 Commit: [c1bed0471a7ff2034d4b9241038ad24d045f0e82](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c1bed0471a7ff2034d4b9241038ad24d045f0e82)
