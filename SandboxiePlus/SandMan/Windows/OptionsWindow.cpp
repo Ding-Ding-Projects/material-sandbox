@@ -2135,6 +2135,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		};
 		migrateGuidanceLabel(ui.gridLayout_14, "label_2");
 		migrateGuidanceLabel(ui.gridLayout_58, "label_71");
+		migrateGuidanceLabel(ui.gridLayout_23, "label_4");
 	}
 
 	ui.tabsOther->setCurrentIndex(0);
