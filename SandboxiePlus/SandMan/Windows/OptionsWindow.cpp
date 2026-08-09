@@ -1346,6 +1346,42 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.chkHostProtectMsg = nativeHostProtectMsg;
 	}
 
+	// Advanced Options > Miscellaneous now owns native M3 controls for its
+	// per-process option model, while retaining the generated grid as a
+	// temporary seam for the existing event and template logic.
+	{
+		auto replaceOptionControl = [](QWidget* oldControl, QWidget* nativeControl, QGridLayout* layout) {
+			if (oldControl && nativeControl && layout) {
+				layout->replaceWidget(oldControl, nativeControl);
+				oldControl->deleteLater();
+			}
+		};
+		auto* nativeOptionsTree = new QTreeWidget(this);
+		nativeOptionsTree->setObjectName(QStringLiteral("treeOptions"));
+		nativeOptionsTree->setColumnCount(3);
+		nativeOptionsTree->setHeaderLabels(QStringList() << tr("Option") << tr("Program") << tr("Value"));
+		nativeOptionsTree->setSortingEnabled(true);
+		nativeOptionsTree->setProperty("m3NativeSurface", true);
+		auto* nativeAddOption = new QToolButton(this);
+		nativeAddOption->setObjectName(QStringLiteral("btnAddOption"));
+		nativeAddOption->setText(tr("Add Option"));
+		nativeAddOption->setProperty("m3NativeSurface", true);
+		auto* nativeDelOption = new QPushButton(tr("Remove"), this);
+		nativeDelOption->setObjectName(QStringLiteral("btnDelOption"));
+		nativeDelOption->setProperty("m3NativeSurface", true);
+		auto* nativeShowOptions = new QCheckBox(tr("Show Templates"), this);
+		nativeShowOptions->setObjectName(QStringLiteral("chkShowOptionsTmpl"));
+		nativeShowOptions->setProperty("m3NativeSurface", true);
+		replaceOptionControl(ui.treeOptions, nativeOptionsTree, ui.gridLayout_60);
+		replaceOptionControl(ui.btnAddOption, nativeAddOption, ui.gridLayout_60);
+		replaceOptionControl(ui.btnDelOption, nativeDelOption, ui.gridLayout_60);
+		replaceOptionControl(ui.chkShowOptionsTmpl, nativeShowOptions, ui.gridLayout_60);
+		ui.treeOptions = nativeOptionsTree;
+		ui.btnAddOption = nativeAddOption;
+		ui.btnDelOption = nativeDelOption;
+		ui.chkShowOptionsTmpl = nativeShowOptions;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
