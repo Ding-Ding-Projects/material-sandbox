@@ -4,7 +4,7 @@ The **Remove Sandbox** command now uses a native Material-styled super-confirmat
 
 While the slider moves, a bounded progress bar reports the exact percentage. Completing the range shows a separate completion state and a short opacity animation. When `UIConfig/ReducedMotion` is enabled, the same states are shown without animation. Focus returns to the control that opened the gate after either cancellation or authorization.
 
-The existing sandbox-level `NeverRemove` protection, unmount handling, and status checks remain in the removal path after the gate. This lane intentionally wires only **Remove Sandbox**; cleanup, recovery-file deletion, snapshot deletion, and other destructive commands retain their existing safeguards until each flow receives an equivalent review.
+The existing sandbox-level `NeverRemove` protection, unmount handling, and status checks remain in the removal path after the gate. The aggregate **Cleanup** toolbar action now uses the same gate and names the message, trace, recovery, and process entries it will clear. Individual log actions remain unchanged and retain their existing safeguards until each flow receives an equivalent review.
 
 The gate is local-only and does not store keys, slider values, credentials, or telemetry. It is a decision prompt, so it is modal; progress and completion are kept inside that prompt rather than emitted as a nagging notification.
 

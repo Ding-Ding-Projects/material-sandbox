@@ -19,9 +19,10 @@ class CDestructiveConfirmationDialog : public QDialog
 
 public:
 	static bool Confirm(QWidget* parent, const QStringList& sandboxNames);
+	static bool ConfirmAction(QWidget* parent, const QString& action, const QStringList& affectedItems);
 
 private:
-	explicit CDestructiveConfirmationDialog(QWidget* parent, const QStringList& sandboxNames);
+	explicit CDestructiveConfirmationDialog(QWidget* parent, const QString& action, const QStringList& affectedItems);
 	void keyPressEvent(QKeyEvent* event) override;
 
 	void UpdateAuthorizationState();
