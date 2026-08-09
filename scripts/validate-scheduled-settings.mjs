@@ -2,6 +2,7 @@ import fs from 'node:fs';
 
 const header = fs.readFileSync('SandboxiePlus/MiscHelpers/Common/ScheduledSettings.h', 'utf8');
 const source = fs.readFileSync('SandboxiePlus/MiscHelpers/Common/ScheduledSettings.cpp', 'utf8');
+const settingsWindow = fs.readFileSync('SandboxiePlus/SandMan/Windows/SettingsWindow.cpp', 'utf8');
 const required = [
   'schemaVersion', 'startDate', 'endDate', 'startTime', 'endTime', 'weekdays',
   'priority', 'effectiveRule', 'schoolModeEnabled', 'UIConfig/ScheduledRules',
@@ -16,4 +17,8 @@ if (!source.includes('candidate.priority > best.priority') || !source.includes('
 if (!source.includes('crossesMidnight')) throw new Error('scheduled-settings-contract missing cross-midnight semantics');
 if (!source.includes('!UserPresentationSettings::schoolModeEnabled')) throw new Error('scheduled-settings-contract missing School mode precedence');
 if (!source.includes('Options/UseDarkTheme')) throw new Error('scheduled-settings-contract missing real theme persistence');
-console.log(`scheduled-settings-contract checks=${required.length + 3}`);
+for (const control of ['addSchedule', 'editSchedule', 'deleteSchedule']) {
+  const pattern = new RegExp(`connect\\(${control}[^\\n]+\\[this,`);
+  if (!pattern.test(settingsWindow)) throw new Error(`scheduled-settings-contract missing safe ${control} callback capture`);
+}
+console.log(`scheduled-settings-contract checks=${required.length + 6}`);

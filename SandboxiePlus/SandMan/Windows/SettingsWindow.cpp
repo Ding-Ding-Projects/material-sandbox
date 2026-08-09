@@ -618,7 +618,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			}
 		};
 		refreshScheduledRules();
-		connect(addSchedule, &QPushButton::clicked, this, [editScheduledRule, refreshScheduledRules]() mutable {
+		connect(addSchedule, &QPushButton::clicked, this, [this, editScheduledRule, refreshScheduledRules]() mutable {
 			bool accepted = false;
 			ScheduledSettings::Rule rule = editScheduledRule(ScheduledSettings::Rule(), &accepted);
 			if (!accepted) return;
@@ -628,7 +628,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			if (ScheduledSettings::save(theConf, rules, &error)) { ScheduledSettings::apply(theConf); refreshScheduledRules(); theGUI->LoadLanguage(); theGUI->UpdateTheme(); }
 			else QMessageBox::warning(this, "Sandboxie-Plus", error);
 		});
-		connect(editSchedule, &QPushButton::clicked, this, [scheduledRules, editScheduledRule, refreshScheduledRules]() mutable {
+		connect(editSchedule, &QPushButton::clicked, this, [this, scheduledRules, editScheduledRule, refreshScheduledRules]() mutable {
 			QListWidgetItem* item = scheduledRules->currentItem();
 			if (!item) return;
 			QList<ScheduledSettings::Rule> rules = ScheduledSettings::load(theConf);
@@ -641,7 +641,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			if (ScheduledSettings::save(theConf, rules, &error)) { ScheduledSettings::apply(theConf); refreshScheduledRules(); theGUI->LoadLanguage(); theGUI->UpdateTheme(); }
 			else QMessageBox::warning(this, "Sandboxie-Plus", error);
 		});
-		connect(deleteSchedule, &QPushButton::clicked, this, [scheduledRules, refreshScheduledRules]() mutable {
+		connect(deleteSchedule, &QPushButton::clicked, this, [this, scheduledRules, refreshScheduledRules]() mutable {
 			QListWidgetItem* item = scheduledRules->currentItem();
 			if (!item) return;
 			QList<ScheduledSettings::Rule> rules = ScheduledSettings::load(theConf);
