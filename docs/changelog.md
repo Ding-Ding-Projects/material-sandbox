@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options app template controls
+
+Commit: [07d07026314bfcb35c8a143f0b191868239f8d0f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/07d07026314bfcb35c8a143f0b191868239f8d0f)
+
+- Rebuilt App Templates category/text filters, template tree, and actions with native Material 3 controls.
+- Preserved extended selection, popup menus, filtering, and template persistence.
+
 ## 2026-08-09 · Native Options config dump controls
 
 Commit: [1534b9ab507ce95e82d96d81e0c63d09b62f9bd2](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1534b9ab507ce95e82d96d81e0c63d09b62f9bd2)

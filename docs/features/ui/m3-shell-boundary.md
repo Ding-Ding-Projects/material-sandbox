@@ -64,6 +64,11 @@ action while retaining its dynamically supplied configuration tree and exact
 dump semantics. The tree remains a data view; only its surrounding controls
 are part of this bounded migration slice.
 
+App Templates > Templates now uses native M3 category/text filters, template
+tree, and actions. Extended selection, popup menus, filtering, and template
+persistence continue through the same object names and handlers while the
+generated grid remains an explicit migration seam.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
