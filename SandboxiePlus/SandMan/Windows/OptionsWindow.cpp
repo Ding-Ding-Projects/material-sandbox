@@ -1608,6 +1608,62 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.txtIniSection = nativeIniText;
 	}
 
+	// Advanced Options > Processes now uses native M3 process-hiding controls
+	// while keeping the existing process model, templates, and persistence.
+	{
+		auto replaceProcessControl = [](QWidget* oldControl, QWidget* nativeControl, QGridLayout* layout) {
+			if (oldControl && nativeControl && layout) {
+				layout->replaceWidget(oldControl, nativeControl);
+				oldControl->deleteLater();
+			}
+		};
+		auto makeProcessCheck = [this](QCheckBox* oldControl) {
+			auto* native = new QCheckBox(oldControl->text(), this);
+			native->setObjectName(oldControl->objectName());
+			native->setCheckState(oldControl->checkState());
+			native->setToolTip(oldControl->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			return native;
+		};
+		auto makeProcessButton = [this](QPushButton* oldControl) {
+			auto* native = new QPushButton(oldControl->text(), this);
+			native->setObjectName(oldControl->objectName());
+			native->setEnabled(oldControl->isEnabled());
+			native->setProperty("m3NativeSurface", true);
+			return native;
+		};
+		auto* nativeHideOther = makeProcessCheck(ui.chkHideOtherBoxes);
+		auto* nativeHideNonSystem = makeProcessCheck(ui.chkHideNonSystemProcesses);
+		auto* nativeShowTemplates = makeProcessCheck(ui.chkShowHiddenProcTmpl);
+		auto* nativeBlockWmi = makeProcessCheck(ui.chkBlockWMI);
+		auto* nativeHideHost = makeProcessCheck(ui.chkHideHostApps);
+		auto* nativeProcessTree = new QTreeWidget(this);
+		nativeProcessTree->setObjectName(QStringLiteral("treeHideProc"));
+		nativeProcessTree->setColumnCount(2);
+		nativeProcessTree->setHeaderLabels(QStringList() << tr("Process") << QString());
+		nativeProcessTree->setSortingEnabled(true);
+		nativeProcessTree->setMinimumSize(ui.treeHideProc->minimumSize());
+		nativeProcessTree->setProperty("m3NativeSurface", true);
+		auto* nativeAddProcess = makeProcessButton(ui.btnAddProcess);
+		auto* nativeDelProcess = makeProcessButton(ui.btnDelProcess);
+		replaceProcessControl(ui.chkHideOtherBoxes, nativeHideOther, ui.gridLayout_86);
+		replaceProcessControl(ui.chkHideNonSystemProcesses, nativeHideNonSystem, ui.gridLayout_86);
+		replaceProcessControl(ui.chkShowHiddenProcTmpl, nativeShowTemplates, ui.gridLayout_86);
+		replaceProcessControl(ui.chkBlockWMI, nativeBlockWmi, ui.gridLayout_86);
+		replaceProcessControl(ui.chkHideHostApps, nativeHideHost, ui.gridLayout_86);
+		replaceProcessControl(ui.treeHideProc, nativeProcessTree, ui.gridLayout_86);
+		replaceProcessControl(ui.btnAddProcess, nativeAddProcess, ui.gridLayout_86);
+		replaceProcessControl(ui.btnDelProcess, nativeDelProcess, ui.gridLayout_86);
+		ui.chkHideOtherBoxes = nativeHideOther;
+		ui.chkHideNonSystemProcesses = nativeHideNonSystem;
+		ui.chkShowHiddenProcTmpl = nativeShowTemplates;
+		ui.chkBlockWMI = nativeBlockWmi;
+		ui.chkHideHostApps = nativeHideHost;
+		ui.treeHideProc = nativeProcessTree;
+		ui.btnAddProcess = nativeAddProcess;
+		ui.btnDelProcess = nativeDelProcess;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
