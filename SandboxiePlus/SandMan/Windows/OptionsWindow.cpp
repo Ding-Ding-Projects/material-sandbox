@@ -1280,6 +1280,39 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.btnDelRecIgnore = nativeDelIgnore;
 	}
 
+	// Quick Recovery uses the same safe in-place migration: native controls
+	// replace Designer widgets while the generated grid remains the merge point.
+	{
+		auto replaceQuickRecoveryControl = [](QWidget* oldControl, QWidget* nativeControl, QGridLayout* layout) {
+			if (oldControl && nativeControl && layout) {
+				layout->replaceWidget(oldControl, nativeControl);
+				oldControl->deleteLater();
+			}
+		};
+		auto* nativeRecoveryTree = new QTreeWidget(this);
+		nativeRecoveryTree->setObjectName(QStringLiteral("treeRecovery"));
+		nativeRecoveryTree->setSortingEnabled(true);
+		nativeRecoveryTree->setHeaderLabels({ tr("Name") });
+		nativeRecoveryTree->setProperty("m3NativeSurface", true);
+		auto* nativeShowTemplates = new QCheckBox(tr("Show Templates"), this);
+		nativeShowTemplates->setObjectName(QStringLiteral("chkShowRecoveryTmpl"));
+		nativeShowTemplates->setProperty("m3NativeSurface", true);
+		auto* nativeAddRecovery = new QPushButton(tr("Add Folder"), this);
+		nativeAddRecovery->setObjectName(QStringLiteral("btnAddRecovery"));
+		nativeAddRecovery->setProperty("m3NativeSurface", true);
+		auto* nativeDelRecovery = new QPushButton(tr("Remove"), this);
+		nativeDelRecovery->setObjectName(QStringLiteral("btnDelRecovery"));
+		nativeDelRecovery->setProperty("m3NativeSurface", true);
+		replaceQuickRecoveryControl(ui.treeRecovery, nativeRecoveryTree, ui.gridLayout_22);
+		replaceQuickRecoveryControl(ui.chkShowRecoveryTmpl, nativeShowTemplates, ui.gridLayout_22);
+		replaceQuickRecoveryControl(ui.btnAddRecovery, nativeAddRecovery, ui.gridLayout_22);
+		replaceQuickRecoveryControl(ui.btnDelRecovery, nativeDelRecovery, ui.gridLayout_22);
+		ui.treeRecovery = nativeRecoveryTree;
+		ui.chkShowRecoveryTmpl = nativeShowTemplates;
+		ui.btnAddRecovery = nativeAddRecovery;
+		ui.btnDelRecovery = nativeDelRecovery;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
