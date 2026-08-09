@@ -29,6 +29,8 @@ const testProxyHeader = read('SandboxiePlus/SandMan/Windows/TestProxyDialog.h');
 const testProxySource = read('SandboxiePlus/SandMan/Windows/TestProxyDialog.cpp');
 const selectBoxHeader = read('SandboxiePlus/SandMan/Windows/SelectBoxWindow.h');
 const selectBoxSource = read('SandboxiePlus/SandMan/Windows/SelectBoxWindow.cpp');
+const boxImageHeader = read('SandboxiePlus/SandMan/Windows/BoxImageWindow.h');
+const boxImageSource = read('SandboxiePlus/SandMan/Windows/BoxImageWindow.cpp');
 const migratedViews = [
   'SandboxiePlus/SandMan/Views/FileView.cpp',
   'SandboxiePlus/SandMan/Views/NtObjectView.cpp',
@@ -63,6 +65,7 @@ const checks = [
   [editorHeader.includes('QTableWidget* settingsTable') && editorSource.includes('QVBoxLayout') && !editorSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/EditorSettingsWindow.ui')), 'editor settings dialog is rebuilt without a legacy .ui form'],
   [testProxyHeader.includes('struct Controls') && testProxySource.includes('QStackedWidget') && testProxySource.includes('M3DialogHost::Install(this)') && !testProxySource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/TestProxyDialog.ui')), 'test proxy dialog is rebuilt without a legacy .ui form'],
   [selectBoxHeader.includes('struct Controls') && selectBoxSource.includes('QDialogButtonBox') && selectBoxSource.includes('M3DialogHost::Install(this)') && !selectBoxSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/SelectBoxWindow.ui')), 'select sandbox dialog is rebuilt without a legacy .ui form'],
+  [boxImageHeader.includes('struct Controls') && boxImageSource.includes('QGridLayout') && boxImageSource.includes('M3DialogHost::Install(this)') && !boxImageSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/BoxImageWindow.ui')), 'box image dialog is rebuilt without a legacy .ui form'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);
