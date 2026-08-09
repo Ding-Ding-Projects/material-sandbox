@@ -1521,6 +1521,28 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Program Alerts, Force Process Options, and USB Drive Sandboxing are
+	// native pages; replace their remaining Designer tab host in one place.
+	if (ui.tabsControl) {
+		auto* legacyControlTabs = ui.tabsControl;
+		auto* nativeControlTabs = new QTabWidget(legacyControlTabs->parentWidget());
+		nativeControlTabs->setObjectName(QStringLiteral("tabsControl"));
+		nativeControlTabs->setTabPosition(QTabWidget::West);
+		nativeControlTabs->setAccessibleName(tr("Control settings pages"));
+		const int currentControlIndex = legacyControlTabs->currentIndex();
+		while (legacyControlTabs->count() > 0) {
+			const int index = legacyControlTabs->count() - 1;
+			nativeControlTabs->insertTab(0, legacyControlTabs->widget(index), legacyControlTabs->tabText(index));
+			legacyControlTabs->removeTab(index);
+		}
+		nativeControlTabs->setCurrentIndex(qBound(0, currentControlIndex, nativeControlTabs->count() - 1));
+		nativeControlTabs->setProperty("m3NativeSurface", true);
+		if (auto* controlHostLayout = legacyControlTabs->parentWidget()->layout())
+			controlHostLayout->replaceWidget(legacyControlTabs, nativeControlTabs);
+		legacyControlTabs->deleteLater();
+		ui.tabsControl = nativeControlTabs;
+	}
+
 	// Replace the self-contained Local Templates child tab with native M3
 	// controls while preserving filtering, multi-selection and template actions.
 	if (ui.tabsTemplates && ui.tabLocalTemplates) {
