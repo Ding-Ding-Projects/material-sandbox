@@ -1244,6 +1244,58 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained Windows Shell child tab with native M3 controls;
+	// context-menu, startup and desktop integration pointers remain unchanged.
+	if (ui.tabsShell && ui.tabWindows) {
+		const int shellIndex = ui.tabsShell->indexOf(ui.tabWindows);
+		if (shellIndex >= 0) {
+			auto* nativeShell = new QWidget(ui.tabsShell);
+			auto* shellLayout = new QVBoxLayout(nativeShell);
+			auto addShellSection = [&](QLabel*& heading, const QString& text) {
+				heading = new QLabel(text, nativeShell);
+				heading->setProperty("m3NativeSurface", true);
+				heading->setStyleSheet("font-weight: 600;");
+				shellLayout->addWidget(heading);
+			};
+			addShellSection(ui.lblStartUp, tr("Start Sandbox Manager"));
+			ui.chkAutoStart = new QCheckBox(tr("Start UI with Windows"), nativeShell);
+			ui.chkSvcStart = new QCheckBox(tr("Start UI when a sandboxed process is started"), nativeShell);
+			shellLayout->addWidget(ui.chkAutoStart);
+			shellLayout->addWidget(ui.chkSvcStart);
+			addShellSection(ui.lblRunBoxed, tr("Run Sandboxed - Actions"));
+			ui.chkShellMenu = new QCheckBox(tr("Add 'Run Sandboxed' to the explorer context menu"), nativeShell);
+			ui.chkAlwaysDefault = new QCheckBox(tr("Always use DefaultBox"), nativeShell);
+			ui.chkRememberLast = new QCheckBox(tr("Remember last used box"), nativeShell);
+			ui.chkShellMenu2 = new QCheckBox(tr("Add 'Run Un-Sandboxed' to the context menu"), nativeShell);
+			ui.chkShellMenu3 = new QCheckBox(tr("Add 'Set Force in Sandbox' to the context menu"), nativeShell);
+			ui.chkShellMenu4 = new QCheckBox(tr("Add 'Set Open Path in Sandbox' to context menu"), nativeShell);
+			shellLayout->addWidget(ui.chkShellMenu);
+			shellLayout->addWidget(ui.chkAlwaysDefault);
+			shellLayout->addWidget(ui.chkRememberLast);
+			shellLayout->addWidget(ui.chkShellMenu2);
+			shellLayout->addWidget(ui.chkShellMenu3);
+			shellLayout->addWidget(ui.chkShellMenu4);
+			addShellSection(ui.lblStartMenu, tr("Start Menu Integration"));
+			ui.chkScanMenu = new QCheckBox(tr("Scan shell folders and offer links in run menu"), nativeShell);
+			ui.cmbIntegrateMenu = new QComboBox(nativeShell);
+			ui.cmbIntegrateDesk = new QComboBox(nativeShell);
+			shellLayout->addWidget(ui.chkScanMenu);
+			shellLayout->addWidget(new QLabel(tr("Integrate with Host Start Menu"), nativeShell));
+			shellLayout->addWidget(ui.cmbIntegrateMenu);
+			shellLayout->addWidget(new QLabel(tr("Integrate with Host Desktop"), nativeShell));
+			shellLayout->addWidget(ui.cmbIntegrateDesk);
+			addShellSection(ui.lblDesktop, tr("Sandboxed Desktop"));
+			ui.chkDeskAutoSwitch = new QCheckBox(tr("Switch to sandboxed desktop when starting a process"), nativeShell);
+			ui.chkDeskQuickSwitch = new QCheckBox(tr("Switch to sandboxed desktop with double click"), nativeShell);
+			shellLayout->addWidget(ui.chkDeskAutoSwitch);
+			shellLayout->addWidget(ui.chkDeskQuickSwitch);
+			shellLayout->addStretch();
+			ui.tabsShell->removeTab(shellIndex);
+			ui.tabsShell->insertTab(shellIndex, nativeShell, tr("Windows Shell"));
+			ui.tabWindows->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.
@@ -1420,7 +1472,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	QSettings CurrentVersion("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", QSettings::NativeFormat);
 	if (CurrentVersion.value("CurrentBuild").toInt() >= 22000) { // Windows 11
 		QCheckBox* SecretCheckBox = new CSecretCheckBox(ui.chkShellMenu->text());
-		((QGridLayout*)((QWidget*)ui.chkShellMenu->parent())->layout())->replaceWidget(ui.chkShellMenu, SecretCheckBox);
+		ui.chkShellMenu->parentWidget()->layout()->replaceWidget(ui.chkShellMenu, SecretCheckBox);
 		ui.chkShellMenu->deleteLater();
 		ui.chkShellMenu = SecretCheckBox;
 	}
