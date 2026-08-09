@@ -20,6 +20,7 @@ public:
 private slots:
     void showContextMenu(const QPoint& position);
     void showTabSearch(const QPoint& position);
+    void showGroupPicker(const QString& tabName, const QPoint& position);
 
 private:
     bool eventFilter(QObject* watched, QEvent* event) override;

@@ -160,10 +160,8 @@ void CTabStateManager::showContextMenu(const QPoint& position)
         if (m_pinned.contains(name)) m_pinned.remove(name); else m_pinned.insert(name);
         save();
     });
-    connect(group, &QAction::triggered, &menu, [this, name]() {
-        bool ok = false;
-        const QString value = QInputDialog::getText(m_tabs, tr("Move tab into group"), tr("Group name"), QLineEdit::Normal, m_groups.value(name), &ok).trimmed();
-        if (ok && !value.isEmpty()) { m_groups.insert(name, value); save(); }
+    connect(group, &QAction::triggered, &menu, [this, name, position]() {
+        showGroupPicker(name, position);
     });
     connect(clearGroup, &QAction::triggered, &menu, [this, name]() { m_groups.remove(name); save(); });
     connect(edit, &QAction::triggered, &menu, [this, name]() {
@@ -198,6 +196,138 @@ void CTabStateManager::showContextMenu(const QPoint& position)
         editor->show();
     });
     menu.exec(m_tabs->tabBar()->mapToGlobal(position));
+}
+
+void CTabStateManager::showGroupPicker(const QString& tabName, const QPoint& position)
+{
+    if (!m_tabs)
+        return;
+
+    QDialog* dialog = new QDialog(m_tabs, Qt::Tool | Qt::WindowStaysOnTopHint);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setWindowTitle(tr("Move tab into group"));
+    dialog->setMinimumSize(420, 340);
+    QVBoxLayout* layout = new QVBoxLayout(dialog);
+    QLabel* description = new QLabel(tr("Choose an existing group or create a new one. The group stays collapsed when it was collapsed before this move."), dialog);
+    description->setWordWrap(true);
+    layout->addWidget(description);
+
+    QHBoxLayout* searchRow = new QHBoxLayout();
+    QLineEdit* search = new QLineEdit(dialog);
+    search->setPlaceholderText(tr("Search groups"));
+    search->setAccessibleName(tr("Group search"));
+    QCheckBox* regex = new QCheckBox(tr("Regex"), dialog);
+    regex->setToolTip(tr("Use the regex builder for this group search"));
+    regex->setAccessibleName(tr("Enable regular expression group search"));
+    searchRow->addWidget(search, 1);
+    searchRow->addWidget(regex);
+    layout->addLayout(searchRow);
+
+    QGroupBox* builder = new QGroupBox(tr("Regex builder"), dialog);
+    QFormLayout* builderLayout = new QFormLayout(builder);
+    QLineEdit* pattern = new QLineEdit(dialog);
+    pattern->setPlaceholderText(tr("Raw pattern (for example: ^Work)"));
+    pattern->setAccessibleName(tr("Group regex pattern"));
+    pattern->setEnabled(false);
+    QLabel* validation = new QLabel(tr("Plain-text search is active."), dialog);
+    validation->setWordWrap(true);
+    validation->setAccessibleName(tr("Group regex validation"));
+    builderLayout->addRow(tr("Pattern"), pattern);
+    builderLayout->addRow(tr("Validation"), validation);
+    layout->addWidget(builder);
+
+    QListWidget* groups = new QListWidget(dialog);
+    groups->setAccessibleName(tr("Available tab groups"));
+    groups->setSelectionMode(QAbstractItemView::SingleSelection);
+    layout->addWidget(groups, 1);
+
+    QHBoxLayout* actions = new QHBoxLayout();
+    QPushButton* create = new QPushButton(tr("Create new group…"), dialog);
+    create->setAccessibleName(tr("Create a new tab group"));
+    QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, dialog);
+    buttons->button(QDialogButtonBox::Ok)->setText(tr("Move"));
+    actions->addWidget(create);
+    actions->addStretch(1);
+    actions->addWidget(buttons);
+    layout->addLayout(actions);
+
+    auto refresh = [this, search, regex, pattern, validation, groups]() {
+        const QString needle = (regex->isChecked() ? pattern->text() : search->text()).left(4096);
+        QRegularExpression expression;
+        if (regex->isChecked()) {
+            expression = QRegularExpression(needle);
+            if (!expression.isValid()) {
+                validation->setText(tr("Invalid pattern: %1").arg(expression.errorString()));
+                groups->clear();
+                return;
+            }
+            validation->setText(tr("Valid regex; results update as you type."));
+        } else {
+            validation->setText(tr("Plain-text search is active."));
+        }
+        QSet<QString> names;
+        for (auto it = m_groups.cbegin(); it != m_groups.cend(); ++it)
+            if (!it.value().isEmpty())
+                names.insert(it.value());
+        QStringList sorted = names.values();
+        sorted.sort(Qt::CaseInsensitive);
+        groups->clear();
+        for (const QString& name : sorted) {
+            const bool match = needle.isEmpty() || (regex->isChecked() ? expression.match(name).hasMatch() : name.contains(needle, Qt::CaseInsensitive));
+            if (!match)
+                continue;
+            int members = 0;
+            for (auto it = m_groups.cbegin(); it != m_groups.cend(); ++it)
+                if (it.value() == name)
+                    ++members;
+            QListWidgetItem* item = new QListWidgetItem(tr("%1  · %2 tabs").arg(name).arg(members), groups);
+            item->setData(Qt::UserRole, name);
+            item->setToolTip(tr("Group %1 contains %2 tab(s)").arg(name).arg(members));
+            item->setBackground(QColor::fromHsv(qAbs(qHash(name)) % 360, 35, 245));
+        }
+        if (groups->count() > 0)
+            groups->setCurrentRow(0);
+    };
+    connect(search, &QLineEdit::textChanged, dialog, [pattern, regex, refresh](const QString& value) {
+        if (!regex->isChecked()) {
+            QSignalBlocker blocker(pattern);
+            pattern->setText(value);
+        }
+        refresh();
+    });
+    connect(pattern, &QLineEdit::textChanged, dialog, [refresh](const QString&) { refresh(); });
+    connect(regex, &QCheckBox::toggled, dialog, [search, pattern, refresh](bool enabled) {
+        QSignalBlocker blocker(pattern);
+        pattern->setText(search->text());
+        pattern->setEnabled(enabled);
+        refresh();
+    });
+    connect(create, &QPushButton::clicked, dialog, [this, tabName, dialog, search, refresh]() {
+        const QString value = search->text().trimmed();
+        if (value.isEmpty()) {
+            search->setFocus();
+            return;
+        }
+        m_groups.insert(tabName, value);
+        save();
+        dialog->accept();
+    });
+    connect(buttons, &QDialogButtonBox::accepted, dialog, [this, tabName, groups, dialog]() {
+        QListWidgetItem* item = groups->currentItem();
+        const QString value = item ? item->data(Qt::UserRole).toString().trimmed() : QString();
+        if (value.isEmpty())
+            return;
+        m_groups.insert(tabName, value);
+        save();
+        dialog->accept();
+    });
+    connect(buttons, &QDialogButtonBox::rejected, dialog, &QDialog::reject);
+    search->setFocus();
+    refresh();
+    const int anchorIndex = m_tabs->tabBar()->tabAt(position);
+    const QRect anchorRect = anchorIndex >= 0 ? m_tabs->tabBar()->tabRect(anchorIndex) : QRect(QPoint(0, 0), QSize(1, 1));
+    dialog->move(m_tabs->tabBar()->mapToGlobal(anchorRect.bottomLeft()));
+    dialog->show();
 }
 
 void CTabStateManager::showTabSearch(const QPoint& position)

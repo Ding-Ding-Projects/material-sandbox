@@ -11,6 +11,8 @@ const pages = fs.readFileSync(path.join(root, '.github/workflows/pages.yml'), 'u
 const checks = [
   ['manager class', header.includes('CTabStateManager')],
   ['search action', manager.includes('Search open tabs') && manager.includes('showTabSearch')],
+  ['group picker', manager.includes('showGroupPicker') && manager.includes('Create new group') && manager.includes('Group search')],
+  ['group member counts', manager.includes('%2 tabs') && manager.includes('setBackground')],
   ['regex builder', manager.includes('Regex builder') && manager.includes('QRegularExpression')],
   ['active schema', manager.includes('schema"), 2') && manager.includes('active')],
   ['settings consumer', settings.includes('CTabStateManager')],
