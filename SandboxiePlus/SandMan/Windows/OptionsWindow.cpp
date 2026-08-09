@@ -2040,6 +2040,35 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		migrateStartRadio(ui.radStartSelected);
 	}
 
+	// Lingering Programs keeps its editable tree/delegate intact while
+	// replacing the Designer action controls with native M3 widgets.
+	{
+		auto migrateLingeringButton = [&](QPushButton*& control) {
+			auto* native = new QPushButton(control->text(), this);
+			native->setObjectName(control->objectName());
+			native->setEnabled(control->isEnabled());
+			native->setToolTip(control->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			ui.gridLayout_14->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		auto migrateLingeringCheck = [&](QCheckBox*& control) {
+			auto* native = new QCheckBox(control->text(), this);
+			native->setObjectName(control->objectName());
+			native->setCheckState(control->checkState());
+			native->setEnabled(control->isEnabled());
+			native->setToolTip(control->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			ui.gridLayout_14->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		migrateLingeringButton(ui.btnAddLingering);
+		migrateLingeringButton(ui.btnDelStopProg);
+		migrateLingeringCheck(ui.chkShowStopTmpl);
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
