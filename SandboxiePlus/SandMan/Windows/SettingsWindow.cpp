@@ -1426,6 +1426,29 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained USB Drive child tab with native M3 controls
+	// while retaining sandbox model population and volume enablement behavior.
+	if (ui.tabsControl && ui.tabUSB) {
+		const int usbIndex = ui.tabsControl->indexOf(ui.tabUSB);
+		if (usbIndex >= 0) {
+			auto* nativeUsb = new QWidget(ui.tabsControl);
+			auto* usbForm = new QFormLayout(nativeUsb);
+			ui.chkSandboxUsb = new QCheckBox(tr("Automatically sandbox all attached USB drives"), nativeUsb);
+			ui.cmbUsbSandbox = new QComboBox(nativeUsb);
+			ui.cmbUsbSandbox->setToolTip(tr("Choose the sandbox that receives attached USB drives."));
+			ui.treeVolumes = new QTreeWidget(nativeUsb);
+			ui.treeVolumes->setColumnCount(2);
+			ui.treeVolumes->setHeaderLabels(QStringList() << tr("Volume") << tr("Information"));
+			ui.treeVolumes->setRootIsDecorated(false);
+			usbForm->addRow(ui.chkSandboxUsb);
+			usbForm->addRow(tr("Sandbox for USB drives:"), ui.cmbUsbSandbox);
+			usbForm->addRow(ui.treeVolumes);
+			ui.tabsControl->removeTab(usbIndex);
+			ui.tabsControl->insertTab(usbIndex, nativeUsb, tr("USB Drive Sandboxing"));
+			ui.tabUSB->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.
