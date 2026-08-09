@@ -177,6 +177,10 @@ Settings Control now uses a native M3 tab host around Program Alerts, Force
 Process Options, and USB Drive Sandboxing pages, preserving page order, labels,
 current selection, and control wiring.
 
+Settings Templates now uses a native M3 tab host around Local Templates and App
+Compatibility pages, preserving page order, labels, current selection, and
+template model wiring.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
