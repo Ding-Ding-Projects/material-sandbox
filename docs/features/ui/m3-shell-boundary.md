@@ -116,6 +116,10 @@ Advanced Options now uses a native M3 tab host for Miscellaneous, Triggers,
 Processes, Privacy, Users, Tracing, and Debug. Dynamic Debug removal, page
 order, icons, and migrated child controls remain intact.
 
+General Options now uses a native M3 tab host for Box, File, Migration,
+Restrictions, Isolation, and Run pages while preserving page order, icons, and
+child behavior.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
