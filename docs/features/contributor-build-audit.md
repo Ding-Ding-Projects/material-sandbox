@@ -13,10 +13,12 @@ The native driver, service, and UI consume the same record; contributor builds
 also compile out debug certificate simulation so it cannot reintroduce a split
 state.
 
-The Settings support page is removed from the contributor build and its
-certificate-refresh slot is inert. Options and troubleshooting surfaces compile
+The Settings certificate child page is removed from the contributor build while
+the updater child remains available under an **Updates** tab with
+certificate-independent access. Its certificate-refresh slot is inert. Options and troubleshooting surfaces compile
 out supporter badges and certificate footers, and the Setup Wizard's update
-footer is hidden at compile time. Setup Wizard skips the certificate page;
+footer is hidden at compile time. Setup Wizard skips the certificate page and
+the personal/commercial license choice, clearing stale usage markers;
 certificate-error popups, expiry logs, and support dialogs are all enclosed by
 the contributor preprocessor boundary. The normal certificate workflow remains
 available in non-contributor builds.

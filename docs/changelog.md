@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Contributor update surface
+
+Commit: [d2dc8ddc78899fe95163d96f3d57e9259e950d60](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d2dc8ddc78899fe95163d96f3d57e9259e950d60)
+
+- Removed the contributor certificate child tab while retaining the updater as a certificate-independent **Updates** surface.
+- Removed Setup Wizard license-choice copy and made legacy support-dialog no-ops explicitly non-blocking.
+
 ## 2026-08-09 · Native Settings ini editor tab
 
 Commit: [529ea4d846e306f66066365c60aa3392eaa2baa3](https://github.com/Ding-Ding-Projects/material-sandbox/commit/529ea4d846e306f66066365c60aa3392eaa2baa3)
@@ -19,7 +26,8 @@ Commit: [2de1c11c0ce603a5ffa5a8cbba3611e2bebc8f2a](https://github.com/Ding-Ding-
 Commit: [342a7452ef66155a14aaa87952c26d41f8c2a77d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/342a7452ef66155a14aaa87952c26d41f8c2a77d)
 
 - Rebuilt the Sandboxie Updater child tab with native Material 3 channel, cadence, version, and update controls.
-- Preserved certificate gating, release-channel state, and updater handlers.
+- Preserved release-channel state and updater handlers; contributor builds now
+  retain the updater while removing only the certificate child tab.
 
 ## 2026-08-09 · Keep Sandboxie.ini actions visible at narrow widths
 
