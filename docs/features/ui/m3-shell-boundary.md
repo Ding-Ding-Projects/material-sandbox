@@ -191,6 +191,12 @@ page, preserving labels, icons, order, current selection, and tab-state wiring.
 Settings Support now uses a native M3 tab host around the Sandboxie Updater
 page, preserving its label, icon, current selection, and update handlers.
 
+The `OptionsWindow.ui` and `SettingsWindow.ui` form registrations remain
+intentional: live generated `ui.*` pointers still supply model-backed controls
+and persistence paths that have not yet been replaced. Removing either `.ui`
+from `SandMan.pri` before those controls move would break compilation, so the
+remaining boundary is limited to those documented control clusters.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
