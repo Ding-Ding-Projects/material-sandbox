@@ -1794,6 +1794,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		auto* nativeDebugScroll = new QScrollArea(this);
 		nativeDebugScroll->setObjectName(QStringLiteral("scrollArea"));
 		nativeDebugScroll->setWidgetResizable(true);
+		nativeDebugScroll->setAccessibleName(tr("Debug options"));
 		nativeDebugScroll->setProperty("m3NativeSurface", true);
 		nativeDebugScroll->setWidget(ui.dbgWidget);
 		ui.gridLayout_87->replaceWidget(ui.scrollArea, nativeDebugScroll);
@@ -1806,7 +1807,10 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	{
 		auto* nativeDebugTabs = new QTabWidget(this);
 		nativeDebugTabs->setObjectName(QStringLiteral("tabsDebug"));
-		nativeDebugTabs->setTabPosition(QTabWidget::South);
+		// Keep the tab strip in the standard readable M3 position; the old
+		// bottom strip was easy to miss and put the focus order below content.
+		nativeDebugTabs->setTabPosition(QTabWidget::North);
+		nativeDebugTabs->setAccessibleName(tr("Debug settings pages"));
 		nativeDebugTabs->addTab(ui.tabDebugConfig, tr("Debug Options"));
 		nativeDebugTabs->addTab(ui.tabConfigDump, tr("Config Dump"));
 		nativeDebugTabs->setCurrentIndex(ui.tabsDebug->currentIndex());
