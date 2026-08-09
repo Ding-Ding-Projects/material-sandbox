@@ -1121,6 +1121,54 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Network Options > Other Options with native M3 controls while
+	// preserving adapter binding, port restrictions, and IP persistence.
+	if (ui.tabsInternet && ui.tabNetConfig) {
+		const int netConfigIndex = ui.tabsInternet->indexOf(ui.tabNetConfig);
+		if (netConfigIndex >= 0) {
+			auto* legacyNetConfig = ui.tabNetConfig;
+			auto* nativeNetConfig = new QWidget(ui.tabsInternet);
+			auto* netLayout = new QVBoxLayout(nativeNetConfig);
+			ui.lblPorts = new QLabel(tr("Port Blocking"), nativeNetConfig);
+			ui.lblPorts->setProperty("m3NativeSurface", true);
+			ui.lblPorts->setStyleSheet("font-weight: 600;");
+			netLayout->addWidget(ui.lblPorts);
+			ui.chkBlockSamba = new QCheckBox(tr("Block common SAMBA ports"), nativeNetConfig);
+			ui.chkBlockDns = new QCheckBox(tr("Block DNS, UDP port 53"), nativeNetConfig);
+			netLayout->addWidget(ui.chkBlockSamba);
+			netLayout->addWidget(ui.chkBlockDns);
+			ui.lblNetwork = new QLabel(tr("Network restrictions"), nativeNetConfig);
+			ui.lblNetwork->setProperty("m3NativeSurface", true);
+			ui.lblNetwork->setStyleSheet("font-weight: 600;");
+			netLayout->addWidget(ui.lblNetwork);
+			ui.chkBlockNetShare = new QCheckBox(tr("Block network files and folders unless specifically opened"), nativeNetConfig);
+			ui.chkBlockNetParam = new QCheckBox(tr("Prevent changes to network and firewall parameters (user mode)"), nativeNetConfig);
+			netLayout->addWidget(ui.chkBlockNetShare);
+			netLayout->addWidget(ui.chkBlockNetParam);
+			ui.lblBind = new QLabel(tr("Bind to Adapter IP"), nativeNetConfig);
+			ui.lblBind->setProperty("m3NativeSurface", true);
+			ui.lblBind->setStyleSheet("font-weight: 600;");
+			netLayout->addWidget(ui.lblBind);
+			ui.cmbNIC = new QComboBox(nativeNetConfig);
+			netLayout->addWidget(ui.cmbNIC);
+			auto* ipRow = new QHBoxLayout();
+			ipRow->addWidget(new QLabel(tr("IPv4"), nativeNetConfig));
+			ui.txtIPv4 = new QLineEdit(nativeNetConfig);
+			ui.txtIPv4->setPlaceholderText(tr("000.000.000.000"));
+			ipRow->addWidget(ui.txtIPv4);
+			ipRow->addWidget(new QLabel(tr("IPv6"), nativeNetConfig));
+			ui.txtIPv6 = new QLineEdit(nativeNetConfig);
+			ui.txtIPv6->setPlaceholderText(tr("0000:0000:0000:0000:0000:0000:0000:0000"));
+			ipRow->addWidget(ui.txtIPv6);
+			netLayout->addLayout(ipRow);
+			netLayout->addStretch();
+			ui.tabsInternet->removeTab(netConfigIndex);
+			ui.tabsInternet->insertTab(netConfigIndex, nativeNetConfig, tr("Other Options"));
+			ui.tabNetConfig = nativeNetConfig;
+			legacyNetConfig->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
