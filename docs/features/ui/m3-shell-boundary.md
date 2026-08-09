@@ -146,6 +146,10 @@ toggle.
 Lingering Programs now uses native M3 Add, Remove, and Show Templates controls
 while preserving the editable program tree, delegate, and stop handlers.
 
+Leader Programs now also uses a native QTreeWidget host configured from the
+Designer tree's columns, sorting, selection, and edit behavior; its existing
+model class and handlers remain unchanged.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

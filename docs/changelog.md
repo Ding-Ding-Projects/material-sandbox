@@ -44,6 +44,13 @@ Commit: [4b81078773c1fb4191633deea1a199db8c95a2a6](https://github.com/Ding-Ding-
 - Rebuilt Lingering Programs Add, Remove, and Show Templates controls with native Material 3 widgets.
 - Preserved the editable program tree, delegate, and stop handlers.
 
+## 2026-08-09 · Native Options leader tree host
+
+Commit: [e9b529531fdbb4990a601bfdd368df27d390b517](https://github.com/Ding-Ding-Projects/material-sandbox/commit/e9b529531fdbb4990a601bfdd368df27d390b517)
+
+- Rebuilt the Leader Programs QTreeWidget host with native Material 3 surface metadata and the existing tree behavior.
+- Preserved its model class, columns, sorting, selection, edit behavior, delegate, and handlers.
+
 ## 2026-08-09 · Native Options resource-access tab host
 
 Commit: [01cf568a6d36d64b7e2450e532ffc3785cf0d0b1](https://github.com/Ding-Ding-Projects/material-sandbox/commit/01cf568a6d36d64b7e2450e532ffc3785cf0d0b1)
