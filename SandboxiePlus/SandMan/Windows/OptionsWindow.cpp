@@ -360,6 +360,35 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace the compact Isolation child tab with native M3 controls while
+	// retaining OptionsAdvanced's access-isolation persistence and enablement.
+	if (ui.tabsGeneral && ui.tabOtherRestrictions) {
+		const int isolationIndex = ui.tabsGeneral->indexOf(ui.tabOtherRestrictions);
+		if (isolationIndex >= 0) {
+			auto* nativeIsolation = new QWidget(ui.tabsGeneral);
+			auto* isolationLayout = new QVBoxLayout(nativeIsolation);
+			ui.lblAccess = new QLabel(tr("Access Isolation"), nativeIsolation);
+			ui.lblAccess->setProperty("m3NativeSurface", true);
+			ui.lblAccess->setStyleSheet("font-weight: 600;");
+			isolationLayout->addWidget(ui.lblAccess);
+			auto* isolationHint = new QLabel(tr("The options below can be used safely when you do not grant admin rights."), nativeIsolation);
+			isolationHint->setWordWrap(true);
+			isolationLayout->addWidget(isolationHint);
+			ui.chkOpenDevCMApi = new QCheckBox(tr("Allow sandboxed programs to manage Hardware/Devices"), nativeIsolation);
+			ui.chkOpenSamEndpoint = new QCheckBox(tr("Open access to Windows Security Account Manager"), nativeIsolation);
+			ui.chkOpenLsaEndpoint = new QCheckBox(tr("Open access to Windows Local Security Authority"), nativeIsolation);
+			ui.chkOpenWpadEndpoint = new QCheckBox(tr("Open access to Proxy Configurations"), nativeIsolation);
+			isolationLayout->addWidget(ui.chkOpenDevCMApi);
+			isolationLayout->addWidget(ui.chkOpenSamEndpoint);
+			isolationLayout->addWidget(ui.chkOpenLsaEndpoint);
+			isolationLayout->addWidget(ui.chkOpenWpadEndpoint);
+			isolationLayout->addStretch();
+			ui.tabsGeneral->removeTab(isolationIndex);
+			ui.tabsGeneral->insertTab(isolationIndex, nativeIsolation, tr("Isolation"));
+			ui.tabOtherRestrictions->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
