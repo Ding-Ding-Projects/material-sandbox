@@ -12,6 +12,7 @@
 #include <QJsonObject>
 #include <QLabel>
 #include <QLineEdit>
+#include <QLocale>
 #include <QListWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -66,7 +67,7 @@ void CNotificationCenter::addItem(Severity severity, const QString& title, const
     const QString& link, const QDateTime& timestamp)
 {
     QListWidgetItem* item = new QListWidgetItem(QStringLiteral("%1 · %2\n%3")
-        .arg(timestamp.toLocalTime().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")), title, body), m_list);
+        .arg(QLocale().toString(timestamp.toLocalTime(), QLocale::ShortFormat), title, body), m_list);
     item->setData(Qt::UserRole, static_cast<int>(severity));
     item->setData(Qt::UserRole + 1, link);
     item->setData(Qt::UserRole + 2, title);

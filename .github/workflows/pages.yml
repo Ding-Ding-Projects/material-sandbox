@@ -23,6 +23,7 @@ jobs:
           node scripts/validate-settings-history.mjs
           node scripts/validate-notifications.mjs
           node scripts/validate-color-translator.mjs
+          node scripts/validate-screenshot-links.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs
