@@ -2,6 +2,8 @@
 
 These are real bundled Sandboxie UI assets from this checkout, shown as a visual catalog until the Qt/MSVC headless capture lane can produce built-window screenshots. They are not mock product screens.
 
+The current built surfaces represented by the gallery are Material shell, Settings/Options configuration, notification/history actions, recovery, and sandbox states. The PNGs are bundled assets rather than captured window frames; the distinction is intentional so the README never presents an icon as runtime proof.
+
 | Surface asset | Surface asset | Surface asset |
 |---|---|---|
 | ![Sandboxie desktop mark](../SandboxiePlus/SandMan/Resources/SandMan.png) | ![Sandboxie logo](../SandboxiePlus/SandMan/Resources/sandboxie-logo.png) | ![Sandboxie backplate](../SandboxiePlus/SandMan/Resources/sandboxie-back.png) |

@@ -7,6 +7,10 @@ Sandboxie is a Windows desktop sandbox manager built with Qt. This checkout carr
 - Shared Material 3 color roles, typography baseline, shape, elevation, focus, and control styling are applied by `MaterialTheme`.
 - Light/dark selection continues to use the existing persisted settings and is applied consistently to the widget tree.
 - Contributor builds unlock the feature capability state in one driver boundary and suppress supporter, purchase, expiry, and certificate reminder interruptions.
+- Settings changes have bounded, type-preserving local history with stable IDs, restore support, and filtered JSON/Markdown export that excludes setting payloads.
+- Informational events have a non-blocking Notifications tab with local history, extended selection, bulk dismissal, plain search, opt-in regex search, and filtered export.
+- Material appearance includes a keyboard-accessible HEX/HEX8, RGB/RGBA, and HSL/HSLA translator with alpha preservation, preview, validation, contrast feedback, and live persistence.
+- Settings and Options tabs persist order, active tab, pin/group metadata, and per-tab appearance edits; the full tab-discovery and group-editor expansion remains in progress.
 - GPL, LGPL, Qt, and upstream license notices remain intact; “remove license checks” refers only to runtime supporter gating, not copyright notices.
 
 See [`docs/material-design.md`](docs/material-design.md) and [`docs/contributor-build.md`](docs/contributor-build.md) for behavior, boundaries, and verification.
