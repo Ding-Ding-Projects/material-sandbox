@@ -113,6 +113,10 @@ The Force Process Options child tab is now another concrete native slice: Mark
 of The Web selection and force controls are created in code while sandbox model
 population and global settings handlers remain intact.
 
+The USB Drive Sandboxing child tab is now another concrete native slice: its
+toggle, sandbox selector, and volume tree are created in code while sandbox
+model population and enablement handlers remain intact.
+
 The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.

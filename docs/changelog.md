@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings USB sandbox tab
+
+Commit: [aacf96e5be483ba0ec9f8adf8912225b544e793d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/aacf96e5be483ba0ec9f8adf8912225b544e793d)
+
+- Rebuilt the USB Drive Sandboxing child tab with native Material 3 toggle, sandbox selector, and volume tree.
+- Preserved sandbox-model population and enablement handlers.
+
 ## 2026-08-09 · Native Settings Force Process tab
 
 Commit: [b5b3cdc6689a0cd467bec058f775246a050aaff6](https://github.com/Ding-Ding-Projects/material-sandbox/commit/b5b3cdc6689a0cd467bec058f775246a050aaff6)
