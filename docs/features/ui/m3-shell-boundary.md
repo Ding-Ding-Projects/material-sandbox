@@ -260,6 +260,12 @@ per-process domain/IP table, add/remove action rail, and explanatory guidance
 are created in code while OptionsNetwork keeps delegates, editing, and
 delete/persistence behavior intact; other OptionsWindow tabs remain staged.
 
+OptionsWindow Network > Internet Proxy is now another native slice: its
+seven-column proxy editor table and add/test/reorder/remove rail are created in
+code while OptionsNetwork keeps embedded editors, proxy testing, ordering,
+hidden legacy switches, and persistence intact; other OptionsWindow tabs remain
+staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Internet Proxy tab
+
+Commit: [e25ff3752f651c56a670bf38597a609ba4304e64](https://github.com/Ding-Ding-Projects/material-sandbox/commit/e25ff3752f651c56a670bf38597a609ba4304e64)
+
+- Rebuilt the Network > Internet Proxy child tab with native Material 3 proxy editor and action controls.
+- Preserved embedded editors, proxy testing, ordering, hidden legacy switches, and persistence.
+
 ## 2026-08-09 · Native Options DNS Filter tab
 
 Commit: [1496c35198468d7bfec06fed00fbb473d80269f6](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1496c35198468d7bfec06fed00fbb473d80269f6)
