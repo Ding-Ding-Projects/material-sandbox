@@ -1,28 +1,282 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sandboxie · Material desktop</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Sandboxie: a calm, contributor-ready Windows sandbox manager with a Material Design 3 documentation home.">
+<title>Sandboxie · Material 3</title>
 <style>
-:root{color-scheme:light;--bg:#fffbfe;--surface:#f3edf7;--surface2:#ece6f0;--text:#1d1b20;--muted:#625b71;--primary:#6750a4;--on-primary:#fff;--outline:#79747e;--radius:18px}body.dark{color-scheme:dark;--bg:#141218;--surface:#211f26;--surface2:#2b2930;--text:#e6e0e9;--muted:#cac4d0;--primary:#d0bcff;--on-primary:#381e72;--outline:#938f99}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:1120px;margin:auto;padding:24px}header{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:14px}.mark{width:48px;height:48px;border-radius:16px;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font-weight:800;font-size:22px}.actions{display:flex;gap:8px;flex-wrap:wrap}button,input,select{font:inherit;border:1px solid var(--outline);border-radius:12px;padding:9px 12px;background:var(--bg);color:var(--text)}button{cursor:pointer}button.primary{background:var(--primary);color:var(--on-primary);border:0}.hero{margin:28px 0;padding:32px;border-radius:28px;background:var(--surface);display:grid;grid-template-columns:1.5fr 1fr;gap:24px}.hero h1{font-size:clamp(2.2rem,6vw,4.8rem);line-height:1.02;margin:0 0 16px}.hero p{color:var(--muted);font-size:1.1rem}.status{border:1px solid var(--outline);border-radius:20px;padding:18px}.status strong{display:block;font-size:1.35rem}.tabs{display:flex;gap:8px;overflow:auto;border-bottom:1px solid var(--outline);padding-bottom:8px}.tab[aria-selected=true]{background:var(--primary);color:var(--on-primary)}.panel{display:none;padding:24px 0}.panel.active{display:block}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.card{background:var(--surface);border-radius:var(--radius);padding:18px;border:1px solid transparent}.card:hover{border-color:var(--outline)}.card h3{margin-top:0}.muted{color:var(--muted)}.searchbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.searchbar input{flex:1;min-width:220px}.builder{display:none;background:var(--surface2);border-radius:16px;padding:14px;margin:10px 0}.builder.open{display:grid;gap:10px}.notice{padding:12px 14px;border-left:4px solid var(--primary);background:var(--surface);border-radius:10px}.footer{margin-top:36px;color:var(--muted);font-size:.9rem}@media(max-width:760px){main{padding:16px}.hero{grid-template-columns:1fr;padding:22px}.hero h1{font-size:2.6rem}}
+:root {
+  color-scheme: light;
+  --md-sys-color-primary: #6750a4;
+  --md-sys-color-on-primary: #fff;
+  --md-sys-color-primary-container: #eaddff;
+  --md-sys-color-on-primary-container: #21005d;
+  --md-sys-color-secondary: #625b71;
+  --md-sys-color-on-secondary: #fff;
+  --md-sys-color-secondary-container: #e8def8;
+  --md-sys-color-on-secondary-container: #1d192b;
+  --md-sys-color-tertiary: #7d5260;
+  --md-sys-color-tertiary-container: #ffd8e4;
+  --md-sys-color-on-tertiary-container: #31111d;
+  --md-sys-color-surface: #fffbfe;
+  --md-sys-color-surface-container: #f3edf7;
+  --md-sys-color-surface-container-high: #ece6f0;
+  --md-sys-color-surface-container-highest: #e6e0e9;
+  --md-sys-color-on-surface: #1d1b20;
+  --md-sys-color-on-surface-variant: #49454f;
+  --md-sys-color-outline: #79747e;
+  --md-sys-color-outline-variant: #cac4d0;
+  --md-sys-color-error: #b3261e;
+  --md-sys-color-error-container: #f9dedc;
+  --md-sys-color-on-error-container: #410e0b;
+  --md-sys-shape-small: 8px;
+  --md-sys-shape-medium: 12px;
+  --md-sys-shape-large: 16px;
+  --md-sys-shape-extra-large: 28px;
+  --md-sys-elevation-1: 0 1px 3px rgb(29 27 32 / .16), 0 1px 2px rgb(29 27 32 / .14);
+  --md-sys-elevation-2: 0 2px 6px rgb(29 27 32 / .18), 0 1px 2px rgb(29 27 32 / .14);
+  --md-sys-motion-standard: cubic-bezier(.2, 0, 0, 1);
+  --md-sys-typescale-body: 1rem/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  --md-sys-typescale-label: .875rem/1.25 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --md-sys-color-primary: #d0bcff;
+  --md-sys-color-on-primary: #381e72;
+  --md-sys-color-primary-container: #4f378b;
+  --md-sys-color-on-primary-container: #eaddff;
+  --md-sys-color-secondary: #ccc2dc;
+  --md-sys-color-on-secondary: #332d3d;
+  --md-sys-color-secondary-container: #4a4458;
+  --md-sys-color-on-secondary-container: #e8def8;
+  --md-sys-color-tertiary: #efb8c8;
+  --md-sys-color-tertiary-container: #633b48;
+  --md-sys-color-on-tertiary-container: #ffd8e4;
+  --md-sys-color-surface: #141218;
+  --md-sys-color-surface-container: #211f26;
+  --md-sys-color-surface-container-high: #2b2930;
+  --md-sys-color-surface-container-highest: #36343b;
+  --md-sys-color-on-surface: #e6e0e9;
+  --md-sys-color-on-surface-variant: #cac4d0;
+  --md-sys-color-outline: #938f99;
+  --md-sys-color-outline-variant: #49454f;
+  --md-sys-color-error: #f2b8b5;
+  --md-sys-color-error-container: #8c1d18;
+  --md-sys-color-on-error-container: #f9dedc;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--md-sys-color-surface); }
+body { margin: 0; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); font: var(--md-sys-typescale-body); }
+body[data-density="compact"] { --space: 12px; }
+body[data-density="comfortable"] { --space: 24px; }
+a { color: var(--md-sys-color-primary); }
+button, input, select { font: inherit; }
+button { min-height: 44px; border: 0; border-radius: 999px; padding: 0 20px; cursor: pointer; transition: transform 160ms var(--md-sys-motion-standard), box-shadow 160ms var(--md-sys-motion-standard), background 160ms var(--md-sys-motion-standard); }
+button:hover { box-shadow: var(--md-sys-elevation-1); }
+button:active { transform: scale(.98); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--md-sys-color-tertiary); outline-offset: 2px; }
+.app-shell { max-width: 1240px; margin: auto; padding: 24px clamp(16px, 4vw, 48px) 64px; }
+.top-app-bar { min-height: 72px; display: flex; gap: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 14px; min-width: 220px; }
+.brand-mark { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 16px; background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); font-weight: 800; font-size: 1.25rem; box-shadow: var(--md-sys-elevation-1); }
+.brand-name { font-weight: 700; letter-spacing: .01em; }
+.brand-subtitle { color: var(--md-sys-color-on-surface-variant); font-size: .85rem; }
+.top-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.filled { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+.tonal { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
+.outlined { background: transparent; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-on-surface); }
+.text-button { background: transparent; color: var(--md-sys-color-primary); padding: 0 12px; }
+select, input[type="search"], input[type="text"] { min-height: 44px; border: 1px solid var(--md-sys-color-outline); border-radius: 4px; padding: 0 14px; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); }
+.hero { margin-top: 18px; padding: clamp(24px, 5vw, 56px); display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .8fr); gap: 32px; align-items: end; border-radius: var(--md-sys-shape-extra-large); background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-surface-container)); box-shadow: var(--md-sys-elevation-1); }
+.eyebrow { margin: 0 0 10px; color: var(--md-sys-color-on-primary-container); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .75rem; }
+h1 { max-width: 820px; margin: 0; font-size: clamp(2.5rem, 8vw, 5.6rem); line-height: 1.02; letter-spacing: -.045em; }
+h2 { font-size: clamp(1.7rem, 3vw, 2.5rem); letter-spacing: -.02em; }
+h3 { margin-top: 0; }
+.hero-copy { max-width: 720px; color: var(--md-sys-color-on-surface-variant); font-size: 1.15rem; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.status-card { padding: 20px; background: var(--md-sys-color-surface); border-radius: var(--md-sys-shape-large); box-shadow: var(--md-sys-elevation-2); }
+.status-card strong { display: block; margin: 8px 0; font-size: 1.4rem; }
+.status-card small { color: var(--md-sys-color-on-surface-variant); }
+.site-tabs { position: sticky; top: 0; z-index: 2; margin: 28px 0 8px; display: flex; gap: 4px; padding: 6px; overflow-x: auto; border-radius: 999px; background: color-mix(in srgb, var(--md-sys-color-surface-container) 94%, transparent); box-shadow: var(--md-sys-elevation-1); }
+.site-tab { flex: 0 0 auto; background: transparent; color: var(--md-sys-color-on-surface-variant); }
+.site-tab[aria-selected="true"] { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); font-weight: 700; }
+.panel { display: none; padding-top: 20px; animation: panel-in 220ms var(--md-sys-motion-standard); }
+.panel.active { display: block; }
+@keyframes panel-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+.section-heading { display: flex; gap: 16px; align-items: end; justify-content: space-between; flex-wrap: wrap; }
+.section-heading p { max-width: 680px; color: var(--md-sys-color-on-surface-variant); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--space, 16px); }
+.card { min-height: 170px; padding: 22px; border-radius: var(--md-sys-shape-large); background: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface); transition: box-shadow 160ms var(--md-sys-motion-standard), transform 160ms var(--md-sys-motion-standard); }
+.card:hover { transform: translateY(-2px); box-shadow: var(--md-sys-elevation-1); }
+.card p { color: var(--md-sys-color-on-surface-variant); }
+.meta { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--md-sys-color-tertiary-container); color: var(--md-sys-color-on-tertiary-container); font-size: .78rem; font-weight: 700; }
+.search-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 14px 0 20px; }
+.search-tools input { flex: 1; min-width: min(100%, 280px); }
+.builder { display: none; margin: 10px 0 20px; padding: 18px; border-radius: var(--md-sys-shape-large); background: var(--md-sys-color-surface-container-high); box-shadow: var(--md-sys-elevation-1); }
+.builder.open { display: grid; gap: 12px; }
+.builder-grid { display: grid; grid-template-columns: 1fr 140px; gap: 10px; }
+.helper { color: var(--md-sys-color-on-surface-variant); font-size: .88rem; }
+.feature-card[hidden] { display: none; }
+.settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.setting { display: grid; gap: 10px; padding: 18px; border-radius: var(--md-sys-shape-large); background: var(--md-sys-color-surface-container); }
+.setting label { font-weight: 600; }
+.setting small { color: var(--md-sys-color-on-surface-variant); }
+input[type="range"] { width: 100%; accent-color: var(--md-sys-color-primary); }
+.docs-list { display: grid; gap: 10px; padding: 0; list-style: none; }
+.docs-list li { padding: 14px 16px; border-radius: var(--md-sys-shape-medium); background: var(--md-sys-color-surface-container); }
+.notification { position: fixed; right: 20px; bottom: 20px; z-index: 4; max-width: min(420px, calc(100vw - 40px)); display: none; padding: 14px 18px; border-radius: var(--md-sys-shape-medium); background: var(--md-sys-color-inverse-surface, #313033); color: var(--md-sys-color-inverse-on-surface, #f4eff4); box-shadow: var(--md-sys-elevation-2); }
+.notification.show { display: flex; align-items: center; gap: 12px; }
+.notification button { min-height: 36px; padding: 0 12px; color: var(--md-sys-color-primary); background: transparent; }
+.dialog-surface { position: fixed; inset: 0; z-index: 3; display: none; place-items: center; padding: 20px; background: rgb(0 0 0 / .42); }
+.dialog-surface.open { display: grid; }
+.dialog { width: min(680px, 100%); max-height: min(720px, 90vh); overflow: auto; padding: 24px; border-radius: var(--md-sys-shape-extra-large); background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface); box-shadow: var(--md-sys-elevation-2); }
+.dialog input { width: 100%; margin: 12px 0; }
+.palette-results { display: grid; gap: 6px; margin-top: 14px; }
+.palette-results button { justify-content: flex-start; text-align: left; border-radius: var(--md-sys-shape-medium); background: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface); }
+.footer { margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--md-sys-color-outline-variant); color: var(--md-sys-color-on-surface-variant); font-size: .9rem; }
+code, kbd { padding: 2px 6px; border-radius: 4px; background: var(--md-sys-color-surface-container-highest); }
+@media (max-width: 760px) { .app-shell { padding-inline: 16px; } .hero { grid-template-columns: 1fr; } .site-tabs { margin-inline: -4px; } .builder-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-<main>
-<header><div class="brand"><div class="mark" aria-hidden="true">S</div><div><strong>Sandboxie</strong><div class="muted">Material desktop</div></div></div><div class="actions"><select id="lang" aria-label="Language"><option value="en">English</option><option value="zh">繁體中文</option><option value="bi">English · 繁體中文</option></select><button id="theme" aria-pressed="false">Dark theme</button><button id="palette">Command palette <kbd>Ctrl+Shift+F</kbd></button></div></header>
-<section class="hero"><div><p class="muted">Windows desktop sandbox manager</p><h1>Safer work, calmer chrome.</h1><p id="intro">A Material Design 3 shell for Sandboxie with contributor capability enabled and supporter nags removed from the build profile.</p><button class="primary" onclick="showTab('features')">Explore features</button></div><aside class="status"><span>✅ Static source ready</span><strong>78c48c69</strong><span class="muted">Built-app and driver runtime proof is still pending because this checkout has no Qt toolchain.</span></aside></section>
-<nav class="tabs" role="tablist" aria-label="Site sections"><button class="tab" role="tab" aria-selected="true" aria-controls="overview" onclick="showTab('overview')">Overview</button><button class="tab" role="tab" aria-selected="false" aria-controls="features" onclick="showTab('features')">Features</button><button class="tab" role="tab" aria-selected="false" aria-controls="docs" onclick="showTab('docs')">Docs</button><button class="tab" role="tab" aria-selected="false" aria-controls="status" onclick="showTab('status')">Status</button></nav>
-<section id="overview" class="panel active"><div class="grid"><article class="card"><h3>Material 3 shell</h3><p>Shared surface, primary, outline, typography, focus, tab, menu, field, table, toolbar, status, and scrollbar roles.</p></article><article class="card"><h3>Contributor profile</h3><p>Qt, service, and driver layers share one unrestricted capability state. Copyright and third-party notices remain intact.</p></article><article class="card"><h3>Quiet by default</h3><p>Supporter, purchase, expiry, and certificate reminder interruptions are suppressed in contributor builds.</p></article><article class="card"><h3>Appearance editor</h3><p>Installed font family, size, weight, style, accent translation, live preview, persistence, and reset are available in the native Settings editor. Unsupported Word-depth properties are disclosed rather than implied.</p></article><article class="card"><h3>Presentation preferences</h3><p>These local controls mirror the desktop settings contract and persist across reloads.</p><label>Language mode <select id="siteLang"><option value="english">English</option><option value="cantonese">Playful Hong Kong Cantonese</option><option value="bilingual">Bilingual</option></select></label><label>English funny level <input id="funnyEn" type="range" min="1" max="5" value="1"></label><label>Cantonese funny level <input id="funnyZh" type="range" min="1" max="5" value="1"></label><label><input id="dialogEmoji" type="checkbox" checked> Show emojis in dialogs and messages</label></article></div></section>
-<section id="features" class="panel" role="tabpanel"><div class="searchbar"><input id="search" placeholder="Search features" aria-label="Search features"><button id="builderToggle">Regex builder</button></div><div id="builder" class="builder"><label>Pattern <input id="pattern" value=""></label><label>Flags <input id="flags" placeholder="i,m"></label><button onclick="runSearch(true)">Apply regex</button><span id="regexState" class="muted">Plain text is the default.</span></div><div id="cards" class="grid"><article class="card feature"><h3>Material theme tokens</h3><p>Light and dark roles, rounded shapes, focus states, and responsive controls.</p></article><article class="card feature"><h3>Appearance editor</h3><p>Installed font family, size, weight, style, accent translator, live preview, persistence, and reset; unsupported Word-depth properties are listed honestly.</p></article><article class="card feature"><h3>External editor integration</h3><p>Settings detects VS Code, remembers one executable path, and opens the local profile folder without shell arguments or credential prompts.</p></article><article class="card feature"><h3>All capability paths</h3><p>Security/privacy, encryption, network, desktop, image, and breakout paths use contributor capability state.</p></article><article class="card feature"><h3>Automatic updates</h3><p>Contributor builds do not gate update policy on a supporter certificate or interrupt startup with a purchase question.</p></article><article class="card feature"><h3>Accessible navigation</h3><p>Tabbed site sections, keyboard focus, responsive layout, and a local search builder are available here.</p></article></div></section>
-<section id="docs" class="panel" role="tabpanel"><div class="notice"><strong>Read the implementation notes</strong><p><a href="material-design.md">Material Design 3 desktop shell</a> · <a href="features/appearance-editor.md">Material appearance editor</a> · <a href="features/external-editor.md">External editor integration</a> · <a href="contributor-build.md">Contributor capability mode</a></p></div></section>
-<section id="status" class="panel" role="tabpanel"><div class="grid"><article class="card"><h3>✅ Landed</h3><p>Commit <code>78c48c69</code> dewed to the hui on <code>codex/material-overhaul</code>.</p></article><article class="card"><h3>⏳ Pending</h3><p>Qt/MSVC build, hidden-desktop capture, loaded driver smoke, and Pages publication proof.</p></article><article class="card"><h3>Download</h3><p>No installer button is shown until a verified release asset exists.</p></article></div></section>
-<p class="footer">Sandboxie is open source. This page documents the contributor build; it does not replace upstream project licenses.</p>
-</main>
+<div class="app-shell">
+  <header class="top-app-bar">
+    <a class="brand" href="#overview" aria-label="Sandboxie home">
+      <span class="brand-mark" aria-hidden="true">S</span>
+      <span><span class="brand-name">Sandboxie</span><span class="brand-subtitle"> · Material Design 3</span></span>
+    </a>
+    <div class="top-actions">
+      <label class="helper" for="language">Language</label>
+      <select id="language" aria-label="Language mode"><option value="en">English</option><option value="zh">繁體中文</option><option value="bi">English · 繁體中文</option></select>
+      <button id="themeButton" class="tonal" type="button" aria-pressed="false">Dark theme</button>
+      <button id="paletteButton" class="outlined" type="button">Command palette <kbd>Ctrl+Shift+F</kbd></button>
+    </div>
+  </header>
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div>
+      <p class="eyebrow">Windows sandbox manager · contributor build</p>
+      <h1 id="hero-title">Safer work, calmer chrome.</h1>
+      <p class="hero-copy">A contributor-ready Sandboxie surface rebuilt from the ground up with Material Design 3 tokens, honest status, accessible navigation, and no unsolicited support or purchase prompts.</p>
+      <div class="hero-actions"><button class="filled" type="button" data-tab="features">Explore features</button><a class="outlined" href="screenshots.md">View screenshot index</a></div>
+    </div>
+    <aside class="status-card" aria-label="Publication status"><span class="meta">● Source verified</span><strong>Static Pages source</strong><small>Native runtime and installer evidence remain labelled separately. A download control appears only after a verified release asset exists.</small></aside>
+  </section>
+
+  <nav class="site-tabs" role="tablist" aria-label="Documentation sections">
+    <button id="tab-overview" class="site-tab" role="tab" aria-selected="true" aria-controls="overview" data-tab="overview">Overview</button>
+    <button id="tab-features" class="site-tab" role="tab" aria-selected="false" aria-controls="features" data-tab="features">Features</button>
+    <button id="tab-docs" class="site-tab" role="tab" aria-selected="false" aria-controls="docs" data-tab="docs">Documentation</button>
+    <button id="tab-settings" class="site-tab" role="tab" aria-selected="false" aria-controls="settings" data-tab="settings">Settings</button>
+    <button id="tab-status" class="site-tab" role="tab" aria-selected="false" aria-controls="status" data-tab="status">Status</button>
+  </nav>
+
+  <main>
+    <section id="overview" class="panel active" role="tabpanel" tabindex="0" aria-labelledby="tab-overview">
+      <div class="section-heading"><div><h2>One calm surface for every capability</h2><p>The site mirrors the desktop's feature contract without pretending that a static page is a built application. Every card below links to the canonical article or the source contract.</p></div></div>
+      <div class="grid">
+        <article class="card"><span class="meta">Material 3</span><h3>Expressive, not ornamental</h3><p>Color roles, typography, shape, elevation, motion, focus, responsive density, and touch-sized controls share one token system.</p></article>
+        <article class="card"><span class="meta">Contributor</span><h3>Capability stays explicit</h3><p>The contributor profile unlocks the intended capability path while preserving upstream attribution and security boundaries. No payment or expiry prompt is shown.</p></article>
+        <article class="card"><span class="meta">Accessible</span><h3>Keyboard-first navigation</h3><p>Real tabs, focus rings, an anchored regex builder, and <kbd>Ctrl+Shift+F</kbd> command discovery work without pointer-only paths.</p></article>
+        <article class="card"><span class="meta">Honest status</span><h3>Evidence has a state</h3><p>Source contracts, Pages publication, native CI, and runtime capture are distinct states. Pending work never wears a green costume.</p></article>
+      </div>
+    </section>
+
+    <section id="features" class="panel" role="tabpanel" tabindex="0" aria-labelledby="tab-features">
+      <div class="section-heading"><div><h2>Feature inventory</h2><p>Search the complete inventory. Plain text is the default; the builder beside this field enables bounded JavaScript regular expressions and reports syntax errors inline.</p></div></div>
+      <div class="search-tools"><input id="featureSearch" type="search" placeholder="Search feature names and descriptions" aria-label="Search features"><button id="builderButton" class="tonal" type="button" aria-expanded="false" aria-controls="regexBuilder">Regex builder</button><span id="featureCount" class="helper" aria-live="polite"></span></div>
+      <div id="regexBuilder" class="builder" aria-label="Anchored regex builder">
+        <div class="builder-grid"><label>Pattern<input id="regexPattern" type="text" maxlength="240" aria-describedby="regexHelp"></label><label>Flags<input id="regexFlags" type="text" maxlength="6" placeholder="i,m"></label></div>
+        <span id="regexHelp" class="helper">Use the JavaScript RegExp dialect. Evaluation is local and bounded to this page's feature text.</span><span id="regexStatus" class="helper" aria-live="polite">Plain text is active.</span>
+      </div>
+      <div id="featureGrid" class="grid">
+        <article class="card feature-card"><span class="meta">UI</span><h3>Material 3 theme tokens</h3><p>Light and dark color roles, typography, shapes, elevation, motion, focus, density, and responsive controls.</p><a href="material-design.md">Read the design contract</a></article>
+        <article class="card feature-card"><span class="meta">UI</span><h3>Appearance editor</h3><p>Installed font family, size, weight, style, accent translation, live preview, persistence, reset, and explicit unsupported-property disclosure.</p><a href="features/appearance-editor.md">Read the article</a></article>
+        <article class="card feature-card"><span class="meta">Settings</span><h3>Scheduled settings</h3><p>Versioned local schedules support dates, times, weekdays, precedence, safe fallback, and validated external sources.</p><a href="features/scheduled-settings.md">Read the article</a></article>
+        <article class="card feature-card"><span class="meta">Settings</span><h3>Renamable School mode</h3><p>A shared local mode can be renamed and unlocked without claiming to be a security boundary; preferences return after unlock.</p><a href="features/school-mode.md">Read the article</a></article>
+        <article class="card feature-card"><span class="meta">Navigation</span><h3>Tab discovery and state</h3><p>Persistent active, pinned, grouped, and ordered tabs with search and a documented schema.</p><a href="features/tab-discovery.md">Read the article</a></article>
+        <article class="card feature-card"><span class="meta">History</span><h3>Settings history</h3><p>Append-only local revisions, filtered views, restore actions, and export of the visible history set.</p><a href="features/settings-history.md">Read the article</a></article>
+        <article class="card feature-card"><span class="meta">Feedback</span><h3>Non-blocking notifications</h3><p>Dismissible informational messages, bulk actions, local search, regex filtering, and export without modal nagging.</p><a href="features/notifications.md">Read the article</a></article>
+        <article class="card feature-card"><span class="meta">Integration</span><h3>VS Code opener</h3><p>Detects a user-selected external editor and opens the profile folder through one explicit action.</p><a href="features/external-editor.md">Read the article</a></article>
+        <article class="card feature-card"><span class="meta">Discovery</span><h3>Command palette</h3><p>Find destinations, settings, and articles with <kbd>Ctrl+Shift+F</kbd>; the page keeps the shortcut discoverable.</p><a href="features/command-palette.md">Read the article</a></article>
+        <article class="card feature-card"><span class="meta">Delight</span><h3>Dim-sum surprise</h3><p>The desktop's delayed 10% startup draw is documented with its non-blocking, local-cache and public-catalog boundaries.</p><a href="features/dim-sum-surprise.md">Read the article</a></article>
+        <article class="card feature-card"><span class="meta">Color</span><h3>Color translator</h3><p>Material accent editing keeps numeric color formats, alpha, contrast, and validation visible.</p><a href="features/color-translator.md">Read the article</a></article>
+        <article class="card feature-card"><span class="meta">Build</span><h3>Contributor build audit</h3><p>Capability checks, generated driver flags, and build-time evidence are documented without removing upstream attribution.</p><a href="features/contributor-build-audit.md">Read the article</a></article>
+      </div>
+    </section>
+
+    <section id="docs" class="panel" role="tabpanel" tabindex="0" aria-labelledby="tab-docs">
+      <div class="section-heading"><div><h2>Documentation</h2><p>Long references stay in the repository as individual articles. This index keeps the path short and the status factual.</p></div></div>
+      <ul class="docs-list">
+        <li><a href="material-design.md">Material Design 3 desktop shell</a><br><span class="helper">Tokens, typography, focus, density, and responsive layout.</span></li>
+        <li><a href="contributor-build.md">Contributor build capability</a><br><span class="helper">Explicit build profile behavior and preserved attribution.</span></li>
+        <li><a href="changelog.md">Changelog</a><br><span class="helper">Release-linked changes with honest verification state.</span></li>
+        <li><a href="screenshots.md">Screenshot index</a><br><span class="helper">Tracked gallery assets; no static image is presented as runtime proof.</span></li>
+      </ul>
+    </section>
+
+    <section id="settings" class="panel" role="tabpanel" tabindex="0" aria-labelledby="tab-settings">
+      <div class="section-heading"><div><h2>Page preferences</h2><p>These controls are local to this browser and demonstrate the same persisted presentation contract as the desktop. They do not change application identity or claim to unlock a runtime build.</p></div></div>
+      <div class="settings-grid">
+        <div class="setting"><label for="density">Density</label><select id="density"><option value="standard">Standard</option><option value="compact">Compact</option><option value="comfortable">Comfortable</option></select><small>Changes spacing while retaining touch-sized controls.</small></div>
+        <div class="setting"><label for="funnyEnglish">English funny level <output id="funnyEnglishValue">1</output></label><input id="funnyEnglish" type="range" min="1" max="5" value="1"><small>Styles voice only; facts and status remain unchanged.</small></div>
+        <div class="setting"><label for="funnyCantonese">Cantonese funny level <output id="funnyCantoneseValue">1</output></label><input id="funnyCantonese" type="range" min="1" max="5" value="1"><small>Applies only when Cantonese or bilingual mode is selected.</small></div>
+        <div class="setting"><label for="emojiToggle"><input id="emojiToggle" type="checkbox" checked> Show emojis in messages</label><small>Decorative emoji never changes control labels or accessible names.</small></div>
+        <div class="setting"><label for="fontScale">Font scale <output id="fontScaleValue">100%</output></label><input id="fontScale" type="range" min="90" max="130" value="100"><small>Uses the browser's local type scale; CJK fallback stays system-provided.</small></div>
+        <div class="setting"><button id="resetSettings" class="outlined" type="button">Reset page preferences</button><small>Restores this page's shipped presentation values.</small></div>
+      </div>
+    </section>
+
+    <section id="status" class="panel" role="tabpanel" tabindex="0" aria-labelledby="tab-status">
+      <div class="section-heading"><div><h2>Release and verification status</h2><p>Publication is deliberately separated from implementation. A verified installer button is absent until a release manifest supplies an immutable asset URL.</p></div></div>
+      <div class="grid">
+        <article class="card"><span class="meta">✅ Verified source</span><h3>Pages source</h3><p>This page is a static, local-asset-only source validated by the Pages workflow.</p></article>
+        <article class="card"><span class="meta">⏳ Separate gate</span><h3>Native build</h3><p>Qt/MSVC and headless runtime evidence belongs to CI and capture lanes, not to this landing page.</p></article>
+        <article class="card"><span class="meta">⏳ Conditional</span><h3>Installer download</h3><p>No installer is advertised until a verified release asset exists. This prevents a guessed or candidate URL.</p></article>
+        <article class="card"><span class="meta">ℹ️ Attribution</span><h3>Open source</h3><p>Upstream license and third-party notices remain authoritative. This page does not replace them.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><p>Sandboxie is open source. Read the repository's <a href="../README.md">README</a>, contribution, security, and license tabs for project records. This page contains no analytics, third-party CDN assets, or unsolicited support prompts.</p></footer>
+</div>
+<div id="notification" class="notification" role="status" aria-live="polite"><span id="notificationText"></span><button id="notificationClose" type="button" aria-label="Dismiss notification">Dismiss</button></div>
+<div id="paletteSurface" class="dialog-surface" role="presentation"><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="paletteTitle"><div class="section-heading"><h2 id="paletteTitle">Command palette</h2><button id="paletteClose" class="text-button" type="button">Close</button></div><p class="helper">Search features, documentation, settings, or destinations. Press <kbd>Escape</kbd> to close.</p><input id="paletteSearch" type="search" placeholder="Search commands" aria-label="Search commands"><div id="paletteResults" class="palette-results"></div></section></div>
 <script>
-const $=s=>document.querySelector(s);function showTab(id){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.getAttribute('aria-controls')===id)));location.hash=id}
-$('#theme').onclick=()=>{document.body.classList.toggle('dark');const on=document.body.classList.contains('dark');$('#theme').textContent=on?'Light theme':'Dark theme';$('#theme').setAttribute('aria-pressed',String(on));localStorage.setItem('theme',on?'dark':'light')};if(localStorage.getItem('theme')==='dark')$('#theme').click();
-['siteLang','funnyEn','funnyZh','dialogEmoji'].forEach(id=>{const el=$('#'+id);const saved=localStorage.getItem('sandboxie-'+id);if(saved!==null)el.type==='checkbox'?el.checked=saved==='true':el.value=saved;el.oninput=()=>localStorage.setItem('sandboxie-'+id,el.type==='checkbox'?String(el.checked):el.value)});
-$('#builderToggle').onclick=()=>$('#builder').classList.toggle('open');function runSearch(regex){const q=regex?$('#pattern').value:$('#search').value;let re;try{re=regex?new RegExp(q,$('#flags').value):new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');$('#regexState').textContent='Valid pattern';}catch(e){$('#regexState').textContent='Invalid pattern: '+e.message;return}document.querySelectorAll('.feature').forEach(c=>c.hidden=!re.test(c.innerText))}$('#search').oninput=()=>runSearch(false);
-$('#palette').onclick=()=>{const q=prompt('Command palette · search a destination or setting');if(q&&/feature/i.test(q))showTab('features');else if(q&&/doc/i.test(q))showTab('docs');};window.addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&e.key.toLowerCase()==='f'){e.preventDefault();$('#palette').click()}});if(location.hash)showTab(location.hash.slice(1));
+(() => {
+  const root = document.documentElement;
+  const body = document.body;
+  const storage = 'sandboxie-pages-';
+  const $ = (id) => document.getElementById(id);
+  const tabs = [...document.querySelectorAll('[data-tab]')];
+  const panels = [...document.querySelectorAll('.panel')];
+  const save = (key, value) => localStorage.setItem(storage + key, String(value));
+  const read = (key, fallback) => localStorage.getItem(storage + key) ?? fallback;
+  const notify = (message) => { $('notificationText').textContent = message; $('notification').classList.add('show'); window.clearTimeout(notify.timer); notify.timer = window.setTimeout(() => $('notification').classList.remove('show'), 4200); };
+  function openTab(id) { const panel = $(id) ? id : 'overview'; panels.forEach((item) => item.classList.toggle('active', item.id === panel)); document.querySelectorAll('.site-tab').forEach((tab) => tab.setAttribute('aria-selected', String(tab.dataset.tab === panel))); history.replaceState(null, '', '#' + panel); $(panel)?.focus({ preventScroll: true }); }
+  tabs.forEach((tab) => tab.addEventListener('click', () => openTab(tab.dataset.tab)));
+  document.querySelectorAll('.site-tab').forEach((tab) => tab.addEventListener('keydown', (event) => { const all = [...document.querySelectorAll('.site-tab')]; const index = all.indexOf(tab); if (event.key === 'ArrowRight' || event.key === 'ArrowDown') { event.preventDefault(); all[(index + 1) % all.length].focus(); } if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') { event.preventDefault(); all[(index - 1 + all.length) % all.length].focus(); } if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openTab(tab.dataset.tab); } }));
+  document.querySelectorAll('[data-tab]').forEach((button) => { if (!button.classList.contains('site-tab')) button.addEventListener('click', () => openTab(button.dataset.tab)); });
+  const savedTheme = read('theme', 'light'); root.dataset.theme = savedTheme; $('themeButton').setAttribute('aria-pressed', String(savedTheme === 'dark')); $('themeButton').textContent = savedTheme === 'dark' ? 'Light theme' : 'Dark theme';
+  $('themeButton').addEventListener('click', () => { const dark = root.dataset.theme !== 'dark'; root.dataset.theme = dark ? 'dark' : 'light'; save('theme', root.dataset.theme); $('themeButton').setAttribute('aria-pressed', String(dark)); $('themeButton').textContent = dark ? 'Light theme' : 'Dark theme'; notify(dark ? 'Dark theme applied.' : 'Light theme applied.'); });
+  const language = $('language'); language.value = read('language', 'en'); language.addEventListener('change', () => { save('language', language.value); notify('Language preference saved locally.'); });
+  const density = $('density'); density.value = read('density', 'standard'); body.dataset.density = density.value; density.addEventListener('change', () => { body.dataset.density = density.value; save('density', density.value); notify('Density preference saved locally.'); });
+  const bindRange = (id, output, key, suffix = '') => { const input = $(id); input.value = read(key, input.value); $(output).value = input.value + suffix; input.addEventListener('input', () => { $(output).value = input.value + suffix; save(key, input.value); }); };
+  bindRange('funnyEnglish', 'funnyEnglishValue', 'funnyEnglish'); bindRange('funnyCantonese', 'funnyCantoneseValue', 'funnyCantonese'); bindRange('fontScale', 'fontScaleValue', 'fontScale', '%'); body.style.fontSize = read('fontScale', '100') + '%'; $('fontScale').addEventListener('input', () => { body.style.fontSize = $('fontScale').value + '%'; });
+  const emoji = $('emojiToggle'); emoji.checked = read('emoji', 'true') === 'true'; emoji.addEventListener('change', () => { save('emoji', emoji.checked); notify('Message decoration preference saved locally.'); });
+  $('resetSettings').addEventListener('click', () => { ['theme','language','density','funnyEnglish','funnyCantonese','fontScale','emoji'].forEach((key) => localStorage.removeItem(storage + key)); location.reload(); });
+  const search = $('featureSearch'); const regexPattern = $('regexPattern'); const regexFlags = $('regexFlags'); const cards = [...document.querySelectorAll('.feature-card')];
+  function filterFeatures(regexMode = false) { const query = regexMode ? regexPattern.value : search.value; let matcher; if (!query) { matcher = { test: () => true }; $('regexStatus').textContent = regexMode ? 'Enter a pattern to search.' : 'Plain text is active.'; } else { try { matcher = regexMode ? new RegExp(query, regexFlags.value) : new RegExp(query.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'), 'i'); $('regexStatus').textContent = regexMode ? 'Valid pattern.' : 'Plain text is active.'; } catch (error) { $('regexStatus').textContent = 'Invalid pattern: ' + error.message; $('featureCount').textContent = 'No results until the pattern is valid.'; return; } } let visible = 0; cards.forEach((card) => { const match = matcher.test(card.innerText); card.hidden = !match; if (match) visible += 1; if (matcher.global) matcher.lastIndex = 0; }); $('featureCount').textContent = visible + ' of ' + cards.length + ' features'; }
+  search.addEventListener('input', () => filterFeatures(false)); regexPattern.addEventListener('input', () => filterFeatures(true)); regexFlags.addEventListener('input', () => filterFeatures(true)); $('builderButton').addEventListener('click', () => { const open = $('regexBuilder').classList.toggle('open'); $('builderButton').setAttribute('aria-expanded', String(open)); if (open) regexPattern.focus(); }); filterFeatures(false);
+  const commands = [...document.querySelectorAll('.feature-card a'), ...document.querySelectorAll('.docs-list a'), ...document.querySelectorAll('.site-tab')].map((item) => ({ label: item.textContent.trim(), action: () => item.matches('.site-tab') ? openTab(item.dataset.tab) : (location.href = item.href) }));
+  function renderPalette() { const query = $('paletteSearch').value.toLowerCase(); const matches = commands.filter((command) => command.label.toLowerCase().includes(query)).slice(0, 18); $('paletteResults').replaceChildren(...matches.map((command) => { const button = document.createElement('button'); button.type = 'button'; button.textContent = command.label; button.addEventListener('click', () => { command.action(); closePalette(); }); return button; })); }
+  function openPalette() { $('paletteSurface').classList.add('open'); $('paletteSearch').value = ''; renderPalette(); $('paletteSearch').focus(); }
+  function closePalette() { $('paletteSurface').classList.remove('open'); $('paletteButton').focus(); }
+  $('paletteButton').addEventListener('click', openPalette); $('paletteClose').addEventListener('click', closePalette); $('paletteSearch').addEventListener('input', renderPalette); $('paletteSurface').addEventListener('click', (event) => { if (event.target === $('paletteSurface')) closePalette(); }); document.addEventListener('keydown', (event) => { if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'f') { event.preventDefault(); openPalette(); } if (event.key === 'Escape' && $('paletteSurface').classList.contains('open')) closePalette(); }); $('notificationClose').addEventListener('click', () => $('notification').classList.remove('show'));
+  const hash = location.hash.slice(1); if (hash && $(hash)) openTab(hash); else openTab('overview');
+})();
 </script>
-</body></html>
+</body>
+</html>

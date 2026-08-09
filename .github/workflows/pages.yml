@@ -19,6 +19,7 @@ jobs:
         shell: bash
         run: |
           test -s docs/index.html
+          node scripts/validate-pages-material.mjs
           node scripts/validate-docs.mjs
           node scripts/validate-settings-history.mjs
           node scripts/validate-notifications.mjs
