@@ -150,6 +150,10 @@ Leader Programs now also uses a native QTreeWidget host configured from the
 Designer tree's columns, sorting, selection, and edit behavior; its existing
 model class and handlers remain unchanged.
 
+Lingering Programs now uses the same native QTreeWidget host treatment,
+preserving its columns, sorting, selection, edit behavior, delegate, and stop
+event flow.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
