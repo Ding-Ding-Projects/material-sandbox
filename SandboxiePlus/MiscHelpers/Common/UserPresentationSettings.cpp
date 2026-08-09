@@ -7,6 +7,9 @@ const char* languageKey = "Options/LanguageMode";
 const char* funnyEnglishKey = "Options/FunnyLevelEnglish";
 const char* funnyCantoneseKey = "Options/FunnyLevelCantonese";
 const char* emojiKey = "Options/ShowDialogEmojis";
+const char* schoolModeKey = "Options/SchoolModeEnabled";
+const char* schoolModeNameKey = "Options/SchoolModeName";
+const char* shippedSchoolModeName = "School mode";
 
 int clampFunny(int level)
 {
@@ -19,6 +22,8 @@ namespace UserPresentationSettings {
 LanguageMode languageMode(CSettings* settings)
 {
     if (!settings)
+        return LanguageMode::English;
+    if (schoolModeEnabled(settings))
         return LanguageMode::English;
     const QString value = settings->GetString(QString::fromLatin1(languageKey), QStringLiteral("english")).toLower();
     if (value == "cantonese" || value == "zh_hant" || value == "zh-tw")
@@ -63,6 +68,38 @@ bool showDialogEmojis(CSettings* settings)
     return settings ? settings->GetBool(CSettings::SStrRef(emojiKey), true) : true;
 }
 
+bool schoolModeEnabled(CSettings* settings)
+{
+    return settings && settings->GetBool(CSettings::SStrRef(schoolModeKey), false);
+}
+
+void setSchoolModeEnabled(CSettings* settings, bool enabled)
+{
+    if (settings)
+        settings->SetValue(QString::fromLatin1(schoolModeKey), enabled);
+}
+
+QString schoolModeName(CSettings* settings)
+{
+    if (!settings)
+        return QString::fromLatin1(shippedSchoolModeName);
+    const QString value = settings->GetString(QString::fromLatin1(schoolModeNameKey), QString::fromLatin1(shippedSchoolModeName)).trimmed();
+    return value.isEmpty() ? QString::fromLatin1(shippedSchoolModeName) : value.left(80);
+}
+
+void setSchoolModeName(CSettings* settings, const QString& name)
+{
+    if (!settings)
+        return;
+    const QString value = name.trimmed().left(80);
+    settings->SetValue(QString::fromLatin1(schoolModeNameKey), value.isEmpty() ? QString::fromLatin1(shippedSchoolModeName) : value);
+}
+
+void resetSchoolModeName(CSettings* settings)
+{
+    setSchoolModeName(settings, QString::fromLatin1(shippedSchoolModeName));
+}
+
 void setShowDialogEmojis(CSettings* settings, bool enabled)
 {
     if (settings)
@@ -73,14 +110,14 @@ QString formatMessage(CSettings* settings, const QString& english, const QString
 {
     const LanguageMode mode = languageMode(settings);
     const QString zh = cantonese.isEmpty() ? english : cantonese;
-    const int level = mode == LanguageMode::Cantonese ? funnyCantonese(settings) : funnyEnglish(settings);
+    const int level = schoolModeEnabled(settings) ? 1 : (mode == LanguageMode::Cantonese ? funnyCantonese(settings) : funnyEnglish(settings));
     QString styledEnglish = english;
     QString styledCantonese = zh;
-    if (level >= 4 && showDialogEmojis(settings)) {
+    if (!schoolModeEnabled(settings) && level >= 4 && showDialogEmojis(settings)) {
         styledEnglish.prepend(QStringLiteral("✨ "));
         styledCantonese.prepend(QStringLiteral("✨ "));
     }
-    if (level == 5) {
+    if (!schoolModeEnabled(settings) && level == 5) {
         styledEnglish.append(QStringLiteral(" (The facts remain firmly supervised.)"));
         styledCantonese.append(QStringLiteral("（資料照樣由沙盒睇實，放心。）"));
     }

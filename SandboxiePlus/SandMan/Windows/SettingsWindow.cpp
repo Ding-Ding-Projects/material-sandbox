@@ -236,6 +236,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		languageMode->setToolTip(tr("Controls app-authored copy. Translation catalog selection remains separate. The shipped default is English."));
 		presentationForm->addRow(tr("Language mode"), languageMode);
 
+		QList<QWidget*> playfulControls;
 		auto addFunnyLevel = [&](const QString& label, int value, std::function<void(int)> setter) {
 			QWidget* row = new QWidget(presentation);
 			QHBoxLayout* rowLayout = new QHBoxLayout(row);
@@ -254,6 +255,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			});
 			row->setToolTip(tr("Level 1 is fully serious; level 5 adds the most playful voice without changing facts."));
 			presentationForm->addRow(label, row);
+			playfulControls.append(row);
 		};
 		addFunnyLevel(tr("English funny level"), UserPresentationSettings::funnyEnglish(theConf), [](int level) { UserPresentationSettings::setFunnyEnglish(theConf, level); });
 		addFunnyLevel(tr("Cantonese funny level"), UserPresentationSettings::funnyCantonese(theConf), [](int level) { UserPresentationSettings::setFunnyCantonese(theConf, level); });
@@ -263,6 +265,43 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		emojis->setToolTip(tr("Adds relevant decorative emojis to dialog copy; buttons, labels, and accessible names stay factual."));
 		connect(emojis, &QCheckBox::toggled, this, [](bool enabled) { UserPresentationSettings::setShowDialogEmojis(theConf, enabled); });
 		presentationForm->addRow(QString(), emojis);
+		playfulControls.append(emojis);
+
+		QCheckBox* schoolMode = new QCheckBox(tr("Enable %1").arg(UserPresentationSettings::schoolModeName(theConf)), presentation);
+		schoolMode->setChecked(UserPresentationSettings::schoolModeEnabled(theConf));
+		schoolMode->setToolTip(tr("Forces English and temporarily omits playful presentation choices. Previous choices are retained and return when this mode is turned off."));
+		presentationForm->addRow(QString(), schoolMode);
+		QLineEdit* schoolName = new QLineEdit(UserPresentationSettings::schoolModeName(theConf), presentation);
+		schoolName->setMaxLength(80);
+		schoolName->setAccessibleName(tr("School mode name"));
+		schoolName->setToolTip(tr("Rename the mode shown in settings and notices. This is a display label only; it is not a security boundary."));
+		presentationForm->addRow(tr("Mode name"), schoolName);
+		QPushButton* resetSchoolName = new QPushButton(tr("Reset mode name"), presentation);
+		resetSchoolName->setToolTip(tr("Restore the shipped name, School mode."));
+		presentationForm->addRow(QString(), resetSchoolName);
+
+		auto updateSchoolVisibility = [schoolMode, languageMode, playfulControls, schoolName, resetSchoolName]() {
+			const bool enabled = schoolMode->isChecked();
+			languageMode->setVisible(!enabled);
+			for (QWidget* control : playfulControls)
+				control->setVisible(!enabled);
+			schoolName->setVisible(true);
+			resetSchoolName->setVisible(true);
+		};
+		connect(schoolMode, &QCheckBox::toggled, this, [updateSchoolVisibility](bool enabled) {
+			UserPresentationSettings::setSchoolModeEnabled(theConf, enabled);
+			updateSchoolVisibility();
+		});
+		connect(schoolName, &QLineEdit::editingFinished, this, [schoolName, schoolMode]() {
+			UserPresentationSettings::setSchoolModeName(theConf, schoolName->text());
+			schoolMode->setText(tr("Enable %1").arg(UserPresentationSettings::schoolModeName(theConf)));
+		});
+		connect(resetSchoolName, &QPushButton::clicked, this, [schoolName, schoolMode]() {
+			UserPresentationSettings::resetSchoolModeName(theConf);
+			schoolName->setText(UserPresentationSettings::schoolModeName(theConf));
+			schoolMode->setText(tr("Enable %1").arg(UserPresentationSettings::schoolModeName(theConf)));
+		});
+		updateSchoolVisibility();
 
 		QLabel* provenance = new QLabel(tr("Provenance: English, level 1/1, and emojis enabled are the compiled-in values until this profile writes another choice."), presentation);
 		provenance->setWordWrap(true);
