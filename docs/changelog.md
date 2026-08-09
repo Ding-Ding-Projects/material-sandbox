@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options DNS Filter tab
+
+Commit: [1496c35198468d7bfec06fed00fbb473d80269f6](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1496c35198468d7bfec06fed00fbb473d80269f6)
+
+- Rebuilt the Network > DNS Filter child tab with native Material 3 domain/IP and action controls.
+- Preserved per-process editing, delegates, delete behavior, and persistence.
+
 ## 2026-08-09 · Native Options Network Firewall tab
 
 Commit: [3343f4ba493fbf0afbcb1ab8fbe01512ccad257a](https://github.com/Ding-Ding-Projects/material-sandbox/commit/3343f4ba493fbf0afbcb1ab8fbe01512ccad257a)

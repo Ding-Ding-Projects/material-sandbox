@@ -255,6 +255,11 @@ rule table, add/remove/template rail, test fields, and WFP caution are created
 in code while OptionsNetwork keeps embedded rule editors, testing behavior, and
 persistence intact; other OptionsWindow tabs remain staged.
 
+OptionsWindow Network > DNS Filter is now another native slice: its
+per-process domain/IP table, add/remove action rail, and explanatory guidance
+are created in code while OptionsNetwork keeps delegates, editing, and
+delete/persistence behavior intact; other OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
