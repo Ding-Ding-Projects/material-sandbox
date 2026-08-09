@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SandMan.h"
+#include "Windows/M3ShellHost.h"
 #include "../MiscHelpers/Common/Common.h"
 #include "../MiscHelpers/Common/ExitDialog.h"
 #include "../MiscHelpers/Common/SortFilterProxyModel.h"
@@ -571,6 +572,9 @@ CSandMan::CSandMan(QWidget *parent)
 
 	CreateUI();
 	setCentralWidget(m_pMainWidget);
+	// One M3 chrome boundary owns the frame and menu. Legacy views remain
+	// routable underneath it while they migrate to native M3 components.
+	M3ShellHost::Install(this, m_pMenuBar);
 
 	m_iRefreshTick = 0;
 
