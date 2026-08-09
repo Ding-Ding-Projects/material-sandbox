@@ -1520,6 +1520,59 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained Sandboxie.ini child tab with native M3 controls
+	// while preserving portable-box actions and config-protection handlers.
+	if (ui.tabsAdvanced && ui.tabLock) {
+		const int lockIndex = ui.tabsAdvanced->indexOf(ui.tabLock);
+		if (lockIndex >= 0) {
+			auto* nativeLock = new QWidget(ui.tabsAdvanced);
+			auto* lockLayout = new QVBoxLayout(nativeLock);
+			ui.lblIni = new QLabel(tr("Sandbox Configuration"), nativeLock);
+			ui.lblIni->setProperty("m3NativeSurface", true);
+			ui.lblIni->setStyleSheet("font-weight: 600;");
+			lockLayout->addWidget(ui.lblIni);
+			ui.chkWatchConfig = new QCheckBox(tr("Watch Sandboxie.ini for changes"), nativeLock);
+			lockLayout->addWidget(ui.chkWatchConfig);
+			ui.treeImport = new QTreeWidget(nativeLock);
+			ui.treeImport->setColumnCount(1);
+			ui.treeImport->setHeaderLabels(QStringList() << tr("Import Path"));
+			ui.treeImport->setRootIsDecorated(false);
+			lockLayout->addWidget(ui.treeImport, 1);
+			auto* importActions = new QHBoxLayout();
+			ui.btnAddBox = new QToolButton(nativeLock);
+			ui.btnAddBox->setText(tr("Add Portable Box"));
+			ui.btnMkBox = new QToolButton(nativeLock);
+			ui.btnMkBox->setText(tr("Create Portable Box"));
+			ui.btnAddRoot = new QToolButton(nativeLock);
+			ui.btnAddRoot->setText(tr("Add Portable Root"));
+			ui.btnRemBox = new QToolButton(nativeLock);
+			ui.btnRemBox->setText(tr("Remove Entry"));
+			importActions->addWidget(ui.btnAddBox);
+			importActions->addWidget(ui.btnMkBox);
+			importActions->addWidget(ui.btnAddRoot);
+			importActions->addWidget(ui.btnRemBox);
+			importActions->addStretch();
+			lockLayout->addLayout(importActions);
+			ui.lblProtection = new QLabel(tr("Config protection"), nativeLock);
+			ui.lblProtection->setProperty("m3NativeSurface", true);
+			ui.lblProtection->setStyleSheet("font-weight: 600;");
+			lockLayout->addWidget(ui.lblProtection);
+			ui.chkAdminOnly = new QCheckBox(tr("Only Administrator user accounts can make changes"), nativeLock);
+			ui.chkPassRequired = new QCheckBox(tr("Password must be entered in order to make changes"), nativeLock);
+			ui.btnSetPassword = new QPushButton(tr("Change Password"), nativeLock);
+			ui.chkAdminOnlyFP = new QCheckBox(tr("Only Administrator user accounts can use Pause Forcing Programs command"), nativeLock);
+			ui.chkClearPass = new QCheckBox(tr("Clear password when main window becomes hidden"), nativeLock);
+			lockLayout->addWidget(ui.chkAdminOnly);
+			lockLayout->addWidget(ui.chkPassRequired);
+			lockLayout->addWidget(ui.btnSetPassword);
+			lockLayout->addWidget(ui.chkAdminOnlyFP);
+			lockLayout->addWidget(ui.chkClearPass);
+			ui.tabsAdvanced->removeTab(lockIndex);
+			ui.tabsAdvanced->insertTab(lockIndex, nativeLock, tr("Sandboxie.ini"));
+			ui.tabLock->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.
