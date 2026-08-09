@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Legacy chrome switch retirement
+
+Commit: [c0485166784f94d2f6969ab234e0b1aff29889ce](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c0485166784f94d2f6969ab234e0b1aff29889ce)
+
+- Removed startup Windows Vista/11 style selection and migrated the old preference to `false`.
+- Box Assistant controls now inherit the shared Material 3 styling without a proxy chrome override.
+
 ## 2026-08-09 · Ground-up Material 3 shell migration slice
 
 Commit: [babc125bae47c8f8a95fc283fd4936be02731a37](https://github.com/Ding-Ding-Projects/material-sandbox/commit/babc125bae47c8f8a95fc283fd4936be02731a37)
