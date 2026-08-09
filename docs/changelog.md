@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-09 · Activate native Shell child tabs
+
+Commit: [cf86c95a182f4a9f49db9dd58191c732d043fa7e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/cf86c95a182f4a9f49db9dd58191c732d043fa7e)
+
+- Corrected the Tray and Run Menu native replacements to target their actual `tabsShell` owner, activating the migrated controls at runtime.
+
 ## 2026-08-09 · Native Settings Windows Shell tab
 
 Commit: [5c4d93534be1115adf2bc15b1c0e0efaa2d9a02f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5c4d93534be1115adf2bc15b1c0e0efaa2d9a02f)

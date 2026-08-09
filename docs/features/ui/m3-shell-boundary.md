@@ -93,6 +93,10 @@ context-menu, integration, and desktop controls are created in code while the
 contributor-sensitive context-menu replacement and handlers remain intact; the
 remaining Settings tabs stay explicitly staged.
 
+The Tray and Run Menu replacements are owned by `tabsShell`; their native
+install guards and validator coverage now target that owner, so both slices are
+active at runtime rather than merely present in source.
+
 The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.
