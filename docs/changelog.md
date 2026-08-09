@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options accessibility control
+
+Commit: [d36b49a4e9995fcf8340a8c40e5f4e641ead3f3f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d36b49a4e9995fcf8340a8c40e5f4e641ead3f3f)
+
+- Rebuilt the App Templates Accessibility screen-reader switch with a native Material 3 control.
+- Preserved the `ScreenReader` template setting, tooltip, and handler wiring.
+
 ## 2026-08-09 · Native Options template-folder tree
 
 Commit: [cb2025af6fdb151de5f8ae34573904864823d494](https://github.com/Ding-Ding-Projects/material-sandbox/commit/cb2025af6fdb151de5f8ae34573904864823d494)

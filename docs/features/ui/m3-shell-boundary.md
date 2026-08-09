@@ -74,6 +74,9 @@ a native M3 tree. Folder loading, in-cell path editors, sorting, and global
 persistence continue unchanged; only the tree host is part of this bounded
 slice.
 
+App Templates > Accessibility now uses a native M3 screen-reader switch while
+retaining the `ScreenReader` template setting, tooltip, and handler wiring.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
