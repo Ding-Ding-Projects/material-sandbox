@@ -1169,6 +1169,44 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace the last Designer-backed Network Options tab host after all five
+	// child pages have been migrated. Move the existing pages so their models,
+	// controls, labels, icons, enabled state, and selected page stay intact.
+	if (ui.tabsInternet) {
+		auto* legacyInternetTabs = ui.tabsInternet;
+		auto* nativeInternetTabs = new QTabWidget(legacyInternetTabs->parentWidget());
+		nativeInternetTabs->setObjectName(QStringLiteral("tabsInternet"));
+		nativeInternetTabs->setTabPosition(QTabWidget::West);
+		nativeInternetTabs->setDocumentMode(true);
+		nativeInternetTabs->setAccessibleName(tr("Network option pages"));
+		nativeInternetTabs->setProperty("m3NativeSurface", true);
+		const int currentInternetIndex = legacyInternetTabs->currentIndex();
+		auto moveInternetPage = [&](QWidget* page) {
+			const int sourceIndex = legacyInternetTabs->indexOf(page);
+			if (sourceIndex < 0)
+				return;
+			const QString text = legacyInternetTabs->tabText(sourceIndex);
+			const QIcon icon = legacyInternetTabs->tabIcon(sourceIndex);
+			const QString toolTip = legacyInternetTabs->tabToolTip(sourceIndex);
+			const QString whatsThis = legacyInternetTabs->tabWhatsThis(sourceIndex);
+			const bool enabled = legacyInternetTabs->isTabEnabled(sourceIndex);
+			legacyInternetTabs->removeTab(sourceIndex);
+			const int targetIndex = nativeInternetTabs->addTab(page, icon, text);
+			nativeInternetTabs->setTabToolTip(targetIndex, toolTip);
+			nativeInternetTabs->setTabWhatsThis(targetIndex, whatsThis);
+			nativeInternetTabs->setTabEnabled(targetIndex, enabled);
+		};
+		moveInternetPage(ui.tabINet);
+		moveInternetPage(ui.tabNetFw);
+		moveInternetPage(ui.tabDNS);
+		moveInternetPage(ui.tabNetProxy);
+		moveInternetPage(ui.tabNetConfig);
+		nativeInternetTabs->setCurrentIndex(currentInternetIndex);
+		ui.gridLayout_21->replaceWidget(legacyInternetTabs, nativeInternetTabs);
+		legacyInternetTabs->deleteLater();
+		ui.tabsInternet = nativeInternetTabs;
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 	ui.tabs->setAccessibleName(tr("Program options pages"));
 	ui.tabs->setDocumentMode(true);
