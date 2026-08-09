@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Registry tab
+
+Commit: [10315f478ad20e47bc3cb858a8282b3a7cf0b86c](https://github.com/Ding-Ding-Projects/material-sandbox/commit/10315f478ad20e47bc3cb858a8282b3a7cf0b86c)
+
+- Rebuilt the Resource Access > Registry child tab with native Material 3 registry-rule and action controls.
+- Preserved four-column access data, add-menu semantics, template toggles, and deletion handlers.
+
 ## 2026-08-09 · Native Options Resource Files tab
 
 Commit: [0519b002d7926aaeaf0a3e57ba28eac72c681949](https://github.com/Ding-Ding-Projects/material-sandbox/commit/0519b002d7926aaeaf0a3e57ba28eac72c681949)
