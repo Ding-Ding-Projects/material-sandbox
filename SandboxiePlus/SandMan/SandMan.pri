@@ -137,7 +137,6 @@ SOURCES += ./main.cpp \
 
     ./Forms/OptionsWindow.ui \
     ./Forms/PopUpWindow.ui \
-    ./Forms/RecoveryWindow.ui \
     ./Forms/SettingsWindow.ui \
     ./Forms/SnapshotsWindow.ui \
 

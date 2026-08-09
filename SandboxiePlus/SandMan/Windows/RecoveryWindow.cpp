@@ -1,10 +1,19 @@
 #include "stdafx.h"
 #include "RecoveryWindow.h"
+#include "M3DialogHost.h"
 #include "SandMan.h"
 #include "../MiscHelpers/Common/Settings.h"
 #include "../MiscHelpers/Common/TreeItemModel.h"
 #include "../MiscHelpers/Common/Common.h"
 #include "SettingsWindow.h"
+#include <QCheckBox>
+#include <QComboBox>
+#include <QGridLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QToolButton>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 
 #if defined(Q_OS_WIN)
@@ -437,8 +446,41 @@ CRecoveryWindow::CRecoveryWindow(const CSandBoxPtr& pBox, bool bImmediate, QWidg
 		});
 	}
 
-	ui.setupUi(this);
-	this->setWindowTitle(tr("%1 - File Recovery").arg(pBox->GetName()));
+	setWindowTitle(tr("%1 - File Recovery").arg(pBox->GetName()));
+	ui.gridLayout = new QGridLayout();
+	ui.treeFiles = new QTreeView(this);
+	ui.finder = new QWidget(this);
+	ui.finder->setMaximumHeight(1);
+	ui.cmbRecover = new QComboBox(this);
+	ui.btnRefresh = new QPushButton(tr("Refresh"), this);
+	ui.btnAddFolder = new QPushButton(tr("Add Folder"), this);
+	ui.btnRecover = new QToolButton(this);
+	ui.btnRecover->setText(tr("Recover"));
+	ui.btnDelete = new QToolButton(this);
+	ui.btnDelete->setText(tr("Delete"));
+	ui.btnDeleteAll = new QToolButton(this);
+	ui.btnDeleteAll->setText(tr("Delete Content"));
+	ui.btnClose = new QToolButton(this);
+	ui.btnClose->setText(tr("Close"));
+	ui.chkShowAll = new QCheckBox(tr("Show All Files"), this);
+	ui.chkShowIgnored = new QCheckBox(tr("Show Ignored Files"), this);
+	ui.lblInfo = new QLabel(this);
+	ui.gridLayout->addWidget(ui.treeFiles, 0, 0, 3, 6);
+	ui.gridLayout->addWidget(ui.finder, 3, 0, 1, 5);
+	ui.gridLayout->addWidget(ui.lblInfo, 4, 0, 1, 5);
+	ui.gridLayout->addWidget(new QLabel(tr("Recover target:"), this), 5, 0);
+	ui.gridLayout->addWidget(ui.cmbRecover, 5, 1, 1, 4);
+	ui.gridLayout->addWidget(ui.btnRecover, 5, 5);
+	ui.gridLayout->addWidget(ui.btnRefresh, 6, 0);
+	ui.gridLayout->addWidget(ui.btnAddFolder, 6, 1);
+	ui.gridLayout->addWidget(ui.chkShowAll, 6, 2);
+	ui.gridLayout->addWidget(ui.chkShowIgnored, 6, 3);
+	ui.gridLayout->addWidget(ui.btnDeleteAll, 6, 4);
+	ui.gridLayout->addWidget(ui.btnClose, 6, 5);
+	auto* root = new QVBoxLayout(this);
+	root->setContentsMargins(16, 16, 16, 16);
+	root->addLayout(ui.gridLayout);
+	M3DialogHost::Install(this);
 
 	FixTriStateBoxPallete(this);
 

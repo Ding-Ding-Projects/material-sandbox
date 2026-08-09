@@ -2,9 +2,16 @@
 
 #include <QtWidgets/QMainWindow>
 #include <QFileIconProvider>
-#include "ui_RecoveryWindow.h"
 #include "SbiePlusAPI.h"
 class CSimpleTreeModel;
+class QCheckBox;
+class QComboBox;
+class QLabel;
+class QGridLayout;
+class QPushButton;
+class QToolButton;
+class QTreeView;
+class QWidget;
 
 class CRecoveryCounter : public QThread
 {
@@ -137,7 +144,21 @@ protected:
 		const QString& boxedPath);
 
 private:
-	Ui::RecoveryWindow ui;
+	struct Controls {
+		QGridLayout* gridLayout = nullptr;
+		QWidget* finder = nullptr;
+		QTreeView* treeFiles = nullptr;
+		QComboBox* cmbRecover = nullptr;
+		QPushButton* btnAddFolder = nullptr;
+		QPushButton* btnRefresh = nullptr;
+		QToolButton* btnRecover = nullptr;
+		QToolButton* btnDelete = nullptr;
+		QToolButton* btnDeleteAll = nullptr;
+		QToolButton* btnClose = nullptr;
+		QCheckBox* chkShowAll = nullptr;
+		QCheckBox* chkShowIgnored = nullptr;
+		QLabel* lblInfo = nullptr;
+	} ui;
 	QAction* m_pRemember;
 	
 	CSimpleTreeModel* m_pFileModel;
