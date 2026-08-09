@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Complete Day Teet Hui feature inventory
+
+Commit: [c84586d5a0ea5056639769b535aa23f460f758de](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c84586d5a0ea5056639769b535aa23f460f758de)
+
+- The landing page now exposes all 18 feature articles from the hand-written index, including destructive confirmation, native CI evidence, and editor settings.
+- The Pages validator requires that exact article list and rejects missing or extra feature cards.
+
 ## 2026-08-09 · Contributor capability initialization and Pages language/tone wiring
 
 Commits: [33202613770e9bb4c1329827fb88b395cb00e26e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/33202613770e9bb4c1329827fb88b395cb00e26e), [4730fbad267a86686cd5fdff6985b050b1f64d95](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4730fbad267a86686cd5fdff6985b050b1f64d95)
