@@ -10,8 +10,6 @@
 #include <QKeySequenceEdit>
 #include <QLineEdit>
 #include <QPlainTextEdit>
-#include <QProxyStyle>
-#include <QStyleFactory>
 #include <QRadioButton>
 #include <QSignalBlocker>
 #include <QSpinBox>
@@ -95,25 +93,6 @@ protected:
 		Painter.fillRect(pButton->style()->subElementRect(Element, &Option, pButton), pButton->property("pending_button_color").value<QColor>());
 		pButton->style()->drawControl(bCheckBox ? QStyle::CE_CheckBox : QStyle::CE_RadioButton, &Option, &Painter, pButton);
 		return true;
-	}
-};
-
-class CPendingEditorStyle : public QProxyStyle
-{
-public:
-	CPendingEditorStyle(QStyle* pBase)
-		: QProxyStyle(pBase)
-	{
-	}
-
-	void drawPrimitive(PrimitiveElement Element, const QStyleOption* pOption, QPainter* pPainter, const QWidget* pWidget = nullptr) const override
-	{
-		QProxyStyle::drawPrimitive(Element, pOption, pPainter, pWidget);
-		if (Element == PE_PanelLineEdit && pWidget && pWidget->property("pending_editor_color").isValid()) {
-			QRect Rect = pOption ? pOption->rect : pWidget->rect();
-			Rect.adjust(1, 1, -1, -1);
-			pPainter->fillRect(Rect, pWidget->property("pending_editor_color").value<QColor>());
-		}
 	}
 };
 
@@ -361,34 +340,12 @@ private:
 
 	bool IsHoldingChanges() const { return m_pHoldChange && *m_pHoldChange; }
 	static bool IsValueExcluded(const QWidget* pControl) { return pControl->property(ValueExcludedProperty).toBool(); }
-	static QString GetStyleKey(const QStyle* pStyle)
-	{
-		if (!pStyle)
-			return QString();
-		QString ClassName = pStyle->metaObject()->className();
-		if (ClassName.contains("Windows11", Qt::CaseInsensitive))
-			return "windows11";
-		if (ClassName.contains("WindowsVista", Qt::CaseInsensitive))
-			return "windowsvista";
-		if (ClassName.contains("Windows", Qt::CaseInsensitive))
-			return "windows";
-		if (ClassName.contains("Fusion", Qt::CaseInsensitive))
-			return "fusion";
-		if (QProxyStyle* pProxy = qobject_cast<QProxyStyle*>(const_cast<QStyle*>(pStyle)))
-			return GetStyleKey(pProxy->baseStyle());
-		return QString();
-	}
-
 	static void InstallEditorStyle(QLineEdit* pLineEdit)
 	{
 		if (pLineEdit->property(ValueEditorStyleProperty).toBool())
 			return;
-		QStyle* pBase = QStyleFactory::create(GetStyleKey(pLineEdit->style()));
-		if (!pBase)
-			return;
-		CPendingEditorStyle* pStyle = new CPendingEditorStyle(pBase);
-		pStyle->setParent(pLineEdit);
-		pLineEdit->setStyle(pStyle);
+		// MaterialTheme owns the widget style. Pending state is expressed through
+		// the control palette and the existing paint filters, never a second style.
 		pLineEdit->setProperty(ValueEditorStyleProperty, true);
 	}
 	static bool IsComboLineEdit(const QLineEdit* pLineEdit)

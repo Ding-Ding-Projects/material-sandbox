@@ -77,7 +77,6 @@
 #include <QHeaderView>
 #include <QToolBar>
 #include <QScrollBar>
-#include <QStyleFactory>
 #include <QSortFilterProxyModel>
 #include <QStackedLayout>
 #include <QTreeWidget>
