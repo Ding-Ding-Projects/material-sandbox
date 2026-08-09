@@ -181,6 +181,49 @@ requireWindow(
   'start-helper reminder suppression',
 );
 
+// Native capability state is initialized before optional certificate I/O. The
+// explicit field assignments keep the contributor contract reviewable and stop
+// a missing Certificate.dat from disabling driver/service features.
+requireWindow(
+  'Sandboxie/core/drv/verify.c',
+  '_FX NTSTATUS KphValidateCertificate()',
+  'CleanupExit:',
+  ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'KphSetContributorCapabilities();', 'return STATUS_SUCCESS;'],
+  'native early contributor capability initialization',
+);
+requireText('Sandboxie/core/drv/verify.c', 'Verify_CertInfo.type = eCertContributor;', 'contributor certificate type');
+requireText('Sandboxie/core/drv/verify.c', 'Verify_CertInfo.level = eCertMaxLevel;', 'contributor maximum capability level');
+for (const [rel, needles, label] of [
+  ['Sandboxie/core/drv/api.c', ['Verify_CertInfo.opt_sec', 'Verify_CertInfo.opt_enc', 'Verify_CertInfo.opt_net'], 'driver feature flag consumers'],
+  ['Sandboxie/core/drv/process.c', ['Verify_CertInfo.active && Verify_CertInfo.opt_sec', 'Verify_CertInfo.active && Verify_CertInfo.opt_enc', 'Verify_CertInfo.active'], 'driver security encryption breakout gates'],
+  ['Sandboxie/core/svc/MountManager.cpp', ['CertInfo.active && (UseFileImage ? CertInfo.opt_enc : CertInfo.opt_sec)'], 'service image protection gate'],
+  ['Sandboxie/core/svc/UserServer.cpp', ['CertInfo.active && CertInfo.opt_enc'], 'service encryption gate'],
+  ['Sandboxie/core/dll/net.c', ['CertInfo.active && CertInfo.opt_net'], 'network feature gate'],
+  ['Sandboxie/core/dll/dns_filter.c', ['CertInfo.active && CertInfo.opt_net'], 'DNS feature gate'],
+  ['SandboxiePlus/SandMan/SandMan.cpp', ['ForceUsbDrives', 'g_CertInfo.active'], 'desktop USB gate'],
+  ['SandboxiePlus/SandMan/Windows/SettingsWindow.cpp', ['chkSandboxUsb', 'g_CertInfo.active', 'CheckForUpdates'], 'settings USB and update gates'],
+]) {
+  for (const needle of needles) requireText(rel, needle, `${label}: ${needle}`);
+}
+{
+  const sandman = read('SandboxiePlus/SandMan/SandMan.cpp');
+  const debug = sandman.indexOf('Debug/IgnoreCertificate');
+  const guard = sandman.lastIndexOf('#ifndef SANDBOXIE_CONTRIBUTOR_BUILD', debug);
+  const close = sandman.indexOf('#endif', debug);
+  if (debug < 0 || guard < 0 || close < 0 || close < debug)
+    throw new Error('SandboxiePlus/SandMan/SandMan.cpp: debug certificate simulation exclusion is missing');
+  if (!sandman.includes('Debug/CertFakeAboutToExpire', debug) || !sandman.includes('Debug/CertFakeOutdated', debug))
+    throw new Error('SandboxiePlus/SandMan/SandMan.cpp: debug certificate simulation contract is incomplete');
+  checks.push('debug certificate simulation exclusion');
+}
+requireWindow(
+  'Sandboxie/apps/start/aboutdlg.cpp',
+  'bool DoAboutDialog(bool bReminder)',
+  'if (CertInfo.active)',
+  ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'if (g_bReminder)', 'return true;', '#endif'],
+  'start-helper reminder suppression',
+);
+
 // Keep the legal boundary explicit: contributor capability changes must never
 // delete GPL/LGPL/Qt/upstream notices or their source files.
 const readme = read('README.md');
