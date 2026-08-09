@@ -1849,6 +1849,26 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.tabsOther = nativeOtherTabs;
 	}
 
+	// Advanced Options now uses a native M3 tab host for all advanced pages;
+	// dynamic Debug removal and each migrated child continue to target the same
+	// object name and page order.
+	{
+		auto* nativeAdvancedTabs = new QTabWidget(this);
+		nativeAdvancedTabs->setObjectName(QStringLiteral("tabsAdvanced"));
+		nativeAdvancedTabs->addTab(ui.tabMisc, tr("Miscellaneous"));
+		nativeAdvancedTabs->addTab(ui.tabTriggers, tr("Triggers"));
+		nativeAdvancedTabs->addTab(ui.tabProcesses, tr("Processes"));
+		nativeAdvancedTabs->addTab(ui.tabPrivacy, tr("Privacy"));
+		nativeAdvancedTabs->addTab(ui.tabUsers, tr("Users"));
+		nativeAdvancedTabs->addTab(ui.tabTracing, tr("Tracing"));
+		nativeAdvancedTabs->addTab(ui.tabDebug, tr("Debug"));
+		nativeAdvancedTabs->setCurrentIndex(ui.tabsAdvanced->currentIndex());
+		nativeAdvancedTabs->setProperty("m3NativeSurface", true);
+		ui.gridLayout_121->replaceWidget(ui.tabsAdvanced, nativeAdvancedTabs);
+		ui.tabsAdvanced->deleteLater();
+		ui.tabsAdvanced = nativeAdvancedTabs;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
