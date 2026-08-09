@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Wnd tab
+
+Commit: [7d061cdf58ec1931ea71530791c1fa2f9ba57c34](https://github.com/Ding-Ding-Projects/material-sandbox/commit/7d061cdf58ec1931ea71530791c1fa2f9ba57c34)
+
+- Rebuilt the Resource Access > Wnd child tab with native Material 3 window-class and policy controls.
+- Preserved four-column access data, template toggles, no-rename behavior, and deletion handlers.
+
 ## 2026-08-09 · Native Options IPC tab
 
 Commit: [3b7577e28f449ddffd6a0cbc797221b6c14d4aea](https://github.com/Ding-Ding-Projects/material-sandbox/commit/3b7577e28f449ddffd6a0cbc797221b6c14d4aea)
