@@ -426,6 +426,49 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace the Advanced Security child tab with native M3 controls while
+	// preserving OptionsAdvanced's security persistence and dependency rules.
+	if (ui.tabsSecurity && ui.tabPrivileges) {
+		const int privilegeIndex = ui.tabsSecurity->indexOf(ui.tabPrivileges);
+		if (privilegeIndex >= 0) {
+			auto* nativePrivileges = new QWidget(ui.tabsSecurity);
+			auto* privilegeLayout = new QVBoxLayout(nativePrivileges);
+			ui.lblPrivilege = new QLabel(tr("Privilege isolation"), nativePrivileges);
+			ui.lblPrivilege->setProperty("m3NativeSurface", true);
+			ui.lblPrivilege->setStyleSheet("font-weight: 600;");
+			privilegeLayout->addWidget(ui.lblPrivilege);
+			ui.chkProtectSCM = new QCheckBox(tr("Allow only privileged processes to access the Service Control Manager"), nativePrivileges);
+			ui.chkRestrictServices = new QCheckBox(tr("Do not start sandboxed services using a system token (recommended)"), nativePrivileges);
+			ui.chkElevateRpcss = new QCheckBox(tr("Start the sandboxed RpcSs as a SYSTEM process (not recommended)"), nativePrivileges);
+			ui.chkProtectSystem = new QCheckBox(tr("Protect sandboxed SYSTEM processes from unprivileged processes"), nativePrivileges);
+			ui.chkDropPrivileges = new QCheckBox(tr("Drop critical privileges from processes running with a SYSTEM token"), nativePrivileges);
+			ui.chkDropConHostIntegrity = new QCheckBox(tr("Drop ConHost.exe Process Integrity Level"), nativePrivileges);
+			privilegeLayout->addWidget(ui.chkProtectSCM);
+			privilegeLayout->addWidget(ui.chkRestrictServices);
+			privilegeLayout->addWidget(ui.chkElevateRpcss);
+			privilegeLayout->addWidget(ui.chkProtectSystem);
+			privilegeLayout->addWidget(ui.chkDropPrivileges);
+			privilegeLayout->addWidget(ui.chkDropConHostIntegrity);
+			ui.lblToken = new QLabel(tr("Sandboxie token"), nativePrivileges);
+			ui.lblToken->setProperty("m3NativeSurface", true);
+			ui.lblToken->setStyleSheet("font-weight: 600;");
+			privilegeLayout->addWidget(ui.lblToken);
+			ui.chkSbieLogon = new QCheckBox(tr("Use a Sandboxie login instead of an anonymous token"), nativePrivileges);
+			ui.chkSbieLogon->setToolTip(tr("A Sandboxie login identifies the box while retaining token isolation."));
+			ui.chkCreateToken = new QCheckBox(tr("Create a new sandboxed token instead of stripping down the original token"), nativePrivileges);
+			ui.chkCreateToken->setTristate(true);
+			ui.chkCreateToken->setToolTip(tr("Checked: add the box group to the token. Partially checked: create the token without extra groups."));
+			ui.chkNotUntrusted = new QCheckBox(tr("Use LOW integrity token instead of UNTRUSTED (reduces isolation)"), nativePrivileges);
+			privilegeLayout->addWidget(ui.chkSbieLogon);
+			privilegeLayout->addWidget(ui.chkCreateToken);
+			privilegeLayout->addWidget(ui.chkNotUntrusted);
+			privilegeLayout->addStretch();
+			ui.tabsSecurity->removeTab(privilegeIndex);
+			ui.tabsSecurity->insertTab(privilegeIndex, nativePrivileges, tr("Advanced Security"));
+			ui.tabPrivileges->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
