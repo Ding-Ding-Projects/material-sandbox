@@ -4,6 +4,11 @@
 #include "../MiscHelpers/Common/Settings.h"
 #include "../MiscHelpers/Common/Common.h"
 
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+
 
 CCompressDialog::CCompressDialog(QWidget *parent)
 	: QDialog(parent)
@@ -19,24 +24,40 @@ CCompressDialog::CCompressDialog(QWidget *parent)
 	//flags &= ~Qt::WindowSystemMenuHint;
 	setWindowFlags(flags);
 
-	ui.setupUi(this);
-	this->setWindowTitle(tr("Sandboxie-Plus - Sandbox Export"));
+	setWindowTitle(tr("Sandbox export"));
+	auto* form = new QFormLayout(this);
+	m_format = new QComboBox(this);
+	m_format->setAccessibleName(tr("Export format"));
+	form->addRow(tr("Format"), m_format);
+	m_compression = new QComboBox(this);
+	m_compression->setAccessibleName(tr("Compression level"));
+	form->addRow(tr("Compression"), m_compression);
+	m_solid = new QCheckBox(tr("Create solid archive"), this);
+	m_solid->setAccessibleName(tr("Create solid archive"));
+	form->addRow(QString(), m_solid);
+	m_encrypt = new QCheckBox(tr("Encrypt archive"), this);
+	m_encrypt->setAccessibleName(tr("Encrypt archive"));
+	form->addRow(QString(), m_encrypt);
+	auto* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+	form->addRow(QString(), buttons);
+	setLayout(form);
 
-	connect(ui.cmbFormat, SIGNAL(currentIndexChanged(int)), this, SLOT(OnFormatChanged(int)));
+	connect(m_format, qOverload<int>(&QComboBox::currentIndexChanged), this, &CCompressDialog::OnFormatChanged);
 
-	ui.cmbFormat->addItem(tr("7-Zip"), ".7z");
-	ui.cmbFormat->addItem(tr("Zip"), ".zip");
+	m_format->addItem(tr("7-Zip"), ".7z");
+	m_format->addItem(tr("Zip"), ".zip");
 
-	ui.cmbCompression->addItem(tr("Store"), 0);
-	ui.cmbCompression->addItem(tr("Fastest"), 1);
-	ui.cmbCompression->addItem(tr("Fast"), 3);
-	ui.cmbCompression->addItem(tr("Normal"), 5);
-	ui.cmbCompression->addItem(tr("Maximum"), 7);
-	ui.cmbCompression->addItem(tr("Ultra"), 9);
-	ui.cmbCompression->setCurrentIndex(ui.cmbCompression->findData(theConf->GetInt("Options/ExportCompression", 3)));
+	m_compression->addItem(tr("Store"), 0);
+	m_compression->addItem(tr("Fastest"), 1);
+	m_compression->addItem(tr("Fast"), 3);
+	m_compression->addItem(tr("Normal"), 5);
+	m_compression->addItem(tr("Maximum"), 7);
+	m_compression->addItem(tr("Ultra"), 9);
+	m_compression->setCurrentIndex(m_compression->findData(theConf->GetInt("Options/ExportCompression", 3)));
 
-	connect(ui.buttonBox, SIGNAL(accepted()), SLOT(accept()));
-	connect(ui.buttonBox, SIGNAL(rejected()), SLOT(reject()));
+	connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
+	connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
+	OnFormatChanged(m_format->currentIndex());
 
 	//restoreGeometry(theConf->GetBlob("CompressDialog/Window_Geometry"));
 }
@@ -48,32 +69,32 @@ CCompressDialog::~CCompressDialog()
 
 void CCompressDialog::OnFormatChanged(int index)
 {
-	ui.chkSolid->setEnabled(index == 0);
-	ui.chkEncrypt->setEnabled(index == 0);
+	m_solid->setEnabled(index == 0);
+	m_encrypt->setEnabled(index == 0);
 }
 
 QString CCompressDialog::GetFormat()
 {
-	return ui.cmbFormat->currentData().toString();
+	return m_format->currentData().toString();
 }
 
 int CCompressDialog::GetLevel()
 {
-	return ui.cmbCompression->currentData().toInt();
+	return m_compression->currentData().toInt();
 }
 
 bool CCompressDialog::MakeSolid()
 {
-	return ui.chkSolid->isChecked();
+	return m_solid->isChecked();
 }
 
 void CCompressDialog::SetMustEncrypt()
 {
-	ui.chkEncrypt->setChecked(true);
-	ui.chkEncrypt->setEnabled(false);
+	m_encrypt->setChecked(true);
+	m_encrypt->setEnabled(false);
 }
 
 bool CCompressDialog::UseEncryption()
 {
-	return ui.chkEncrypt->isChecked();
+	return m_encrypt->isChecked();
 }

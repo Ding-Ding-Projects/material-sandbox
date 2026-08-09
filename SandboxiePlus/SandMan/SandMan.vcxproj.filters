@@ -516,9 +516,6 @@
     <QtUic Include="Forms\BoxImageWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="Forms\CompressDialog.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="Forms\TestProxyDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>

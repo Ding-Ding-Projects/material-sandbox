@@ -1,8 +1,10 @@
 #pragma once
 
-#include <QtWidgets/QMainWindow>
-#include "ui_CompressDialog.h"
+#include <QDialog>
 #include "SbiePlusAPI.h"
+
+class QComboBox;
+class QCheckBox;
 
 class CCompressDialog : public QDialog
 {
@@ -23,5 +25,8 @@ private slots:
 	void OnFormatChanged(int index);
 
 private:
-	Ui::CompressDialog ui;
+	QComboBox* m_format = nullptr;
+	QComboBox* m_compression = nullptr;
+	QCheckBox* m_solid = nullptr;
+	QCheckBox* m_encrypt = nullptr;
 };
