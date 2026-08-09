@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-09 · Native Network Options tab host
+
+Commit: [9f6c3051cc9d0e899f4807c63420aad0e738b090](https://github.com/Ding-Ding-Projects/material-sandbox/commit/9f6c3051cc9d0e899f4807c63420aad0e738b090)
+
+- Rebuilt the five-page Network Options host as a native Material 3 tab widget with left docking, document mode, native-surface metadata, and an accessible name.
+- Preserved the host object name, child page order, labels, icons, enabled state, selected page, and all existing child control behavior.
+- Added a completeness contract covering every page and required host property; its negative-path test fails when a required accessible name is removed.
+
 ## 2026-08-09 · Complete SandMan contributor build matrix
 
 Commit: [d715832683ed0ee3cc3de3fd653b84f38c78029f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d715832683ed0ee3cc3de3fd653b84f38c78029f)
