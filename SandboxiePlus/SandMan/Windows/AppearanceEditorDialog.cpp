@@ -115,7 +115,7 @@ CAppearanceEditorDialog::CAppearanceEditorDialog(const QFont& initialFont, const
     m_preview->setAccessibleName(tr("Material appearance live preview"));
     form->addRow(tr("Preview"), m_preview);
 
-    QLabel* unsupported = new QLabel(tr("Not represented by this native slice: variable-font axes, line-height, baseline offset, superscript, subscript, text effects, and per-element overrides. Line-height and baseline controls are intentionally not fabricated because Qt's application font cannot apply them consistently to every widget. These remain visible as an explicit limitation instead of being silently discarded."), this);
+    QLabel* unsupported = new QLabel(tr("Not represented by this global native slice: variable-font axes, line-height, baseline offset, superscript, subscript, text effects, and per-element overrides. Line-height, baseline, superscript, and subscript controls are intentionally not fabricated because Qt's application font cannot apply them consistently to every widget. Per-element font overrides are available from a tab's Edit tab appearance action and are persisted for that target."), this);
     unsupported->setWordWrap(true);
     unsupported->setProperty("secondary", true);
     form->addRow(tr("Unsupported properties"), unsupported);

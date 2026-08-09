@@ -9,6 +9,7 @@
 #include <QDialogButtonBox>
 #include <QFontComboBox>
 #include <QFormLayout>
+#include <QFont>
 #include <QGroupBox>
 #include <QInputDialog>
 #include <QLabel>
@@ -95,6 +96,32 @@ void CTabStateManager::load()
         m_groups.insert(it.key(), it.value().toString());
     if (schema >= 2)
         m_active = root.value(QStringLiteral("active")).toString();
+
+    // Per-tab appearance is a real element target: restore only the bounded
+    // QFont attributes that Qt widgets can apply without inventing layout
+    // semantics such as line-height or baseline offsets.
+    const QJsonObject appearance = root.value(QStringLiteral("appearance")).toObject();
+    for (auto it = appearance.cbegin(); it != appearance.cend(); ++it) {
+        m_appearanceOverrides.insert(it.key());
+        QWidget* page = nullptr;
+        for (int i = 0; i < m_tabs->count(); ++i)
+            if (tabKey(i) == it.key()) { page = m_tabs->widget(i); break; }
+        if (!page || !it.value().isObject())
+            continue;
+        const QJsonObject value = it.value().toObject();
+        QFont font = page->font();
+        if (value.contains(QStringLiteral("family"))) font.setFamily(value.value(QStringLiteral("family")).toString());
+        if (value.contains(QStringLiteral("pointSize"))) font.setPointSize(value.value(QStringLiteral("pointSize")).toInt());
+        if (value.contains(QStringLiteral("weight"))) font.setWeight(static_cast<QFont::Weight>(value.value(QStringLiteral("weight")).toInt()));
+        if (value.contains(QStringLiteral("style"))) font.setStyle(static_cast<QFont::Style>(value.value(QStringLiteral("style")).toInt()));
+        if (value.contains(QStringLiteral("underline"))) font.setUnderline(value.value(QStringLiteral("underline")).toBool());
+        if (value.contains(QStringLiteral("strikeOut"))) font.setStrikeOut(value.value(QStringLiteral("strikeOut")).toBool());
+        if (value.contains(QStringLiteral("overline"))) font.setOverline(value.value(QStringLiteral("overline")).toBool());
+        if (value.contains(QStringLiteral("capitalization"))) font.setCapitalization(static_cast<QFont::Capitalization>(value.value(QStringLiteral("capitalization")).toInt()));
+        if (value.contains(QStringLiteral("letterSpacing"))) font.setLetterSpacing(QFont::AbsoluteSpacing, value.value(QStringLiteral("letterSpacing")).toDouble());
+        if (value.contains(QStringLiteral("wordSpacing"))) font.setWordSpacing(value.value(QStringLiteral("wordSpacing")).toDouble());
+        page->setFont(font);
+    }
 }
 
 void CTabStateManager::save() const
@@ -116,6 +143,28 @@ void CTabStateManager::save() const
         groups.insert(it.key(), it.value());
     root.insert(QStringLiteral("groups"), groups);
     root.insert(QStringLiteral("active"), m_active.isEmpty() ? tabKey(m_tabs->currentIndex()) : m_active);
+    QJsonObject appearance;
+    for (const QString& key : m_appearanceOverrides) {
+        QWidget* page = nullptr;
+        for (int i = 0; i < m_tabs->count(); ++i)
+            if (tabKey(i) == key) { page = m_tabs->widget(i); break; }
+        if (!page)
+            continue;
+        const QFont font = page->font();
+        QJsonObject value;
+        value.insert(QStringLiteral("family"), font.family());
+        value.insert(QStringLiteral("pointSize"), font.pointSize());
+        value.insert(QStringLiteral("weight"), static_cast<int>(font.weight()));
+        value.insert(QStringLiteral("style"), static_cast<int>(font.style()));
+        value.insert(QStringLiteral("underline"), font.underline());
+        value.insert(QStringLiteral("strikeOut"), font.strikeOut());
+        value.insert(QStringLiteral("overline"), font.overline());
+        value.insert(QStringLiteral("capitalization"), static_cast<int>(font.capitalization()));
+        value.insert(QStringLiteral("letterSpacing"), font.letterSpacing());
+        value.insert(QStringLiteral("wordSpacing"), font.wordSpacing());
+        appearance.insert(key, value);
+    }
+    root.insert(QStringLiteral("appearance"), appearance);
     m_settings->SetBlob(m_key, QJsonDocument(root).toJson(QJsonDocument::Compact));
 }
 
@@ -212,10 +261,12 @@ void CTabStateManager::showContextMenu(const QPoint& position)
         form->addRow(tr("Size"), size);
         QPushButton* apply = new QPushButton(tr("Apply"), editor);
         form->addRow(QString(), apply);
-        connect(apply, &QPushButton::clicked, editor, [page, font, size, editor]() {
+        connect(apply, &QPushButton::clicked, editor, [this, page, font, size, editor, name]() {
             QFont value = font->currentFont();
             value.setPointSize(size->value());
             page->setFont(value);
+            m_appearanceOverrides.insert(name);
+            save();
             editor->close();
         });
         const QPoint anchor = m_tabs->tabBar()->mapToGlobal(m_tabs->tabBar()->tabRect(m_tabs->indexOf(page)).bottomLeft());
