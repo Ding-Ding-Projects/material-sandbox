@@ -956,6 +956,17 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		migrateGuiBehaviorCheck(ui.chkNewLayout);
 		migrateGuiBehaviorCheck(ui.chkColorIcons);
 		migrateGuiBehaviorCheck(ui.chkHighlightPendingChanges);
+		migrateGuiBehaviorCheck(ui.chkOverlayIcons);
+		migrateGuiBehaviorCheck(ui.chkHideCore);
+		auto* grouping = new QComboBox(ui.tabUI);
+		grouping->setObjectName(ui.cmbGrouping->objectName());
+		grouping->setEnabled(ui.cmbGrouping->isEnabled());
+		grouping->setToolTip(ui.cmbGrouping->toolTip());
+		grouping->setAccessibleName(ui.cmbGrouping->accessibleName().isEmpty() ? tr("Group state on start") : ui.cmbGrouping->accessibleName());
+		grouping->setProperty("m3NativeSurface", true);
+		ui.gridLayout_15->replaceWidget(ui.cmbGrouping, grouping);
+		ui.cmbGrouping->deleteLater();
+		ui.cmbGrouping = grouping;
 	}
 
 	if (theConf->GetBool("Options/AltRowColors", false)) {
