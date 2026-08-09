@@ -25,6 +25,8 @@ const compressHeader = read('SandboxiePlus/SandMan/Windows/CompressDialog.h');
 const compressSource = read('SandboxiePlus/SandMan/Windows/CompressDialog.cpp');
 const editorHeader = read('SandboxiePlus/SandMan/Windows/EditorSettingsWindow.h');
 const editorSource = read('SandboxiePlus/SandMan/Windows/EditorSettingsWindow.cpp');
+const testProxyHeader = read('SandboxiePlus/SandMan/Windows/TestProxyDialog.h');
+const testProxySource = read('SandboxiePlus/SandMan/Windows/TestProxyDialog.cpp');
 const migratedViews = [
   'SandboxiePlus/SandMan/Views/FileView.cpp',
   'SandboxiePlus/SandMan/Views/NtObjectView.cpp',
@@ -57,6 +59,7 @@ const checks = [
   [renameHeader.includes('m_boxName') && renameSource.includes('QFormLayout') && !renameSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/RenameSandboxDialog.ui')), 'rename dialog is rebuilt without a legacy .ui form'],
   [compressHeader.includes('m_format') && compressSource.includes('QFormLayout') && !compressSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/CompressDialog.ui')), 'compress dialog is rebuilt without a legacy .ui form'],
   [editorHeader.includes('QTableWidget* settingsTable') && editorSource.includes('QVBoxLayout') && !editorSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/EditorSettingsWindow.ui')), 'editor settings dialog is rebuilt without a legacy .ui form'],
+  [testProxyHeader.includes('struct Controls') && testProxySource.includes('QStackedWidget') && testProxySource.includes('M3DialogHost::Install(this)') && !testProxySource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/TestProxyDialog.ui')), 'test proxy dialog is rebuilt without a legacy .ui form'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);
