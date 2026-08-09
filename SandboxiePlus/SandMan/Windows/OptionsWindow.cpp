@@ -1313,6 +1313,39 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.btnDelRecovery = nativeDelRecovery;
 	}
 
+	// Native M3 controls for Dlls & Extensions keep the DLL model and host-image
+	// protection handlers intact while replacing the last Designer controls in
+	// this child tab.
+	{
+		auto replaceDllControl = [](QWidget* oldControl, QWidget* nativeControl, QGridLayout* layout) {
+			if (oldControl && nativeControl && layout) {
+				layout->replaceWidget(oldControl, nativeControl);
+				oldControl->deleteLater();
+			}
+		};
+		auto* nativeDllTree = new QTreeWidget(this);
+		nativeDllTree->setObjectName(QStringLiteral("treeInjectDll"));
+		nativeDllTree->setColumnCount(2);
+		nativeDllTree->setHeaderLabels(QStringList() << tr("Name") << tr("Description"));
+		nativeDllTree->setSortingEnabled(true);
+		nativeDllTree->setProperty("m3NativeSurface", true);
+		auto* nativeHostProtect = new QCheckBox(
+			tr("Prevent sandboxed programs installed on the host from loading DLLs from the sandbox"), this);
+		nativeHostProtect->setObjectName(QStringLiteral("chkHostProtect"));
+		nativeHostProtect->setToolTip(ui.chkHostProtect->toolTip());
+		nativeHostProtect->setProperty("m3NativeSurface", true);
+		auto* nativeHostProtectMsg = new QCheckBox(
+			tr("Issue message 1305 when a program tries to load a sandboxed dll"), this);
+		nativeHostProtectMsg->setObjectName(QStringLiteral("chkHostProtectMsg"));
+		nativeHostProtectMsg->setProperty("m3NativeSurface", true);
+		replaceDllControl(ui.treeInjectDll, nativeDllTree, ui.gridLayout_49);
+		replaceDllControl(ui.chkHostProtect, nativeHostProtect, ui.gridLayout_49);
+		replaceDllControl(ui.chkHostProtectMsg, nativeHostProtectMsg, ui.gridLayout_49);
+		ui.treeInjectDll = nativeDllTree;
+		ui.chkHostProtect = nativeHostProtect;
+		ui.chkHostProtectMsg = nativeHostProtectMsg;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
