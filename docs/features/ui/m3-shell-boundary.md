@@ -117,6 +117,10 @@ The USB Drive Sandboxing child tab is now another concrete native slice: its
 toggle, sandbox selector, and volume tree are created in code while sandbox
 model population and enablement handlers remain intact.
 
+The Local Templates child tab is now another concrete native slice: its filter,
+multi-select tree, and add/open/remove actions are created in code while
+pending-change tracking and template handlers remain intact.
+
 The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings Local Templates tab
+
+Commit: [4b6ec4969a0c417560d905a7566d2161b4e3951d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4b6ec4969a0c417560d905a7566d2161b4e3951d)
+
+- Rebuilt the Local Templates child tab with native Material 3 filter, multi-select tree, and template actions.
+- Preserved pending-change tracking, template menus, and existing handlers.
+
 ## 2026-08-09 · Native Settings USB sandbox tab
 
 Commit: [aacf96e5be483ba0ec9f8adf8912225b544e793d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/aacf96e5be483ba0ec9f8adf8912225b544e793d)
