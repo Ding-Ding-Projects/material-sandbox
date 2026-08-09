@@ -672,6 +672,50 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Breakout Programs with native M3 controls while preserving
+	// browse menus, security advisory copy, delegates, and breakout handlers.
+	if (ui.tabsForce && ui.tabBreakout) {
+		const int breakoutIndex = ui.tabsForce->indexOf(ui.tabBreakout);
+		if (breakoutIndex >= 0) {
+			auto* legacyBreakout = ui.tabBreakout;
+			auto* nativeBreakout = new QWidget(ui.tabsForce);
+			auto* breakoutLayout = new QVBoxLayout(nativeBreakout);
+			auto* breakoutHint = new QLabel(tr("Programs listed here may break out of this sandbox or be captured into another sandbox."), nativeBreakout);
+			breakoutHint->setWordWrap(true);
+			breakoutLayout->addWidget(breakoutHint);
+			ui.treeBreakout = new QTreeWidget(nativeBreakout);
+			ui.treeBreakout->setColumnCount(2);
+			ui.treeBreakout->setHeaderLabels(QStringList() << tr("Type") << tr("Name"));
+			ui.treeBreakout->setSortingEnabled(true);
+			breakoutLayout->addWidget(ui.treeBreakout, 1);
+			auto* breakoutActions = new QHBoxLayout();
+			ui.btnBreakoutProg = new QToolButton(nativeBreakout);
+			ui.btnBreakoutProg->setText(tr("Breakout Program"));
+			ui.btnBreakoutDir = new QToolButton(nativeBreakout);
+			ui.btnBreakoutDir->setText(tr("Breakout Folder"));
+			ui.btnBreakoutDoc = new QToolButton(nativeBreakout);
+			ui.btnBreakoutDoc->setText(tr("Breakout Document"));
+			ui.btnDelBreakout = new QPushButton(tr("Remove"), nativeBreakout);
+			ui.chkShowBreakoutTmpl = new QCheckBox(tr("Show Templates"), nativeBreakout);
+			breakoutActions->addWidget(ui.btnBreakoutProg);
+			breakoutActions->addWidget(ui.btnBreakoutDir);
+			breakoutActions->addWidget(ui.btnBreakoutDoc);
+			breakoutActions->addWidget(ui.btnDelBreakout);
+			breakoutActions->addWidget(ui.chkShowBreakoutTmpl);
+			breakoutActions->addStretch();
+			breakoutLayout->addLayout(breakoutActions);
+			ui.lblBreakOut = new QLabel(tr("<b>Security advisory:</b> Breakout rules combined with broad resource paths can compromise isolation; review the documentation before use."), nativeBreakout);
+			ui.lblBreakOut->setWordWrap(true);
+			ui.lblBreakOut->setTextFormat(Qt::RichText);
+			ui.lblBreakOut->setOpenExternalLinks(false);
+			breakoutLayout->addWidget(ui.lblBreakOut);
+			ui.tabsForce->removeTab(breakoutIndex);
+			ui.tabsForce->insertTab(breakoutIndex, nativeBreakout, tr("Breakout Programs"));
+			ui.tabBreakout = nativeBreakout;
+			legacyBreakout->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
