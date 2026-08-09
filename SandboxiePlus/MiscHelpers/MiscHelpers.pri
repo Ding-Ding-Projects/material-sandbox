@@ -28,6 +28,7 @@ HEADERS += ./MiscHelpers.h \
     ./Common/SortFilterProxyModel.h \
     ./Common/SplitTreeView.h \
     ./Common/TabPanel.h \
+    ./Common/TabStateManager.h \
     ./Common/TreeItemModel.h \
     ./Common/TreeViewEx.h \
     ./Common/TreeWidgetEx.h \
@@ -70,6 +71,7 @@ SOURCES += ./MiscHelpers.cpp \
     ./Common/SmartGridWidget.cpp \
     ./Common/SplitTreeView.cpp \
     ./Common/TabPanel.cpp \
+    ./Common/TabStateManager.cpp \
     ./Common/TreeItemModel.cpp \
     ./Common/Xml.cpp \
     ./Common/MT/ThreadLock.cpp \

@@ -84,6 +84,9 @@
     <ClCompile Include="Common\TabPanel.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="Common\TabStateManager.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
     <ClCompile Include="Common\TreeItemModel.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -253,6 +256,9 @@
       <Filter>Common</Filter>
     </QtMoc>
     <QtMoc Include="Common\TabPanel.h">
+      <Filter>Common</Filter>
+    </QtMoc>
+    <QtMoc Include="Common\TabStateManager.h">
       <Filter>Common</Filter>
     </QtMoc>
     <QtMoc Include="Common\TreeItemModel.h">

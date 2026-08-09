@@ -3,6 +3,7 @@
 #include "EditorSettingsWindow.h"
 #include "SandMan.h"
 #include "../MiscHelpers/Common/Settings.h"
+#include "../MiscHelpers/Common/TabStateManager.h"
 #include "../MiscHelpers/Common/UserPresentationSettings.h"
 #include "../MiscHelpers/Common/Common.h"
 #include "../MiscHelpers/Common/OtherFunctions.h"
@@ -205,6 +206,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	this->setWindowFlag(Qt::WindowStaysOnTopHint, theGUI->IsAlwaysOnTop());
 
 	ui.setupUi(this);
+	new CTabStateManager(ui.tabs, theConf, QStringLiteral("SettingsWindow/Tabs"), this);
 	this->setWindowTitle(tr("Sandboxie Plus - Global Settings"));
 
 	// Global presentation settings live beside the existing interface controls

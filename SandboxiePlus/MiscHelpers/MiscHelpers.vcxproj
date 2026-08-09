@@ -325,6 +325,7 @@
     <ClCompile Include="Common\SmartGridWidget.cpp" />
     <ClCompile Include="Common\SplitTreeView.cpp" />
     <ClCompile Include="Common\TabPanel.cpp" />
+    <ClCompile Include="Common\TabStateManager.cpp" />
     <ClCompile Include="Common\TreeItemModel.cpp" />
     <ClCompile Include="Common\Xml.cpp" />
     <ClCompile Include="MiscHelpers.cpp" />
@@ -373,6 +374,7 @@
     <QtMoc Include="Common\SortFilterProxyModel.h" />
     <QtMoc Include="Common\SplitTreeView.h" />
     <QtMoc Include="Common\TabPanel.h" />
+    <QtMoc Include="Common\TabStateManager.h" />
     <QtMoc Include="Common\TreeItemModel.h" />
     <QtMoc Include="Common\TreeViewEx.h" />
     <QtMoc Include="Common\TreeWidgetEx.h" />

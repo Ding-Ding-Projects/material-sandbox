@@ -4,6 +4,7 @@
 #include "SandMan.h"
 #include "SettingsWindow.h"
 #include "../MiscHelpers/Common/Settings.h"
+#include "../MiscHelpers/Common/TabStateManager.h"
 #include "../MiscHelpers/Common/Common.h"
 #include "../MiscHelpers/Common/ComboInputDialog.h"
 #include "../MiscHelpers/Common/SettingsWidgets.h"
@@ -188,6 +189,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	this->setWindowFlag(Qt::WindowStaysOnTopHint, theGUI->IsAlwaysOnTop());
 
 	ui.setupUi(this);
+	new CTabStateManager(ui.tabs, theConf, QStringLiteral("OptionsWindow/Tabs"), this);
 	this->setWindowTitle(tr("Sandboxie Plus - '%1' Options").arg(QString(Name).replace("_", " ")));
 
 	ui.tabs->setTabPosition(QTabWidget::West);
