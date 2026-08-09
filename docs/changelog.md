@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Access Policies tab
+
+Commit: [360655729b897c0bfd1bf19dd6cc8523b7ae0e7e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/360655729b897c0bfd1bf19dd6cc8523b7ae0e7e)
+
+- Rebuilt the Resource Access > Access Policies child tab with native Material 3 policy controls and guidance.
+- Preserved privacy/specificity dependencies, boxed-access behavior, and persistence.
+
 ## 2026-08-09 · Native Options COM tab
 
 Commit: [d4bcbd453eb340e73c809d388740a1bf5e06ba2d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d4bcbd453eb340e73c809d388740a1bf5e06ba2d)
