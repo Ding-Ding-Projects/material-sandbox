@@ -7,5 +7,5 @@
     {"slug":"notifications","path":"../features/notifications.md","related":["settings-history","material-design"]},
     {"slug":"color-translator","path":"../features/color-translator.md","related":["material-design","settings-history"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"062426ff"}
+  "changelog": {"path":"../changelog.md","commit":"f144d7fb"}
 }

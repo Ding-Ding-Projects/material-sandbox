@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-09 · Material color translator
+
+Commit: [f144d7fb](https://github.com/Ding-Ding-Projects/material-sandbox/commit/f144d7fbfb9b09010311772d0397339b1fd0472a)
+
+- Added bidirectional HEX/RGB/HSL accent editing with alpha, contrast feedback, validation, and keyboard focus.
+
 ## 2026-08-09 · Notifications and screenshot gallery
 
 Commit: [062426ff](https://github.com/Ding-Ding-Projects/material-sandbox/commit/062426ff87594ccd170bee2fba74dbf80d55d8bf)
