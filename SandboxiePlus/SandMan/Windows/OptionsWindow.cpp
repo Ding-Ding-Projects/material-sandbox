@@ -1526,6 +1526,20 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.btnDelTemplate = nativeDelTemplate;
 	}
 
+	// Template Folders keeps its editable path delegates but receives a native
+	// M3 tree host, preserving the item-widget contract used by the folder model.
+	{
+		auto* nativeFolderTree = new QTreeWidget(this);
+		nativeFolderTree->setObjectName(QStringLiteral("treeFolders"));
+		nativeFolderTree->setColumnCount(2);
+		nativeFolderTree->setHeaderLabels(QStringList() << tr("Name") << tr("Value"));
+		nativeFolderTree->setSortingEnabled(true);
+		nativeFolderTree->setProperty("m3NativeSurface", true);
+		ui.gridLayout_42->replaceWidget(ui.treeFolders, nativeFolderTree);
+		ui.treeFolders->deleteLater();
+		ui.treeFolders = nativeFolderTree;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
