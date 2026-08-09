@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Network Other Options tab
+
+Commit: [3a077e56cf5b55b09e98f79b78f6a26f99c5c2bc](https://github.com/Ding-Ding-Projects/material-sandbox/commit/3a077e56cf5b55b09e98f79b78f6a26f99c5c2bc)
+
+- Rebuilt Network > Other Options with native Material 3 restriction, adapter-binding, and dual-IP controls.
+- Preserved adapter population, read-only behavior, and persistence.
+
 ## 2026-08-09 · Native Options Internet Proxy tab
 
 Commit: [e25ff3752f651c56a670bf38597a609ba4304e64](https://github.com/Ding-Ding-Projects/material-sandbox/commit/e25ff3752f651c56a670bf38597a609ba4304e64)

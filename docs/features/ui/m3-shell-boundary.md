@@ -266,6 +266,11 @@ code while OptionsNetwork keeps embedded editors, proxy testing, ordering,
 hidden legacy switches, and persistence intact; other OptionsWindow tabs remain
 staged.
 
+OptionsWindow Network > Other Options is now another native slice: port and
+network restriction toggles, adapter binding, and IPv4/IPv6 fields are created
+in code while OptionsNetwork keeps adapter population, read-only rules, and
+persistence intact; other OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
