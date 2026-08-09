@@ -61,6 +61,7 @@ QString BuildStyleSheet(bool dark, const QColor& accentSeed, int density)
         QTreeView, QListView, QTableView { background: %2; alternate-background-color: %3; border: 1px solid %5; border-radius: 12px; selection-background-color: %8; selection-color: %9; }
         QHeaderView::section { background: %3; border: 0; padding: 8px; }
         QGroupBox { border: 1px solid %5; border-radius: 12px; margin-top: 12px; padding: 12px; }
+        QGroupBox[m3NativeSurface="true"] { border: 2px solid %2; background: %1; }
         QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 6px; }
         QStatusBar { background: %3; }
         QToolBar { background: %2; border: 0; spacing: 6px; padding: 6px; }
