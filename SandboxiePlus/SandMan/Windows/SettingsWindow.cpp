@@ -1781,6 +1781,29 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Sandboxie Updater is now a native page; replace its remaining Designer
+	// support-tab host while preserving the page label and current selection.
+	if (ui.tabsSupport) {
+		auto* legacySupportTabs = ui.tabsSupport;
+		auto* nativeSupportTabs = new QTabWidget(legacySupportTabs->parentWidget());
+		nativeSupportTabs->setObjectName(QStringLiteral("tabsSupport"));
+		nativeSupportTabs->setTabPosition(QTabWidget::West);
+		nativeSupportTabs->setAccessibleName(tr("Support settings pages"));
+		const int currentSupportIndex = legacySupportTabs->currentIndex();
+		while (legacySupportTabs->count() > 0) {
+			const int index = legacySupportTabs->count() - 1;
+			nativeSupportTabs->insertTab(0, legacySupportTabs->widget(index), legacySupportTabs->tabText(index));
+			nativeSupportTabs->setTabIcon(0, legacySupportTabs->tabIcon(index));
+			legacySupportTabs->removeTab(index);
+		}
+		nativeSupportTabs->setCurrentIndex(qBound(0, currentSupportIndex, nativeSupportTabs->count() - 1));
+		nativeSupportTabs->setProperty("m3NativeSurface", true);
+		if (auto* supportHostLayout = legacySupportTabs->parentWidget()->layout())
+			supportHostLayout->replaceWidget(legacySupportTabs, nativeSupportTabs);
+		legacySupportTabs->deleteLater();
+		ui.tabsSupport = nativeSupportTabs;
+	}
+
 	// Replace the self-contained Edit ini child tab with native M3 controls while
 	// preserving editor actions, validation toggles and the text buffer pointer.
 	if (ui.tabs && ui.tabEdit) {

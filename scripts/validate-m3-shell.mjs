@@ -69,6 +69,7 @@ const checks = [
   [settingsSource.includes('nativeTemplateTabs') && settingsSource.includes('setAccessibleName(tr("Template settings pages"))') && settingsSource.includes('setProperty("m3NativeSurface", true)'), 'Settings template tab host is rebuilt with native Material 3 controls'],
   [settingsSource.includes('nativeAdvancedTabs') && settingsSource.includes('setAccessibleName(tr("Advanced settings pages"))') && settingsSource.includes('setProperty("m3NativeSurface", true)'), 'Settings advanced tab host is rebuilt with native Material 3 controls'],
   [settingsSource.includes('nativeSettingsTabs') && settingsSource.includes('setAccessibleName(tr("Settings pages"))') && settingsSource.includes('setProperty("m3NativeSurface", true)'), 'Settings outer tab host is rebuilt with native Material 3 controls'],
+  [settingsSource.includes('nativeSupportTabs') && settingsSource.includes('setAccessibleName(tr("Support settings pages"))') && settingsSource.includes('setProperty("m3NativeSurface", true)'), 'Settings support tab host is rebuilt with native Material 3 controls'],
   [!fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/CustomStyles.h')) && !read('SandboxiePlus/SandMan/SandMan.pri').includes('CustomStyles.h'), 'obsolete proxy chrome source is removed from the build'],
   [sandmanPri.includes('Windows/M3DialogHost.h') && sandmanPri.includes('Windows/M3DialogHost.cpp'), 'dialog host is registered in qmake'],
   [dialogHost.includes('FramelessWindowHint') && dialogHost.includes('m3DialogInstalled'), 'dialog host is frameless and idempotent'],
