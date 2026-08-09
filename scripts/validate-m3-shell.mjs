@@ -6,12 +6,16 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const pri = read('SandboxiePlus/SandMan/SandMan.pri');
 const cpp = read('SandboxiePlus/SandMan/SandMan.cpp');
 const host = read('SandboxiePlus/SandMan/Windows/M3ShellHost.cpp');
+const theme = read('SandboxiePlus/MiscHelpers/Common/MaterialTheme.cpp');
+const sandman = read('SandboxiePlus/SandMan/SandMan.cpp');
 const checks = [
   [pri.includes('Windows/M3ShellHost.h'), 'header is listed in SandMan.pri'],
   [pri.includes('Windows/M3ShellHost.cpp'), 'source is listed in SandMan.pri'],
   [cpp.includes('M3ShellHost::Install(this, m_pMenuBar)'), 'CSandMan installs the M3 shell'],
   [host.includes('m3ShellInstalled'), 'installation is idempotent'],
   [host.includes('FramelessWindowHint'), 'native chrome is replaced'],
+  [!theme.includes('QStyleFactory::create'), 'theme does not reset to a legacy style'],
+  [!sandman.includes('QApplication::setStyle(new KeepSubMenusVisibleStyle'), 'main window does not re-wrap legacy chrome'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);

@@ -19,7 +19,10 @@ The legacy seams are `CSandMan` (`QMainWindow`), `SettingsWindow.ui`,
 `OptionsWindow.ui`, and the dialogs under `SandMan/Windows`. `CustomStyles.h`
 continues to style data controls but is no longer allowed to own product
 chrome. Follow-up migrations should move one view at a time behind this host,
-then remove its legacy form and proxy-style dependency.
+then remove its legacy form and proxy-style dependency. The central theme path
+no longer constructs `Fusion` or wraps the application in the old proxy chrome;
+data-view factories remain an explicitly tracked follow-up until each view is
+rebuilt as a native M3 component.
 
 ## Failure and accessibility notes
 

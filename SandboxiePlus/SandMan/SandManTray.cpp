@@ -185,7 +185,7 @@ void CSandMan::CreateTrayMenu()
 		//m_pTrayBoxes->setStyleSheet("QTreeView::item:hover{background-color:#FFFF00;}");
 		m_pTrayBoxes->setItemDelegate(new CTrayBoxesItemDelegate());
 
-		m_pTrayBoxes->setStyle(QStyleFactory::create(m_DefaultStyle));
+		// Tray views inherit the shared Material 3 application style.
 
 		pLayout->insertSpacing(0, 0);// keep left edge aligned with menu text
 

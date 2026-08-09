@@ -1,7 +1,6 @@
 #include "MaterialTheme.h"
 
 #include <QPalette>
-#include <QStyleFactory>
 
 namespace {
 
@@ -83,7 +82,6 @@ void Apply(QApplication* app, bool dark, const QColor& accentSeed, int density)
     if (!app)
         return;
 
-    app->setStyle(QStyleFactory::create("Fusion"));
     app->setPalette(BuildPalette(dark, accentSeed));
     app->setStyleSheet(BuildStyleSheet(dark, accentSeed, density));
 }

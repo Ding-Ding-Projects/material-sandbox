@@ -4515,7 +4515,7 @@ void CSandMan::RebuildUI()
 
 	UpdateState();
 
-	if(m_pTrayBoxes) m_pTrayBoxes->setStyle(QStyleFactory::create(m_DefaultStyle));
+	// Tray views inherit the shared Material 3 application style.
 }
 
 void CSandMan::OnResetMsgs()
@@ -5064,7 +5064,6 @@ void CSandMan::SetUITheme()
 	if (textColor.isValid()) { appearancePalette.setColor(QPalette::WindowText, textColor); appearancePalette.setColor(QPalette::Text, textColor); }
 	if (highlight.isValid() && highlight.alpha() > 0) appearancePalette.setColor(QPalette::Highlight, highlight);
 	QApplication::setPalette(appearancePalette);
-	QApplication::setStyle(new KeepSubMenusVisibleStyle(new CustomTabStyle(QApplication::style())));
 	QApplication::setApplicationDisplayName(SandManDisplayName());
 	QString displayTitle = tr("%1 v%2").arg(SandManDisplayName()).arg(GetVersion());
 	if (IsElevated()) displayTitle.append(tr(" (Administrator)"));
