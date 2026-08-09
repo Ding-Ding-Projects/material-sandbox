@@ -2007,6 +2007,24 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.treeLeader = nativeLeaderTree;
 	}
 
+	// Lingering Programs keeps the same QTreeWidget model class while moving
+	// its host to a native M3 surface; delegates and event filters rebind below.
+	{
+		auto* nativeStopTree = new QTreeWidget(this);
+		nativeStopTree->setObjectName(ui.treeStop->objectName());
+		nativeStopTree->setColumnCount(ui.treeStop->columnCount());
+		nativeStopTree->setHeaderLabels({ui.treeStop->headerItem()->text(0)});
+		nativeStopTree->setSortingEnabled(ui.treeStop->isSortingEnabled());
+		nativeStopTree->setRootIsDecorated(ui.treeStop->rootIsDecorated());
+		nativeStopTree->setAlternatingRowColors(ui.treeStop->alternatingRowColors());
+		nativeStopTree->setSelectionMode(ui.treeStop->selectionMode());
+		nativeStopTree->setEditTriggers(ui.treeStop->editTriggers());
+		nativeStopTree->setProperty("m3NativeSurface", true);
+		ui.gridLayout_14->replaceWidget(ui.treeStop, nativeStopTree);
+		ui.treeStop->deleteLater();
+		ui.treeStop = nativeStopTree;
+	}
+
 	// Start Restrictions replaces its Designer controls while retaining the
 	// existing tree and radio semantics used by the start-policy handlers.
 	{
