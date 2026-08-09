@@ -154,6 +154,10 @@ Lingering Programs now uses the same native QTreeWidget host treatment,
 preserving its columns, sorting, selection, edit behavior, delegate, and stop
 event flow.
 
+Start Restrictions now uses the same native QTreeWidget host treatment,
+preserving its columns, sorting, selection, edit behavior, delegate, and policy
+event flow.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

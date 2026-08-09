@@ -58,6 +58,13 @@ Commit: [be543390a3ad099d3cca3cadcf11e0bd830dc7d4](https://github.com/Ding-Ding-
 - Rebuilt the Lingering Programs QTreeWidget host with native Material 3 surface metadata and the existing tree behavior.
 - Preserved columns, sorting, selection, edit behavior, its delegate, and stop event flow.
 
+## 2026-08-09 · Native Options start tree host
+
+Commit: [1438e8456aa6d41a7d4d719613892090cfc00276](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1438e8456aa6d41a7d4d719613892090cfc00276)
+
+- Rebuilt the Start Restrictions QTreeWidget host with native Material 3 surface metadata and the existing tree behavior.
+- Preserved columns, sorting, selection, edit behavior, its delegate, and policy event flow.
+
 ## 2026-08-09 · Native Options resource-access tab host
 
 Commit: [01cf568a6d36d64b7e2450e532ffc3785cf0d0b1](https://github.com/Ding-Ding-Projects/material-sandbox/commit/01cf568a6d36d64b7e2450e532ffc3785cf0d0b1)
