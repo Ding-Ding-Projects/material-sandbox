@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Program Groups tab
+
+Commit: [b1f8b7b26e7c2cfcc6390437ea5dde2f25aa2aec](https://github.com/Ding-Ding-Projects/material-sandbox/commit/b1f8b7b26e7c2cfcc6390437ea5dde2f25aa2aec)
+
+- Rebuilt the Program Groups child tab with native Material 3 tree and action controls.
+- Preserved group delegates, model behavior, template toggles, and compact-layout moves.
+
 ## 2026-08-09 · Native Options Job Object tab
 
 Commit: [7203cf4fa9260dd487ec276cabef3f3d3bf4fbe2](https://github.com/Ding-Ding-Projects/material-sandbox/commit/7203cf4fa9260dd487ec276cabef3f3d3bf4fbe2)

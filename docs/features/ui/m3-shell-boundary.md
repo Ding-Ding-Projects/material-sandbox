@@ -192,6 +192,11 @@ memory, process-count, and CPU limits are created in code with responsive
 label/value rows while OptionsAdvanced keeps numeric validation, dynamic
 enablement, and persistence; other OptionsWindow tabs remain staged.
 
+OptionsWindow Program Groups is now another native slice: its group tree and
+add/remove/template action rail are created in code while the existing group
+delegates, model, and handlers remain intact; compact layout moves reuse the
+same native page and other OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
