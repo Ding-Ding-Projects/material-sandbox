@@ -630,6 +630,48 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Force Programs with native M3 controls while preserving force
+	// rules, browse menus, delegates, and disable-for-box behavior.
+	if (ui.tabsForce && ui.tabForceProgs) {
+		const int forceIndex = ui.tabsForce->indexOf(ui.tabForceProgs);
+		if (forceIndex >= 0) {
+			auto* legacyForce = ui.tabForceProgs;
+			auto* nativeForce = new QWidget(ui.tabsForce);
+			auto* forceLayout = new QVBoxLayout(nativeForce);
+			auto* forceHint = new QLabel(tr("Programs started from these entries or locations are placed in this sandbox unless explicitly started elsewhere."), nativeForce);
+			forceHint->setWordWrap(true);
+			forceLayout->addWidget(forceHint);
+			ui.treeForced = new QTreeWidget(nativeForce);
+			ui.treeForced->setColumnCount(2);
+			ui.treeForced->setHeaderLabels(QStringList() << tr("Type") << tr("Name"));
+			ui.treeForced->setSortingEnabled(true);
+			forceLayout->addWidget(ui.treeForced, 1);
+			auto* forceActions = new QHBoxLayout();
+			ui.btnForceProg = new QToolButton(nativeForce);
+			ui.btnForceProg->setText(tr("Force Program"));
+			ui.btnForceChild = new QToolButton(nativeForce);
+			ui.btnForceChild->setText(tr("Force Children"));
+			ui.btnForceDir = new QToolButton(nativeForce);
+			ui.btnForceDir->setText(tr("Force Folder"));
+			ui.btnDelForce = new QPushButton(tr("Remove"), nativeForce);
+			ui.chkShowForceTmpl = new QCheckBox(tr("Show Templates"), nativeForce);
+			forceActions->addWidget(ui.btnForceProg);
+			forceActions->addWidget(ui.btnForceChild);
+			forceActions->addWidget(ui.btnForceDir);
+			forceActions->addWidget(ui.btnDelForce);
+			forceActions->addWidget(ui.chkShowForceTmpl);
+			forceActions->addStretch();
+			forceLayout->addLayout(forceActions);
+			ui.chkDisableForced = new QCheckBox(tr("Disable forced Process and Folder rules for this sandbox"), nativeForce);
+			forceLayout->addWidget(ui.chkDisableForced);
+			ui.tabsForce->removeTab(forceIndex);
+			ui.tabsForce->insertTab(forceIndex, nativeForce, tr("Force Programs"));
+			ui.tabForceProgs = nativeForce;
+			ui.tabForceProgs->setProperty("m3NativeSurface", true);
+			legacyForce->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
