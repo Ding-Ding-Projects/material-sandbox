@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Security Isolation tab
+
+Commit: [7cbd1001225b06f2e0baeee0603e88780d4724f8](https://github.com/Ding-Ding-Projects/material-sandbox/commit/7cbd1001225b06f2e0baeee0603e88780d4724f8)
+
+- Rebuilt the Security Isolation child tab with native Material 3 filtering and desktop-isolation controls.
+- Preserved compatibility guidance, OptionsAdvanced safety dependencies, and persistence.
+
 ## 2026-08-09 · Native Options Advanced Security tab
 
 Commit: [d49220ce900358a2b37aaf03909c52782326d9fe](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d49220ce900358a2b37aaf03909c52782326d9fe)

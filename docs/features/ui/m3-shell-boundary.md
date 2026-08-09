@@ -177,6 +177,11 @@ Sandboxie-token controls are created in code while OptionsAdvanced keeps the
 existing persistence, tristate semantics, and dependency rules; other
 OptionsWindow tabs remain staged.
 
+OptionsWindow Security Isolation is now another native slice: compatibility
+guidance, security-filtering switches, and desktop-isolation controls are
+created in code while OptionsAdvanced keeps the existing safety dependencies
+and persistence; other OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
