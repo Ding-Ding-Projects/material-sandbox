@@ -1296,6 +1296,47 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained add-on configuration child tab with native M3
+	// controls while retaining the Ram Disk persistence and enablement handlers.
+	if (ui.tabsAddons && ui.tabAddonConfig) {
+		const int addonConfigIndex = ui.tabsAddons->indexOf(ui.tabAddonConfig);
+		if (addonConfigIndex >= 0) {
+			auto* nativeAddonConfig = new QWidget(ui.tabsAddons);
+			auto* addonForm = new QFormLayout(nativeAddonConfig);
+			ui.lblDiskImage = new QLabel(tr("Disk Image Support"), nativeAddonConfig);
+			ui.lblDiskImage->setProperty("m3NativeSurface", true);
+			ui.lblDiskImage->setStyleSheet("font-weight: 600;");
+			addonForm->addRow(ui.lblDiskImage);
+			ui.lblImDisk = new QLabel(tr("<a href=\"addon://ImDisk\">Install ImDisk</a> driver to enable Ram Disk and Disk Image support."), nativeAddonConfig);
+			ui.lblImDisk->setOpenExternalLinks(false);
+			ui.lblImDisk->setWordWrap(true);
+			addonForm->addRow(ui.lblImDisk);
+			ui.chkRamDisk = new QCheckBox(tr("Enable Ram Disk creation"), nativeAddonConfig);
+			ui.txtRamLimit = new QLineEdit(nativeAddonConfig);
+			ui.lblRamLimit = new QLabel(tr("RAM Limit"), nativeAddonConfig);
+			ui.lblRamLetter = new QLabel(tr("* takes effect on disk creation"), nativeAddonConfig);
+			ui.lblRamLetter->setToolTip(tr("When a Ram Disk is already mounted you need to unmount it for this option to take effect."));
+			auto* ramLimitRow = new QHBoxLayout();
+			ramLimitRow->addWidget(ui.chkRamDisk, 1);
+			ramLimitRow->addWidget(ui.lblRamLimit);
+			ramLimitRow->addWidget(ui.txtRamLimit);
+			ramLimitRow->addWidget(new QLabel(tr("kilobytes"), nativeAddonConfig));
+			addonForm->addRow(ramLimitRow);
+			ui.chkRamLetter = new QCheckBox(tr("Assign drive letter to Ram Disk"), nativeAddonConfig);
+			ui.cmbRamLetter = new QComboBox(nativeAddonConfig);
+			ui.cmbRamLetter->setFixedWidth(80);
+			auto* ramLetterRow = new QHBoxLayout();
+			ramLetterRow->addWidget(ui.chkRamLetter, 1);
+			ramLetterRow->addWidget(ui.cmbRamLetter);
+			ramLetterRow->addWidget(ui.lblRamLetter);
+			addonForm->addRow(ramLetterRow);
+			addonForm->addRow(new QLabel(tr("Changes apply to the next Ram Disk creation."), nativeAddonConfig));
+			ui.tabsAddons->removeTab(addonConfigIndex);
+			ui.tabsAddons->insertTab(addonConfigIndex, nativeAddonConfig, tr("Add-On Configuration"));
+			ui.tabAddonConfig->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.
