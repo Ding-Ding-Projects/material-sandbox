@@ -1644,6 +1644,40 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained Edit ini child tab with native M3 controls while
+	// preserving editor actions, validation toggles and the text buffer pointer.
+	if (ui.tabs && ui.tabEdit) {
+		const int editIndex = ui.tabs->indexOf(ui.tabEdit);
+		if (editIndex >= 0) {
+			auto* nativeEdit = new QWidget(ui.tabs);
+			auto* editLayout = new QVBoxLayout(nativeEdit);
+			auto* editToolbar = new QHBoxLayout();
+			ui.btnEditIni = new QPushButton(tr("Edit ini"), nativeEdit);
+			ui.chkValidateIniKeys = new QCheckBox(tr("Validate"), nativeEdit);
+			ui.chkEnableTooltips = new QCheckBox(tr("Tooltips"), nativeEdit);
+			ui.chkEnableAutoCompletion = new QCheckBox(tr("Complete"), nativeEdit);
+			ui.btnEditorSettings = new QPushButton(tr("⚙"), nativeEdit);
+			ui.btnEditorSettings->setAccessibleName(tr("Editor settings"));
+			ui.btnSaveIni = new QPushButton(tr("Save"), nativeEdit);
+			ui.btnCancelEdit = new QPushButton(tr("Cancel"), nativeEdit);
+			editToolbar->addWidget(ui.btnEditIni);
+			editToolbar->addWidget(ui.chkValidateIniKeys);
+			editToolbar->addWidget(ui.chkEnableTooltips);
+			editToolbar->addWidget(ui.chkEnableAutoCompletion);
+			editToolbar->addStretch();
+			editToolbar->addWidget(ui.btnEditorSettings);
+			editToolbar->addWidget(ui.btnSaveIni);
+			editToolbar->addWidget(ui.btnCancelEdit);
+			editLayout->addLayout(editToolbar);
+			ui.txtIniSection = new QPlainTextEdit(nativeEdit);
+			ui.txtIniSection->setLineWrapMode(QPlainTextEdit::NoWrap);
+			editLayout->addWidget(ui.txtIniSection, 1);
+			ui.tabs->removeTab(editIndex);
+			ui.tabs->insertTab(editIndex, nativeEdit, tr("Edit ini Section"));
+			ui.tabEdit->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.

@@ -97,6 +97,7 @@ const checks = [
   [settingsSource.includes('auto* compatActions = new QVBoxLayout()') && settingsSource.includes('ui.btnAddCompat->setAccessibleName') && settingsSource.includes('ui.lblUpdateTemplates->setWordWrap(true)'), 'settings app compatibility actions stay responsive and accessible'],
   [settingsSource.includes('nativeLock') && settingsSource.includes('ui.tabsAdvanced->insertTab(lockIndex, nativeLock') && settingsSource.includes('ui.treeImport = new QTreeWidget(nativeLock)') && settingsSource.includes('ui.btnSetPassword = new QPushButton'), 'settings Sandboxie.ini child tab is rebuilt with native controls'],
   [settingsSource.includes('nativeUpdate') && settingsSource.includes('ui.tabsSupport->insertTab(updateIndex, nativeUpdate') && settingsSource.includes('ui.cmbInterval = new QComboBox(nativeUpdate)') && settingsSource.includes('ui.radStable = new QRadioButton'), 'settings updater child tab is rebuilt with native controls'],
+  [settingsSource.includes('nativeEdit') && settingsSource.includes('ui.tabs->insertTab(editIndex, nativeEdit') && settingsSource.includes('ui.txtIniSection = new QPlainTextEdit(nativeEdit)') && settingsSource.includes('ui.btnEditorSettings->setAccessibleName'), 'settings ini editor child tab is rebuilt with native controls'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);
