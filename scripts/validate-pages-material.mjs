@@ -32,6 +32,7 @@ const featureSlugs = [
   'features/dim-sum-surprise.md', 'features/color-translator.md', 'features/contributor-build-audit.md',
   'features/settings-provenance.md', 'features/build-entrypoints.md', 'features/destructive-confirmation.md',
   'features/native-ci-evidence.md', 'features/ui/m3-shell-boundary.md', 'features/editor-settings.md',
+  'features/changelog-viewer.md', 'features/pages-language-tone.md', 'features/pages-a11y-boundary.md',
 ];
 const featureCount = (source.match(/class="card feature-card"/g) || []).length;
 for (const slug of featureSlugs) {
