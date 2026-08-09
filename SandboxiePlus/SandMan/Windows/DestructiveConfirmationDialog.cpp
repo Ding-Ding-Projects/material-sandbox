@@ -15,10 +15,10 @@
 #include <QVariantAnimation>
 #include <QVBoxLayout>
 
-CDestructiveConfirmationDialog::CDestructiveConfirmationDialog(QWidget* parent, const QStringList& sandboxNames)
+CDestructiveConfirmationDialog::CDestructiveConfirmationDialog(QWidget* parent, const QString& action, const QStringList& affectedItems)
 	: QDialog(parent)
 {
-	setWindowTitle(tr("Confirm irreversible sandbox removal"));
+	setWindowTitle(tr("Confirm irreversible action: %1").arg(action));
 	setModal(true);
 	setMinimumWidth(520);
 	setAttribute(Qt::WA_DeleteOnClose, false);
@@ -29,27 +29,27 @@ CDestructiveConfirmationDialog::CDestructiveConfirmationDialog(QWidget* parent, 
 	m_reducedMotion = theConf && theConf->GetBool("UIConfig/ReducedMotion", false);
 
 	auto* layout = new QVBoxLayout(this);
-	auto* title = new QLabel(tr("This action permanently removes sandbox content."), this);
+	auto* title = new QLabel(tr("This action is irreversible and will permanently change local data."), this);
 	title->setWordWrap(true);
 	title->setStyleSheet(QStringLiteral("font-weight: 700; font-size: 15px;"));
 	layout->addWidget(title);
 
-	auto* target = new QLabel(tr("Affected sandbox(es): %1").arg(sandboxNames.join(tr(", "))), this);
+	auto* target = new QLabel(tr("Action: %1\nAffected item(s): %2").arg(action, affectedItems.join(tr(", "))), this);
 	target->setWordWrap(true);
 	target->setTextInteractionFlags(Qt::TextSelectableByMouse);
 	layout->addWidget(target);
 
-	m_firstKey = new QCheckBox(tr("I understand that the selected sandbox content will be permanently deleted."), this);
+	m_firstKey = new QCheckBox(tr("I understand that the selected data will be permanently changed or deleted."), this);
 	m_firstKey->setObjectName(QStringLiteral("destructiveKeyContent"));
-	m_firstKey->setAccessibleName(tr("Confirm permanent sandbox content deletion"));
+	m_firstKey->setAccessibleName(tr("Confirm permanent data change"));
 	layout->addWidget(m_firstKey);
 
-	m_secondKey = new QCheckBox(tr("I confirm that this removal applies to the sandbox(es) listed above."), this);
+	m_secondKey = new QCheckBox(tr("I confirm that this action applies only to the items listed above."), this);
 	m_secondKey->setObjectName(QStringLiteral("destructiveKeyTarget"));
-	m_secondKey->setAccessibleName(tr("Confirm affected sandbox targets"));
+	m_secondKey->setAccessibleName(tr("Confirm affected action targets"));
 	layout->addWidget(m_secondKey);
 
-	auto* instruction = new QLabel(tr("Move the confirmation slider across its full range to authorize the removal."), this);
+	auto* instruction = new QLabel(tr("Move the confirmation slider across its full range to authorize this action."), this);
 	instruction->setWordWrap(true);
 	layout->addWidget(instruction);
 
@@ -85,7 +85,7 @@ CDestructiveConfirmationDialog::CDestructiveConfirmationDialog(QWidget* parent, 
 	m_cancel = buttons->addButton(tr("Emergency exit"), QDialogButtonBox::RejectRole);
 	m_cancel->setObjectName(QStringLiteral("destructiveEmergencyExit"));
 	m_cancel->setToolTip(tr("Cancel safely without removing anything (Escape)"));
-	m_confirm = buttons->addButton(tr("Authorize removal"), QDialogButtonBox::AcceptRole);
+	m_confirm = buttons->addButton(tr("Authorize action"), QDialogButtonBox::AcceptRole);
 	m_confirm->setObjectName(QStringLiteral("destructiveAuthorize"));
 	m_confirm->setEnabled(false);
 	m_confirm->setToolTip(tr("Select both confirmations and complete the slider first"));
@@ -126,7 +126,12 @@ CDestructiveConfirmationDialog::CDestructiveConfirmationDialog(QWidget* parent, 
 
 bool CDestructiveConfirmationDialog::Confirm(QWidget* parent, const QStringList& sandboxNames)
 {
-	CDestructiveConfirmationDialog dialog(parent, sandboxNames);
+	return ConfirmAction(parent, QObject::tr("Remove sandbox content"), sandboxNames);
+}
+
+bool CDestructiveConfirmationDialog::ConfirmAction(QWidget* parent, const QString& action, const QStringList& affectedItems)
+{
+	CDestructiveConfirmationDialog dialog(parent, action, affectedItems);
 	QWidget* origin = parent ? parent->focusWidget() : nullptr;
 	const bool confirmed = dialog.exec() == QDialog::Accepted && dialog.m_authorized;
 	if (origin)

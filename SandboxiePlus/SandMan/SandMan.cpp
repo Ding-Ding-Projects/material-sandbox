@@ -45,6 +45,7 @@
 #include "Windows/DocumentationBrowser.h"
 #include "Windows/NotificationCenter.h"
 #include "Windows/DimSumSurprise.h"
+#include "Windows/DestructiveConfirmationDialog.h"
 #include "CustomStyles.h"
 #include "../MiscHelpers/Common/MaterialTheme.h"
 #include "../MiscHelpers/Common/UserPresentationSettings.h"
@@ -4350,6 +4351,14 @@ void CSandMan::OnRefresh()
 
 void CSandMan::OnCleanUp()
 {
+	if (sender() == m_pCleanUpButton) {
+		const QStringList affectedItems = {
+			tr("message log"), tr("trace log"), tr("recovery log"), tr("sandbox process entries")
+		};
+		if (!CDestructiveConfirmationDialog::ConfirmAction(this, tr("Cleanup all logs and process entries"), affectedItems))
+			return;
+	}
+
 	if (sender() == m_pCleanUpMsgLog || sender() == m_pCleanUpButton) {
 		m_MessageLog.clear();
 		m_PendingMessageLog.clear();
