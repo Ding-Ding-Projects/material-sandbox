@@ -23,6 +23,13 @@ Commit: [b3ead759442670cf2b30ae23f52c23ce9831a72d](https://github.com/Ding-Ding-
 - Rebuilt Stop Options lingering-window and leniency switches with native Material 3 controls.
 - Preserved stop-change handlers, persistence, and the later stop-tab merge.
 
+## 2026-08-09 · Native Options leader controls
+
+Commit: [c8ae278c6fcfd8dee77241c14aa729422e2664ec](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c8ae278c6fcfd8dee77241c14aa729422e2664ec)
+
+- Rebuilt Leader Programs Add, Remove, and Show Templates controls with native Material 3 widgets.
+- Preserved the leader program tree, handlers, and template state.
+
 ## 2026-08-09 · Native Options resource-access tab host
 
 Commit: [01cf568a6d36d64b7e2450e532ffc3785cf0d0b1](https://github.com/Ding-Ding-Projects/material-sandbox/commit/01cf568a6d36d64b7e2450e532ffc3785cf0d0b1)

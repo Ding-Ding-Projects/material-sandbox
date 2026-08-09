@@ -136,6 +136,9 @@ Stop Options now uses native M3 controls for lingering-window and leniency
 switches while preserving stop-change handlers, persistence, and the later
 stop-tab merge.
 
+Leader Programs now uses native M3 controls for Add, Remove, and Show
+Templates while preserving the program tree, handlers, and template state.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
