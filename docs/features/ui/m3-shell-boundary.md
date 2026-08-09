@@ -466,6 +466,11 @@ Material 3 controls in-place. Their object names, tri-state/check states,
 accessible names, signal routes, persistence keys, and pending-change handling
 remain intact; `chkMonitorSize` stays on its separate General-settings path.
 
+The same tab now also rebuilds `chkOverlayIcons`, `chkHideCore`, and
+`cmbGrouping` as native Material 3 controls. Their object names, option values,
+signal routes, and `Options/UseOverlayIcons`, `Options/HideSbieProcesses`, and
+`Options/BoxGroupHandling` persistence keys remain unchanged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
