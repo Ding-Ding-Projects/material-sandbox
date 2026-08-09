@@ -49,6 +49,7 @@
 #include <QProcess>
 #include <QDir>
 #include <QFileInfo>
+#include <algorithm>
 
 
 #include <windows.h>
