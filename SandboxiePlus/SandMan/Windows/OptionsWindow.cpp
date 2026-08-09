@@ -1825,6 +1825,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	{
 		auto* nativeTemplateTabs = new QTabWidget(this);
 		nativeTemplateTabs->setObjectName(QStringLiteral("tabsTemplates"));
+		nativeTemplateTabs->setTabPosition(QTabWidget::West);
+		nativeTemplateTabs->setAccessibleName(tr("Application template settings pages"));
 		nativeTemplateTabs->addTab(ui.tab_11, tr("Templates"));
 		nativeTemplateTabs->addTab(ui.tab_12, tr("Template Folders"));
 		nativeTemplateTabs->addTab(ui.tab_13, tr("Accessibility"));
@@ -1840,6 +1842,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	{
 		auto* nativeOtherTabs = new QTabWidget(this);
 		nativeOtherTabs->setObjectName(QStringLiteral("tabsOther"));
+		nativeOtherTabs->setTabPosition(QTabWidget::West);
+		nativeOtherTabs->setAccessibleName(tr("Various option pages"));
 		nativeOtherTabs->addTab(ui.tabCompat, tr("Compatibility"));
 		nativeOtherTabs->addTab(ui.tabDlls, tr("Dlls && Extensions"));
 		nativeOtherTabs->setCurrentIndex(ui.tabsOther->currentIndex());
@@ -1855,6 +1859,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	{
 		auto* nativeAdvancedTabs = new QTabWidget(this);
 		nativeAdvancedTabs->setObjectName(QStringLiteral("tabsAdvanced"));
+		nativeAdvancedTabs->setTabPosition(QTabWidget::West);
+		nativeAdvancedTabs->setAccessibleName(tr("Advanced option pages"));
 		nativeAdvancedTabs->addTab(ui.tabMisc, tr("Miscellaneous"));
 		nativeAdvancedTabs->addTab(ui.tabTriggers, tr("Triggers"));
 		nativeAdvancedTabs->addTab(ui.tabProcesses, tr("Processes"));
@@ -1874,6 +1880,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	{
 		auto* nativeGeneralTabs = new QTabWidget(this);
 		nativeGeneralTabs->setObjectName(QStringLiteral("tabsGeneral"));
+		nativeGeneralTabs->setTabPosition(QTabWidget::West);
+		nativeGeneralTabs->setAccessibleName(tr("General option pages"));
 		nativeGeneralTabs->addTab(ui.tabOptions, tr("Box Options"));
 		nativeGeneralTabs->addTab(ui.tabFile, tr("File Options"));
 		nativeGeneralTabs->addTab(ui.tabMigration, tr("File Migration"));
@@ -1892,6 +1900,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	{
 		auto* nativeSecurityTabs = new QTabWidget(this);
 		nativeSecurityTabs->setObjectName(QStringLiteral("tabsSecurity"));
+		nativeSecurityTabs->setTabPosition(QTabWidget::West);
+		nativeSecurityTabs->setAccessibleName(tr("Security option pages"));
 		nativeSecurityTabs->addTab(ui.tabSecurity, tr("Security"));
 		nativeSecurityTabs->addTab(ui.tabIsolation, tr("Security Isolation"));
 		nativeSecurityTabs->addTab(ui.tabPrivate, tr("Box Protection"));
@@ -1909,6 +1919,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	{
 		auto* nativeForceTabs = new QTabWidget(this);
 		nativeForceTabs->setObjectName(QStringLiteral("tabsForce"));
+		nativeForceTabs->setTabPosition(QTabWidget::West);
+		nativeForceTabs->setAccessibleName(tr("Program control pages"));
 		nativeForceTabs->addTab(ui.tabForceProgs, tr("Force Programs"));
 		nativeForceTabs->addTab(ui.tabBreakout, tr("Breakout Programs"));
 		nativeForceTabs->setCurrentIndex(ui.tabsForce->currentIndex());
