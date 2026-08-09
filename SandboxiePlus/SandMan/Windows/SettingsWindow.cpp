@@ -416,11 +416,12 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			auto source = [&keys](const char* key, const QString& value) {
 				return QObject::tr("%1 (%2)").arg(value, keys.contains(QString::fromLatin1(key)) ? QObject::tr("profile value") : QObject::tr("compiled-in value"));
 			};
+			const QString emojiState = emojis->isChecked() ? QObject::tr("enabled") : QObject::tr("disabled");
 			provenance->setText(QObject::tr("Provenance: language %1; English funny level %2; Cantonese funny level %3; emojis %4. A profile value is restored from this profile; a compiled-in value is the shipped setting.")
 				.arg(source("Options/LanguageMode", languageMode->currentText()))
 				.arg(source("Options/FunnyLevelEnglish", QString::number(UserPresentationSettings::funnyEnglish(theConf))))
 				.arg(source("Options/FunnyLevelCantonese", QString::number(UserPresentationSettings::funnyCantonese(theConf))))
-				.arg(source("Options/ShowDialogEmojis", emojis->isChecked() ? QObject::tr("enabled") : QObject::tr("disabled")));
+				.arg(source("Options/ShowDialogEmojis", emojiState));
 		};
 		refreshPresentationProvenance();
 		connect(emojis, &QCheckBox::toggled, this, [refreshPresentationProvenance](bool) { refreshPresentationProvenance(); });
@@ -477,11 +478,12 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			};
 			const bool hasFont = keys.contains(QStringLiteral("UIConfig/UIFontFamily")) || keys.contains(QStringLiteral("UIConfig/UIFont"));
 			QString accentValue = theConf->GetString("UIConfig/AccentSeed", "#6750A4");
+			const QString typographyState = hasFont ? QObject::tr("profile value") : QObject::tr("compiled-in value");
 			appearanceProvenance->setText(QObject::tr("Provenance: display name %1; density %2; accent %3; typography %4. A profile value is restored from this profile; a compiled-in value is the shipped setting.")
 				.arg(source("UIConfig/AppDisplayName", appName->text().trimmed().isEmpty() ? QStringLiteral("Sandboxie-Plus") : appName->text().trimmed()))
 				.arg(source("UIConfig/Density", density->currentText()))
 				.arg(source("UIConfig/AccentSeed", accentValue))
-				.arg(hasFont ? QObject::tr("profile value") : QObject::tr("compiled-in value"));
+				.arg(typographyState);
 		};
 		refreshAppearanceProvenance();
 		QPushButton* resetAppearance = new QPushButton(tr("Reset appearance identity"), appearance);

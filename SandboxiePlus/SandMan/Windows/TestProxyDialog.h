@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtWidgets/QDialog>
+#include <QtWidgets/QStackedWidget>
 #include "OptionsWindow.h"
 #include <QPropertyAnimation>
 
