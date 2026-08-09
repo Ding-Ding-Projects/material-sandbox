@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-09 · Non-blocking update success notifications
+
+Commit: [4938fa8bb8ae100ed9eb112a7d598ba88dadc77b](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4938fa8bb8ae100ed9eb112a7d598ba88dadc77b)
+
+- Manual update checks now record the no-update success path in the notification center instead of a blocking information box.
+- Preserved the updater state machine while preventing unsolicited modal interruptions.
+
+## 2026-08-09 · Improve Debug tab focus and accessibility
+
 ## 2026-08-09 · Improve Debug tab focus and accessibility
 
 Commit: [a785021779e98f99bf4efebf596046d17a9f6c75](https://github.com/Ding-Ding-Projects/material-sandbox/commit/a785021779e98f99bf4efebf596046d17a9f6c75)
