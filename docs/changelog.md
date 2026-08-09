@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options app-template tab host
+
+Commit: [5d77ba0d19e7828ac8bbfaca0d691a9d9830d5e3](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5d77ba0d19e7828ac8bbfaca0d691a9d9830d5e3)
+
+- Rebuilt the App Templates tab host with native Material 3 tabs.
+- Preserved Templates, Template Folders, and Accessibility page order and controls.
+
 ## 2026-08-09 · Native Options debug tab host
 
 Commit: [df101ff3854bb6ef94bacbbf9bd66ab3a80ad581](https://github.com/Ding-Ding-Projects/material-sandbox/commit/df101ff3854bb6ef94bacbbf9bd66ab3a80ad581)

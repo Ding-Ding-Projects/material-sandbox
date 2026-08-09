@@ -106,6 +106,9 @@ The Debug Options and Config Dump pages now share a native M3 tab host. Current
 page state, dynamic controls, and Config Dump refresh-on-tab-change behavior
 remain unchanged.
 
+The App Templates surface now uses a native M3 tab host for Templates, Template
+Folders, and Accessibility, preserving page order and each page's controls.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
