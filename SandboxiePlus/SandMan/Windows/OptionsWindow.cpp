@@ -314,6 +314,52 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace the self-contained Restrictions child tab with native M3 controls
+	// while preserving OptionsGeneral's existing handlers and persistence.
+	if (ui.tabsGeneral && ui.tabRestrictions) {
+		const int restrictionIndex = ui.tabsGeneral->indexOf(ui.tabRestrictions);
+		if (restrictionIndex >= 0) {
+			auto* nativeRestrictions = new QWidget(ui.tabsGeneral);
+			auto* restrictionLayout = new QVBoxLayout(nativeRestrictions);
+			ui.lblPrinting = new QLabel(tr("Printing restrictions"), nativeRestrictions);
+			ui.lblPrinting->setProperty("m3NativeSurface", true);
+			ui.lblPrinting->setStyleSheet("font-weight: 600;");
+			restrictionLayout->addWidget(ui.lblPrinting);
+			ui.chkBlockSpooler = new QCheckBox(tr("Block access to the printer spooler"), nativeRestrictions);
+			ui.chkOpenSpooler = new QCheckBox(tr("Remove spooler restriction; printers can be installed outside the sandbox"), nativeRestrictions);
+			ui.chkPrintToFile = new QCheckBox(tr("Allow the print spooler to print to files outside the sandbox"), nativeRestrictions);
+			restrictionLayout->addWidget(ui.chkBlockSpooler);
+			restrictionLayout->addWidget(ui.chkOpenSpooler);
+			restrictionLayout->addWidget(ui.chkPrintToFile);
+			ui.lblOther = new QLabel(tr("Other restrictions"), nativeRestrictions);
+			ui.lblOther->setProperty("m3NativeSurface", true);
+			ui.lblOther->setStyleSheet("font-weight: 600;");
+			restrictionLayout->addWidget(ui.lblOther);
+			ui.chkOpenProtectedStorage = new QCheckBox(tr("Open System Protected Storage"), nativeRestrictions);
+			ui.chkOpenCredentials = new QCheckBox(tr("Open Windows Credentials Store (user mode)"), nativeRestrictions);
+			ui.chkCloseClipBoard = new QCheckBox(tr("Block read access to the clipboard"), nativeRestrictions);
+			ui.chkVmRead = new QCheckBox(tr("Allow reading memory of unsandboxed processes (not recommended)"), nativeRestrictions);
+			ui.chkVmReadNotify = new QCheckBox(tr("Issue message 2111 when a process access is denied"), nativeRestrictions);
+			ui.chkProtectPower = new QCheckBox(tr("Prevent sandboxed processes from interfering with power operations (Experimental)"), nativeRestrictions);
+			ui.chkUserOperation = new QCheckBox(tr("Prevent interference with the user interface (Experimental)"), nativeRestrictions);
+			ui.chkCoverBar = new QCheckBox(tr("Allow sandboxed windows to cover the taskbar"), nativeRestrictions);
+			ui.chkBlockCapture = new QCheckBox(tr("Prevent sandboxed processes from capturing window images (Experimental, may cause UI glitches)"), nativeRestrictions);
+			restrictionLayout->addWidget(ui.chkOpenProtectedStorage);
+			restrictionLayout->addWidget(ui.chkOpenCredentials);
+			restrictionLayout->addWidget(ui.chkCloseClipBoard);
+			restrictionLayout->addWidget(ui.chkVmRead);
+			restrictionLayout->addWidget(ui.chkVmReadNotify);
+			restrictionLayout->addWidget(ui.chkProtectPower);
+			restrictionLayout->addWidget(ui.chkUserOperation);
+			restrictionLayout->addWidget(ui.chkCoverBar);
+			restrictionLayout->addWidget(ui.chkBlockCapture);
+			restrictionLayout->addStretch();
+			ui.tabsGeneral->removeTab(restrictionIndex);
+			ui.tabsGeneral->insertTab(restrictionIndex, nativeRestrictions, tr("Restrictions"));
+			ui.tabRestrictions->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
