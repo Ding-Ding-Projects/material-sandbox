@@ -1367,6 +1367,44 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained Program Alerts child tab with native M3
+	// controls while preserving its global-settings and warning-list handlers.
+	if (ui.tabsControl && ui.tabAlert) {
+		const int alertIndex = ui.tabsControl->indexOf(ui.tabAlert);
+		if (alertIndex >= 0) {
+			auto* nativeAlert = new QWidget(ui.tabsControl);
+			auto* alertLayout = new QVBoxLayout(nativeAlert);
+			ui.chkStartBlock = new QCheckBox(tr("Prevent the listed programs from starting on this system"), nativeAlert);
+			alertLayout->addWidget(ui.chkStartBlock);
+			auto* alertHint = new QLabel(tr("When any of the following programs is launched outside any sandbox, Sandboxie will issue message SBIE1301."), nativeAlert);
+			alertHint->setWordWrap(true);
+			alertLayout->addWidget(alertHint);
+			ui.treeWarnProgs = new QTreeWidget(nativeAlert);
+			ui.treeWarnProgs->setColumnCount(2);
+			ui.treeWarnProgs->setHeaderLabels(QStringList() << tr("Name") << tr("Path"));
+			ui.treeWarnProgs->setRootIsDecorated(false);
+			alertLayout->addWidget(ui.treeWarnProgs, 1);
+			auto* alertActions = new QHBoxLayout();
+			ui.btnAddWarnProg = new QPushButton(tr("Add Program"), nativeAlert);
+			ui.btnAddWarnFolder = new QPushButton(tr("Add Folder"), nativeAlert);
+			ui.btnDelWarnProg = new QPushButton(tr("Remove Program"), nativeAlert);
+			alertActions->addWidget(ui.btnAddWarnProg);
+			alertActions->addWidget(ui.btnAddWarnFolder);
+			alertActions->addWidget(ui.btnDelWarnProg);
+			alertActions->addStretch();
+			alertLayout->addLayout(alertActions);
+			ui.chkStartBlockMsg = new QCheckBox(tr("Issue message 1308 when a program fails to start"), nativeAlert);
+			ui.chkNotForcedMsg = new QCheckBox(tr("Issue message 1301 when forced processes has been disabled"), nativeAlert);
+			ui.chkForcedMsg = new QCheckBox(tr("Issue message 1321 when a process has been forced into a sandbox"), nativeAlert);
+			alertLayout->addWidget(ui.chkStartBlockMsg);
+			alertLayout->addWidget(ui.chkNotForcedMsg);
+			alertLayout->addWidget(ui.chkForcedMsg);
+			ui.tabsControl->removeTab(alertIndex);
+			ui.tabsControl->insertTab(alertIndex, nativeAlert, tr("Program Alerts"));
+			ui.tabAlert->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.
