@@ -36,6 +36,7 @@ private:
     CSettings* m_settings;
     QString m_key;
     QSet<QString> m_pinned;
+    QSet<QString> m_appearanceOverrides;
     QHash<QString, QString> m_groups;
     QString m_active;
 };

@@ -8,7 +8,7 @@ The editor stores `UIConfig/UIFontFamily`, `UIConfig/UIFontPointSize`, `UIConfig
 
 ## Supported and unsupported properties
 
-This bounded native slice supports installed family selection, point size, weight, style, underline style, strikeout, overline, capitalization, letter/word spacing, accent HEX/RGB/HSL translation, preview text/highlight colors, persistence, and reset. It does not claim full Word-depth editing: variable-font axes, line-height, baseline offset, superscript, subscript, text effects, and per-element overrides remain explicitly listed as unsupported in the dialog. Qt applies the supported font attributes globally; line-height and baseline are not fabricated because the native application-font API cannot apply them consistently to every widget.
+This bounded native slice supports installed family selection, point size, weight, style, underline style, strikeout, overline, capitalization, letter/word spacing, accent HEX/RGB/HSL translation, preview text/highlight colors, persistence, and reset. It does not claim full Word-depth editing: variable-font axes, line-height, baseline offset, superscript, subscript, and text effects remain explicitly unsupported because Qt's application-font API cannot apply those rich-text semantics consistently to every widget. Per-element font overrides are supported for real tab targets through **Edit tab appearance…**; they are stored under the tab-state blob's `appearance` object keyed by the stable tab key and contain only Qt-supported `QFont` attributes. The global editor keeps per-element controls out rather than pretending a global value can target an individual widget.
 
 ## Failure modes and security
 
@@ -16,6 +16,6 @@ An unavailable family falls back to the current Qt application font. Invalid col
 
 ## Verification
 
-Run `node scripts/validate-appearance-editor.mjs`. For runtime verification, open Settings → UI → Material appearance identity → **Edit Material typography and color**, change each supported control, confirm the preview changes, accept, reopen to confirm persistence, and use reset before checking the shell at 100% and 200% scale.
+Run `node scripts/validate-appearance-editor.mjs`. For runtime verification, open Settings → UI → Material appearance identity → **Edit Material typography and color**, change each supported control, confirm the preview changes, accept, reopen to confirm persistence, and use reset before checking the shell at 100% and 200% scale. On a tab strip, use **Edit tab appearance…**, change the target font, restart the window, and confirm the stable-keyed override returns; line-height, baseline offset, superscript, and subscript remain documented as unsupported rather than rendered by a fake control.
 
 Suggested articles: [Material Design 3 shell](material-design.md), [Color translator](color-translator.md), [Settings history](settings-history.md).

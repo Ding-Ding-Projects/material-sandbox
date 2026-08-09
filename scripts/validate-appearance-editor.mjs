@@ -11,6 +11,7 @@ const pri = read('SandboxiePlus/SandMan/SandMan.pri');
 const vcxproj = read('SandboxiePlus/SandMan/SandMan.vcxproj');
 const qrc = read('SandboxiePlus/SandMan/Resources/SandMan.qrc');
 const docs = read('SandboxiePlus/SandMan/Resources/Docs/appearance-editor.md');
+const tabs = read('SandboxiePlus/MiscHelpers/Common/TabStateManager.cpp');
 
 const checks = [
   ['dialog class', h.includes('class CAppearanceEditorDialog') && cpp.includes('CAppearanceEditorDialog::CAppearanceEditorDialog')],
@@ -22,7 +23,8 @@ const checks = [
   ['translator reuse', cpp.includes('CColorTranslatorDialog') && settings.includes('CAppearanceEditorDialog')],
   ['persistent values', settings.includes('UIConfig/UIFontFamily') && settings.includes('UIConfig/UIFontPointSize') && startup.includes('UIFontWeight')],
   ['reset path', cpp.includes('resetToShippedDefaults') && docs.includes('Reset to shipped defaults')],
-  ['unsupported disclosure', cpp.includes('Not represented by this native slice') && docs.includes('does not claim full Word-depth') && docs.includes('line-height') && docs.includes('baseline offset')],
+  ['unsupported disclosure', cpp.includes('Not represented by this global native slice') && docs.includes('does not claim full Word-depth') && docs.includes('line-height') && docs.includes('baseline offset')],
+  ['real per-element target', tabs.includes('QStringLiteral("appearance")') && tabs.includes('tabKey(i)') && docs.includes('stable tab key')],
   ['qmake registration', pri.includes('./Windows/AppearanceEditorDialog.h') && pri.includes('./Windows/AppearanceEditorDialog.cpp')],
   ['MSVC registration', vcxproj.includes('Windows\\AppearanceEditorDialog.cpp') && vcxproj.includes('Windows\\AppearanceEditorDialog.h')],
   ['offline article bundle', qrc.includes('Docs/appearance-editor.md')],
