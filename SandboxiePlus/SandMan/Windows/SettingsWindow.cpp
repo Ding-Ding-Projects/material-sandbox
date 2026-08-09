@@ -1417,6 +1417,28 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Optional Add-Ons and Add-On Configuration are native pages; replace the
+	// remaining Designer tab host while preserving order and current selection.
+	if (ui.tabsAddons) {
+		auto* legacyAddonTabs = ui.tabsAddons;
+		auto* nativeAddonTabs = new QTabWidget(legacyAddonTabs->parentWidget());
+		nativeAddonTabs->setObjectName(QStringLiteral("tabsAddons"));
+		nativeAddonTabs->setTabPosition(QTabWidget::West);
+		nativeAddonTabs->setAccessibleName(tr("Add-on settings pages"));
+		const int currentAddonIndex = legacyAddonTabs->currentIndex();
+		while (legacyAddonTabs->count() > 0) {
+			const int index = legacyAddonTabs->count() - 1;
+			nativeAddonTabs->insertTab(0, legacyAddonTabs->widget(index), legacyAddonTabs->tabText(index));
+			legacyAddonTabs->removeTab(index);
+		}
+		nativeAddonTabs->setCurrentIndex(qBound(0, currentAddonIndex, nativeAddonTabs->count() - 1));
+		nativeAddonTabs->setProperty("m3NativeSurface", true);
+		if (auto* addonHostLayout = legacyAddonTabs->parentWidget()->layout())
+			addonHostLayout->replaceWidget(legacyAddonTabs, nativeAddonTabs);
+		legacyAddonTabs->deleteLater();
+		ui.tabsAddons = nativeAddonTabs;
+	}
+
 	// Replace the self-contained Program Alerts child tab with native M3
 	// controls while preserving its global-settings and warning-list handlers.
 	if (ui.tabsControl && ui.tabAlert) {
