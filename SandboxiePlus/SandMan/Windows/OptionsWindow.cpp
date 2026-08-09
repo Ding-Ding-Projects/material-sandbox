@@ -1994,6 +1994,52 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		migrateLeaderCheck(ui.chkShowLeaderTmpl);
 	}
 
+	// Start Restrictions replaces its Designer controls while retaining the
+	// existing tree and radio semantics used by the start-policy handlers.
+	{
+		auto migrateStartButton = [&](QPushButton*& control) {
+			auto* native = new QPushButton(control->text(), this);
+			native->setObjectName(control->objectName());
+			native->setEnabled(control->isEnabled());
+			native->setToolTip(control->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			ui.gridLayout_19->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		auto migrateStartCheck = [&](QCheckBox*& control) {
+			auto* native = new QCheckBox(control->text(), this);
+			native->setObjectName(control->objectName());
+			native->setCheckState(control->checkState());
+			native->setEnabled(control->isEnabled());
+			native->setToolTip(control->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			ui.gridLayout_19->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		auto migrateStartRadio = [&](QRadioButton*& control) {
+			auto* native = new QRadioButton(control->text(), this);
+			native->setObjectName(control->objectName());
+			native->setChecked(control->isChecked());
+			native->setEnabled(control->isEnabled());
+			native->setToolTip(control->toolTip());
+			native->setAutoExclusive(control->autoExclusive());
+			native->setProperty("m3NativeSurface", true);
+			ui.gridLayout_23->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		migrateStartButton(ui.btnAddStartProg);
+		migrateStartButton(ui.btnDelStartProg);
+		migrateStartCheck(ui.chkShowStartTmpl);
+		migrateStartCheck(ui.chkStartBlockMsg);
+		migrateStartCheck(ui.chkAlertBeforeStart);
+		migrateStartRadio(ui.radStartAll);
+		migrateStartRadio(ui.radStartExcept);
+		migrateStartRadio(ui.radStartSelected);
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
