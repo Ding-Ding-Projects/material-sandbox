@@ -596,6 +596,40 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Program Groups with native M3 controls while preserving the
+	// existing group tree model, delegates, and add/remove handlers.
+	if (ui.tabs && ui.tabGroups) {
+		const int groupIndex = ui.tabs->indexOf(ui.tabGroups);
+		if (groupIndex >= 0) {
+			auto* legacyGroups = ui.tabGroups;
+			auto* nativeGroups = new QWidget(ui.tabs);
+			auto* groupsLayout = new QVBoxLayout(nativeGroups);
+			auto* groupsHint = new QLabel(tr("Group programs under a shared name for use by sandbox settings; box groups override template groups."), nativeGroups);
+			groupsHint->setWordWrap(true);
+			groupsLayout->addWidget(groupsHint);
+			ui.treeGroups = new QTreeWidget(nativeGroups);
+			ui.treeGroups->setColumnCount(1);
+			ui.treeGroups->setHeaderLabels(QStringList() << tr("Name"));
+			ui.treeGroups->setSortingEnabled(true);
+			groupsLayout->addWidget(ui.treeGroups, 1);
+			auto* groupActions = new QHBoxLayout();
+			ui.btnAddGroup = new QPushButton(tr("Add Group"), nativeGroups);
+			ui.btnAddProg = new QPushButton(tr("Add Program"), nativeGroups);
+			ui.btnDelProg = new QPushButton(tr("Remove"), nativeGroups);
+			ui.chkShowGroupTmpl = new QCheckBox(tr("Show Templates"), nativeGroups);
+			groupActions->addWidget(ui.btnAddGroup);
+			groupActions->addWidget(ui.btnAddProg);
+			groupActions->addWidget(ui.btnDelProg);
+			groupActions->addWidget(ui.chkShowGroupTmpl);
+			groupActions->addStretch();
+			groupsLayout->addLayout(groupActions);
+			ui.tabs->removeTab(groupIndex);
+			ui.tabs->insertTab(groupIndex, nativeGroups, tr("Program Groups"));
+			ui.tabGroups = nativeGroups;
+			legacyGroups->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
