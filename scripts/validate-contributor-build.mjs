@@ -28,6 +28,53 @@ function requireWindow(rel, start, end, needles, label) {
   checks.push(label);
 }
 
+function requireSandManContributorConfigurations() {
+  const rel = 'SandboxiePlus/SandMan/SandMan.vcxproj';
+  const project = read(rel);
+  const supported = [
+    'Debug|ARM64',
+    'Debug|Win32',
+    'Debug|x64',
+    'Release|ARM64',
+    'Release|Win32',
+    'Release|x64',
+  ];
+  const declared = [...project.matchAll(/<ProjectConfiguration\s+Include="([^"]+)"/g)].map(match => match[1]);
+  const duplicates = declared.filter((configuration, index) => declared.indexOf(configuration) !== index);
+  const missing = supported.filter(configuration => !declared.includes(configuration));
+  const unexpected = declared.filter(configuration => !supported.includes(configuration));
+  if (duplicates.length || missing.length || unexpected.length || declared.length !== supported.length) {
+    throw new Error(`${rel}: supported configuration inventory drifted; missing=[${missing.join(', ')}] unexpected=[${unexpected.join(', ')}] duplicates=[${duplicates.join(', ')}]`);
+  }
+
+  const itemDefinitions = new Map();
+  const pattern = /<ItemDefinitionGroup\s+Condition="'\$\(Configuration\)\|\$\(Platform\)'=='([^']+)'">([\s\S]*?)<\/ItemDefinitionGroup>/g;
+  for (const match of project.matchAll(pattern)) {
+    if (itemDefinitions.has(match[1]))
+      throw new Error(`${rel}: duplicate ItemDefinitionGroup for ${match[1]}`);
+    itemDefinitions.set(match[1], match[2]);
+  }
+
+  for (const configuration of supported) {
+    const group = itemDefinitions.get(configuration);
+    if (!group)
+      throw new Error(`${rel}: missing ItemDefinitionGroup for ${configuration}`);
+    const compile = group.match(/<ClCompile(?:\s[^>]*)?>([\s\S]*?)<\/ClCompile>/)?.[1] ?? '';
+    const definitionText = compile.match(/<PreprocessorDefinitions(?:\s[^>]*)?>([^<]*)<\/PreprocessorDefinitions>/)?.[1] ?? '';
+    const definitions = definitionText.split(';').map(value => value.trim()).filter(Boolean);
+    if (definitions.filter(value => value === 'SANDBOXIE_CONTRIBUTOR_BUILD').length !== 1)
+      throw new Error(`${rel}: ${configuration} must define SANDBOXIE_CONTRIBUTOR_BUILD exactly once`);
+    if (!definitions.includes('%(PreprocessorDefinitions)'))
+      throw new Error(`${rel}: ${configuration} must preserve inherited preprocessor definitions`);
+    checks.push(`SandMan MSVC ${configuration} contributor definition`);
+  }
+  return supported;
+}
+
+const sandManConfigurations = requireSandManContributorConfigurations();
+requireText('SandboxiePlus/SandMan/SandMan.qc.pro', 'DEFINES += SANDBOXIE_CONTRIBUTOR_BUILD', 'SandMan Qt 5 contributor definition');
+requireText('SandboxiePlus/SandMan/SandMan-Qt6.qc.pro', 'DEFINES += SANDBOXIE_CONTRIBUTOR_BUILD', 'SandMan Qt 6 contributor definition');
+
 // The contributor profile must neutralize each unsolicited reminder boundary,
 // while the ordinary certificate workflow remains available in non-contributor
 // builds. These are explicit source contracts rather than a broad word search:
@@ -268,4 +315,4 @@ requireText('README.md', 'license notices remain intact', 'license notice preser
 requireText('docs/contributor-build.md', 'Copyright and third-party license notices are not removed.', 'contributor license boundary documentation');
 if (!readme.toLowerCase().includes('contributor')) throw new Error('README.md: contributor profile is undocumented');
 
-console.log(`contributor-build-contract checks=${checks.length}`);
+console.log(`contributor-build-contract checks=${checks.length} SandManMSVC=${sandManConfigurations.join(',')}`);
