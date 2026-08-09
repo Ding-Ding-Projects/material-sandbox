@@ -28,6 +28,12 @@ The old Windows 11 style preference is hidden and written as `false` during
 migration. Existing profiles therefore cannot bring a second product chrome
 back after a restart.
 
+The Immediate Recovery child tab is now a focused native slice: its prompt
+check box, ignore tree, and add/remove actions are constructed in code with
+Material 3 surface metadata. The existing object names, recovery handlers,
+template persistence, and recovery-tab merge remain unchanged, so the
+Designer layout can be retired incrementally without changing user data.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

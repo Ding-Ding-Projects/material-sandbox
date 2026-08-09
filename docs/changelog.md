@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Immediate Recovery controls
+
+Commit: [4acc2e1b7e79018b03e6349ad323f2537e2f3261](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4acc2e1b7e79018b03e6349ad323f2537e2f3261)
+
+- Rebuilt the Immediate Recovery prompt, ignore tree, and actions with native Material 3 controls.
+- Preserved recovery handlers, object names, template persistence, and the merged recovery layout.
+
 ## 2026-08-09 · Native Options Network Other Options tab
 
 Commit: [3a077e56cf5b55b09e98f79b78f6a26f99c5c2bc](https://github.com/Ding-Ding-Projects/material-sandbox/commit/3a077e56cf5b55b09e98f79b78f6a26f99c5c2bc)
