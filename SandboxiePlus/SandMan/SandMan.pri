@@ -57,6 +57,7 @@ HEADERS += ./stdafx.h \
     ./Engine/JSEngineExt.h \
     ./Engine/WizardObject.h \
     ./CustomStyles.h \
+    ../MiscHelpers/Common/MaterialTheme.h \
     ./AddonManager.h \
     ./BoxTransfer.h
 
@@ -114,7 +115,8 @@ SOURCES += ./main.cpp \
     ./Engine/JSEngineExt.cpp \
     ./Engine/SysObject.cpp \
     ./AddonManager.cpp \
-    ./BoxTransfer.cpp
+    ./BoxTransfer.cpp \
+    ../MiscHelpers/Common/MaterialTheme.cpp
 
 FORMS += ./Forms/EditorSettingsWindow.ui \
     ./Forms/SelectBoxWindow.ui \

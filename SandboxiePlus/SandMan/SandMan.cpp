@@ -43,6 +43,7 @@
 #include "AddonManager.h"
 #include "Windows/PopUpWindow.h"
 #include "CustomStyles.h"
+#include "../MiscHelpers/Common/MaterialTheme.h"
 #include <QElapsedTimer>
 #include <QScreen>
 
@@ -1428,6 +1429,7 @@ void CSandMan::UpdateLabel()
 		//auto neon = new CNeonEffect(10, 4, 180); // 140
 		//m_pLabel->setGraphicsEffect(NULL);
 	}
+	#if !SANDBOXIE_CONTRIBUTOR_BUILD
 	else if (g_Certificate.isEmpty())
 	{
 		LabelText = theConf->GetString("Updater/LabelMessage");
@@ -1497,6 +1499,7 @@ void CSandMan::UpdateLabel()
 		glowAni->start();*/
 
 	}
+	#endif
 
 	if(m_pSeparator) m_pSeparator->setVisible(!LabelText.isEmpty());
 	m_pLabel->setVisible(!LabelText.isEmpty());
@@ -3142,6 +3145,11 @@ void CSandMan::OnMenuHover(QAction* action)
 
 void CSandMan::CheckSupport()
 {
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	// Contributor builds never interrupt work with support, purchase, or
+	// certificate-expiry reminders.  Support remains available from Help.
+	return;
+#endif
 	if (CSupportDialog::CheckSupport())
 		return;
 
@@ -3481,6 +3489,7 @@ void CSandMan::OnLogSbieMessage(quint32 MsgCode, const QStringList& MsgData, qui
 			m_MissingTemplates[MsgData[1]].insert(MsgData[2]);
 	}
 
+	#ifndef SANDBOXIE_CONTRIBUTOR_BUILD
 	if ((MsgCode & 0xFFFF) == 6004 || (MsgCode & 0xFFFF) == 6008 || (MsgCode & 0xFFFF) == 6009) // certificate error
 	{
 		QString Message;
@@ -3523,6 +3532,7 @@ void CSandMan::OnLogSbieMessage(quint32 MsgCode, const QStringList& MsgData, qui
 		}
 		// return;
 	}
+	#endif
 
 	QString ProcessName;
 	if (ProcessId == 4)
@@ -3582,6 +3592,11 @@ bool CSandMan::SetCertificate(const QByteArray& Certificate)
 
 bool CSandMan::CheckCertificate(QWidget* pWidget, int iType)
 {
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	Q_UNUSED(pWidget);
+	Q_UNUSED(iType);
+	return true;
+#else
 	QString Message;
 	if (iType == 1 || iType == 2)
 	{
@@ -3622,6 +3637,7 @@ bool CSandMan::CheckCertificate(QWidget* pWidget, int iType)
 	}*/
 
 	return false;
+#endif
 }
 
 void InitCertSlot();
@@ -3631,6 +3647,24 @@ SB_STATUS CSandMan::ReloadCert(QWidget* pWidget)
 	SB_STATUS Status = theAPI->ReloadCert();
 
 	theAPI->GetDriverInfo(-1, &g_CertInfo.State, sizeof(g_CertInfo.State));
+
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	// The contributor build is intentionally license-free.  Keep the same
+	// capability shape as the highest supported certificate so the UI and
+	// service layers do not invent a second set of feature gates.
+	g_CertInfo.active = 1;
+	g_CertInfo.expired = 0;
+	g_CertInfo.outdated = 0;
+	g_CertInfo.grace_period = 0;
+	g_CertInfo.expirers_in_sec = 0;
+	g_CertInfo.lock_req = 0;
+	g_CertInfo.type = eCertContributor;
+	g_CertInfo.level = eCertMaxLevel;
+	g_CertInfo.opt_sec = 1;
+	g_CertInfo.opt_enc = 1;
+	g_CertInfo.opt_net = 1;
+	g_CertInfo.opt_desk = 1;
+#endif
 
 	if (!Status.IsError())
 	{
@@ -3724,6 +3758,7 @@ SB_STATUS CSandMan::ReloadCert(QWidget* pWidget)
 		}
 	}
 
+	#ifndef SANDBOXIE_CONTRIBUTOR_BUILD
 	if (CERT_IS_TYPE(g_CertInfo, eCertBusiness))
 		InitCertSlot();
 
@@ -3743,6 +3778,7 @@ SB_STATUS CSandMan::ReloadCert(QWidget* pWidget)
 		else if (g_CertInfo.expirers_in_sec > 0 && g_CertInfo.expirers_in_sec < (60 * 60 * 24 * 30))
 			OnLogMessage(tr("The supporter certificate will expire in %1 days, please get an updated certificate").arg(g_CertInfo.expirers_in_sec / (60 * 60 * 24)));
 	}
+	#endif
 
 	emit CertUpdated();
 
@@ -4833,6 +4869,12 @@ void CSandMan::SetUITheme()
 		font.setPointSizeF(newFontSize);
 		QApplication::setFont(font);
 	}
+
+	// Keep the existing persisted light/dark choice, but apply one shared
+	// Material 3 token system to the complete widget tree.  This replaces the
+	// platform-dependent chrome while leaving the user's content untouched.
+	MaterialTheme::Apply(qobject_cast<QApplication*>(QApplication::instance()), bDark);
+	QApplication::setStyle(new KeepSubMenusVisibleStyle(new CustomTabStyle(QApplication::style())));
 
 #if defined(Q_OS_WIN)
 	foreach(QWidget * pWidget, QApplication::topLevelWidgets())

@@ -1085,6 +1085,24 @@ _FX NTSTATUS KphValidateCertificate()
             Verify_CertInfo.grace_period = 1;
     }
 
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+    // Contributor builds intentionally do not enforce supporter certificates.
+    // Normalize the validated state once here so driver, service, and UI
+    // consumers all observe the same unrestricted capability set.
+    Verify_CertInfo.active = 1;
+    Verify_CertInfo.expired = 0;
+    Verify_CertInfo.outdated = 0;
+    Verify_CertInfo.grace_period = 0;
+    Verify_CertInfo.lock_req = 0;
+    Verify_CertInfo.type = eCertContributor;
+    Verify_CertInfo.level = eCertMaxLevel;
+    Verify_CertInfo.opt_sec = 1;
+    Verify_CertInfo.opt_enc = 1;
+    Verify_CertInfo.opt_net = 1;
+    Verify_CertInfo.opt_desk = 1;
+    status = STATUS_SUCCESS;
+#endif
+
 
 CleanupExit:
     if(CertDbg)     DbgPrint("Sbie Cert status: %08x; active: %d\n", status, Verify_CertInfo.active);

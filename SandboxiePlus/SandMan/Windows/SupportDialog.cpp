@@ -33,6 +33,10 @@ bool CSupportDialog::IsBusinessUse()
 
 bool CSupportDialog::CheckSupport(bool bOnRun)
 {
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	Q_UNUSED(bOnRun);
+	return false;
+#endif
 	bool NoGo = false;
 
 #ifdef INSIDER_BUILD
@@ -151,6 +155,11 @@ int CountSeats();
 
 bool CSupportDialog::ShowDialog(bool NoGo, int Wait)
 {
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	Q_UNUSED(NoGo);
+	Q_UNUSED(Wait);
+	return false;
+#endif
 	QDateTime InstallDate = GetSbieInstallationDate();
 
 	int Days = InstallDate.daysTo(QDateTime::currentDateTimeUtc());

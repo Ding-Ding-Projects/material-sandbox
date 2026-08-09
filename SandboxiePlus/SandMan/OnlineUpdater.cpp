@@ -409,10 +409,15 @@ QString COnlineUpdater::GetOnNewUpdateOption() const
 	QString OnNewUpdate = theConf->GetString("Options/OnNewUpdate", "ignore");
 
 	QString ReleaseChannel = theConf->GetString("Options/ReleaseChannel", "stable");
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	Q_UNUSED(ReleaseChannel);
+	return OnNewUpdate;
+#else
 	if (ReleaseChannel != "preview" && (!g_CertInfo.active || g_CertInfo.expired)) // without active cert, allow revisions for preview channel
 		return "ignore"; // this service requires a valid certificate
 
 	return OnNewUpdate;
+#endif
 }
 
 QString COnlineUpdater::GetOnNewReleaseOption() const
@@ -421,8 +426,12 @@ QString COnlineUpdater::GetOnNewReleaseOption() const
 
 	if (OnNewRelease == "install" || OnNewRelease == "download") {
 		QString ReleaseChannel = theConf->GetString("Options/ReleaseChannel", "stable");
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+		Q_UNUSED(ReleaseChannel);
+#else
 		if (ReleaseChannel != "preview" && (!g_CertInfo.active || g_CertInfo.expired)) // without active cert, allow automated updates only for preview channel
 			return "notify"; // this service requires a valid certificate
+#endif
 	}
 
 	//if ((g_CertInfo.active && g_CertInfo.expired) && OnNewRelease == "install")
@@ -432,6 +441,9 @@ QString COnlineUpdater::GetOnNewReleaseOption() const
 
 bool COnlineUpdater::ShowCertWarningIfNeeded()
 {
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	return true;
+#else
 	//
 	// This function checks if this installation uses a expired personal
 	// certificate which is active for the current build
@@ -453,6 +465,7 @@ bool COnlineUpdater::ShowCertWarningIfNeeded()
 		});
 	}
 	return Ret == QMessageBox::Yes;
+#endif
 }
 
 void COnlineUpdater::Process() 
@@ -466,6 +479,11 @@ void COnlineUpdater::Process()
 	}
 
 	int iCheckUpdates = theConf->GetInt("Options/CheckForUpdates", 2);
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	// Contributor builds do not interrupt startup with an update question.
+	if (iCheckUpdates == 2)
+		iCheckUpdates = 1;
+#endif
 	if (iCheckUpdates != 0)
 	{
 		if(CurretnDate.toSecsSinceEpoch() >= NextUpdateCheck)
@@ -638,7 +656,7 @@ bool COnlineUpdater::HandleUpdate()
 	// solution: apply updates silently, then prompt to install new release, else prioritize installing new releases over updating the existing one
 	//
 
-	bool bAllowAuto = g_CertInfo.active && !g_CertInfo.expired; // To use automatic updates a valid certificate is required
+	bool bAllowAuto = true; // Contributor builds have no certificate-dependent update policy.
 
 	bool bCanRunInstaller = (m_CheckMode == eAuto && OnNewRelease == "install");
 	bool bIsInstallerReady = false;

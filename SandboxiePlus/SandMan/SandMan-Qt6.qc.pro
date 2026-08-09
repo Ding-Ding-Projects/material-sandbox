@@ -6,6 +6,7 @@ PRECOMPILED_HEADER = stdafx.h
 QT += core gui network widgets widgets-private concurrent core-private qml qml-private
 
 CONFIG += lrelease
+DEFINES += SANDBOXIE_CONTRIBUTOR_BUILD
 
 MY_ARCH=$$(build_arch)
 equals(MY_ARCH, ARM64) {
