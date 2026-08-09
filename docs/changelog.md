@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Obsolete proxy chrome removed
+
+Commit: [f5a66a18a49a3482a757c5b2dce3c4462593e1fa](https://github.com/Ding-Ding-Projects/material-sandbox/commit/f5a66a18a49a3482a757c5b2dce3c4462593e1fa)
+
+- Removed the unused `CustomStyles.h` proxy chrome classes and their qmake/MSVC registrations.
+- Kept pending-value editor decoration separate from product chrome.
+
 ## 2026-08-09 · Legacy chrome switch retirement
 
 Commit: [c0485166784f94d2f6969ab234e0b1aff29889ce](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c0485166784f94d2f6969ab234e0b1aff29889ce)
