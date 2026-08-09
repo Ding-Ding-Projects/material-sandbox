@@ -33,4 +33,8 @@ for (const sha of new Set(commitLinks)) {
 }
 const qrc = fs.readFileSync(path.join(root, 'SandboxiePlus', 'SandMan', 'Resources', 'SandMan.qrc'), 'utf8');
 for (const resource of ['Docs/material-design.md', 'Docs/contributor-build.md', 'Docs/changelog.md', 'Docs/scheduled-settings.md']) if (!qrc.includes(resource)) throw new Error(`missing Qt resource: ${resource}`);
+const browserCpp = fs.readFileSync(path.join(root, 'SandboxiePlus', 'SandMan', 'Windows', 'DocumentationBrowser.cpp'), 'utf8');
+for (const contract of ['m_changelogSearch', 'openChangelogRegexBuilder', 'm_changelogFrom', 'm_changelogTo', 'copyFilteredChangelog', 'exportFilteredChangelog', 'QDate::fromString']) {
+  if (!browserCpp.includes(contract)) throw new Error(`changelog viewer contract missing: ${contract}`);
+}
 console.log(`docs-valid articles=${manifest.articles.length} changelog=${manifest.changelog.commit}`);
