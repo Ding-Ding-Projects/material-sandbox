@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DocumentationBrowser.h"
+#include "M3DialogHost.h"
 
 #include <QClipboard>
 #include <QDate>
@@ -129,6 +130,7 @@ CDocumentationBrowser::CDocumentationBrowser(QWidget* parent)
     connect(m_search, &QLineEdit::textChanged, this, &CDocumentationBrowser::filterArticles);
     connect(m_articleList, &QListWidget::currentRowChanged, this, &CDocumentationBrowser::showArticle);
     loadArticles();
+    M3DialogHost::Install(this);
 }
 
 void CDocumentationBrowser::loadArticles()

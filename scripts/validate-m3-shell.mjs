@@ -3,13 +3,19 @@ import path from 'node:path';
 
 const root = process.cwd();
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
-const pri = read('SandboxiePlus/SandMan/SandMan.pri');
+const sandmanPri = read('SandboxiePlus/SandMan/SandMan.pri');
 const cpp = read('SandboxiePlus/SandMan/SandMan.cpp');
 const host = read('SandboxiePlus/SandMan/Windows/M3ShellHost.cpp');
 const theme = read('SandboxiePlus/MiscHelpers/Common/MaterialTheme.cpp');
 const sandman = read('SandboxiePlus/SandMan/SandMan.cpp');
 const main = read('SandboxiePlus/SandMan/main.cpp');
 const settings = read('SandboxiePlus/SandMan/Windows/SettingsWindow.cpp');
+const pri = read('SandboxiePlus/SandMan/SandMan.pri');
+const dialogHost = read('SandboxiePlus/SandMan/Windows/M3DialogHost.cpp');
+const appearance = read('SandboxiePlus/SandMan/Windows/AppearanceEditorDialog.cpp');
+const color = read('SandboxiePlus/SandMan/Windows/ColorTranslatorDialog.cpp');
+const docs = read('SandboxiePlus/SandMan/Windows/DocumentationBrowser.cpp');
+const destructive = read('SandboxiePlus/SandMan/Windows/DestructiveConfirmationDialog.cpp');
 const migratedViews = [
   'SandboxiePlus/SandMan/Views/FileView.cpp',
   'SandboxiePlus/SandMan/Views/NtObjectView.cpp',
@@ -33,6 +39,10 @@ const checks = [
   [!main.includes('app.setStyle("windowsvista")'), 'startup does not select legacy Windows chrome'],
   [settings.includes('ui.chkUseW11Style->hide()') && settings.includes('SetValue("Options/UseW11Style", false)'), 'legacy Windows style setting is hidden and migrated off'],
   [!fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/CustomStyles.h')) && !read('SandboxiePlus/SandMan/SandMan.pri').includes('CustomStyles.h'), 'obsolete proxy chrome source is removed from the build'],
+  [sandmanPri.includes('Windows/M3DialogHost.h') && sandmanPri.includes('Windows/M3DialogHost.cpp'), 'dialog host is registered in qmake'],
+  [dialogHost.includes('FramelessWindowHint') && dialogHost.includes('m3DialogInstalled'), 'dialog host is frameless and idempotent'],
+  [appearance.includes('M3DialogHost::Install(this)') && color.includes('M3DialogHost::Install(this)'), 'appearance and color dialogs use M3 chrome'],
+  [docs.includes('M3DialogHost::Install(this)') && destructive.includes('M3DialogHost::Install(this)'), 'docs and destructive dialogs use M3 chrome'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);

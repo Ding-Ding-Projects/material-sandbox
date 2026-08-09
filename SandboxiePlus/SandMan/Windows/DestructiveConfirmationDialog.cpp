@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DestructiveConfirmationDialog.h"
+#include "M3DialogHost.h"
 
 #include "../MiscHelpers/Common/Settings.h"
 
@@ -122,6 +123,7 @@ CDestructiveConfirmationDialog::CDestructiveConfirmationDialog(QWidget* parent, 
 	setTabOrder(m_cancel, m_confirm);
 	m_cancel->setDefault(true);
 	resize(sizeHint());
+	M3DialogHost::Install(this);
 }
 
 bool CDestructiveConfirmationDialog::Confirm(QWidget* parent, const QStringList& sandboxNames)

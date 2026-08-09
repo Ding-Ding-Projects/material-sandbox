@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "AppearanceEditorDialog.h"
 #include "ColorTranslatorDialog.h"
+#include "M3DialogHost.h"
 
 #include <QComboBox>
 #include <QCheckBox>
@@ -156,6 +157,7 @@ CAppearanceEditorDialog::CAppearanceEditorDialog(const QFont& initialFont, const
     setTabOrder(m_accentButton, reset);
     setTabOrder(reset, buttons->button(QDialogButtonBox::Ok));
     updatePreview();
+    M3DialogHost::Install(this);
 }
 
 void CAppearanceEditorDialog::setFontControls(const QFont& font)

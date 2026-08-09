@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ColorTranslatorDialog.h"
+#include "M3DialogHost.h"
 
 #include <algorithm>
 #include <QDialogButtonBox>
@@ -63,6 +64,7 @@ CColorTranslatorDialog::CColorTranslatorDialog(const QColor& initial, QWidget* p
     setTabOrder(m_hsl, m_buttons->button(QDialogButtonBox::Ok));
     m_hex->setFocus();
     updateFields();
+    M3DialogHost::Install(this);
 }
 
 void CColorTranslatorDialog::setColor(const QColor& color)

@@ -502,6 +502,7 @@
     <ClCompile Include="Windows\DimSumSurprise.cpp" />
     <ClCompile Include="Windows\ColorTranslatorDialog.cpp" />
     <ClCompile Include="Windows\AppearanceEditorDialog.cpp" />
+    <ClCompile Include="Windows\M3DialogHost.cpp" />
     <ClCompile Include="Windows\DestructiveConfirmationDialog.cpp" />
     <ClCompile Include="Windows\SnapshotsWindow.cpp" />
     <ClCompile Include="Windows\SupportDialog.cpp" />
@@ -539,6 +540,7 @@
     <ClInclude Include="Windows\DimSumSurprise.h" />
     <QtMoc Include="Windows\ColorTranslatorDialog.h" />
     <QtMoc Include="Windows\AppearanceEditorDialog.h" />
+    <ClInclude Include="Windows\M3DialogHost.h" />
     <QtMoc Include="Windows\OptionsWindow.h" />
     <QtMoc Include="Windows\EditorSettingsWindow.h" />
     <QtMoc Include="Views\SbieView.h" />

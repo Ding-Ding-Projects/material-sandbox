@@ -204,6 +204,9 @@
     <ClCompile Include="Windows\AppearanceEditorDialog.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\M3DialogHost.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
     <ClCompile Include="Windows\DestructiveConfirmationDialog.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
@@ -359,6 +362,9 @@
     <QtMoc Include="Windows\AppearanceEditorDialog.h">
       <Filter>Windows</Filter>
     </QtMoc>
+    <ClInclude Include="Windows\M3DialogHost.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
     <QtMoc Include="Windows\SnapshotsWindow.h">
       <Filter>Windows</Filter>
     </QtMoc>

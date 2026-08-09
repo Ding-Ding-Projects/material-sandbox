@@ -28,6 +28,13 @@ The old Windows 11 style preference is hidden and written as `false` during
 migration. Existing profiles therefore cannot bring a second product chrome
 back after a restart.
 
+## Dialog migration
+
+Appearance, color translation, offline documentation, and destructive-action
+dialogs now use the reusable `M3DialogHost`. It supplies a frameless title
+surface, accessible close action, keyboard-sized target, and drag behavior while
+preserving each dialog's existing content and decision semantics.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
@@ -38,7 +45,9 @@ controls remain available through the host surface.
 
 ## Verification
 
-The source validator checks that the host is present in `SandMan.pri`, that the
-constructor installs it after `setCentralWidget`, and that the host is guarded
-against duplicate installation. A native compile remains part of the Windows
-CI gate because this checkout does not guarantee a Qt SDK on every agent.
+The source validator checks that the shell and dialog hosts are present in
+`SandMan.pri`, that the constructor installs the shell after
+`setCentralWidget`, that migrated dialogs install the dialog host, and that both
+hosts are guarded against duplicate installation. A native compile remains part
+of the Windows CI gate because this checkout does not guarantee a Qt SDK on
+every agent.

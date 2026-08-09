@@ -45,6 +45,7 @@ HEADERS += ./stdafx.h \
     ./Windows/AppearanceEditorDialog.h \
     ./Windows/DestructiveConfirmationDialog.h \
     ./Windows/M3ShellHost.h \
+    ./Windows/M3DialogHost.h \
     ./OnlineUpdater.h \
     ./Wizards/NewBoxWizard.h \
     ./Wizards/TemplateWizard.h \
@@ -113,6 +114,7 @@ SOURCES += ./main.cpp \
     ./Windows/AppearanceEditorDialog.cpp \
     ./Windows/DestructiveConfirmationDialog.cpp \
     ./Windows/M3ShellHost.cpp \
+    ./Windows/M3DialogHost.cpp \
     ./OnlineUpdater.cpp \
     ./Wizards/NewBoxWizard.cpp \
     ./Wizards/TemplateWizard.cpp \
