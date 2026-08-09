@@ -1413,6 +1413,35 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.chkMonitorAdminOnly = nativeMonitorAdmin;
 	}
 
+	// Advanced Options > Tracing migrates its complete checkbox cluster in one
+	// pass, copying the generated text/tooltips so every trace switch keeps its
+	// wording while the controls become native M3 surfaces.
+	{
+		auto migrateTraceCheck = [&](QCheckBox*& control) {
+			auto* native = new QCheckBox(control->text(), this);
+			native->setObjectName(control->objectName());
+			native->setToolTip(control->toolTip());
+			native->setProperty("m3NativeSurface", true);
+			ui.gridLayout_32->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		migrateTraceCheck(ui.chkDisableMonitor);
+		migrateTraceCheck(ui.chkCallTrace);
+		migrateTraceCheck(ui.chkFileTrace);
+		migrateTraceCheck(ui.chkPipeTrace);
+		migrateTraceCheck(ui.chkKeyTrace);
+		migrateTraceCheck(ui.chkIpcTrace);
+		migrateTraceCheck(ui.chkGuiTrace);
+		migrateTraceCheck(ui.chkComTrace);
+		migrateTraceCheck(ui.chkNetFwTrace);
+		migrateTraceCheck(ui.chkDnsTrace);
+		migrateTraceCheck(ui.chkApiTrace);
+		migrateTraceCheck(ui.chkHookTrace);
+		migrateTraceCheck(ui.chkDbgTrace);
+		migrateTraceCheck(ui.chkErrTrace);
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
