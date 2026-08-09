@@ -173,6 +173,10 @@ Settings Add-Ons now uses a native M3 tab host around Optional Add-Ons and
 Add-On Configuration pages, preserving page order, labels, current selection,
 and add-on model wiring.
 
+Settings Control now uses a native M3 tab host around Program Alerts, Force
+Process Options, and USB Drive Sandboxing pages, preserving page order, labels,
+current selection, and control wiring.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
