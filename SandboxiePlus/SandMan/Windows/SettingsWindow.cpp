@@ -1162,8 +1162,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 
 	// Replace the self-contained System Tray child tab with native M3 controls;
 	// all existing option pointers remain intact for persistence and live updates.
-	if (ui.tabsGeneral && ui.tabTray) {
-		const int trayIndex = ui.tabsGeneral->indexOf(ui.tabTray);
+	if (ui.tabsShell && ui.tabTray) {
+		const int trayIndex = ui.tabsShell->indexOf(ui.tabTray);
 		if (trayIndex >= 0) {
 			auto* nativeTray = new QWidget(ui.tabsGeneral);
 			auto* trayForm = new QFormLayout(nativeTray);
@@ -1202,16 +1202,16 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			ui.chkSingleShow = new QCheckBox(tr("Open/Close from/to tray with a single click"), nativeTray);
 			trayForm->addRow(QString(), ui.chkSingleShow);
 			trayForm->addRow(new QLabel(tr("Changes apply immediately to the tray and notification surfaces."), nativeTray));
-			ui.tabsGeneral->removeTab(trayIndex);
-			ui.tabsGeneral->insertTab(trayIndex, nativeTray, tr("System Tray"));
+			ui.tabsShell->removeTab(trayIndex);
+			ui.tabsShell->insertTab(trayIndex, nativeTray, tr("System Tray"));
 			ui.tabTray->deleteLater();
 		}
 	}
 
 	// Replace the self-contained Run Menu child tab with native M3 controls;
 	// the editable tree and command actions keep their generated pointers.
-	if (ui.tabsGeneral && ui.tabRun) {
-		const int runIndex = ui.tabsGeneral->indexOf(ui.tabRun);
+	if (ui.tabsShell && ui.tabRun) {
+		const int runIndex = ui.tabsShell->indexOf(ui.tabRun);
 		if (runIndex >= 0) {
 			auto* nativeRun = new QWidget(ui.tabsGeneral);
 			auto* runLayout = new QVBoxLayout(nativeRun);
@@ -1238,8 +1238,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			runActions->addWidget(ui.btnDelCmd);
 			runActions->addStretch();
 			runLayout->addLayout(runActions);
-			ui.tabsGeneral->removeTab(runIndex);
-			ui.tabsGeneral->insertTab(runIndex, nativeRun, tr("Run Menu"));
+			ui.tabsShell->removeTab(runIndex);
+			ui.tabsShell->insertTab(runIndex, nativeRun, tr("Run Menu"));
 			ui.tabRun->deleteLater();
 		}
 	}
