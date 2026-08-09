@@ -13,3 +13,4 @@ This category documents local, user-controlled recovery behavior. Each article n
 - [Contributor capability and quiet certificate boundary](contributor-build-audit.md)
 - [External editor integration](external-editor.md)
 - [Destructive-action confirmation](destructive-confirmation.md)
+- [Native CI evidence and stale-run control](native-ci-evidence.md)

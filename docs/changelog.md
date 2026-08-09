@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-09 · Native CI stale-run control
+
+Commit: pending
+
+- Added an explicit concurrency contract for validation-only Windows builds.
+- Added architecture-specific artifact completeness checks and SHA-256 manifests before upload.
+- Kept Pages and release side effects outside cancellation so external state is not stranded.
+
 ## Unreleased — dim-sum startup contract
 
 - Added a delayed, non-blocking 10% startup draw that can display a bilingual dim-sum photo from a validated application-data cache sourced from the public catalog; offline or unsafe caches are skipped without interrupting startup. Commit: `2da9260b` (integration pending).

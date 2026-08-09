@@ -14,6 +14,7 @@
     {"slug":"command-palette","path":"../features/command-palette.md","related":["material-design","scheduled-settings","settings-history"]},
     {"slug":"external-editor","path":"../features/external-editor.md","related":["appearance-editor","settings-history","scheduled-settings"]}
     ,{"slug":"destructive-confirmation","path":"../features/destructive-confirmation.md","related":["notifications","settings-history","appearance-editor"]}
+    ,{"slug":"native-ci-evidence","path":"../features/native-ci-evidence.md","related":["contributor-build","material-design","destructive-confirmation"]}
   ],
   "changelog": {"path":"../changelog.md","commit":"6a19a278"}
 }

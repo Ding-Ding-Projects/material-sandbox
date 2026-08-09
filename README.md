@@ -88,6 +88,7 @@ This profile does **not** remove copyright notices, third-party attributions, or
 | Offline documentation | Bundled feature articles rendered inside the application with local search and completeness validation | [`docs/features/README.md`](docs/features/README.md) |
 | External editor | Detects/configures VS Code and opens the persisted profile folder as a workspace root | [`docs/features/external-editor.md`](docs/features/external-editor.md) |
 | Destructive confirmation | Remove Sandbox uses a two-key, full-range destructive-action confirmation with reduced-motion-aware progress, Emergency exit, and focus return | [`docs/features/destructive-confirmation.md`](docs/features/destructive-confirmation.md) |
+| Native CI evidence | Windows validation runs cancel superseded builds, reject incomplete architecture artifacts, and publish SHA-256 manifests while Pages and release side effects remain uncancelled; native/runtime evidence stays separately labelled | [`docs/features/native-ci-evidence.md`](docs/features/native-ci-evidence.md) |
 | Screenshots | A large, honest catalog of tracked visual assets, with runtime-capture boundaries called out | [`docs/screenshots.md`](docs/screenshots.md) |
 
 ### Product behavior that remains unchanged
@@ -160,6 +161,8 @@ node scripts/validate-scheduled-settings.mjs
 node scripts/validate-school-mode.mjs
 node scripts/validate-settings-history.mjs
 node scripts/validate-tab-discovery.mjs
+node scripts/validate-ci-concurrency.mjs
+node scripts/validate-ci-artifacts.mjs --help
 git diff --check
 ```
 

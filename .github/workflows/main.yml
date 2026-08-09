@@ -1,5 +1,11 @@
 name: CI
 
+# This workflow is validation/build-only. A newer commit supersedes an older
+# queued build, so cancel stale work and keep the visible verdict current.
+concurrency:
+  group: sandboxie-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   workflow_dispatch:
 
@@ -181,6 +187,9 @@ jobs:
       - name: Merging Build
         run: Installer\copy_build.cmd x64 build_qt6
 
+      - name: Verify x64 artifact completeness
+        run: node scripts/validate-ci-artifacts.mjs Installer/SbiePlus_x64 x64
+
       - name: Collect installer assets
         run: Installer\get_assets.cmd
 
@@ -191,6 +200,7 @@ jobs:
           name: Assets
           path: |
             Installer/Assets/*
+          if-no-files-found: error
           retention-days: 60
 
       - name: Upload Sandboxie x64
@@ -200,6 +210,7 @@ jobs:
           name: Sandboxie_x64
           path: |
             Installer/SbiePlus_x64/*
+          if-no-files-found: error
           retention-days: 60
 
 
@@ -306,6 +317,9 @@ jobs:
       - name: Merging Build
         run: Installer\copy_build.cmd ARM64 build_qt6
 
+      - name: Verify ARM64 artifact completeness
+        run: node scripts/validate-ci-artifacts.mjs Installer/SbiePlus_a64 ARM64
+
       - name: Upload Sandboxie ARM64
         #if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         uses: actions/upload-artifact@v7.0.1
@@ -313,4 +327,5 @@ jobs:
           name: Sandboxie_ARM64
           path: |
             Installer/SbiePlus_a64/*
+          if-no-files-found: error
           retention-days: 60
