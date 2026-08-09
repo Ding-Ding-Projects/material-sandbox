@@ -930,6 +930,34 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		});
 	}
 
+	// Rebuild the remaining GUI behavior checkboxes in-place as native M3
+	// controls. Pointer identity (object name/state) remains stable for the
+	// existing signal, persistence, and pending-change handlers below.
+	if (ui.gridLayout_15) {
+		auto migrateGuiBehaviorCheck = [&](QCheckBox*& control) {
+			auto* native = new QCheckBox(control->text(), ui.tabUI);
+			native->setObjectName(control->objectName());
+			native->setTristate(control->isTristate());
+			native->setCheckState(control->checkState());
+			native->setEnabled(control->isEnabled());
+			native->setToolTip(control->toolTip());
+			native->setAccessibleName(control->accessibleName().isEmpty() ? control->text() : control->accessibleName());
+			native->setProperty("m3NativeSurface", true);
+			ui.gridLayout_15->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		migrateGuiBehaviorCheck(ui.chkDarkTheme);
+		migrateGuiBehaviorCheck(ui.chkAltRows);
+		migrateGuiBehaviorCheck(ui.chkBackground);
+		migrateGuiBehaviorCheck(ui.chkLargeIcons);
+		migrateGuiBehaviorCheck(ui.chkNoIcons);
+		migrateGuiBehaviorCheck(ui.chkOptTree);
+		migrateGuiBehaviorCheck(ui.chkNewLayout);
+		migrateGuiBehaviorCheck(ui.chkColorIcons);
+		migrateGuiBehaviorCheck(ui.chkHighlightPendingChanges);
+	}
+
 	if (theConf->GetBool("Options/AltRowColors", false)) {
 		foreach(QTreeWidget* pTree, this->findChildren<QTreeWidget*>()) 
 			pTree->setAlternatingRowColors(true);
