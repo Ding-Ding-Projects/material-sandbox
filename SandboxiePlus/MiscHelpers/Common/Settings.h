@@ -104,6 +104,11 @@ public:
 	void				DelValue(const QString& key);
 	bool				SetValue(const QString& key, const QVariant& value);
 	QVariant			GetValue(const QString& key, const QVariant& preset = QVariant());
+	// Full-state helpers used by local settings checkpoints. They operate under
+	// the settings mutex and deliberately bypass per-key history writes; the
+	// history layer records one bounded checkpoint for the operation.
+	QVariantMap			SnapshotValues() const;
+	bool				ApplySnapshot(const QVariantMap& values);
 
 	void				SetBlob(const QString& key, const QByteArray& value);
 	QByteArray			GetBlob(const QString& key);
@@ -144,7 +149,7 @@ public:
 	void				Sync()														{QMutexLocker Locker(&m_Mutex); m_ValueCache.clear(); m_pConf->sync();}
 
 protected:
-	QMutex				m_Mutex;
+	mutable QMutex		m_Mutex;
 	//QMap<QString, SSetting> m_DefaultValues;
 
 	QMap<SStrRef, SCacheVal>m_ValueCache;

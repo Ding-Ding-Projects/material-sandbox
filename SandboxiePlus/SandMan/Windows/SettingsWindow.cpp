@@ -654,19 +654,23 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			QPushButton* restore = new QPushButton(tr("Restore selected revision"), dialog);
 			restore->setEnabled(false);
 			layout->addWidget(restore);
+			QPushButton* checkpoint = new QPushButton(tr("Create full settings checkpoint"), dialog);
+			checkpoint->setToolTip(tr("Save one bounded, type-preserving snapshot of all settings on this device."));
+			layout->addWidget(checkpoint);
 			QHBoxLayout* exportLayout = new QHBoxLayout();
 			QPushButton* exportJson = new QPushButton(tr("Export JSON"), dialog);
 			QPushButton* exportMarkdown = new QPushButton(tr("Export Markdown"), dialog);
 			exportLayout->addWidget(exportJson);
 			exportLayout->addWidget(exportMarkdown);
 			layout->addLayout(exportLayout);
-			const QVector<CLocalSettingsHistory::Entry> entries = theConf->History()->entries();
+			QSharedPointer<QVector<CLocalSettingsHistory::Entry>> entries(new QVector<CLocalSettingsHistory::Entry>(theConf->History()->entries()));
 			auto refill = [entries, revisions, search]() {
 				revisions->clear();
 				const QString query = search->text().trimmed();
-				for (int i = entries.size() - 1; i >= 0; --i) {
-					const auto& entry = entries.at(i);
-					const QString text = QStringLiteral("%1 · %2 · %3").arg(QLocale().toString(entry.timestamp.toLocalTime(), QLocale::ShortFormat), entry.action, entry.key);
+				for (int i = entries->size() - 1; i >= 0; --i) {
+					const auto& entry = entries->at(i);
+					const QString kind = entry.isSnapshot ? QObject::tr("[Snapshot]") : QString();
+					const QString text = QStringLiteral("%1 · %2 · %3 %4").arg(QLocale().toString(entry.timestamp.toLocalTime(), QLocale::ShortFormat), entry.action, kind, entry.key);
 					if (!query.isEmpty() && !text.contains(query, Qt::CaseInsensitive))
 						continue;
 					QListWidgetItem* item = new QListWidgetItem(text, revisions);
@@ -675,6 +679,16 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			};
 			refill();
 			connect(search, &QLineEdit::textChanged, dialog, refill);
+			connect(checkpoint, &QPushButton::clicked, dialog, [this, dialog, entries, refill]() {
+				QString id;
+				QString error;
+				if (theConf->History()->checkpoint(theConf, &id, &error)) {
+					*entries = theConf->History()->entries();
+					refill();
+				} else {
+					QToolTip::showText(QCursor::pos(), error, dialog);
+				}
+			});
 			connect(revisions, &QListWidget::currentItemChanged, dialog, [restore](QListWidgetItem* item) { restore->setEnabled(item != nullptr); });
 			auto exportHistory = [entries, search](const QString& path, bool markdown) {
 				QSaveFile file(path);
@@ -682,8 +696,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 				QJsonArray array;
 				QString markdownText = QStringLiteral("# Settings history\n\nSearch: `%1`\n\n").arg(search->text().trimmed().replace('`', "'"));
 				const auto escape = [](QString value) { return value.replace('\\', "\\\\").replace('\n', " ").replace('*', "\\*").replace('[', "\\["); };
-				for (int i = entries.size() - 1; i >= 0; --i) {
-					const auto& entry = entries.at(i);
+				for (int i = entries->size() - 1; i >= 0; --i) {
+					const auto& entry = entries->at(i);
 					const QString text = QStringLiteral("%1 · %2 · %3").arg(QLocale().toString(entry.timestamp.toLocalTime(), QLocale::ShortFormat), entry.action, entry.key);
 					if (!search->text().trimmed().isEmpty() && !text.contains(search->text().trimmed(), Qt::CaseInsensitive)) continue;
 					if (markdown) markdownText += QStringLiteral("- **%1** — %2 (%3)\n").arg(escape(entry.action), escape(entry.key), entry.timestamp.toUTC().toString(Qt::ISODate));

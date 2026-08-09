@@ -107,6 +107,35 @@ QVariant CSettings::GetValue(const QString &key, const QVariant& preset)
 	return m_pConf->value(key, preset);
 }
 
+QVariantMap CSettings::SnapshotValues() const
+{
+	QMutexLocker Locker(&m_Mutex);
+	QVariantMap values;
+	const QStringList keys = m_pConf->allKeys();
+	for (const QString& key : keys) {
+		// History is an implementation detail and must never recursively become
+		// part of a checkpoint or expose its local records to an export.
+		if (!key.startsWith(QStringLiteral("History/")))
+			values.insert(key, m_pConf->value(key));
+	}
+	return values;
+}
+
+bool CSettings::ApplySnapshot(const QVariantMap& values)
+{
+	QMutexLocker Locker(&m_Mutex);
+	const QStringList keys = m_pConf->allKeys();
+	for (const QString& key : keys) {
+		if (!key.startsWith(QStringLiteral("History/")) && !values.contains(key))
+			m_pConf->remove(key);
+	}
+	for (auto it = values.cbegin(); it != values.cend(); ++it)
+		m_pConf->setValue(it.key(), it.value());
+	m_ValueCache.clear();
+	m_pConf->sync();
+	return m_pConf->status() == QSettings::NoError;
+}
+
 void CSettings::SetBlob(const QString& key, const QByteArray& value)
 {
 	QString str;

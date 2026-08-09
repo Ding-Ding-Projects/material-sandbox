@@ -4,6 +4,7 @@
 #include <QMutex>
 #include <QString>
 #include <QVariant>
+#include <QVariantMap>
 #include <QVector>
 
 #include "../mischelpers_global.h"
@@ -26,12 +27,18 @@ public:
         QVariant before;
         bool hadAfter = false;
         QVariant after;
+        // A checkpoint stores the complete settings key/value map.  Delta
+        // records keep this false so existing callers remain source-compatible.
+        bool isSnapshot = false;
+        QVariantMap snapshot;
     };
 
     explicit CLocalSettingsHistory(const QString& filePath, int maxEntries = 500);
 
     void record(const QString& key, bool hadBefore, const QVariant& before,
         bool hadAfter, const QVariant& after, const QString& action = QStringLiteral("settings changed"));
+    bool checkpoint(CSettings* settings, QString* id = nullptr,
+        QString* error = nullptr, const QString& action = QStringLiteral("settings checkpoint"));
     QVector<Entry> entries() const;
     bool restore(const QString& id, CSettings* settings, QString* error = nullptr) const;
     QString filePath() const { return m_filePath; }
