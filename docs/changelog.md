@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings GUI tab
+
+Commit: [0603d8fc11912a045251602bca639cd26ad1fdb9](https://github.com/Ding-Ding-Projects/material-sandbox/commit/0603d8fc11912a045251602bca639cd26ad1fdb9)
+
+- Rebuilt the Settings GUI child tab with native Material 3 DPI, font scaling, UI font, external editor, and capture controls.
+- Retained the existing generated member pointers, persistence paths, and signal handlers while leaving unrelated tabs staged.
+
 ## 2026-08-09 · Native Material 3 surface token consumption
 
 Commit: [69a8c1a0fe310bb26d0f44f345395150e67d7ecb](https://github.com/Ding-Ding-Projects/material-sandbox/commit/69a8c1a0fe310bb26d0f44f345395150e67d7ecb)

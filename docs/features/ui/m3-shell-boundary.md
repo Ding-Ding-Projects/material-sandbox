@@ -68,6 +68,10 @@ claimed as complete.
 The shared MaterialTheme consumes the native-surface marker with a dedicated
 group treatment, so the appearance slice changes rendered chrome rather than
 only carrying validator metadata.
+The GUI child tab is now another concrete native slice: DPI, font scaling, UI
+font, external editor, and capture controls are created in code and reattached
+to the existing persistence and signal paths; the remaining Settings tabs stay
+explicitly staged.
 
 ## Failure and accessibility notes
 
