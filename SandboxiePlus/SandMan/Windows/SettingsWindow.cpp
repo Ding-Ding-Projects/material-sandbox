@@ -614,7 +614,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			for (const ScheduledSettings::Rule& rule : ScheduledSettings::load(theConf)) {
 				const QString key = rule.values.isEmpty() ? QString() : rule.values.firstKey();
 				const QString value = rule.values.isEmpty() ? QString() : rule.values.first();
-				QListWidgetItem* item = new QListWidgetItem(QStringLiteral("%1 · %2 · %3 · %4").arg(rule.enabled ? QStringLiteral("✓") : QStringLiteral("×"), rule.label, ScheduledSettings::valueLabel(key), value), scheduledRules);
+				QListWidgetItem* item = new QListWidgetItem(QStringLiteral("%1 · %2 · %3 · %4 · %5").arg(rule.enabled ? QStringLiteral("✓") : QStringLiteral("×"), rule.label, ScheduledSettings::valueLabel(key), value, ScheduledSettings::sourceStatusDescription(rule.source)), scheduledRules);
+				item->setToolTip(ScheduledSettings::sourceStatusDescription(rule.source));
 				item->setData(Qt::UserRole, rule.id);
 			}
 		};

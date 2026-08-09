@@ -22,3 +22,8 @@ boolean entities (`binary_sensor.*` and `input_boolean.*`). The native
 credential-vault/network adapter is not yet available, so external sources are
 explicitly marked unsupported and remain inert; no network request or blocking
 UI path is claimed.
+
+The settings list and each rule tooltip show this state explicitly: local
+sources are active, while external metadata is saved but not active until the
+credential-vault/network adapter exists. The recovery hint is informational and
+never asks for a token or claims a partial schedule application.

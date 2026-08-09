@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — scheduled-source status
+
+- Scheduled-rules rows now show a localized active/inactive source status and a
+  recovery hint for retained external metadata, without requesting credentials
+  or performing network I/O.
+
 ## 2026-08-09 · Native CI stale-run control
 
 Commit: [731a5a336fde7e6e3ce1a341a02d4e5b0e5dc995](https://github.com/Ding-Ding-Projects/material-sandbox/commit/731a5a336fde7e6e3ce1a341a02d4e5b0e5dc995)

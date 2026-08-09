@@ -21,6 +21,12 @@ reports `unsupported-external-source` and remains inert: no network I/O,
 blocking wait, or partial setting change is claimed. Tokens are never stored in
 the schedule. A future schema version is ignored rather than guessed.
 
+The scheduled-rules list shows a localized source status beside each rule and
+in its tooltip. Local rules are labelled active; external rules are labelled
+saved but not active, with the credential-vault/network-adapter recovery reason.
+This makes the safe fallback visible without requesting a token or claiming a
+partial update.
+
 School mode remains the final presentation gate. A matching language rule cannot
 turn Cantonese or bilingual presentation back on while School mode is enabled;
 the user's previous presentation choices remain stored and available after unlock.
