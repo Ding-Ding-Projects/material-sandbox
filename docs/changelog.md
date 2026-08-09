@@ -65,6 +65,13 @@ Commit: [1438e8456aa6d41a7d4d719613892090cfc00276](https://github.com/Ding-Ding-
 - Rebuilt the Start Restrictions QTreeWidget host with native Material 3 surface metadata and the existing tree behavior.
 - Preserved columns, sorting, selection, edit behavior, its delegate, and policy event flow.
 
+## 2026-08-09 · Native Settings GUI tab host
+
+Commit: [70227058f1a1b50e3c3e7017daafe8267cf6782a](https://github.com/Ding-Ding-Projects/material-sandbox/commit/70227058f1a1b50e3c3e7017daafe8267cf6782a)
+
+- Rebuilt the Settings GUI tab host with native Material 3 controls around its existing native child pages.
+- Preserved page order, labels, current selection, and icon/state wiring.
+
 ## 2026-08-09 · Native Options resource-access tab host
 
 Commit: [01cf568a6d36d64b7e2450e532ffc3785cf0d0b1](https://github.com/Ding-Ding-Projects/material-sandbox/commit/01cf568a6d36d64b7e2450e532ffc3785cf0d0b1)
