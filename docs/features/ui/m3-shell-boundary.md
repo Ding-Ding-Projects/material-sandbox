@@ -185,6 +185,9 @@ Settings Advanced now uses a native M3 tab host around Sandbox Options and
 Sandboxie.ini pages, preserving page order, labels, current selection, and
 settings wiring.
 
+The Settings outer tab host now uses native M3 controls around every migrated
+page, preserving labels, icons, order, current selection, and tab-state wiring.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

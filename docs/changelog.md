@@ -114,6 +114,13 @@ Commit: [91c68684d0f4d4ebb0eded025950efcaac10a0fd](https://github.com/Ding-Ding-
 - Rebuilt the Settings Advanced tab host with native Material 3 controls around Sandbox Options and Sandboxie.ini pages.
 - Preserved page order, labels, current selection, and settings wiring.
 
+## 2026-08-09 · Native Settings outer tab host
+
+Commit: [f0d03cf880d2e61377f9f1d260761b5a522dc01f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/f0d03cf880d2e61377f9f1d260761b5a522dc01f)
+
+- Rebuilt the outer Settings tab host with native Material 3 controls around every migrated page.
+- Preserved labels, icons, order, current selection, and tab-state wiring.
+
 ## 2026-08-09 · Native Options resource-access tab host
 
 Commit: [01cf568a6d36d64b7e2450e532ffc3785cf0d0b1](https://github.com/Ding-Ding-Projects/material-sandbox/commit/01cf568a6d36d64b7e2450e532ffc3785cf0d0b1)
