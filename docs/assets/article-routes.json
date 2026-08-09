@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "routePrefix": "#/articles/",
+  "articles": [
+    {
+      "slug": "material-design",
+      "route": "#/articles/material-design",
+      "relatedArticles": [{ "slug": "contributor-build", "route": "#/articles/contributor-build" }],
+      "featureDestination": { "id": "feature:material-design", "route": "#/articles/material-design" },
+      "paletteDestination": { "id": "palette:article:material-design", "kind": "article", "route": "#/articles/material-design" }
+    },
+    {
+      "slug": "appearance-editor",
+      "route": "#/articles/appearance-editor",
+      "relatedArticles": [
+        { "slug": "material-design", "route": "#/articles/material-design" },
+        { "slug": "color-translator", "route": "#/articles/color-translator" },
+        { "slug": "settings-history", "route": "#/articles/settings-history" }
+      ],
+      "featureDestination": { "id": "feature:appearance-editor", "route": "#/articles/appearance-editor" },
+      "paletteDestination": { "id": "palette:article:appearance-editor", "kind": "article", "route": "#/articles/appearance-editor" }
+    },
+    {
+      "slug": "settings-provenance",
+      "route": "#/articles/settings-provenance",
+      "relatedArticles": [
+        { "slug": "appearance-editor", "route": "#/articles/appearance-editor" },
+        { "slug": "settings-history", "route": "#/articles/settings-history" },
+        { "slug": "scheduled-settings", "route": "#/articles/scheduled-settings" }
+      ],
+      "featureDestination": { "id": "feature:settings-provenance", "route": "#/articles/settings-provenance" },
+      "paletteDestination": { "id": "palette:article:settings-provenance", "kind": "article", "route": "#/articles/settings-provenance" }
+    },
+    {
+      "slug": "contributor-build",
+      "route": "#/articles/contributor-build",
+      "relatedArticles": [
+        { "slug": "contributor-build-audit", "route": "#/articles/contributor-build-audit" },
+        { "slug": "material-design", "route": "#/articles/material-design" }
+      ],
+      "featureDestination": { "id": "feature:contributor-build", "route": "#/articles/contributor-build" },
+      "paletteDestination": { "id": "palette:article:contributor-build", "kind": "article", "route": "#/articles/contributor-build" }
+    },
+    {
+      "slug": "contributor-build-audit",
+      "route": "#/articles/contributor-build-audit",
+      "relatedArticles": [
+        { "slug": "contributor-build", "route": "#/articles/contributor-build" },
+        { "slug": "native-ci-evidence", "route": "#/articles/native-ci-evidence" },
+        { "slug": "material-design", "route": "#/articles/material-design" }
+      ],
+      "featureDestination": { "id": "feature:contributor-build-audit", "route": "#/articles/contributor-build-audit" },
+      "paletteDestination": { "id": "palette:article:contributor-build-audit", "kind": "article", "route": "#/articles/contributor-build-audit" }
+    },
+    {
+      "slug": "settings-history",
+      "route": "#/articles/settings-history",
+      "relatedArticles": [
+        { "slug": "material-design", "route": "#/articles/material-design" },
+        { "slug": "contributor-build", "route": "#/articles/contributor-build" }
+      ],
+      "featureDestination": { "id": "feature:settings-history", "route": "#/articles/settings-history" },
+      "paletteDestination": { "id": "palette:article:settings-history", "kind": "article", "route": "#/articles/settings-history" }
+    },
+    {
+      "slug": "notifications",
+      "route": "#/articles/notifications",
+      "relatedArticles": [
+        { "slug": "settings-history", "route": "#/articles/settings-history" },
+        { "slug": "material-design", "route": "#/articles/material-design" }
+      ],
+      "featureDestination": { "id": "feature:notifications", "route": "#/articles/notifications" },
+      "paletteDestination": { "id": "palette:article:notifications", "kind": "article", "route": "#/articles/notifications" }
+    },
+    {
+      "slug": "color-translator",
+      "route": "#/articles/color-translator",
+      "relatedArticles": [
+        { "slug": "material-design", "route": "#/articles/material-design" },
+        { "slug": "settings-history", "route": "#/articles/settings-history" }
+      ],
+      "featureDestination": { "id": "feature:color-translator", "route": "#/articles/color-translator" },
+      "paletteDestination": { "id": "palette:article:color-translator", "kind": "article", "route": "#/articles/color-translator" }
+    },
+    {
+      "slug": "school-mode",
+      "route": "#/articles/school-mode",
+      "relatedArticles": [
+        { "slug": "material-design", "route": "#/articles/material-design" },
+        { "slug": "notifications", "route": "#/articles/notifications" }
+      ],
+      "featureDestination": { "id": "feature:school-mode", "route": "#/articles/school-mode" },
+      "paletteDestination": { "id": "palette:article:school-mode", "kind": "article", "route": "#/articles/school-mode" }
+    },
+    {
+      "slug": "dim-sum-surprise",
+      "route": "#/articles/dim-sum-surprise",
+      "relatedArticles": [
+        { "slug": "notifications", "route": "#/articles/notifications" },
+        { "slug": "material-design", "route": "#/articles/material-design" },
+        { "slug": "school-mode", "route": "#/articles/school-mode" }
+      ],
+      "featureDestination": { "id": "feature:dim-sum-surprise", "route": "#/articles/dim-sum-surprise" },
+      "paletteDestination": { "id": "palette:article:dim-sum-surprise", "kind": "article", "route": "#/articles/dim-sum-surprise" }
+    },
+    {
+      "slug": "scheduled-settings",
+      "route": "#/articles/scheduled-settings",
+      "relatedArticles": [
+        { "slug": "material-design", "route": "#/articles/material-design" },
+        { "slug": "school-mode", "route": "#/articles/school-mode" },
+        { "slug": "settings-history", "route": "#/articles/settings-history" }
+      ],
+      "featureDestination": { "id": "feature:scheduled-settings", "route": "#/articles/scheduled-settings" },
+      "paletteDestination": { "id": "palette:article:scheduled-settings", "kind": "article", "route": "#/articles/scheduled-settings" }
+    },
+    {
+      "slug": "tab-discovery",
+      "route": "#/articles/tab-discovery",
+      "relatedArticles": [
+        { "slug": "appearance-editor", "route": "#/articles/appearance-editor" },
+        { "slug": "settings-history", "route": "#/articles/settings-history" },
+        { "slug": "scheduled-settings", "route": "#/articles/scheduled-settings" }
+      ],
+      "featureDestination": { "id": "feature:tab-discovery", "route": "#/articles/tab-discovery" },
+      "paletteDestination": { "id": "palette:article:tab-discovery", "kind": "article", "route": "#/articles/tab-discovery" }
+    },
+    {
+      "slug": "command-palette",
+      "route": "#/articles/command-palette",
+      "relatedArticles": [
+        { "slug": "material-design", "route": "#/articles/material-design" },
+        { "slug": "scheduled-settings", "route": "#/articles/scheduled-settings" },
+        { "slug": "settings-history", "route": "#/articles/settings-history" }
+      ],
+      "featureDestination": { "id": "feature:command-palette", "route": "#/articles/command-palette" },
+      "paletteDestination": { "id": "palette:article:command-palette", "kind": "article", "route": "#/articles/command-palette" }
+    },
+    {
+      "slug": "external-editor",
+      "route": "#/articles/external-editor",
+      "relatedArticles": [
+        { "slug": "appearance-editor", "route": "#/articles/appearance-editor" },
+        { "slug": "settings-history", "route": "#/articles/settings-history" },
+        { "slug": "scheduled-settings", "route": "#/articles/scheduled-settings" }
+      ],
+      "featureDestination": { "id": "feature:external-editor", "route": "#/articles/external-editor" },
+      "paletteDestination": { "id": "palette:article:external-editor", "kind": "article", "route": "#/articles/external-editor" }
+    },
+    {
+      "slug": "destructive-confirmation",
+      "route": "#/articles/destructive-confirmation",
+      "relatedArticles": [
+        { "slug": "notifications", "route": "#/articles/notifications" },
+        { "slug": "settings-history", "route": "#/articles/settings-history" },
+        { "slug": "appearance-editor", "route": "#/articles/appearance-editor" }
+      ],
+      "featureDestination": { "id": "feature:destructive-confirmation", "route": "#/articles/destructive-confirmation" },
+      "paletteDestination": { "id": "palette:article:destructive-confirmation", "kind": "article", "route": "#/articles/destructive-confirmation" }
+    },
+    {
+      "slug": "native-ci-evidence",
+      "route": "#/articles/native-ci-evidence",
+      "relatedArticles": [
+        { "slug": "contributor-build", "route": "#/articles/contributor-build" },
+        { "slug": "material-design", "route": "#/articles/material-design" },
+        { "slug": "destructive-confirmation", "route": "#/articles/destructive-confirmation" }
+      ],
+      "featureDestination": { "id": "feature:native-ci-evidence", "route": "#/articles/native-ci-evidence" },
+      "paletteDestination": { "id": "palette:article:native-ci-evidence", "kind": "article", "route": "#/articles/native-ci-evidence" }
+    },
+    {
+      "slug": "build-entrypoints",
+      "route": "#/articles/build-entrypoints",
+      "relatedArticles": [
+        { "slug": "native-ci-evidence", "route": "#/articles/native-ci-evidence" },
+        { "slug": "contributor-build", "route": "#/articles/contributor-build" },
+        { "slug": "material-design", "route": "#/articles/material-design" }
+      ],
+      "featureDestination": { "id": "feature:build-entrypoints", "route": "#/articles/build-entrypoints" },
+      "paletteDestination": { "id": "palette:article:build-entrypoints", "kind": "article", "route": "#/articles/build-entrypoints" }
+    },
+    {
+      "slug": "m3-shell-boundary",
+      "route": "#/articles/m3-shell-boundary",
+      "relatedArticles": [
+        { "slug": "material-design", "route": "#/articles/material-design" },
+        { "slug": "appearance-editor", "route": "#/articles/appearance-editor" },
+        { "slug": "tab-discovery", "route": "#/articles/tab-discovery" }
+      ],
+      "featureDestination": { "id": "feature:m3-shell-boundary", "route": "#/articles/m3-shell-boundary" },
+      "paletteDestination": { "id": "palette:article:m3-shell-boundary", "kind": "article", "route": "#/articles/m3-shell-boundary" }
+    },
+    {
+      "slug": "editor-settings",
+      "route": "#/articles/editor-settings",
+      "relatedArticles": [
+        { "slug": "m3-shell-boundary", "route": "#/articles/m3-shell-boundary" },
+        { "slug": "settings-history", "route": "#/articles/settings-history" },
+        { "slug": "appearance-editor", "route": "#/articles/appearance-editor" }
+      ],
+      "featureDestination": { "id": "feature:editor-settings", "route": "#/articles/editor-settings" },
+      "paletteDestination": { "id": "palette:article:editor-settings", "kind": "article", "route": "#/articles/editor-settings" }
+    },
+    {
+      "slug": "changelog-viewer",
+      "route": "#/articles/changelog-viewer",
+      "relatedArticles": [
+        { "slug": "settings-history", "route": "#/articles/settings-history" },
+        { "slug": "command-palette", "route": "#/articles/command-palette" },
+        { "slug": "material-design", "route": "#/articles/material-design" }
+      ],
+      "featureDestination": { "id": "feature:changelog-viewer", "route": "#/articles/changelog-viewer" },
+      "paletteDestination": { "id": "palette:article:changelog-viewer", "kind": "article", "route": "#/articles/changelog-viewer" }
+    },
+    {
+      "slug": "pages-language-tone",
+      "route": "#/articles/pages-language-tone",
+      "relatedArticles": [
+        { "slug": "material-design", "route": "#/articles/material-design" },
+        { "slug": "school-mode", "route": "#/articles/school-mode" },
+        { "slug": "notifications", "route": "#/articles/notifications" }
+      ],
+      "featureDestination": { "id": "feature:pages-language-tone", "route": "#/articles/pages-language-tone" },
+      "paletteDestination": { "id": "palette:article:pages-language-tone", "kind": "article", "route": "#/articles/pages-language-tone" }
+    },
+    {
+      "slug": "pages-a11y-boundary",
+      "route": "#/articles/pages-a11y-boundary",
+      "relatedArticles": [
+        { "slug": "material-design", "route": "#/articles/material-design" },
+        { "slug": "tab-discovery", "route": "#/articles/tab-discovery" },
+        { "slug": "command-palette", "route": "#/articles/command-palette" }
+      ],
+      "featureDestination": { "id": "feature:pages-a11y-boundary", "route": "#/articles/pages-a11y-boundary" },
+      "paletteDestination": { "id": "palette:article:pages-a11y-boundary", "kind": "article", "route": "#/articles/pages-a11y-boundary" }
+    }
+  ]
+}

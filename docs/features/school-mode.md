@@ -6,4 +6,20 @@ The current implementation intentionally does not store an unlock credential. Ad
 
 Verification: `node scripts/validate-school-mode.mjs`; CI also bundles `Docs/school-mode.md` through the SandMan resource file.
 
-Suggested articles: [Material design](material-design.md), [Settings history](settings-history.md), [Notifications](notifications.md).
+## GitHub Pages workspace
+
+The GitHub Pages workspace keeps a separate browser-local focused mode with a
+visitor-chosen name and a browser-local hash for its unlock code. It is an
+experience lock rather than an account-security boundary: clearing the site’s
+local data intentionally resets it. While enabled, the workspace forces English
+and omits language, bilingual, funny-level, dim-sum, and related documentation
+routes from cards, search, palette results, direct hash routes, notifications,
+and active toasts. A renamed mode keeps the exact chosen name in its dialog,
+search, close action, notifications, and accessible labels.
+
+The Pages static site never exports the unlock hash; importing preferences
+explicitly leaves focused mode off. Run `node scripts/validate-pages-material.mjs`
+and verify enable, renamed unlock labels, direct blocked article routes, and
+hidden discovery results in a browser.
+
+Suggested articles: [Material design](../material-design.md), [Settings history](settings-history.md), [Notifications](notifications.md).

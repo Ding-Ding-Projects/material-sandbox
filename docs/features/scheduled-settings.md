@@ -49,4 +49,20 @@ Verification: run `node scripts/validate-scheduled-settings.mjs`. Native runtime
 verification still requires the supported Qt/MSVC build; the static contract does
 not claim that hosted compilation or a rendered dialog has passed.
 
-Suggested articles: [appearance](appearance.md), [settings history](settings-history.md), and [language and tone](language-and-tone.md).
+## GitHub Pages workspace
+
+The GitHub Pages site has a separate, browser-local schedule editor. Its bounded
+rules carry a label, optional inclusive ISO start/end dates, a start/end time,
+either every day or explicit weekdays, and local theme, density, and language
+values. The browser evaluates them every 30 seconds in its own local timezone.
+Later matching rules win. For a cross-midnight window, the originating weekday
+and date boundary continue through the following end time, so a Monday
+22:00–06:00 rule remains a Monday rule at 01:00 Tuesday.
+
+The static site intentionally has no API or Home Assistant credential path:
+there is no trusted network or operating-system credential boundary in GitHub
+Pages. Its local editor and its date/time controls remain usable offline. Run
+`node scripts/validate-pages-material.mjs` for the Pages schedule contract and
+exercise a saved rule across its matching window in a browser.
+
+Suggested articles: [appearance](appearance-editor.md), [settings history](settings-history.md), and [language and tone](pages-language-tone.md).

@@ -1,62 +1,56 @@
-# GitHub Pages navigation and overlay boundary
+# GitHub Pages keyboard and overlay boundary
 
-## Implemented page behaviour
+## Behaviour
 
-The documentation landing page has one persistent tab strip whose shipped
-position is the left edge. A page preference can move that strip to the right,
-top, or bottom. The strip reports a vertical orientation at either side and a
-horizontal orientation at the top, bottom, and narrow-width fallback. Arrow
-keys follow that axis; Home and End move focus; Enter and Space activate the
-focused tab; and inactive panels use the `hidden` attribute.
+The Pages workspace is a browser-style tab surface rather than one long page.
+The tab strip starts on the left and can dock on every edge. It exposes the
+correct `aria-orientation`: vertical strips use Up/Down and horizontal strips
+use Left/Right, with Home and End available in both. Tabs retain `tablist`,
+`tab`, and `tabpanel` semantics, a roving tab stop, visible focus, an explicit
+selected state, and a controlled panel relationship.
 
-The command palette is a bounded modal surface with Escape, backdrop, and close
-button paths. Its focus loop stays inside the open palette. A normal close
-returns focus to the invoking control, while a setting-teleport command keeps
-focus on the selected live setting instead of immediately moving it back to the
-palette invoker. Palette indexing covers tabs, linked documentation, feature
-names, and settings.
+Every search field—including strip, per-group, group-name, master-tab,
+settings, history, notifications, command palette, and bulk-close search—has
+its own adjacent regex builder. Plain text remains the default. The builder
+limits input size and rejects a small high-risk nested-quantifier set before
+evaluation. Regex sample feedback runs in a local worker with a bounded
+timeout; an overdue preview is terminated rather than holding the page thread.
 
-Feature, settings, and palette searches each own a separate adjacent regular-
-expression builder. This is a page-level search facility, not a claim that the
-site already implements the desktop application's complete tab-management,
-appearance-editor, history, export, or scheduling contracts.
+## Responsive and motion rules
 
-## Responsive and motion boundary
+Controls meet a 44px target baseline. The narrow layout moves the left/right
+rail into a scrollable row instead of clipping its labels. The site honors
+both the visitor’s reduced-motion setting and `prefers-reduced-motion`.
 
-Buttons and text-entry controls use the page's Material minimum target sizing,
-and focusable page panels have their own visible focus treatment. The palette
-paints its own surface and scrolls within a viewport bound. CSS honors the
-operating system's reduced-motion request; scripted movement must consult the
-same preference rather than relying on CSS alone.
+The tab and appearance context menus paint their own labelled surface, move
+focus to their local search field, and return focus through a stable selector
+after an internal rerender. The move-into-group picker supports Arrow Up,
+Arrow Down, Enter, and Escape. Appearance and group dialogs anchor beside the
+originating control where space permits, scroll that origin back into view if
+needed, and clamp to the viewport instead of appearing off-screen. The
+appearance and focused-mode dialogs each carry their own local regex builder.
 
-## Source verification and remaining proof
+Native dialog elements provide the command palette, appearance editor,
+focused-mode control, tab manager, and bulk-close review. They have explicit
+close actions, respond to Escape, retain a return-focus path, paint their own
+surface, and are restored across an internal rerender so typing in a search
+field does not silently close the dialog.
 
-Run:
+Browser-local destructive actions use two independently operated keys before
+enabling a full-range slider. The slider paints non-blocking progress, and
+reaching the end triggers a distinct reduced-motion-aware authorization pulse.
 
-```powershell
-node scripts/validate-pages-material.mjs
-pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/validate-pages-a11y.ps1
-node scripts/validate-pages-material.mjs --self-test
-pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/validate-pages-a11y.ps1 -SelfTest
-```
+## Verification
 
-The source validators check the hand-written accessibility inventory, including
-axis-aware tabs, focusable panels, modal containment, post-command focus,
-feature-name discovery, localized accessible names and options, persistent
-error feedback, reduced-motion handling, and minimum target rules. They also
-exercise deliberate negative source mutations in their self-test modes.
-
-These checks parse committed source; they do not render a browser accessibility
-tree or prove pixel geometry. Real browser verification remains required at
-320/360/390/414 CSS pixels, 100/125/150/200% zoom, touch input, long bilingual
-copy, high contrast, and full focus cycling. Pinning, grouping, reordering, the
-four desktop tab-discovery scopes, per-element appearance editing, and bulk tab
-actions remain documented product work rather than implemented landing-page
-controls.
+Run `pwsh -NoProfile -File scripts/validate-pages-a11y.ps1`,
+`node --test scripts/test-pages-interactions.mjs`, and manually
+exercise all four dock edges, keyboard-only tab navigation, command-palette
+open/close and return focus, regex validation, group-picker arrows, an
+anchored appearance editor, the two-key slider gate, a bulk-close review with
+pinned tabs excluded, and 320px/200% layouts.
 
 ## Suggested articles
 
-- [GitHub Pages language, tone, and appearance controls](pages-language-tone.md)
-- [Command palette](command-palette.md)
 - [Tab discovery](tab-discovery.md)
-- [Material Design 3 desktop shell](../material-design.md)
+- [Command palette](command-palette.md)
+- [Material appearance editor](appearance-editor.md)

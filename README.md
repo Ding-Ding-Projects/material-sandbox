@@ -173,6 +173,13 @@ node scripts/validate-settings-history.mjs
 node scripts/validate-tab-discovery.mjs
 node scripts/validate-ci-concurrency.mjs
 node scripts/validate-ci-artifacts.mjs --help
+node scripts/validate-pages-material.mjs
+node scripts/validate-pages-article-completeness.mjs
+node scripts/validate-pages-markdown-renderer.mjs
+node scripts/validate-pages-regex-safety.mjs
+node --check docs/regex-worker.js
+pwsh -NoProfile -File scripts/validate-pages-a11y.ps1
+pwsh -NoProfile -File scripts/validate-pages-contract.ps1
 git diff --check
 ```
 

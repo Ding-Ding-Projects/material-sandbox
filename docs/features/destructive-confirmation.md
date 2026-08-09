@@ -10,4 +10,18 @@ The gate is local-only and does not store keys, slider values, credentials, or t
 
 Verification: run `node scripts/validate-destructive-confirmation.mjs`. Hosted Qt/MSVC build and hidden-desktop capture remain the authoritative runtime checks. The static contract checks source registration, both independent keys, the full-range slider, reduced-motion path, focus return, and the real Remove Sandbox wiring.
 
+## GitHub Pages workspace
+
+The GitHub Pages workspace uses the same two independently operated keys and
+full-range slider before it removes browser-local records or replaces them.
+The gate names the exact tab review, schedule rule, notification selection,
+saved appearance preset, selected appearance override, or parsed preferences
+file that will change. A cancellation or completed authorization returns focus
+to the originating control; progress and completion remain reduced-motion aware
+inside the decision dialog. Import parses and allowlists the file before review,
+but does not replace local preferences until this gate completes.
+
+Run `node scripts/validate-pages-material.mjs` and manually test cancel and
+authorization for a preset deletion, appearance reset, and preference import.
+
 Suggested articles: [Notification center](notifications.md), [Local settings history](settings-history.md), and [Material appearance editor](appearance-editor.md).
