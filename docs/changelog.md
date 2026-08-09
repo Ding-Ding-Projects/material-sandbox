@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings ini editor tab
+
+Commit: [529ea4d846e306f66066365c60aa3392eaa2baa3](https://github.com/Ding-Ding-Projects/material-sandbox/commit/529ea4d846e306f66066365c60aa3392eaa2baa3)
+
+- Rebuilt the Edit ini Section child tab with native Material 3 toolbar and plain-text editor controls.
+- Preserved validation, completion, save, cancel, and editor-settings handlers.
+
 ## 2026-08-09 · Responsive App Compatibility actions
 
 Commit: [2de1c11c0ce603a5ffa5a8cbba3611e2bebc8f2a](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2de1c11c0ce603a5ffa5a8cbba3611e2bebc8f2a)
