@@ -31,6 +31,7 @@ HEADERS += ./stdafx.h \
     ./Windows/RecoveryWindow.h \
     ./Windows/PopUpWindow.h \
     ./Windows/SnapshotsWindow.h \
+    ./Windows/BoxImageWindow.h \
     ./Windows/SettingsWindow.h \
     ./Windows/OptionsWindow.h \
     ./Windows/PendingChanges.h \
@@ -103,6 +104,7 @@ SOURCES += ./main.cpp \
     ./Windows/RecoveryWindow.cpp \
     ./Windows/SettingsWindow.cpp \
     ./Windows/SnapshotsWindow.cpp \
+    ./Windows/BoxImageWindow.cpp \
     ./Windows/SelectBoxWindow.cpp \
     ./Windows/SupportDialog.cpp \
     ./Windows/TestProxyDialog.cpp \
