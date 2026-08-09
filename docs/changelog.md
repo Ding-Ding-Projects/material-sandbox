@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Application-wide dialog chrome
+
+Commit: [d284a99552e7df6ef6c38e129db9c72018764cce](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d284a99552e7df6ef6c38e129db9c72018764cce)
+
+- Routed every shown application-owned `QDialog` through the reusable Material 3 host.
+- Kept the dialog migration idempotent so rebuilt surfaces cannot stack title bars.
+
 ## 2026-08-09 · M3 modal dialog host
 
 Commit: [fefd451cec268a46f507f6bdd6ce790d70b659b4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/fefd451cec268a46f507f6bdd6ce790d70b659b4)
