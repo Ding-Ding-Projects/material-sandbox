@@ -1699,6 +1699,28 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Sandbox Options and Sandboxie.ini are native pages; replace their
+	// remaining Designer tab host while preserving order and current selection.
+	if (ui.tabsAdvanced) {
+		auto* legacyAdvancedTabs = ui.tabsAdvanced;
+		auto* nativeAdvancedTabs = new QTabWidget(legacyAdvancedTabs->parentWidget());
+		nativeAdvancedTabs->setObjectName(QStringLiteral("tabsAdvanced"));
+		nativeAdvancedTabs->setTabPosition(QTabWidget::West);
+		nativeAdvancedTabs->setAccessibleName(tr("Advanced settings pages"));
+		const int currentAdvancedIndex = legacyAdvancedTabs->currentIndex();
+		while (legacyAdvancedTabs->count() > 0) {
+			const int index = legacyAdvancedTabs->count() - 1;
+			nativeAdvancedTabs->insertTab(0, legacyAdvancedTabs->widget(index), legacyAdvancedTabs->tabText(index));
+			legacyAdvancedTabs->removeTab(index);
+		}
+		nativeAdvancedTabs->setCurrentIndex(qBound(0, currentAdvancedIndex, nativeAdvancedTabs->count() - 1));
+		nativeAdvancedTabs->setProperty("m3NativeSurface", true);
+		if (auto* advancedHostLayout = legacyAdvancedTabs->parentWidget()->layout())
+			advancedHostLayout->replaceWidget(legacyAdvancedTabs, nativeAdvancedTabs);
+		legacyAdvancedTabs->deleteLater();
+		ui.tabsAdvanced = nativeAdvancedTabs;
+	}
+
 	// Replace the self-contained Sandboxie Updater child tab with native M3
 	// controls while preserving channel, certificate and update handlers.
 	if (ui.tabsSupport && ui.tabUpdate) {
