@@ -218,6 +218,11 @@ The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.
 
+The Debug tab host now keeps its tabs above the content in a predictable focus
+order, and both the tab host and scroll surface expose explicit accessible
+names. The M3 contract validator guards these choices so a bottom-only strip or
+unnamed surface cannot silently return.
+
 The Sandboxie Updater child tab is now another concrete native slice: channel
 radios, cadence, version links, and update toggles are created in code while
 certificate gating, release state, and updater handlers remain intact.
