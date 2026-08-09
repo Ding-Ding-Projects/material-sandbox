@@ -1000,6 +1000,56 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Network Options > Firewall with native M3 controls while
+	// preserving embedded rule editors, test fields, and WFP warning behavior.
+	if (ui.tabsInternet && ui.tabNetFw) {
+		const int fwIndex = ui.tabsInternet->indexOf(ui.tabNetFw);
+		if (fwIndex >= 0) {
+			auto* legacyFw = ui.tabNetFw;
+			auto* nativeFw = new QWidget(ui.tabsInternet);
+			auto* fwLayout = new QVBoxLayout(nativeFw);
+			ui.lblNoWfp = new QLabel(tr("Caution: Windows Filtering Platform may be unavailable; rules then apply only in user mode and can be bypassed."), nativeFw);
+			ui.lblNoWfp->setWordWrap(true);
+			ui.lblNoWfp->setProperty("m3NativeSurface", true);
+			fwLayout->addWidget(ui.lblNoWfp);
+			ui.treeNetFw = new QTreeWidget(nativeFw);
+			ui.treeNetFw->setColumnCount(5);
+			ui.treeNetFw->setHeaderLabels(QStringList() << tr("Program") << tr("Action") << tr("Port") << tr("IP") << tr("Protocol"));
+			ui.treeNetFw->setSortingEnabled(true);
+			fwLayout->addWidget(ui.treeNetFw, 1);
+			auto* fwActions = new QHBoxLayout();
+			ui.btnAddFwRule = new QPushButton(tr("Add Rule"), nativeFw);
+			ui.btnDelFwRule = new QPushButton(tr("Remove"), nativeFw);
+			ui.chkShowNetFwTmpl = new QCheckBox(tr("Show Templates"), nativeFw);
+			fwActions->addWidget(ui.btnAddFwRule);
+			fwActions->addWidget(ui.btnDelFwRule);
+			fwActions->addWidget(ui.chkShowNetFwTmpl);
+			fwActions->addStretch();
+			fwLayout->addLayout(fwActions);
+			auto* testRow = new QHBoxLayout();
+			testRow->addWidget(new QLabel(tr("Test program"), nativeFw));
+			ui.txtProgFwTest = new QLineEdit(nativeFw);
+			testRow->addWidget(ui.txtProgFwTest);
+			testRow->addWidget(new QLabel(tr("Port"), nativeFw));
+			ui.txtPortFwTest = new QLineEdit(nativeFw);
+			testRow->addWidget(ui.txtPortFwTest);
+			testRow->addWidget(new QLabel(tr("IP"), nativeFw));
+			ui.txtIPFwTest = new QLineEdit(nativeFw);
+			testRow->addWidget(ui.txtIPFwTest);
+			testRow->addWidget(new QLabel(tr("Protocol"), nativeFw));
+			ui.cmbProtFwTest = new QComboBox(nativeFw);
+			testRow->addWidget(ui.cmbProtFwTest);
+			ui.btnClearFwTest = new QToolButton(nativeFw);
+			ui.btnClearFwTest->setText(tr("Clear"));
+			testRow->addWidget(ui.btnClearFwTest);
+			fwLayout->addLayout(testRow);
+			ui.tabsInternet->removeTab(fwIndex);
+			ui.tabsInternet->insertTab(fwIndex, nativeFw, tr("Network Firewall"));
+			ui.tabNetFw = nativeFw;
+			legacyFw->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
