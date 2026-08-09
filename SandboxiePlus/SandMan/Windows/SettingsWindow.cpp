@@ -1178,6 +1178,40 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	ui.cmbGrouping->addItem(tr("Expand all groups"), 1);
 	ui.cmbGrouping->addItem(tr("Collapse all groups"), 2);
 
+	// Replace the GUI child tab's Designer-only font/editor controls with a
+	// native M3 form. Existing ui members are reassigned so downstream loading,
+	// persistence, and signal wiring remain unchanged.
+	if (ui.tabsGUI && ui.tab) {
+		const int guiIndex = ui.tabsGUI->indexOf(ui.tab);
+		if (guiIndex >= 0) {
+			auto* nativeGui = new QWidget(ui.tabsGUI);
+			auto* guiForm = new QFormLayout(nativeGui);
+			ui.cmbDPI = new QComboBox(nativeGui);
+			ui.cmbFontScale = new QComboBox(nativeGui);
+			ui.lblUiFont = new QLabel(nativeGui);
+			ui.btnSelectUiFont = new QPushButton(tr("Select Font"), nativeGui);
+			ui.btnResetUiFont = new QPushButton(tr("Reset Font"), nativeGui);
+			ui.chkHide = new QCheckBox(tr("Hide SandMan windows from screen capture (UI restart required)"), nativeGui);
+			ui.txtEditor = new QLineEdit(nativeGui);
+			ui.lblIniEditFont = new QLabel(nativeGui);
+			ui.btnSelectIniFont = new QPushButton(tr("Select font"), nativeGui);
+			ui.btnResetIniFont = new QPushButton(tr("Reset font"), nativeGui);
+			guiForm->addRow(tr("DPI scaling"), ui.cmbDPI);
+			guiForm->addRow(tr("Font scaling"), ui.cmbFontScale);
+			guiForm->addRow(tr("UI Font"), ui.lblUiFont);
+			guiForm->addRow(QString(), ui.btnSelectUiFont);
+			guiForm->addRow(QString(), ui.btnResetUiFont);
+			guiForm->addRow(QString(), ui.chkHide);
+			guiForm->addRow(tr("External Ini Editor"), ui.txtEditor);
+			guiForm->addRow(tr("Ini Editor Font"), ui.lblIniEditFont);
+			guiForm->addRow(QString(), ui.btnSelectIniFont);
+			guiForm->addRow(QString(), ui.btnResetIniFont);
+			ui.tabsGUI->removeTab(guiIndex);
+			ui.tabsGUI->insertTab(guiIndex, nativeGui, tr("Appearance & Editor"));
+			ui.tab->deleteLater();
+		}
+	}
+
 	ui.cmbDPI->addItem(tr("None"), 0);
 	ui.cmbDPI->addItem(tr("Native"), 1);
 	ui.cmbDPI->addItem(tr("Qt"), 2);

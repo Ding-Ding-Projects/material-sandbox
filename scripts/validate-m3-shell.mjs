@@ -81,6 +81,7 @@ const checks = [
   [settingsSource.includes('M3DialogHost::Install(this)') && settingsSource.includes('ui.setupUi') && !settingsSource.includes('chkFusionTheme') && fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/SettingsWindow.ui')), 'settings dialog uses native M3 chrome while its large content remains an explicit migration boundary'],
   [settingsSource.includes('nativeLocation') && settingsSource.includes('ui.tabsGUI->insertTab') && settingsSource.includes('ui.cmbFallbackActiveMonitor = new QComboBox(nativeLocation)'), 'settings window options tab is rebuilt with native controls'],
   [settingsSource.includes('m3PresentationSurface') && settingsSource.includes('m3AppearanceIdentitySurface') && settingsSource.includes('m3ScheduledAppearanceSurface') && settingsSource.includes('m3ExternalEditorSurface') && settingsSource.includes('m3NativeSurface'), 'settings appearance and presentation feature groups are native Material 3 surfaces'],
+  [settingsSource.includes('nativeGui') && settingsSource.includes('ui.tabsGUI->insertTab(guiIndex, nativeGui') && settingsSource.includes('ui.cmbFontScale = new QComboBox(nativeGui)') && settingsSource.includes('ui.txtEditor = new QLineEdit(nativeGui)'), 'settings GUI appearance/editor child tab is rebuilt with native controls'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);
