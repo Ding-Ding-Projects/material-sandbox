@@ -2568,8 +2568,12 @@ void CSandMan::UpdateDrives()
 
 void CSandMan::UpdateForceUSB()
 {
-	if (!theAPI->GetGlobalSettings()->GetBool("ForceUsbDrives", false) || !g_CertInfo.active)
+	if (!theAPI->GetGlobalSettings()->GetBool("ForceUsbDrives", false))
 		return;
+#ifndef SANDBOXIE_CONTRIBUTOR_BUILD
+	if (!g_CertInfo.active)
+		return;
+#endif
 
 	QString UsbSandbox = theAPI->GetGlobalSettings()->GetText("UsbSandbox", "USB_Box");
 
@@ -3061,6 +3065,7 @@ void CSandMan::OnStatusChanged()
 
 		uchar UsageFlags = 0;
 		if (theAPI->GetSecureParam("UsageFlags", &UsageFlags, sizeof(UsageFlags))) {
+#ifndef SANDBOXIE_CONTRIBUTOR_BUILD
 			if (!CERT_IS_TYPE(g_CertInfo, eCertBusiness)) {
 				if ((UsageFlags & (2 | 1)) != 0) {
 					if(g_CertInfo.active)
@@ -3069,6 +3074,7 @@ void CSandMan::OnStatusChanged()
 						appTitle.append(tr("   -   for Non-Commercial use ONLY"));
 				}
 			}
+#endif
 		}
 		else { // migrate value form ini to registry // todo remove in later builds
 			int BusinessUse = theConf->GetInt("Options/BusinessUse", 2);

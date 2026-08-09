@@ -123,6 +123,20 @@ requireWindow(
   ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'm_pBottomLabel->setVisible(false);', '#else', '#endif'],
   'setup update supporter footer exclusion',
 );
+requireWindow(
+  'SandboxiePlus/SandMan/SandMan.cpp',
+  'void CSandMan::UpdateForceUSB()',
+  'void CSandMan::OnMaintenance',
+  ['#ifndef SANDBOXIE_CONTRIBUTOR_BUILD', 'if (!g_CertInfo.active)', '#endif'],
+  'USB automation contributor capability guard',
+);
+requireWindow(
+  'SandboxiePlus/SandMan/SandMan.cpp',
+  'if (theAPI->GetSecureParam("UsageFlags"',
+  'g_FeatureFlags = theAPI->GetFeatureFlags();',
+  ['#ifndef SANDBOXIE_CONTRIBUTOR_BUILD', 'Non-Commercial use ONLY', '#endif'],
+  'non-commercial title copy contributor guard',
+);
 
 // Keep the legal boundary explicit: contributor capability changes must never
 // delete GPL/LGPL/Qt/upstream notices or their source files.
