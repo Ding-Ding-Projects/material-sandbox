@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options compatibility controls
+
+Commit: [1a158c67e885741bedc3bfa6a2bb34a30581b6aa](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1a158c67e885741bedc3bfa6a2bb34a30581b6aa)
+
+- Rebuilt Various Options Compatibility workaround switches with native Material 3 controls.
+- Preserved labels, tooltips, and box-setting persistence.
+
 ## 2026-08-09 · Native Options privacy controls
 
 Commit: [73f44ea0f0f9354653e8f19af8ca928789c1ec88](https://github.com/Ding-Ding-Projects/material-sandbox/commit/73f44ea0f0f9354653e8f19af8ca928789c1ec88)

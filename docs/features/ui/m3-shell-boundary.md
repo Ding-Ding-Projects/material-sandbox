@@ -90,6 +90,10 @@ Advanced Options > Privacy now uses native M3 firmware, identifier, serial,
 MAC, locale, and dump controls. Privacy persistence and firmware-table export
 remain unchanged with the same object-name and signal wiring.
 
+Various Options > Compatibility now rebuilds every compatibility workaround
+switch as a native M3 control while preserving labels, tooltips, and box-setting
+persistence.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
