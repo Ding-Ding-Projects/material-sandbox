@@ -7,6 +7,13 @@ Commit: [137ccb70f0af7b7fb55a05141d3d351e099e10af](https://github.com/Ding-Ding-
 - Empty multi-sandbox export selections now report through the notification center instead of a blocking information box.
 - Preserved decision prompts and genuine error dialogs while keeping informational feedback non-blocking.
 
+## 2026-08-09 · Native Options program-control tab host
+
+Commit: [4056faa6f0ffecbc696fab75a1455ae61e93caa2](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4056faa6f0ffecbc696fab75a1455ae61e93caa2)
+
+- Rebuilt the Program Control tab host with native Material 3 tabs.
+- Preserved Force, Breakout, and later dynamic Group, Stop, and Start page additions.
+
 ## 2026-08-09 · Native Options security tab host
 
 Commit: [1c283bd8b1998320e7ff10cf087698f518ed213b](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1c283bd8b1998320e7ff10cf087698f518ed213b)

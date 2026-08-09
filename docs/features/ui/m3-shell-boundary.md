@@ -124,6 +124,10 @@ Security Options now uses a native M3 tab host for Security, Isolation,
 Protection, Job, and Advanced Security pages while preserving state, order,
 icons, and migrated child behavior.
 
+Program Control now uses a native M3 tab host for Force and Breakout pages;
+later dynamic Group, Stop, and Start pages continue to append through the same
+host.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
