@@ -656,7 +656,11 @@ bool COnlineUpdater::HandleUpdate()
 	// solution: apply updates silently, then prompt to install new release, else prioritize installing new releases over updating the existing one
 	//
 
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
 	bool bAllowAuto = true; // Contributor builds have no certificate-dependent update policy.
+#else
+	bool bAllowAuto = g_CertInfo.active && !g_CertInfo.expired; // To use automatic updates a valid certificate is required
+#endif
 
 	bool bCanRunInstaller = (m_CheckMode == eAuto && OnNewRelease == "install");
 	bool bIsInstallerReady = false;

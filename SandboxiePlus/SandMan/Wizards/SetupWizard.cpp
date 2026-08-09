@@ -14,8 +14,10 @@ CSetupWizard::CSetupWizard(int iOldLevel, QWidget *parent)
 {
     if (iOldLevel < SETUP_LVL_1)
         setPage(Page_Intro, new CIntroPage);
+    #ifndef SANDBOXIE_CONTRIBUTOR_BUILD
     if (iOldLevel < SETUP_LVL_3)
         setPage(Page_Certificate, new CCertificatePage(iOldLevel));
+    #endif
     if (iOldLevel < SETUP_LVL_1) {
         setPage(Page_UI, new CUIPage);
         setPage(Page_Shell, new CShellPage);
@@ -226,9 +228,13 @@ CIntroPage::CIntroPage(QWidget *parent)
 
 int CIntroPage::nextId() const
 {
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+    return CSetupWizard::Page_UI;
+#else
     if(g_Certificate.isEmpty())
         return CSetupWizard::Page_Certificate;
     return CSetupWizard::Page_UI;
+#endif
 }
 
 bool CIntroPage::isComplete() const 

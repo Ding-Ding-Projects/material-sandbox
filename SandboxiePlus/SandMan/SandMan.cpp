@@ -3664,6 +3664,7 @@ SB_STATUS CSandMan::ReloadCert(QWidget* pWidget)
 	g_CertInfo.opt_enc = 1;
 	g_CertInfo.opt_net = 1;
 	g_CertInfo.opt_desk = 1;
+	Status = SB_OK;
 #endif
 
 	if (!Status.IsError())
@@ -4835,22 +4836,6 @@ void CSandMan::SetUITheme()
 	m_DarkTheme = bDark;
 
 
-	bool bFusion;
-	int iFusion = theConf->GetInt("Options/UseFusionTheme", 2);
-	if (iFusion == 2)
-		bFusion = bDark;
-	else
-		bFusion = (iFusion == 1);
-
-	if (bFusion)
-		QApplication::setStyle(QStyleFactory::create("Fusion"));
-	else {
-		int iViewMode = theConf->GetInt("Options/ViewMode", 1);
-		QApplication::setStyle(QStyleFactory::create((bDark || iViewMode == 2) ? "Windows" : m_DefaultStyle));
-	}
-	QApplication::setStyle(new KeepSubMenusVisibleStyle(new CustomTabStyle(QApplication::style())));
-
-
 	CTreeItemModel::SetDarkMode(bDark);
 	//CListItemModel::SetDarkMode(bDark); // not used
 	CPopUpWindow::SetDarkMode(bDark);
@@ -5017,10 +5002,14 @@ void CSandMan::OnAbout()
 		).arg(theGUI->GetVersion(true));
 
 		QString CertInfo;
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+		CertInfo = tr("Contributor build: all Sandboxie capabilities are enabled without supporter prompts.");
+#else
 		if (!g_Certificate.isEmpty())
 			CertInfo = tr("This copy of Sandboxie-Plus is certified for: %1").arg(GetArguments(g_Certificate, L'\n', L':').value("NAME"));
 		else
 			CertInfo = tr("Sandboxie-Plus is free for personal and non-commercial use.");
+#endif
 
 		QString SbiePath = theAPI->GetSbiePath();
 
