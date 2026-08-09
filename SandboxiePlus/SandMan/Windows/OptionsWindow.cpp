@@ -1801,6 +1801,21 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.scrollArea = nativeDebugScroll;
 	}
 
+	// Replace the Designer Debug tab host while retaining both existing pages
+	// and their dynamic controls/signals.
+	{
+		auto* nativeDebugTabs = new QTabWidget(this);
+		nativeDebugTabs->setObjectName(QStringLiteral("tabsDebug"));
+		nativeDebugTabs->setTabPosition(QTabWidget::South);
+		nativeDebugTabs->addTab(ui.tabDebugConfig, tr("Debug Options"));
+		nativeDebugTabs->addTab(ui.tabConfigDump, tr("Config Dump"));
+		nativeDebugTabs->setCurrentIndex(ui.tabsDebug->currentIndex());
+		nativeDebugTabs->setProperty("m3NativeSurface", true);
+		ui.gridLayout_31->replaceWidget(ui.tabsDebug, nativeDebugTabs);
+		ui.tabsDebug->deleteLater();
+		ui.tabsDebug = nativeDebugTabs;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
