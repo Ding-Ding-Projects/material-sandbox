@@ -77,6 +77,11 @@ slice.
 App Templates > Accessibility now uses a native M3 screen-reader switch while
 retaining the `ScreenReader` template setting, tooltip, and handler wiring.
 
+The Edit ini Section surface now builds its validation, completion, tooltip,
+editor, and save/cancel controls as native M3 widgets. The later code-editor
+upgrade, INI validation, and persistence workflow continue using the same
+object names and pointers.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

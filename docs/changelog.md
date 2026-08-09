@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options ini editor controls
+
+Commit: [2426e44a4198cf22c484c971e94746e05f165c1d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2426e44a4198cf22c484c971e94746e05f165c1d)
+
+- Rebuilt Edit ini Section validation, completion, tooltip, editor, and save/cancel controls with native Material 3 widgets.
+- Preserved the later code-editor upgrade, INI validation, persistence, and object-name wiring.
+
 ## 2026-08-09 · Native Options accessibility control
 
 Commit: [d36b49a4e9995fcf8340a8c40e5f4e641ead3f3f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d36b49a4e9995fcf8340a8c40e5f4e641ead3f3f)
