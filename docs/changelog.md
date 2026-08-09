@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings notifications tab
+
+Commit: [2b3cef9e573317efe833a9f72b1cff5a77835ebb](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2b3cef9e573317efe833a9f72b1cff5a77835ebb)
+
+- Rebuilt the Settings notifications child tab with native Material 3 notification options, message tree, and actions.
+- Preserved message filters, tree edits, settings persistence, and existing signal handlers.
+
 ## 2026-08-09 · Native Settings GUI tab
 
 Commit: [0603d8fc11912a045251602bca639cd26ad1fdb9](https://github.com/Ding-Ding-Projects/material-sandbox/commit/0603d8fc11912a045251602bca639cd26ad1fdb9)
