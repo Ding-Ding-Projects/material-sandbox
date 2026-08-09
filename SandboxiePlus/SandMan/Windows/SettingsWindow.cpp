@@ -27,6 +27,7 @@
 #include <QScreen>
 #include <QSet>
 #include <functional>
+#include <QColorDialog>
 
 
 #include <windows.h>
@@ -266,6 +267,63 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			else if (index == 0 || index == 2)
 				theConf->SetValue("Options/UiLanguage", "native");
 			theGUI->LoadLanguage();
+		});
+
+		QGroupBox* appearance = new QGroupBox(tr("Material appearance identity"), ui.tabUI);
+		QFormLayout* appearanceForm = new QFormLayout(appearance);
+		QLineEdit* appName = new QLineEdit(theConf->GetString("UIConfig/AppDisplayName", "Sandboxie-Plus"), appearance);
+		appName->setAccessibleName(tr("Application display name"));
+		appName->setToolTip(tr("Changes the name shown in the title bar and app-authored notices. Package identity and data paths never change."));
+		appearanceForm->addRow(tr("Display name"), appName);
+
+		QComboBox* density = new QComboBox(appearance);
+		density->addItem(tr("Compact"), 0);
+		density->addItem(tr("Comfortable (shipped default)"), 1);
+		density->addItem(tr("Spacious"), 2);
+		density->setCurrentIndex(qBound(0, theConf->GetInt("UIConfig/Density", 1), 2));
+		density->setToolTip(tr("Controls the spacing of Material controls. The current value is persisted in this profile."));
+		appearanceForm->addRow(tr("Density"), density);
+
+		QPushButton* accent = new QPushButton(tr("Choose accent seed"), appearance);
+		const QString accentValue = theConf->GetString("UIConfig/AccentSeed", "#6750A4");
+		accent->setStyleSheet(QStringLiteral("background:%1;").arg(accentValue));
+		accent->setToolTip(tr("Continuous color selection is applied as the Material primary seed and persists across restarts."));
+		appearanceForm->addRow(tr("Accent"), accent);
+
+		QLabel* appearanceProvenance = new QLabel(tr("Provenance: Sandboxie-Plus, comfortable density, and #6750A4 are the compiled-in values until this profile writes another choice."), appearance);
+		appearanceProvenance->setWordWrap(true);
+		appearanceForm->addRow(QString(), appearanceProvenance);
+		QPushButton* resetAppearance = new QPushButton(tr("Reset appearance identity"), appearance);
+		resetAppearance->setToolTip(tr("Restores the shipped display name, comfortable density, and Material purple accent."));
+		appearanceForm->addRow(QString(), resetAppearance);
+		uiLayout->addWidget(appearance, 2, 0);
+
+		connect(appName, &QLineEdit::editingFinished, this, [appName]() {
+			QString value = appName->text().trimmed();
+			if (value.isEmpty()) value = QStringLiteral("Sandboxie-Plus");
+			theConf->SetValue("UIConfig/AppDisplayName", value.left(80));
+			theGUI->OnStatusChanged();
+		});
+		connect(density, qOverload<int>(&QComboBox::currentIndexChanged), this, [density](int index) {
+			theConf->SetValue("UIConfig/Density", density->itemData(index).toInt());
+			theGUI->UpdateTheme();
+		});
+		connect(accent, &QPushButton::clicked, this, [accent]() {
+			const QColor chosen = QColorDialog::getColor(QColor(theConf->GetString("UIConfig/AccentSeed", "#6750A4")), this, tr("Choose Material accent seed"), QColorDialog::ShowAlphaChannel);
+			if (!chosen.isValid()) return;
+			theConf->SetValue("UIConfig/AccentSeed", chosen.name(QColor::HexArgb));
+			accent->setStyleSheet(QStringLiteral("background:%1;").arg(chosen.name(QColor::HexArgb)));
+			theGUI->UpdateTheme();
+		});
+		connect(resetAppearance, &QPushButton::clicked, this, [appName, density, accent]() {
+			theConf->SetValue("UIConfig/AppDisplayName", "Sandboxie-Plus");
+			theConf->SetValue("UIConfig/Density", 1);
+			theConf->SetValue("UIConfig/AccentSeed", "#6750A4");
+			appName->setText("Sandboxie-Plus");
+			density->setCurrentIndex(1);
+			accent->setStyleSheet(QStringLiteral("background:#6750A4;"));
+			theGUI->OnStatusChanged();
+			theGUI->UpdateTheme();
 		});
 	}
 

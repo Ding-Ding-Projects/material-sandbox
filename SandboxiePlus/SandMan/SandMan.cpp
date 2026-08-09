@@ -51,6 +51,12 @@
 
 CSbiePlusAPI* theAPI = NULL;
 
+static QString SandManDisplayName()
+{
+	const QString configured = theConf ? theConf->GetString("UIConfig/AppDisplayName", "Sandboxie-Plus").trimmed() : QString();
+	return configured.isEmpty() ? QStringLiteral("Sandboxie-Plus") : configured;
+}
+
 #include <wtypes.h>
 #include <QAbstractNativeEventFilter>
 #include <dbt.h>
@@ -516,14 +522,15 @@ CSandMan::CSandMan(QWidget *parent)
 	UpdateDrives();
 
 #ifdef INSIDER_BUILD
-	QString appTitle = tr("Sandboxie-Plus Insider [%1]").arg(QString(__DATE__));
+	QString appTitle = tr("%1 Insider [%2]").arg(SandManDisplayName()).arg(QString(__DATE__));
 #else
-	QString appTitle = tr("Sandboxie-Plus v%1").arg(GetVersion());
+	QString appTitle = tr("%1 v%2").arg(SandManDisplayName()).arg(GetVersion());
 #endif
 	if (IsElevated())
 		appTitle.append(tr(" (Administrator)"));
 
 	this->setWindowTitle(appTitle);
+	QApplication::setApplicationDisplayName(SandManDisplayName());
 
 	setAcceptDrops(true);
 
@@ -2865,9 +2872,9 @@ void CSandMan::OnBoxCleaned(CSandBoxPlus* pBoxEx)
 void CSandMan::OnStatusChanged()
 {
 #ifdef INSIDER_BUILD
-	QString appTitle = tr("Sandboxie-Plus Insider [%1]").arg(QString(__DATE__));
+	QString appTitle = tr("%1 Insider [%2]").arg(SandManDisplayName()).arg(QString(__DATE__));
 #else
-	QString appTitle = tr("Sandboxie-Plus v%1").arg(GetVersion());
+	QString appTitle = tr("%1 v%2").arg(SandManDisplayName()).arg(GetVersion());
 #endif
 
 	bool bConnected = theAPI->IsConnected();
@@ -3066,6 +3073,7 @@ void CSandMan::OnStatusChanged()
 	}
 
 	this->setWindowTitle(appTitle);
+	QApplication::setApplicationDisplayName(SandManDisplayName());
 
 	UpdateState();
 }
@@ -4333,6 +4341,8 @@ void CSandMan::UpdateSettings(bool bRebuildUI)
 	//GetBoxView()->UpdateRunMenu();
 
 	SetupHotKeys();
+	// Appearance settings are live values, not only rebuild-time metadata.
+	SetUITheme();
 
 	if (theConf->GetInt("Options/SysTrayIcon", 1))
 		m_pTrayIcon->show();
@@ -4900,8 +4910,14 @@ void CSandMan::SetUITheme()
 	// Keep the existing persisted light/dark choice, but apply one shared
 	// Material 3 token system to the complete widget tree.  This replaces the
 	// platform-dependent chrome while leaving the user's content untouched.
-	MaterialTheme::Apply(qobject_cast<QApplication*>(QApplication::instance()), bDark);
+	const QColor accentSeed(theConf->GetString("UIConfig/AccentSeed", "#6750A4"));
+	const int density = qBound(0, theConf->GetInt("UIConfig/Density", 1), 2);
+	MaterialTheme::Apply(qobject_cast<QApplication*>(QApplication::instance()), bDark, accentSeed, density);
 	QApplication::setStyle(new KeepSubMenusVisibleStyle(new CustomTabStyle(QApplication::style())));
+	QApplication::setApplicationDisplayName(SandManDisplayName());
+	QString displayTitle = tr("%1 v%2").arg(SandManDisplayName()).arg(GetVersion());
+	if (IsElevated()) displayTitle.append(tr(" (Administrator)"));
+	setWindowTitle(displayTitle);
 
 #if defined(Q_OS_WIN)
 	foreach(QWidget * pWidget, QApplication::topLevelWidgets())

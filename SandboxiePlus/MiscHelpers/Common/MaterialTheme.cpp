@@ -5,13 +5,13 @@
 
 namespace {
 
-QPalette BuildPalette(bool dark)
+QPalette BuildPalette(bool dark, const QColor& accentSeed)
 {
     const QColor surface = dark ? QColor("#141218") : QColor("#FFFBFE");
     const QColor surfaceContainer = dark ? QColor("#211F26") : QColor("#F3EDF7");
     const QColor onSurface = dark ? QColor("#E6E0E9") : QColor("#1D1B20");
-    const QColor primary = dark ? QColor("#D0BCFF") : QColor("#6750A4");
-    const QColor onPrimary = dark ? QColor("#381E72") : QColor("#FFFFFF");
+    const QColor primary = accentSeed.isValid() ? accentSeed : (dark ? QColor("#D0BCFF") : QColor("#6750A4"));
+    const QColor onPrimary = primary.lightnessF() > 0.62 ? QColor("#1D1B20") : QColor("#FFFFFF");
 
     QPalette palette;
     palette.setColor(QPalette::Window, surface);
@@ -30,15 +30,17 @@ QPalette BuildPalette(bool dark)
     return palette;
 }
 
-QString BuildStyleSheet(bool dark)
+QString BuildStyleSheet(bool dark, const QColor& accentSeed, int density)
 {
     const QString surface = dark ? QStringLiteral("#141218") : QStringLiteral("#FFFBFE");
     const QString surfaceContainer = dark ? QStringLiteral("#211F26") : QStringLiteral("#F3EDF7");
     const QString surfaceHigh = dark ? QStringLiteral("#2B2930") : QStringLiteral("#ECE6F0");
     const QString onSurface = dark ? QStringLiteral("#E6E0E9") : QStringLiteral("#1D1B20");
     const QString outline = dark ? QStringLiteral("#938F99") : QStringLiteral("#79747E");
-    const QString primary = dark ? QStringLiteral("#D0BCFF") : QStringLiteral("#6750A4");
-    const QString onPrimary = dark ? QStringLiteral("#381E72") : QStringLiteral("#FFFFFF");
+    const QColor accent = accentSeed.isValid() ? accentSeed : (dark ? QColor("#D0BCFF") : QColor("#6750A4"));
+    const QString primary = accent.name();
+    const QString onPrimary = accent.lightnessF() > 0.62 ? QStringLiteral("#1D1B20") : QStringLiteral("#FFFFFF");
+    const int controlPadding = density <= 0 ? 4 : density >= 2 ? 12 : 8;
 
     return QString::fromUtf8(R"(
         QWidget { color: %1; font-size: 10pt; }
@@ -68,21 +70,22 @@ QString BuildStyleSheet(bool dark)
         QScrollBar:vertical { background: %2; width: 12px; margin: 2px; }
         QScrollBar::handle:vertical { background: %5; min-height: 36px; border-radius: 6px; }
         QCheckBox, QRadioButton { spacing: 8px; }
-    )").arg(onSurface, surface, surfaceContainer, onSurface, outline, surfaceHigh, surfaceContainer, primary, onPrimary);
+    )").arg(onSurface, surface, surfaceContainer, onSurface, outline, surfaceHigh, surfaceContainer, primary, onPrimary)
+        + QStringLiteral("\nQPushButton, QToolButton, QComboBox { padding-top: %1px; padding-bottom: %1px; }\n").arg(controlPadding);
 }
 
 }
 
 namespace MaterialTheme {
 
-void Apply(QApplication* app, bool dark)
+void Apply(QApplication* app, bool dark, const QColor& accentSeed, int density)
 {
     if (!app)
         return;
 
     app->setStyle(QStyleFactory::create("Fusion"));
-    app->setPalette(BuildPalette(dark));
-    app->setStyleSheet(BuildStyleSheet(dark));
+    app->setPalette(BuildPalette(dark, accentSeed));
+    app->setStyleSheet(BuildStyleSheet(dark, accentSeed, density));
 }
 
 }
