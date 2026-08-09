@@ -185,6 +185,13 @@ QString sourceStatus(const Source& source)
 	return QStringLiteral("unsupported-external-source");
 }
 
+QString sourceStatusDescription(const Source& source)
+{
+	if (source.kind == QStringLiteral("local"))
+		return QObject::tr("Local source · active");
+	return QObject::tr("External source · saved, not active (credential vault/network adapter unavailable)");
+}
+
 Rule effectiveRule(CSettings* settings, const QDateTime& local)
 {
 	Rule best;

@@ -49,6 +49,7 @@ QStringList validate(const Rule& rule);
 // External sources currently return an explicit unsupported status. This keeps
 // schedule evaluation non-blocking and fail-safe while preserving metadata.
 QString sourceStatus(const Source& source);
+QString sourceStatusDescription(const Source& source);
 
 // Returns the highest-priority matching rule. Ties are deterministic by id.
 Rule effectiveRule(CSettings* settings, const QDateTime& local = QDateTime::currentDateTime());

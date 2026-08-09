@@ -17,7 +17,7 @@ if (!source.includes('candidate.priority > best.priority') || !source.includes('
 if (!source.includes('crossesMidnight')) throw new Error('scheduled-settings-contract missing cross-midnight semantics');
 if (!source.includes('!UserPresentationSettings::schoolModeEnabled')) throw new Error('scheduled-settings-contract missing School mode precedence');
 if (!source.includes('Options/UseDarkTheme')) throw new Error('scheduled-settings-contract missing real theme persistence');
-for (const token of ['struct Source', 'https-api', 'home-assistant', 'os-vault://', 'unsupported-external-source', 'refreshSeconds', 'binary_sensor|input_boolean']) {
+for (const token of ['struct Source', 'https-api', 'home-assistant', 'os-vault://', 'unsupported-external-source', 'refreshSeconds', 'binary_sensor|input_boolean', 'sourceStatusDescription']) {
   if (!header.includes(token) && !source.includes(token)) throw new Error(`scheduled-settings-contract missing source contract ${token}`);
 }
 if (!source.includes('url.scheme() != QStringLiteral("https")') || !source.includes('url.userName()') || !source.includes('url.password()')) {
@@ -28,6 +28,9 @@ if (!source.includes('source.url.size() > 2048') || !source.includes('source.ref
 }
 if (!source.includes('External sources are deliberately inert') && !source.includes('External source metadata is deliberately inert')) {
   throw new Error('scheduled-settings-contract missing fail-safe external-source behavior');
+}
+if (!source.includes('External source · saved, not active') || !settingsWindow.includes('sourceStatusDescription(rule.source)')) {
+  throw new Error('scheduled-settings-contract missing visible external-source status/recovery hint');
 }
 for (const control of ['addSchedule', 'editSchedule', 'deleteSchedule']) {
   const pattern = new RegExp(`connect\\(${control}[^\\n]+\\[this,`);
