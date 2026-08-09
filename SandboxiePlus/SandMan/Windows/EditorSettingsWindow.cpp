@@ -4,6 +4,9 @@
 #include "../../MiscHelpers/Common/Settings.h"
 #include "../../MiscHelpers/Common/CodeEdit.h"
 #include "../Helpers/IniHighlighter.h"
+#include <QtWidgets/QFormLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
 
 // Editor setting metadata structure for DRY code (renamed to avoid conflict with IniHighlighter.h)
 struct EditorSettingInfo {
@@ -50,10 +53,31 @@ static EditorSettingInfo GetSettingInfo(int index)
 CEditorSettingsWindow::CEditorSettingsWindow(QWidget *parent)
 	: QDialog(parent)
 {
-	ui.setupUi(this);
-
+	setModal(true);
+	setSizeGripEnabled(true);
 	setWindowTitle(tr("Editor Settings"));
-	
+	QVBoxLayout* root = new QVBoxLayout(this);
+	QLabel* intro = new QLabel(tr("Configure Editor Settings\nUse the checkboxes in the table to configure each setting. The table shows what each state means."), this);
+	intro->setWordWrap(true);
+	root->addWidget(intro);
+	settingsTable = new QTableWidget(this);
+	settingsTable->setObjectName(QStringLiteral("settingsTable"));
+	settingsTable->setMinimumHeight(300);
+	settingsTable->setSelectionMode(QAbstractItemView::NoSelection);
+	settingsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+	settingsTable->setAlternatingRowColors(false);
+	root->addWidget(settingsTable, 1);
+	QHBoxLayout* actions = new QHBoxLayout();
+	btnResetAll = new QPushButton(tr("Reset All to Defaults"), this);
+	btnResetAll->setToolTip(tr("Reset all settings to their default values and remove custom config entries."));
+	actions->addWidget(btnResetAll);
+	actions->addStretch();
+	root->addLayout(actions);
+	buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	root->addWidget(buttonBox);
+	connect(buttonBox, &QDialogButtonBox::accepted, this, &CEditorSettingsWindow::accept);
+	connect(buttonBox, &QDialogButtonBox::rejected, this, &CEditorSettingsWindow::reject);
+
 	// Initialize all reset flags to false using a loop
 	m_anyResetOccurred = false;
 	m_wasValidateIniKeysReset = false;
@@ -72,8 +96,6 @@ CEditorSettingsWindow::CEditorSettingsWindow(QWidget *parent)
 	UpdateTable();
 
 	// Set Reset All button text and tooltip from code so translations are sourced here
-	ui.btnResetAll->setText(tr("Reset All to Defaults"));
-	ui.btnResetAll->setToolTip(tr("Reset all settings to their default values and remove custom config entries."));
 	
 	// Initialize previous consent state after loading settings
 	m_previousConsentState = chkAutoCompletionConsent->isChecked();
@@ -84,11 +106,7 @@ CEditorSettingsWindow::CEditorSettingsWindow(QWidget *parent)
 	// Update dependencies (disable dependent settings if prerequisites not met)
 	UpdateDependencies();
 
-	// Note: QDialogButtonBox automatically connects accepted() -> accept() and rejected() -> reject()
-	// No need to manually connect these signals
-	// connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-	// connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-	connect(ui.btnResetAll, SIGNAL(clicked()), this, SLOT(OnResetAll()));
+	connect(btnResetAll, &QPushButton::clicked, this, &CEditorSettingsWindow::OnResetAll);
 }
 
 CEditorSettingsWindow::~CEditorSettingsWindow()
@@ -164,12 +182,12 @@ void CEditorSettingsWindow::ResetIndividualSetting(int index)
 void CEditorSettingsWindow::InitializeTable()
 {
 	// Set up the table
-	ui.settingsTable->setRowCount(SETTING_COUNT);
-	ui.settingsTable->setColumnCount(6);
+	settingsTable->setRowCount(SETTING_COUNT);
+	settingsTable->setColumnCount(6);
 	
 	QStringList headers;
 	headers << tr("Setting") << tr("State") << tr("Unchecked") << tr("Partial") << tr("Checked") << tr("Reset");
-	ui.settingsTable->setHorizontalHeaderLabels(headers);
+	settingsTable->setHorizontalHeaderLabels(headers);
 	
 	// Create checkboxes based on setting metadata
 	QCheckBox* checkboxes[SETTING_COUNT];
@@ -190,20 +208,20 @@ void CEditorSettingsWindow::InitializeTable()
 		// Column 0: Setting name
 		QTableWidgetItem* nameItem = new QTableWidgetItem(tr(info.displayName));
 		nameItem->setFlags(nameItem->flags() & ~Qt::ItemIsEditable);
-		ui.settingsTable->setItem(i, 0, nameItem);
+		settingsTable->setItem(i, 0, nameItem);
 		
 		// Column 1: State (checkbox)
 		QWidget* cbContainer = new QWidget(this);
 		QHBoxLayout* cbLayout = new QHBoxLayout(cbContainer);
 		cbLayout->setContentsMargins(0, 0, 0, 0);
 		cbLayout->addWidget(checkboxes[i], 0, Qt::AlignCenter);
-		ui.settingsTable->setCellWidget(i, 1, cbContainer);
+		settingsTable->setCellWidget(i, 1, cbContainer);
 
 		// Column 5: Reset button
 		QPushButton* resetBtn = new QPushButton(tr("Reset"), this);
 		resetBtn->setToolTip(tr("Reset this setting to default value"));
 		resetBtn->setMaximumWidth(60);
-		ui.settingsTable->setCellWidget(i, 5, resetBtn);
+		settingsTable->setCellWidget(i, 5, resetBtn);
 
 		// Connect reset button
 		connect(resetBtn, &QPushButton::clicked, this, [this, i]() {
@@ -217,19 +235,19 @@ void CEditorSettingsWindow::InitializeTable()
 	}
 	
 	// Connect table events to handle cell clicks and maintain highlighting
-	connect(ui.settingsTable, SIGNAL(itemSelectionChanged()), this, SLOT(OnTableItemClicked()));
-	connect(ui.settingsTable, SIGNAL(cellClicked(int, int)), this, SLOT(OnTableCellClicked(int, int)));
+	connect(settingsTable, SIGNAL(itemSelectionChanged()), this, SLOT(OnTableItemClicked()));
+	connect(settingsTable, SIGNAL(cellClicked(int, int)), this, SLOT(OnTableCellClicked(int, int)));
 	
 	// Set up state descriptions
 	UpdateTable();
 	
 	// Resize columns to content first - this adapts to language, DPI, and font size automatically
-	ui.settingsTable->resizeColumnsToContents();
+	settingsTable->resizeColumnsToContents();
 	
 	// Add extra space to accommodate bold text highlighting in state description columns
 	// This percentage-based approach works better across different DPIs and languages
-	for (int col = 0; col < ui.settingsTable->columnCount(); ++col) {
-		int currentWidth = ui.settingsTable->columnWidth(col);
+	for (int col = 0; col < settingsTable->columnCount(); ++col) {
+		int currentWidth = settingsTable->columnWidth(col);
 		int extraSpace = 0;
 		
 		if (col >= 2 && col <= 4) {
@@ -243,21 +261,21 @@ void CEditorSettingsWindow::InitializeTable()
 			extraSpace = 10;
 		}
 		
-		ui.settingsTable->setColumnWidth(col, currentWidth + extraSpace);
+		settingsTable->setColumnWidth(col, currentWidth + extraSpace);
 	}
 	
 	// Enable last section stretch to utilize available space
-	ui.settingsTable->horizontalHeader()->setStretchLastSection(true);
+	settingsTable->horizontalHeader()->setStretchLastSection(true);
 	
 	// Auto-resize dialog to fit table content
 	int totalWidth = 0;
-	for (int col = 0; col < ui.settingsTable->columnCount(); ++col) {
-		totalWidth += ui.settingsTable->columnWidth(col);
+	for (int col = 0; col < settingsTable->columnCount(); ++col) {
+		totalWidth += settingsTable->columnWidth(col);
 	}
 	
 	// Add margins and scrollbar space
 	int dialogWidth = totalWidth + 40; // Extra space for margins and potential scrollbar
-	int dialogHeight = ui.settingsTable->rowCount() * 30 + 120; // Height for rows plus header and buttons
+	int dialogHeight = settingsTable->rowCount() * 30 + 120; // Height for rows plus header and buttons
 	
 	// Set minimum and preferred size for the dialog
 	setMinimumSize(dialogWidth, dialogHeight);
@@ -271,19 +289,19 @@ void CEditorSettingsWindow::UpdateTable()
 		EditorSettingInfo info = GetSettingInfo(row);
 		
 		// Column 2: Unchecked/Disabled state
-		ui.settingsTable->setItem(row, 2, new QTableWidgetItem(tr(info.descUnchecked)));
+		settingsTable->setItem(row, 2, new QTableWidgetItem(tr(info.descUnchecked)));
 		
 		// Column 3: Partial/Basic state
-		ui.settingsTable->setItem(row, 3, new QTableWidgetItem(tr(info.descPartial)));
+		settingsTable->setItem(row, 3, new QTableWidgetItem(tr(info.descPartial)));
 		
 		// Column 4: Checked/Full state
-		ui.settingsTable->setItem(row, 4, new QTableWidgetItem(tr(info.descChecked)));
+		settingsTable->setItem(row, 4, new QTableWidgetItem(tr(info.descChecked)));
 	}
 	
 	// Make all description items non-editable
-	for (int row = 0; row < ui.settingsTable->rowCount(); ++row) {
-		for (int col = 2; col < ui.settingsTable->columnCount(); ++col) {
-			QTableWidgetItem* item = ui.settingsTable->item(row, col);
+	for (int row = 0; row < settingsTable->rowCount(); ++row) {
+		for (int col = 2; col < settingsTable->columnCount(); ++col) {
+			QTableWidgetItem* item = settingsTable->item(row, col);
 			if (item) {
 				item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 			}
@@ -297,9 +315,9 @@ void CEditorSettingsWindow::UpdateTable()
 void CEditorSettingsWindow::OnSettingChanged()
 {
 	// Clear all highlighting first by resetting background colors
-	for (int row = 0; row < ui.settingsTable->rowCount(); ++row) {
+	for (int row = 0; row < settingsTable->rowCount(); ++row) {
 		for (int col = 2; col < 5; ++col) { // Only columns 2, 3, 4 (state descriptions)
-			QTableWidgetItem* item = ui.settingsTable->item(row, col);
+			QTableWidgetItem* item = settingsTable->item(row, col);
 			if (item) {
 				// Reset to default background
 				item->setData(Qt::BackgroundRole, QVariant());
@@ -315,7 +333,7 @@ void CEditorSettingsWindow::OnSettingChanged()
 	bool darkMode = (QApplication::palette().color(QPalette::Window).lightness() < 128);
 
 	// Highlight current states with color-coded backgrounds
-	for (int i = 0; i < SETTING_COUNT && i < ui.settingsTable->rowCount(); ++i) {
+	for (int i = 0; i < SETTING_COUNT && i < settingsTable->rowCount(); ++i) {
 		QCheckBox* cb = GetCheckBoxByIndex(i);
 		if (!cb) continue; // Safety check
 		
@@ -353,7 +371,7 @@ void CEditorSettingsWindow::OnSettingChanged()
 			}
 		}
 		
-		QTableWidgetItem* item = ui.settingsTable->item(i, col);
+		QTableWidgetItem* item = settingsTable->item(i, col);
 		if (item && item->text() != "-") {
 			// Apply color-coded highlighting
 			item->setData(Qt::BackgroundRole, QBrush(highlightColor));
@@ -367,7 +385,7 @@ void CEditorSettingsWindow::OnSettingChanged()
 	}
 	
 	// Force table to update its display
-	ui.settingsTable->viewport()->update();
+	settingsTable->viewport()->update();
 }
 
 void CEditorSettingsWindow::LoadSettings()
@@ -590,7 +608,7 @@ void CEditorSettingsWindow::OnTableCellClicked(int row, int column)
 		return;
 	}
 	
-	QTableWidgetItem* item = ui.settingsTable->item(row, column);
+	QTableWidgetItem* item = settingsTable->item(row, column);
 	if (!item || item->text() == "-") return; // Don't handle invalid states
 	
 	// Determine the new state based on clicked column
@@ -683,7 +701,7 @@ void CEditorSettingsWindow::ClearResetFlags()
 // Helper function to enable/disable an entire table row
 void CEditorSettingsWindow::SetRowEnabled(int row, bool enabled)
 {
-	if (row < 0 || row >= ui.settingsTable->rowCount()) return;
+	if (row < 0 || row >= settingsTable->rowCount()) return;
 	
 	// Get the checkbox for this row
 	QCheckBox* cb = GetCheckBoxByIndex(row);
@@ -692,8 +710,8 @@ void CEditorSettingsWindow::SetRowEnabled(int row, bool enabled)
 	}
 	
 	// Enable/disable all items in the row
-	for (int col = 0; col < ui.settingsTable->columnCount(); ++col) {
-		QTableWidgetItem* item = ui.settingsTable->item(row, col);
+	for (int col = 0; col < settingsTable->columnCount(); ++col) {
+		QTableWidgetItem* item = settingsTable->item(row, col);
 		if (item) {
 			Qt::ItemFlags flags = item->flags();
 			if (enabled) {
@@ -716,7 +734,7 @@ void CEditorSettingsWindow::SetRowEnabled(int row, bool enabled)
 	}
 	
 	// Keep reset button always enabled so users can reset even when setting is disabled
-	QPushButton* resetBtn = qobject_cast<QPushButton*>(ui.settingsTable->cellWidget(row, 5));
+	QPushButton* resetBtn = qobject_cast<QPushButton*>(settingsTable->cellWidget(row, 5));
 	if (resetBtn) {
 		resetBtn->setEnabled(true); // Always enabled
 	}

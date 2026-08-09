@@ -137,7 +137,6 @@ SOURCES += ./main.cpp \
     ../MiscHelpers/Common/UserPresentationSettings.cpp \
     ../MiscHelpers/Common/ScheduledSettings.cpp
 
-FORMS += ./Forms/EditorSettingsWindow.ui \
     ./Forms/SelectBoxWindow.ui \
     ./Forms/OptionsWindow.ui \
     ./Forms/PopUpWindow.ui \

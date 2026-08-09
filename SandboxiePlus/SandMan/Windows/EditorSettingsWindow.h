@@ -4,7 +4,8 @@
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QTableWidgetItem>
 #include <QtWidgets/QCheckBox>
-#include "ui_EditorSettingsWindow.h"
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QDialogButtonBox>
 
 class CEditorSettingsWindow : public QDialog
 {
@@ -52,7 +53,9 @@ private slots:
 	void UpdateDependencies();
 
 private:
-	Ui::EditorSettingsWindow ui;
+	QTableWidget* settingsTable;
+	QPushButton* btnResetAll;
+	QDialogButtonBox* buttonBox;
 	
 	// Checkbox controls (created dynamically and embedded in table)
 	QCheckBox* chkValidateIniKeys;

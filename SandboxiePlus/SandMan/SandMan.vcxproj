@@ -589,7 +589,6 @@
     <Image Include="Resources\SandMan.ico" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="Forms\EditorSettingsWindow.ui" />
     <QtUic Include="Forms\BoxImageWindow.ui" />
     <QtUic Include="Forms\OptionsWindow.ui" />
     <QtUic Include="Forms\PopUpWindow.ui" />
