@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SelectBoxWindow.h"
+#include "M3DialogHost.h"
 #include "SandMan.h"
 #include "../MiscHelpers/Common/Settings.h"
 #include "../SbiePlusAPI.h"
@@ -12,6 +13,13 @@
 #include <QAbstractNativeEventFilter>
 #include <dbt.h>
 #endif
+#include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QGroupBox>
+#include <QLabel>
+#include <QRadioButton>
+#include <QTreeWidget>
+#include <QVBoxLayout>
 
 //////////////////////////////////////////////////////////////////////////////////////
 // CBoxPicker
@@ -196,8 +204,32 @@ CSelectBoxWindow::CSelectBoxWindow(const QStringList& Commands, const QString& B
 		});
 	}
 
-	ui.setupUi(this);
-	this->setWindowTitle(tr("Sandboxie-Plus - Run Sandboxed"));
+	setWindowTitle(tr("Sandboxie-Plus - Run Sandboxed"));
+	ui.label = new QLabel(tr("Select the sandbox in which to start the program, installer or document."), this);
+	ui.label->setWordWrap(true);
+	ui.radBoxed = new QRadioButton(tr("Run Sandboxed"), this);
+	ui.radBoxed->setChecked(true);
+	ui.radBoxedNew = new QRadioButton(tr("Run in a new Sandbox"), this);
+	ui.radUnBoxed = new QRadioButton(tr("Run Outside the Sandbox"), this);
+	ui.chkFCP = new QCheckBox(tr("Force Children"), this);
+	ui.chkFCP->setToolTip(tr("Force direct child to be sandboxed, but does not include indirect child processes that are opened through the DCOM and IPC interface."));
+	ui.chkAdmin = new QCheckBox(tr("Run As UAC Administrator"), this);
+	ui.buttonBox = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Ok, Qt::Horizontal, this);
+	ui.treeBoxes = new QTreeWidget(this);
+	ui.treeBoxes->setHeaderLabels(QStringList() << tr("Sandbox"));
+	ui.treeBoxes->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	auto* root = new QVBoxLayout(this);
+	root->setContentsMargins(16, 16, 16, 16);
+	root->addWidget(ui.label);
+	root->addWidget(ui.radBoxed);
+	root->addWidget(ui.treeBoxes, 1);
+	root->addWidget(ui.radBoxedNew);
+	root->addWidget(ui.radUnBoxed);
+	root->addWidget(ui.chkFCP);
+	root->addSpacing(6);
+	root->addWidget(ui.chkAdmin);
+	root->addWidget(ui.buttonBox);
+	M3DialogHost::Install(this);
 
 	connect(ui.radBoxed, SIGNAL(clicked(bool)), this, SLOT(OnBoxType()));
 	connect(ui.radBoxedNew, SIGNAL(clicked(bool)), this, SLOT(OnBoxType()));
@@ -209,11 +241,12 @@ CSelectBoxWindow::CSelectBoxWindow(const QStringList& Commands, const QString& B
 	connect(ui.buttonBox, SIGNAL(accepted()), SLOT(OnRun()));
 	connect(ui.buttonBox, SIGNAL(rejected()), SLOT(reject()));
 
-	m_pBoxPicker = new CBoxPicker(BoxName);
+	m_pBoxPicker = new CBoxPicker(BoxName, this);
 	m_pBoxPicker->EnableMultiSel(true);
 	connect(m_pBoxPicker, SIGNAL(BoxDblClick()), this, SLOT(OnRun()));
-	ui.treeBoxes->parentWidget()->layout()->replaceWidget(ui.treeBoxes, m_pBoxPicker);
+	root->replaceWidget(ui.treeBoxes, m_pBoxPicker);
 	delete ui.treeBoxes;
+	ui.treeBoxes = nullptr;
 
 	m_pBoxPicker->setFocus();
 

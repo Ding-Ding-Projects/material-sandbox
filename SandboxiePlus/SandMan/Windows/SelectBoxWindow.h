@@ -1,8 +1,14 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
-#include "ui_SelectBoxWindow.h"
 #include "SbiePlusAPI.h"
+
+class QCheckBox;
+class QDialogButtonBox;
+class QLabel;
+class QRadioButton;
+class QTreeWidget;
+class QTreeWidgetItem;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // CBoxPicker
@@ -60,6 +66,15 @@ protected:
 	QString			m_WrkDir;
 
 private:
-	Ui::SelectBoxWindow ui;
+	struct Controls {
+		QLabel* label = nullptr;
+		QRadioButton* radBoxed = nullptr;
+		QRadioButton* radBoxedNew = nullptr;
+		QRadioButton* radUnBoxed = nullptr;
+		QCheckBox* chkFCP = nullptr;
+		QCheckBox* chkAdmin = nullptr;
+		QDialogButtonBox* buttonBox = nullptr;
+		QTreeWidget* treeBoxes = nullptr;
+	} ui;
 	CBoxPicker*		m_pBoxPicker;
 };
