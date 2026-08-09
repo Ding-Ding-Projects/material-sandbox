@@ -483,7 +483,7 @@ void ExportMultiBoxes(QWidget* parent, const QList<CSandBoxPtr>& SandBoxes)
 		}
 
 		if (exportSeparateFiles && selectedBoxes.isEmpty()) {
-			QMessageBox::information(parent, "Sandboxie-Plus", CBoxTransferDialog::tr("No boxes selected for separate file export."));
+			theGUI->OnLogMessage(CBoxTransferDialog::tr("No boxes selected for separate file export."), true);
 			return;
 		}
 

@@ -1054,7 +1054,7 @@ bool CSubmitPage::validatePage()
             return;
         }
 
-        QMessageBox::information(this, "Sandboxie-Plus", tr("Your issue report has been successfully submitted, thank you."));
+        theGUI->OnLogMessage(tr("Your issue report has been successfully submitted, thank you."), true);
         wizard()->close();
     });
 

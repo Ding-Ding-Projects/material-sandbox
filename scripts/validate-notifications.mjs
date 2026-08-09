@@ -16,6 +16,8 @@ const checks = [
   ['SandboxiePlus/SandMan/SandMan.cpp', 'm_pNotificationCenter->post'],
   ['SandboxiePlus/SandMan/OnlineUpdater.cpp', 'OnLogMessage(tr("No new updates found'],
   ['SandboxiePlus/SandMan/BoxTransfer.cpp', 'OnLogMessage(CBoxTransferDialog::tr("Nothing selected for export."), true)'],
+  ['SandboxiePlus/SandMan/BoxTransfer.cpp', 'OnLogMessage(CBoxTransferDialog::tr("No boxes selected for separate file export."), true)'],
+  ['SandboxiePlus/SandMan/Wizards/BoxAssistant.cpp', 'OnLogMessage(tr("Your issue report has been successfully submitted, thank you."), true)'],
   ['SandboxiePlus/SandMan/SandMan.pri', 'NotificationCenter.cpp'],
   ['README.md', 'docs/screenshots.md'],
   ['docs/screenshots.md', 'Material desktop screenshot gallery'],
@@ -30,4 +32,9 @@ if (updater.includes('QMessageBox::information(theGUI') && updater.includes('No 
 const transfer = read('SandboxiePlus/SandMan/BoxTransfer.cpp');
 if (transfer.includes('QMessageBox::information(parent, "Sandboxie-Plus", CBoxTransferDialog::tr("Nothing selected for export."))'))
   throw new Error('empty export selection must use the non-blocking notification center');
+if (transfer.includes('QMessageBox::information(parent, "Sandboxie-Plus", CBoxTransferDialog::tr("No boxes selected for separate file export."))'))
+  throw new Error('empty separate-file export selection must use the non-blocking notification center');
+const assistant = read('SandboxiePlus/SandMan/Wizards/BoxAssistant.cpp');
+if (assistant.includes('QMessageBox::information(this, "Sandboxie-Plus", tr("Your issue report has been successfully submitted, thank you."))'))
+  throw new Error('issue report success must use the non-blocking notification center');
 console.log(`notification-and-gallery-contract checks=${checks.length}`);
