@@ -5,5 +5,5 @@
     {"slug":"contributor-build","path":"../contributor-build.md","related":["material-design"]},
     {"slug":"settings-history","path":"../features/settings-history.md","related":["material-design","contributor-build"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"9da80a4a"}
+  "changelog": {"path":"../changelog.md","commit":"7c8f9d9e"}
 }
