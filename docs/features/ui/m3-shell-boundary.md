@@ -128,6 +128,10 @@ Program Control now uses a native M3 tab host for Force and Breakout pages;
 later dynamic Group, Stop, and Start pages continue to append through the same
 host.
 
+Resource Access now uses a native M3 tab host for Files, Registry, IPC, Wnd,
+COM, and Access Policies pages while preserving page order, state, icons, and
+migrated child behavior.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
