@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Process Restrictions tab
+
+Commit: [c5be1b490b1b720374d0501d9839c976aedba529](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c5be1b490b1b720374d0501d9839c976aedba529)
+
+- Rebuilt the Network > Process Restrictions child tab with native Material 3 mode, toggle, table, and action controls.
+- Preserved embedded per-program editors, dependencies, handlers, and persistence.
+
 ## 2026-08-09 · Native Options Access Policies tab
 
 Commit: [360655729b897c0bfd1bf19dd6cc8523b7ae0e7e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/360655729b897c0bfd1bf19dd6cc8523b7ae0e7e)

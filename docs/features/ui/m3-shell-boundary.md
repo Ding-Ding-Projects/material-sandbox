@@ -245,6 +245,11 @@ privacy, rule-specificity, and boxed-access policy controls plus their concise
 guidance are created in code while the existing dependency and persistence
 rules remain intact; other OptionsWindow tabs remain staged.
 
+OptionsWindow Network > Process Restrictions is now another native slice: its
+network mode row, prompt/message toggles, editable per-program table, and
+action rail are created in code while OptionsNetwork keeps embedded editors,
+dependencies, and persistence intact; other OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
