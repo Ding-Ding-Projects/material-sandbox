@@ -1449,6 +1449,44 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained Local Templates child tab with native M3
+	// controls while preserving filtering, multi-selection and template actions.
+	if (ui.tabsTemplates && ui.tabLocalTemplates) {
+		const int templateIndex = ui.tabsTemplates->indexOf(ui.tabLocalTemplates);
+		if (templateIndex >= 0) {
+			auto* nativeTemplates = new QWidget(ui.tabsTemplates);
+			auto* templateLayout = new QVBoxLayout(nativeTemplates);
+			auto* templateHint = new QLabel(tr("This list contains user created custom templates for sandbox options"), nativeTemplates);
+			templateHint->setWordWrap(true);
+			templateLayout->addWidget(templateHint);
+			auto* filterRow = new QHBoxLayout();
+			filterRow->addWidget(new QLabel(tr("Text Filter"), nativeTemplates));
+			ui.txtTemplates = new QLineEdit(nativeTemplates);
+			filterRow->addWidget(ui.txtTemplates, 1);
+			templateLayout->addLayout(filterRow);
+			ui.treeTemplates = new QTreeWidget(nativeTemplates);
+			ui.treeTemplates->setColumnCount(1);
+			ui.treeTemplates->setHeaderLabels(QStringList() << tr("Name"));
+			ui.treeTemplates->setSelectionMode(QAbstractItemView::ExtendedSelection);
+			templateLayout->addWidget(ui.treeTemplates, 1);
+			auto* templateActions = new QHBoxLayout();
+			ui.btnAddTemplate = new QToolButton(nativeTemplates);
+			ui.btnAddTemplate->setText(tr("Add Template"));
+			ui.btnOpenTemplate = new QToolButton(nativeTemplates);
+			ui.btnOpenTemplate->setText(tr("Open Template"));
+			ui.btnDelTemplate = new QToolButton(nativeTemplates);
+			ui.btnDelTemplate->setText(tr("Remove"));
+			templateActions->addWidget(ui.btnAddTemplate);
+			templateActions->addWidget(ui.btnOpenTemplate);
+			templateActions->addWidget(ui.btnDelTemplate);
+			templateActions->addStretch();
+			templateLayout->addLayout(templateActions);
+			ui.tabsTemplates->removeTab(templateIndex);
+			ui.tabsTemplates->insertTab(templateIndex, nativeTemplates, tr("Local Templates"));
+			ui.tabLocalTemplates->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.
