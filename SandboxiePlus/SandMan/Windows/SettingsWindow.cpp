@@ -39,6 +39,9 @@
 #include <QTextStream>
 #include "ColorTranslatorDialog.h"
 #include <QListWidget>
+#include <QStackedWidget>
+#include <QDateEdit>
+#include <QTimeEdit>
 #include <QToolTip>
 #include <QUuid>
 #include <QTimer>
