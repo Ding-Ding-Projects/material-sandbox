@@ -24,6 +24,7 @@ jobs:
           node scripts/validate-ci-concurrency.mjs
           node scripts/validate-ci-artifacts.mjs --help
           node scripts/validate-pages-material.mjs
+          node scripts/validate-m3-shell.mjs
           node scripts/validate-docs.mjs
           node scripts/validate-settings-history.mjs
           node scripts/validate-notifications.mjs

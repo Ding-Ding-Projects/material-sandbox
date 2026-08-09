@@ -17,6 +17,7 @@
     ,{"slug":"destructive-confirmation","path":"../features/destructive-confirmation.md","related":["notifications","settings-history","appearance-editor"]}
     ,{"slug":"native-ci-evidence","path":"../features/native-ci-evidence.md","related":["contributor-build","material-design","destructive-confirmation"]}
     ,{"slug":"build-entrypoints","path":"../features/build-entrypoints.md","related":["native-ci-evidence","contributor-build","material-design"]}
+    ,{"slug":"m3-shell-boundary","path":"../features/ui/m3-shell-boundary.md","related":["material-design","appearance-editor","tab-discovery"]}
   ],
   "changelog": {"path":"../changelog.md","commit":"d7012a106615c8b1033580d7500e92805a3c5b04"}
 }
