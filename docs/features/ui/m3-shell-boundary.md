@@ -182,6 +182,11 @@ guidance, security-filtering switches, and desktop-isolation controls are
 created in code while OptionsAdvanced keeps the existing safety dependencies
 and persistence; other OptionsWindow tabs remain staged.
 
+OptionsWindow Box Protection is now another native slice: confidentiality,
+protected-window policy, host-process rules, and template actions are created
+in code while OptionsAdvanced keeps the existing access-entry handlers and
+persistence; other OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls

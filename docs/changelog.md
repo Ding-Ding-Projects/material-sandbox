@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Box Protection tab
+
+Commit: [31225c08d34f96f30340a82444ce0bfb8ca84c11](https://github.com/Ding-Ding-Projects/material-sandbox/commit/31225c08d34f96f30340a82444ce0bfb8ca84c11)
+
+- Rebuilt the Box Protection child tab with native Material 3 confidentiality, policy, and host-process controls.
+- Preserved OptionsAdvanced access-entry handlers, template toggles, and persistence.
+
 ## 2026-08-09 · Native Options Security Isolation tab
 
 Commit: [7cbd1001225b06f2e0baeee0603e88780d4724f8](https://github.com/Ding-Ding-Projects/material-sandbox/commit/7cbd1001225b06f2e0baeee0603e88780d4724f8)
