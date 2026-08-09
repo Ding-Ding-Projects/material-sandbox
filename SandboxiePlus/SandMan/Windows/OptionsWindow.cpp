@@ -553,6 +553,49 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Job Object with native M3 controls while preserving limit
+	// validation, dynamic enablement, and OptionsAdvanced persistence.
+	if (ui.tabsSecurity && ui.tabJob) {
+		const int jobIndex = ui.tabsSecurity->indexOf(ui.tabJob);
+		if (jobIndex >= 0) {
+			auto* nativeJob = new QWidget(ui.tabsSecurity);
+			auto* jobLayout = new QVBoxLayout(nativeJob);
+			ui.lblJob = new QLabel(tr("Other isolation"), nativeJob);
+			ui.lblJob->setProperty("m3NativeSurface", true);
+			ui.lblJob->setStyleSheet("font-weight: 600;");
+			jobLayout->addWidget(ui.lblJob);
+			ui.chkAddToJob = new QCheckBox(tr("Add sandboxed processes to job objects (recommended)"), nativeJob);
+			ui.chkNestedJobs = new QCheckBox(tr("Allow use of nested job objects (works on Windows 8 and later)"), nativeJob);
+			jobLayout->addWidget(ui.chkAddToJob);
+			jobLayout->addWidget(ui.chkNestedJobs);
+			ui.lblLimit = new QLabel(tr("Limit restrictions"), nativeJob);
+			ui.lblLimit->setProperty("m3NativeSurface", true);
+			ui.lblLimit->setStyleSheet("font-weight: 600;");
+			jobLayout->addWidget(ui.lblLimit);
+			auto addLimit = [&](QLineEdit*& edit, QLabel*& unit, const QString& label, const QString& placeholder) {
+				auto* row = new QHBoxLayout();
+				row->addWidget(new QLabel(label, nativeJob));
+				edit = new QLineEdit(nativeJob);
+				edit->setMaximumWidth(125);
+				edit->setPlaceholderText(placeholder);
+				unit = new QLabel(tr("bytes"), nativeJob);
+				row->addWidget(edit);
+				row->addWidget(unit);
+				row->addStretch();
+				jobLayout->addLayout(row);
+			};
+			addLimit(ui.txtSingleMemory, ui.lblSingleMemory, tr("Single Process Memory Limit:"), tr("unlimited"));
+			addLimit(ui.txtTotalMemory, ui.lblTotalMemory, tr("Total Processes Memory Limit:"), tr("unlimited"));
+			addLimit(ui.txtTotalNumber, ui.lblTotalNumber, tr("Total Processes Number Limit:"), tr("unlimited"));
+			addLimit(ui.txtCpuRateLimit, ui.lblCpuRateLimit, tr("Total CPU Rate Limit (%):"), tr("unlimited"));
+			ui.lblCpuRateLimit->setText(tr("%"));
+			jobLayout->addStretch();
+			ui.tabsSecurity->removeTab(jobIndex);
+			ui.tabsSecurity->insertTab(jobIndex, nativeJob, tr("Job Object"));
+			ui.tabJob->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
