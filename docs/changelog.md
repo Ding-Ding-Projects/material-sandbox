@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options COM tab
+
+Commit: [d4bcbd453eb340e73c809d388740a1bf5e06ba2d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d4bcbd453eb340e73c809d388740a1bf5e06ba2d)
+
+- Rebuilt the Resource Access > COM child tab with native Material 3 COM-object and policy controls.
+- Preserved four-column access data, templates, deletion handlers, virtualization behavior, and persistence.
+
 ## 2026-08-09 · Native Options Wnd tab
 
 Commit: [7d061cdf58ec1931ea71530791c1fa2f9ba57c34](https://github.com/Ding-Ding-Projects/material-sandbox/commit/7d061cdf58ec1931ea71530791c1fa2f9ba57c34)

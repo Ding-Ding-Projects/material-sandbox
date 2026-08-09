@@ -234,6 +234,12 @@ four-column window-class table, add/remove/template rail, and no-rename policy
 control are created in code while the existing access model and handlers remain
 intact; other OptionsWindow tabs remain staged.
 
+OptionsWindow Resource Access > COM is now another native slice: its
+four-column COM-object table, add/remove/template rail, and virtualization
+policy control are created in code while the existing access model, templates,
+deletion handlers, and persistence remain intact; other OptionsWindow tabs
+remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
