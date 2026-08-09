@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Force Programs tab
+
+Commit: [72cc5fa4ae6acfe2f66dd649aaf43569f29cdd46](https://github.com/Ding-Ding-Projects/material-sandbox/commit/72cc5fa4ae6acfe2f66dd649aaf43569f29cdd46)
+
+- Rebuilt the Force Programs child tab with native Material 3 force-rule and action controls.
+- Preserved browse menus, delegates, template toggle, disable switch, handlers, and persistence.
+
 ## 2026-08-09 · Native Options Program Groups tab
 
 Commit: [b1f8b7b26e7c2cfcc6390437ea5dde2f25aa2aec](https://github.com/Ding-Ding-Projects/material-sandbox/commit/b1f8b7b26e7c2cfcc6390437ea5dde2f25aa2aec)

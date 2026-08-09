@@ -197,6 +197,11 @@ add/remove/template action rail are created in code while the existing group
 delegates, model, and handlers remain intact; compact layout moves reuse the
 same native page and other OptionsWindow tabs remain staged.
 
+OptionsWindow Force Programs is now another native slice: its force-rule tree,
+browse actions, template toggle, and disable switch are created in code while
+the existing delegates, menus, handlers, and persistence remain intact; other
+OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
