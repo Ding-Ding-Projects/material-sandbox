@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "OptionsWindow.h"
+#include "M3DialogHost.h"
 #include "EditorSettingsWindow.h"
 #include "SandMan.h"
 #include "SettingsWindow.h"
@@ -191,6 +192,9 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	ui.setupUi(this);
 	new CTabStateManager(ui.tabs, theConf, QStringLiteral("OptionsWindow/Tabs"), this);
 	this->setWindowTitle(tr("Sandboxie Plus - '%1' Options").arg(QString(Name).replace("_", " ")));
+	// The options content remains behavior-rich and Designer-backed for now;
+	// the shared host replaces its platform chrome while each tab is migrated.
+	M3DialogHost::Install(this);
 
 	ui.tabs->setTabPosition(QTabWidget::West);
 
