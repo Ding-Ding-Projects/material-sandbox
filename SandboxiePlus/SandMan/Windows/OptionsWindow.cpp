@@ -1887,6 +1887,23 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.tabsGeneral = nativeGeneralTabs;
 	}
 
+	// Security Options now uses a native M3 tab host for Security, Isolation,
+	// Protection, Job, and Advanced Security pages while preserving state/order.
+	{
+		auto* nativeSecurityTabs = new QTabWidget(this);
+		nativeSecurityTabs->setObjectName(QStringLiteral("tabsSecurity"));
+		nativeSecurityTabs->addTab(ui.tabSecurity, tr("Security"));
+		nativeSecurityTabs->addTab(ui.tabIsolation, tr("Security Isolation"));
+		nativeSecurityTabs->addTab(ui.tabPrivate, tr("Box Protection"));
+		nativeSecurityTabs->addTab(ui.tabJob, tr("Job Object"));
+		nativeSecurityTabs->addTab(ui.tabPrivileges, tr("Advanced Security"));
+		nativeSecurityTabs->setCurrentIndex(ui.tabsSecurity->currentIndex());
+		nativeSecurityTabs->setProperty("m3NativeSurface", true);
+		ui.gridLayout_7->replaceWidget(ui.tabsSecurity, nativeSecurityTabs);
+		ui.tabsSecurity->deleteLater();
+		ui.tabsSecurity = nativeSecurityTabs;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
