@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings GUI behavior controls
+
+Commit: [cbffce483d10b66478e159a8d3c1e13cef870e4e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/cbffce483d10b66478e159a8d3c1e13cef870e4e)
+
+- Rebuilt the nine GUI behavior checkboxes as native Material 3 controls while preserving object names, tri-state/check state, signal routing, persistence keys, and pending-change highlighting.
+- Kept `chkMonitorSize` on its separate General-settings path and recorded the remaining Designer boundary honestly.
+
 ## 2026-08-09 · Non-blocking image password success notification
 
 Commit: [37315f1bb53535cbed5b0afb6e6bc0aeae4236a7](https://github.com/Ding-Ding-Projects/material-sandbox/commit/37315f1bb53535cbed5b0afb6e6bc0aeae4236a7)
