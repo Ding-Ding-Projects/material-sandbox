@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 
 const root = process.cwd();
 const manifestPath = path.join(root, 'docs', 'articles', 'index.json');
@@ -18,7 +19,18 @@ for (const article of manifest.articles) {
 const changelogPath = path.resolve(path.dirname(manifestPath), manifest.changelog.path);
 if (!fs.existsSync(changelogPath)) throw new Error('missing changelog');
 const changelog = fs.readFileSync(changelogPath, 'utf8');
+if (!/^[0-9a-f]{40}$/.test(manifest.changelog.commit)) throw new Error('changelog manifest commit must be a full SHA');
 if (!new RegExp(`\\b${manifest.changelog.commit}\\b`).test(changelog)) throw new Error('changelog commit is missing from changelog.md');
+const commitLinks = [...changelog.matchAll(/https:\/\/github\.com\/Ding-Ding-Projects\/material-sandbox\/commit\/([0-9a-f]{40})\b/g)].map(match => match[1]);
+if (commitLinks.length === 0) throw new Error('changelog has no full commit links');
+if (/Commit:\s*(?:pending|`[0-9a-f]{1,39}`|[^\n]*integration pending)/i.test(changelog)) throw new Error('changelog contains pending or short commit references');
+for (const sha of new Set(commitLinks)) {
+  try {
+    execFileSync('git', ['cat-file', '-e', `${sha}^{commit}`], { stdio: 'ignore' });
+  } catch {
+    throw new Error(`changelog commit does not resolve locally: ${sha}`);
+  }
+}
 const qrc = fs.readFileSync(path.join(root, 'SandboxiePlus', 'SandMan', 'Resources', 'SandMan.qrc'), 'utf8');
 for (const resource of ['Docs/material-design.md', 'Docs/contributor-build.md', 'Docs/changelog.md', 'Docs/scheduled-settings.md']) if (!qrc.includes(resource)) throw new Error(`missing Qt resource: ${resource}`);
 console.log(`docs-valid articles=${manifest.articles.length} changelog=${manifest.changelog.commit}`);

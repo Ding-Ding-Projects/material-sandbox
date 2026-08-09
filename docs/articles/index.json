@@ -16,5 +16,5 @@
     ,{"slug":"destructive-confirmation","path":"../features/destructive-confirmation.md","related":["notifications","settings-history","appearance-editor"]}
     ,{"slug":"native-ci-evidence","path":"../features/native-ci-evidence.md","related":["contributor-build","material-design","destructive-confirmation"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"6a19a278"}
+  "changelog": {"path":"../changelog.md","commit":"731a5a336fde7e6e3ce1a341a02d4e5b0e5dc995"}
 }
