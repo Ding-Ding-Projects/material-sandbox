@@ -1,8 +1,19 @@
 #include "stdafx.h"
 #include "SnapshotsWindow.h"
+#include "M3DialogHost.h"
 #include "SandMan.h"
 #include "../MiscHelpers/Common/Settings.h"
 #include "../MiscHelpers/Common/TreeItemModel.h"
+#include <QCheckBox>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QPushButton>
+#include <QToolButton>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 
 CSnapshotsWindow::CSnapshotsWindow(const CSandBoxPtr& pBox, QWidget *parent)
@@ -19,8 +30,37 @@ CSnapshotsWindow::CSnapshotsWindow(const CSandBoxPtr& pBox, QWidget *parent)
 
 	this->setWindowFlag(Qt::WindowStaysOnTopHint, theGUI->IsAlwaysOnTop());
 
-	ui.setupUi(this);
-	this->setWindowTitle(tr("%1 - Snapshots").arg(pBox->GetName()));
+	setWindowTitle(tr("%1 - Snapshots").arg(pBox->GetName()));
+	ui.treeSnapshots = new QTreeView(this);
+	ui.groupBox = new QGroupBox(tr("Selected Snapshot Details"), this);
+	ui.txtName = new QLineEdit(ui.groupBox);
+	ui.chkDefault = new QCheckBox(tr("Default snapshot"), ui.groupBox);
+	ui.chkDefault->setToolTip(tr("When deleting a snapshot content, it will be returned to this snapshot instead of none."));
+	ui.txtInfo = new QPlainTextEdit(ui.groupBox);
+	ui.btnTake = new QPushButton(tr("Take Snapshot"), this);
+	ui.btnSelect = new QToolButton(this);
+	ui.btnSelect->setText(tr("Go to Snapshot"));
+	ui.btnRemove = new QPushButton(tr("Remove Snapshot"), this);
+	QGridLayout* details = new QGridLayout(ui.groupBox);
+	details->addWidget(new QLabel(tr("Name:"), ui.groupBox), 0, 0);
+	details->addWidget(ui.txtName, 0, 1);
+	details->addWidget(ui.chkDefault, 0, 2);
+	details->addWidget(new QLabel(tr("Description:"), ui.groupBox), 1, 0, 2, 1, Qt::AlignTop);
+	details->addWidget(ui.txtInfo, 1, 1, 2, 2);
+	QGroupBox* actions = new QGroupBox(tr("Snapshot Actions"), this);
+	QVBoxLayout* actionLayout = new QVBoxLayout(actions);
+	actionLayout->addWidget(ui.btnTake);
+	actionLayout->addWidget(ui.btnSelect);
+	actionLayout->addWidget(ui.btnRemove);
+	actionLayout->addStretch();
+	QGridLayout* rootGrid = new QGridLayout();
+	rootGrid->addWidget(ui.treeSnapshots, 0, 0, 1, 2);
+	rootGrid->addWidget(ui.groupBox, 1, 0);
+	rootGrid->addWidget(actions, 1, 1);
+	auto* root = new QVBoxLayout(this);
+	root->setContentsMargins(16, 16, 16, 16);
+	root->addLayout(rootGrid);
+	M3DialogHost::Install(this);
 
 	ui.treeSnapshots->setAlternatingRowColors(theConf->GetBool("Options/AltRowColors", false));
 

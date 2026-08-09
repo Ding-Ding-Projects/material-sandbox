@@ -138,7 +138,6 @@ SOURCES += ./main.cpp \
     ./Forms/OptionsWindow.ui \
     ./Forms/PopUpWindow.ui \
     ./Forms/SettingsWindow.ui \
-    ./Forms/SnapshotsWindow.ui \
 
 TRANSLATIONS += sandman_ar.ts \
     sandman_de.ts \

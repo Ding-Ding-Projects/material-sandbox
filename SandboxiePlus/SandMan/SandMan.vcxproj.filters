@@ -501,9 +501,6 @@
     <QtUic Include="Forms\OptionsWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="Forms\SnapshotsWindow.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="Forms\PopUpWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>

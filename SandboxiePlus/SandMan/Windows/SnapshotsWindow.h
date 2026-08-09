@@ -1,9 +1,15 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
-#include "ui_SnapshotsWindow.h"
 #include "SbiePlusAPI.h"
 class CSimpleTreeModel;
+class QCheckBox;
+class QGroupBox;
+class QLineEdit;
+class QPlainTextEdit;
+class QPushButton;
+class QToolButton;
+class QTreeView;
 
 class CSnapshotsWindow : public QDialog
 {
@@ -50,6 +56,15 @@ protected:
 	int			m_SaveInfoPending;
 
 private:
-	Ui::SnapshotsWindow ui;
+	struct Controls {
+		QTreeView* treeSnapshots = nullptr;
+		QGroupBox* groupBox = nullptr;
+		QLineEdit* txtName = nullptr;
+		QCheckBox* chkDefault = nullptr;
+		QPlainTextEdit* txtInfo = nullptr;
+		QPushButton* btnTake = nullptr;
+		QToolButton* btnSelect = nullptr;
+		QPushButton* btnRemove = nullptr;
+	} ui;
 	CSimpleTreeModel* m_pSnapshotModel;
 };
