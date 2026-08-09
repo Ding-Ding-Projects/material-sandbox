@@ -1324,6 +1324,28 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		ui.tabsShell = nativeShellTabs;
 	}
 
+	// General Options and Notifications are native pages; replace their
+	// remaining Designer tab host while preserving order and current selection.
+	if (ui.tabsGeneral) {
+		auto* legacyGeneralTabs = ui.tabsGeneral;
+		auto* nativeGeneralTabs = new QTabWidget(legacyGeneralTabs->parentWidget());
+		nativeGeneralTabs->setObjectName(QStringLiteral("tabsGeneral"));
+		nativeGeneralTabs->setTabPosition(QTabWidget::West);
+		nativeGeneralTabs->setAccessibleName(tr("General settings pages"));
+		const int currentGeneralIndex = legacyGeneralTabs->currentIndex();
+		while (legacyGeneralTabs->count() > 0) {
+			const int index = legacyGeneralTabs->count() - 1;
+			nativeGeneralTabs->insertTab(0, legacyGeneralTabs->widget(index), legacyGeneralTabs->tabText(index));
+			legacyGeneralTabs->removeTab(index);
+		}
+		nativeGeneralTabs->setCurrentIndex(qBound(0, currentGeneralIndex, nativeGeneralTabs->count() - 1));
+		nativeGeneralTabs->setProperty("m3NativeSurface", true);
+		if (auto* generalHostLayout = legacyGeneralTabs->parentWidget()->layout())
+			generalHostLayout->replaceWidget(legacyGeneralTabs, nativeGeneralTabs);
+		legacyGeneralTabs->deleteLater();
+		ui.tabsGeneral = nativeGeneralTabs;
+	}
+
 	// Replace the self-contained add-on configuration child tab with native M3
 	// controls while retaining the Ram Disk persistence and enablement handlers.
 	if (ui.tabsAddons && ui.tabAddonConfig) {
