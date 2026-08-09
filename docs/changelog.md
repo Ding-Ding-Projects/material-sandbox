@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-09 · Interactive Material 3 GitHub Pages documentation
+
+Commit: [bc61226eea96eece1645e3338866763f40bbfc00](https://github.com/Ding-Ding-Projects/material-sandbox/commit/bc61226eea96eece1645e3338866763f40bbfc00)
+
+- Rebuilt the landing page with local-only Material 3 roles, four-edge accessible tabs, persisted language/tone/appearance preferences, three isolated regex builders, exact-target command discovery, and independent persistent notifications.
+- Added bounded worker evaluation, contrast-safe accent derivation, storage migration, source-revision stamping, and executable interaction, accessibility, mutation, and link-safety regressions.
+- Rendered the canonical 22 feature articles plus changelog and image documentation into the same interactive shell, with exact bidirectional landing/output coverage and no raw Markdown routes.
+- Switched repository Pages publication to the workflow-only path so the stamped artifact is the sole deployment source.
+
 ## 2026-08-09 · Native Settings GUI labels
 
 Commit: [c1bed0471a7ff2034d4b9241038ad24d045f0e82](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c1bed0471a7ff2034d4b9241038ad24d045f0e82)
