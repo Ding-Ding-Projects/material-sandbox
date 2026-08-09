@@ -1540,6 +1540,19 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.treeFolders = nativeFolderTree;
 	}
 
+	// App Templates > Accessibility has one persisted screen-reader switch;
+	// replace it with a native M3 control while retaining the template handler.
+	{
+		auto* nativeScreenReaders = new QCheckBox(ui.chkScreenReaders->text(), this);
+		nativeScreenReaders->setObjectName(QStringLiteral("chkScreenReaders"));
+		nativeScreenReaders->setChecked(ui.chkScreenReaders->isChecked());
+		nativeScreenReaders->setToolTip(ui.chkScreenReaders->toolTip());
+		nativeScreenReaders->setProperty("m3NativeSurface", true);
+		ui.gridLayout_43->replaceWidget(ui.chkScreenReaders, nativeScreenReaders);
+		ui.chkScreenReaders->deleteLater();
+		ui.chkScreenReaders = nativeScreenReaders;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
