@@ -507,6 +507,7 @@
     <ClCompile Include="Windows\ColorTranslatorDialog.cpp" />
     <ClCompile Include="Windows\AppearanceEditorDialog.cpp" />
     <ClCompile Include="Windows\M3DialogHost.cpp" />
+    <ClCompile Include="Windows\M3ShellHost.cpp" />
     <ClCompile Include="Windows\DestructiveConfirmationDialog.cpp" />
     <ClCompile Include="Windows\SnapshotsWindow.cpp" />
     <ClCompile Include="Windows\SupportDialog.cpp" />
@@ -515,6 +516,12 @@
     <ClCompile Include="Wizards\SetupWizard.cpp" />
     <ClCompile Include="Wizards\TemplateWizard.cpp" />
     <ClCompile Include="Windows\TestProxyDialog.cpp" />
+    <ClCompile Include="..\MiscHelpers\Common\MaterialTheme.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\MiscHelpers\Common\M3Tokens.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Views\NtObjectView.h" />
@@ -545,6 +552,9 @@
     <QtMoc Include="Windows\ColorTranslatorDialog.h" />
     <QtMoc Include="Windows\AppearanceEditorDialog.h" />
     <ClInclude Include="Windows\M3DialogHost.h" />
+    <ClInclude Include="Windows\M3ShellHost.h" />
+    <ClInclude Include="..\MiscHelpers\Common\MaterialTheme.h" />
+    <ClInclude Include="..\MiscHelpers\Common\M3Tokens.h" />
     <QtMoc Include="Windows\OptionsWindow.h" />
     <QtMoc Include="Windows\EditorSettingsWindow.h" />
     <QtMoc Include="Views\SbieView.h" />

@@ -65,6 +65,7 @@ HEADERS += ./stdafx.h \
     ./Engine/JSEngineExt.h \
     ./Engine/WizardObject.h \
     ../MiscHelpers/Common/MaterialTheme.h \
+    ../MiscHelpers/Common/M3Tokens.h \
     ../MiscHelpers/Common/UserPresentationSettings.h \
     ../MiscHelpers/Common/ScheduledSettings.h \
     ./AddonManager.h \
@@ -134,6 +135,7 @@ SOURCES += ./main.cpp \
     ./AddonManager.cpp \
     ./BoxTransfer.cpp \
     ../MiscHelpers/Common/MaterialTheme.cpp \
+    ../MiscHelpers/Common/M3Tokens.cpp \
     ../MiscHelpers/Common/UserPresentationSettings.cpp \
     ../MiscHelpers/Common/ScheduledSettings.cpp
 

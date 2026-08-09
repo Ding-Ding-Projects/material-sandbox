@@ -207,6 +207,15 @@
     <ClCompile Include="Windows\M3DialogHost.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\M3ShellHost.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscHelpers\Common\MaterialTheme.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscHelpers\Common\M3Tokens.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Windows\DestructiveConfirmationDialog.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
@@ -364,6 +373,15 @@
     </QtMoc>
     <ClInclude Include="Windows\M3DialogHost.h">
       <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\M3ShellHost.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscHelpers\Common\MaterialTheme.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscHelpers\Common\M3Tokens.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <QtMoc Include="Windows\SnapshotsWindow.h">
       <Filter>Windows</Filter>
