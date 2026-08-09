@@ -1816,6 +1816,21 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.tabsDebug = nativeDebugTabs;
 	}
 
+	// App Templates now uses a native M3 tab host for Templates, Template
+	// Folders, and Accessibility pages while preserving each page's controls.
+	{
+		auto* nativeTemplateTabs = new QTabWidget(this);
+		nativeTemplateTabs->setObjectName(QStringLiteral("tabsTemplates"));
+		nativeTemplateTabs->addTab(ui.tab_11, tr("Templates"));
+		nativeTemplateTabs->addTab(ui.tab_12, tr("Template Folders"));
+		nativeTemplateTabs->addTab(ui.tab_13, tr("Accessibility"));
+		nativeTemplateTabs->setCurrentIndex(ui.tabsTemplates->currentIndex());
+		nativeTemplateTabs->setProperty("m3NativeSurface", true);
+		ui.gridLayout_5->replaceWidget(ui.tabsTemplates, nativeTemplateTabs);
+		ui.tabsTemplates->deleteLater();
+		ui.tabsTemplates = nativeTemplateTabs;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
