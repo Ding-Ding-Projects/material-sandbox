@@ -498,6 +498,7 @@
     <ClCompile Include="Windows\SelectBoxWindow.cpp" />
     <ClCompile Include="Windows\SettingsWindow.cpp" />
     <ClCompile Include="Windows\NotificationCenter.cpp" />
+    <ClCompile Include="Windows\DimSumSurprise.cpp" />
     <ClCompile Include="Windows\ColorTranslatorDialog.cpp" />
     <ClCompile Include="Windows\SnapshotsWindow.cpp" />
     <ClCompile Include="Windows\SupportDialog.cpp" />
@@ -530,6 +531,7 @@
     <QtMoc Include="Windows\SnapshotsWindow.h" />
     <QtMoc Include="Windows\SettingsWindow.h" />
     <QtMoc Include="Windows\NotificationCenter.h" />
+    <ClInclude Include="Windows\DimSumSurprise.h" />
     <QtMoc Include="Windows\ColorTranslatorDialog.h" />
     <QtMoc Include="Windows\OptionsWindow.h" />
     <QtMoc Include="Windows\EditorSettingsWindow.h" />

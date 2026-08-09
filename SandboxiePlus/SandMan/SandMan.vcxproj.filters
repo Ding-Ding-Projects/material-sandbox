@@ -195,6 +195,9 @@
     <ClCompile Include="Windows\NotificationCenter.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\DimSumSurprise.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
     <ClCompile Include="Windows\ColorTranslatorDialog.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
@@ -341,6 +344,9 @@
     <QtMoc Include="Windows\NotificationCenter.h">
       <Filter>Windows</Filter>
     </QtMoc>
+    <ClInclude Include="Windows\DimSumSurprise.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
     <QtMoc Include="Windows\ColorTranslatorDialog.h">
       <Filter>Windows</Filter>
     </QtMoc>

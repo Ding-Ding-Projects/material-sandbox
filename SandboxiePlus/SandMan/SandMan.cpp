@@ -44,6 +44,7 @@
 #include "Windows/PopUpWindow.h"
 #include "Windows/DocumentationBrowser.h"
 #include "Windows/NotificationCenter.h"
+#include "Windows/DimSumSurprise.h"
 #include "CustomStyles.h"
 #include "../MiscHelpers/Common/MaterialTheme.h"
 #include "../MiscHelpers/Common/UserPresentationSettings.h"
@@ -639,6 +640,8 @@ CSandMan::CSandMan(QWidget *parent)
 		SB_RESULT(void*) Status = ConnectSbie();
 		HandleMaintenance(Status);
 	}
+	setProperty("DimSumSurpriseStartupReady", true);
+	DimSumSurprise::schedule(this);
 
 	connect(CSymbolProvider::Instance(), SIGNAL(StatusChanged(const QString&)), this, SLOT(OnSymbolStatus(const QString&)));
 

@@ -249,6 +249,7 @@
         <file alias="Docs/changelog.md">Docs/changelog.md</file>
         <file alias="Docs/settings-history.md">Docs/settings-history.md</file>
         <file alias="Docs/notifications.md">Docs/notifications.md</file>
+        <file alias="Docs/dim-sum-surprise.md">Docs/dim-sum-surprise.md</file>
         <file alias="Docs/color-translator.md">Docs/color-translator.md</file>
         <file alias="Docs/school-mode.md">Docs/school-mode.md</file>
     </qresource>

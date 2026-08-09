@@ -40,6 +40,7 @@ HEADERS += ./stdafx.h \
     ./Windows/TestProxyDialog.h \
     ./Windows/DocumentationBrowser.h \
     ./Windows/NotificationCenter.h \
+    ./Windows/DimSumSurprise.h \
     ./Windows/ColorTranslatorDialog.h \
     ./OnlineUpdater.h \
     ./Wizards/NewBoxWizard.h \
@@ -104,6 +105,7 @@ SOURCES += ./main.cpp \
     ./Windows/TestProxyDialog.cpp \
     ./Windows/DocumentationBrowser.cpp \
     ./Windows/NotificationCenter.cpp \
+    ./Windows/DimSumSurprise.cpp \
     ./Windows/ColorTranslatorDialog.cpp \
     ./OnlineUpdater.cpp \
     ./Wizards/NewBoxWizard.cpp \
