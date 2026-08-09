@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings Add-On Configuration tab
+
+Commit: [27525843940b9acb2efd9af6597bb0c97d8ceeef](https://github.com/Ding-Ding-Projects/material-sandbox/commit/27525843940b9acb2efd9af6597bb0c97d8ceeef)
+
+- Rebuilt the Add-On Configuration child tab with native Material 3 Ram Disk controls.
+- Preserved installation checks, enablement rules, drive-letter selection, and persistence.
+
 ## 2026-08-09 · Correct native shell tab ownership
 
 Commit: [8c1f71ff1f527f8a25b3a65a1fabc838a72a9e77](https://github.com/Ding-Ding-Projects/material-sandbox/commit/8c1f71ff1f527f8a25b3a65a1fabc838a72a9e77)

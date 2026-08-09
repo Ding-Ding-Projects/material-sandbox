@@ -19,8 +19,11 @@
     ,{"slug":"build-entrypoints","path":"../features/build-entrypoints.md","related":["native-ci-evidence","contributor-build","material-design"]}
     ,{"slug":"m3-shell-boundary","path":"../features/ui/m3-shell-boundary.md","related":["material-design","appearance-editor","tab-discovery"]}
     ,{"slug":"editor-settings","path":"../features/editor-settings.md","related":["m3-shell-boundary","settings-history","appearance-editor"]}
+    ,{"slug":"changelog-viewer","path":"../features/changelog-viewer.md","related":["settings-history","command-palette","material-design"]}
+    ,{"slug":"pages-language-tone","path":"../features/pages-language-tone.md","related":["material-design","school-mode","notifications"]}
+    ,{"slug":"pages-a11y-boundary","path":"../features/pages-a11y-boundary.md","related":["material-design","tab-discovery","command-palette"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"8c1f71ff1f527f8a25b3a65a1fabc838a72a9e77"}
+  "changelog": {"path":"../changelog.md","commit":"27525843940b9acb2efd9af6597bb0c97d8ceeef"}
 }
 
 
