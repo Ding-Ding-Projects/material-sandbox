@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native archive export dialog
+
+Commit: [88181375fdc0d38478aaa3b7d19b75121d1ab760](https://github.com/Ding-Ding-Projects/material-sandbox/commit/88181375fdc0d38478aaa3b7d19b75121d1ab760)
+
+- Replaced `CompressDialog.ui` with a native Material 3 export form.
+- Preserved format-dependent compression, solid archive, encryption, and export settings behavior.
+
 ## 2026-08-09 · Native rename dialog
 
 Commit: [2251972eb131533c38532531fba767fb5e2f36c3](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2251972eb131533c38532531fba767fb5e2f36c3)
