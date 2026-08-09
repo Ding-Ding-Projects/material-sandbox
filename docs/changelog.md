@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Ground-up Material 3 shell migration slice
+
+Commit: [babc125bae47c8f8a95fc283fd4936be02731a37](https://github.com/Ding-Ding-Projects/material-sandbox/commit/babc125bae47c8f8a95fc283fd4936be02731a37)
+
+- Added one frameless M3 title-bar/menu host with accessible window controls and idempotent installation.
+- Removed central Fusion and proxy-style resets; remaining data-view factories are documented as the next migration boundary.
+
 ## 2026-08-09 · Windows entrypoints and contributor capability cleanup
 
 Commit: [d7012a106615c8b1033580d7500e92805a3c5b04](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d7012a106615c8b1033580d7500e92805a3c5b04)
