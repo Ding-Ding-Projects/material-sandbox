@@ -210,6 +210,13 @@ int CAppearanceEditorDialog::selectedUnderlineStyle() const
     return m_underline->currentData().toInt();
 }
 
+void CAppearanceEditorDialog::setUnderlineStyle(int style)
+{
+    const int index = m_underline->findData(qBound(0, style, 6));
+    if (index >= 0)
+        m_underline->setCurrentIndex(index);
+}
+
 void CAppearanceEditorDialog::updatePreview()
 {
     QFont font = selectedFont();

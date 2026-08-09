@@ -683,6 +683,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			CAppearanceEditorDialog editor(initial, QColor(theConf->GetString("UIConfig/AccentSeed", "#6750A4")),
 				QColor(theConf->GetString("UIConfig/UIFontTextColor", "#FF000000")),
 				QColor(theConf->GetString("UIConfig/UIFontHighlight", "#00000000")), this);
+			editor.setUnderlineStyle(theConf->GetInt("UIConfig/UIFontUnderline", 0));
 			if (editor.exec() != QDialog::Accepted)
 				return;
 			QFont chosen = editor.selectedFont();
