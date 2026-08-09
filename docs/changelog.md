@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native notification popup
+
+Commit: [5424988941371677e9a983c859aadab01703602e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5424988941371677e9a983c859aadab01703602e)
+
+- Replaced `PopUpWindow.ui` with a native Material 3 notification table and frameless shell.
+- Preserved batched messages, prompts, quick-recovery entries, progress indicators, copy, and geometry behavior.
+
 ## 2026-08-09 · Native snapshots dialog
 
 Commit: [dd8d085ba7e51d405b59fe4c22acc863fb611ec9](https://github.com/Ding-Ding-Projects/material-sandbox/commit/dd8d085ba7e51d405b59fe4c22acc863fb611ec9)

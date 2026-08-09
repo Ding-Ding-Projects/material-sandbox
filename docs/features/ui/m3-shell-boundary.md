@@ -50,6 +50,9 @@ delete/recovery menu semantics.
 `SnapshotsWindow` now likewise owns its snapshot tree, editable details, and
 action group in code while retaining selection, defaults, autosave, and
 snapshot-operation behavior.
+`PopUpWindow` now owns its notification table in code and installs the shared
+M3 main-window shell while retaining message batching, prompts, recovery, and
+progress-entry behavior.
 
 ## Failure and accessibility notes
 
