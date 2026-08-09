@@ -1106,6 +1106,60 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained General Options child tab with native M3
+	// controls while retaining every generated pointer used by persistence and
+	// shortcut handlers below.
+	if (ui.tabsGeneral && ui.tab_3) {
+		const int generalIndex = ui.tabsGeneral->indexOf(ui.tab_3);
+		if (generalIndex >= 0) {
+			auto* nativeGeneral = new QWidget(ui.tabsGeneral);
+			auto* generalLayout = new QVBoxLayout(nativeGeneral);
+			ui.lblGeneral = new QLabel(tr("SandMan Options"), nativeGeneral);
+			ui.lblGeneral->setProperty("m3NativeSurface", true);
+			ui.lblGeneral->setStyleSheet("font-weight: 600;");
+			generalLayout->addWidget(ui.lblGeneral);
+			auto* languageRow = new QHBoxLayout();
+			languageRow->addWidget(new QLabel(tr("UI Language:"), nativeGeneral));
+			ui.uiLang = new QComboBox(nativeGeneral);
+			languageRow->addWidget(ui.uiLang, 1);
+			generalLayout->addLayout(languageRow);
+			auto addCheck = [&](QCheckBox*& target, const QString& text) {
+				target = new QCheckBox(text, nativeGeneral);
+				generalLayout->addWidget(target);
+			};
+			addCheck(ui.chkSandboxUrls, tr("Open urls from this ui sandboxed"));
+			addCheck(ui.chkMonitorSize, tr("Count and display the disk space occupied by each sandbox"));
+			auto addShortcut = [&](QCheckBox*& check, QKeySequenceEdit*& key, const QString& text) {
+				auto* row = new QHBoxLayout();
+				check = new QCheckBox(text, nativeGeneral);
+				key = new QKeySequenceEdit(nativeGeneral);
+				row->addWidget(check, 1);
+				row->addWidget(key);
+				generalLayout->addLayout(row);
+			};
+			addShortcut(ui.chkPanic, ui.keyPanic, tr("Hotkey for terminating all boxed processes:"));
+			addShortcut(ui.chkTop, ui.keyTop, tr("Hotkey for bringing sandman to the top:"));
+			addShortcut(ui.chkPauseForce, ui.keyPauseForce, tr("Hotkey for suspending process/folder forcing:"));
+			addShortcut(ui.chkSuspend, ui.keySuspend, tr("Hotkey for suspending all processes:"));
+			addCheck(ui.chkAsyncBoxOps, tr("Run box operations asynchronously whenever possible (like content deletion)"));
+			addCheck(ui.chkAutoTerminate, tr("Terminate all boxed processes when Sandman exits"));
+			addCheck(ui.chkSkipUAC, tr("Always run SandMan UI as Admin"));
+			ui.chkSkipUAC->setToolTip(tr("Requires elevation and changes the launch privilege used by the SandMan UI."));
+			ui.lblRecovery = new QLabel(tr("Recovery Options"), nativeGeneral);
+			ui.lblRecovery->setProperty("m3NativeSurface", true);
+			ui.lblRecovery->setStyleSheet("font-weight: 600;");
+			generalLayout->addWidget(ui.lblRecovery);
+			addCheck(ui.chkShowRecovery, tr("Show file recovery window when emptying sandboxes"));
+			addCheck(ui.chkCheckDelete, tr("Check sandboxes' auto-delete status when Sandman starts"));
+			addCheck(ui.chkRecoveryTop, tr("Show the Recovery Window as Always on Top"));
+			addCheck(ui.chkRandomGuidName, tr("Use random GUID as sandbox name when creating new boxes"));
+			generalLayout->addStretch();
+			ui.tabsGeneral->removeTab(generalIndex);
+			ui.tabsGeneral->insertTab(generalIndex, nativeGeneral, tr("General Options"));
+			ui.tab_3->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.

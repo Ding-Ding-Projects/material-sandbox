@@ -83,6 +83,7 @@ const checks = [
   [settingsSource.includes('m3PresentationSurface') && settingsSource.includes('m3AppearanceIdentitySurface') && settingsSource.includes('m3ScheduledAppearanceSurface') && settingsSource.includes('m3ExternalEditorSurface') && settingsSource.includes('m3NativeSurface'), 'settings appearance and presentation feature groups are native Material 3 surfaces'],
   [settingsSource.includes('nativeGui') && settingsSource.includes('ui.tabsGUI->insertTab(guiIndex, nativeGui') && settingsSource.includes('ui.cmbFontScale = new QComboBox(nativeGui)') && settingsSource.includes('ui.txtEditor = new QLineEdit(nativeGui)'), 'settings GUI appearance/editor child tab is rebuilt with native controls'],
   [settingsSource.includes('nativeNotifications') && settingsSource.includes('ui.tabsGeneral->insertTab(notificationIndex, nativeNotifications') && settingsSource.includes('ui.treeMessages = new QTreeWidget(nativeNotifications)') && settingsSource.includes('ui.chkSilentMode = new QCheckBox'), 'settings notifications child tab is rebuilt with native controls'],
+  [settingsSource.includes('nativeGeneral') && settingsSource.includes('ui.tabsGeneral->insertTab(generalIndex, nativeGeneral') && settingsSource.includes('ui.uiLang = new QComboBox(nativeGeneral)') && settingsSource.includes('addShortcut(ui.chkPanic, ui.keyPanic'), 'settings general child tab is rebuilt with native controls'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);
