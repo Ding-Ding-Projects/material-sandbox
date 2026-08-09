@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings Optional Add-Ons list
+
+Commit: [dddeb77dad72ef484f58dae938edd07e94b7d0a4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/dddeb77dad72ef484f58dae938edd07e94b7d0a4)
+
+- Rebuilt the Optional Add-Ons child tab with native Material 3 add-on tree, install/remove actions, and update link.
+- Preserved the existing add-on model and selection behavior.
+
 ## 2026-08-09 · Complete Day Teet Hui article inventory
 
 Commit: [afffeccc09c69f76651d635f510491cfb26b530f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/afffeccc09c69f76651d635f510491cfb26b530f)
