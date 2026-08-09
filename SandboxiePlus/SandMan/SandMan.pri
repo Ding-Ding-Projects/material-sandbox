@@ -146,7 +146,6 @@ FORMS += ./Forms/EditorSettingsWindow.ui \
     ./Forms/SnapshotsWindow.ui \
     ./Forms/BoxImageWindow.ui \
     ./Forms/CompressDialog.ui \
-    ./Forms/RenameSandboxDialog.ui \
     ./Forms/TestProxyDialog.ui
 
 TRANSLATIONS += sandman_ar.ts \

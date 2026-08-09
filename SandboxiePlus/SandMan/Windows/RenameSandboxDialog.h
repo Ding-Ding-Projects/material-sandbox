@@ -1,7 +1,10 @@
 #pragma once
 
-#include <QtWidgets/QDialog>
-#include "ui_RenameSandboxDialog.h"
+#include <QDialog>
+
+class QCheckBox;
+class QLabel;
+class QLineEdit;
 
 class CRenameSandboxDialog : public QDialog
 {
@@ -11,10 +14,10 @@ public:
 	CRenameSandboxDialog(const QString& boxName, const QString& alias, bool aliasDisabled, bool hasAliasSetting, QWidget* parent = Q_NULLPTR);
 	~CRenameSandboxDialog();
 
-	QString GetBoxName() const { return ui.txtBoxName->text().trimmed(); }
-	QString GetAlias() const { return ui.txtBoxAlias->text().trimmed(); }
-	bool IsAliasDisabled() const { return ui.chkAliasDisabled->isChecked(); }
-	bool IsAliasHidden() const { return ui.chkHideAlias->isChecked(); }
+	QString GetBoxName() const { return m_boxName->text().trimmed(); }
+	QString GetAlias() const { return m_alias->text().trimmed(); }
+	bool IsAliasDisabled() const { return m_aliasDisabled->isChecked(); }
+	bool IsAliasHidden() const { return m_hideAlias->isChecked(); }
 
 private slots:
 	void OnHideAliasToggled(bool checked);
@@ -25,5 +28,9 @@ private:
 
 	void UpdateAliasDisabledState();
 
-	Ui::RenameSandboxDialog ui;
+	QLineEdit* m_boxName = nullptr;
+	QLabel* m_aliasPrompt = nullptr;
+	QLineEdit* m_alias = nullptr;
+	QCheckBox* m_aliasDisabled = nullptr;
+	QCheckBox* m_hideAlias = nullptr;
 };

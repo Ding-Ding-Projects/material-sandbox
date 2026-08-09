@@ -592,7 +592,6 @@
     <QtUic Include="Forms\EditorSettingsWindow.ui" />
     <QtUic Include="Forms\BoxImageWindow.ui" />
     <QtUic Include="Forms\CompressDialog.ui" />
-    <QtUic Include="Forms\RenameSandboxDialog.ui" />
     <QtUic Include="Forms\OptionsWindow.ui" />
     <QtUic Include="Forms\PopUpWindow.ui" />
     <QtUic Include="Forms\RecoveryWindow.ui" />

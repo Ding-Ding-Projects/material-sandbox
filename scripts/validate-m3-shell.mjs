@@ -19,6 +19,8 @@ const destructive = read('SandboxiePlus/SandMan/Windows/DestructiveConfirmationD
 const mainSource = read('SandboxiePlus/SandMan/main.cpp');
 const extractHeader = read('SandboxiePlus/SandMan/Windows/ExtractDialog.h');
 const extractSource = read('SandboxiePlus/SandMan/Windows/ExtractDialog.cpp');
+const renameHeader = read('SandboxiePlus/SandMan/Windows/RenameSandboxDialog.h');
+const renameSource = read('SandboxiePlus/SandMan/Windows/RenameSandboxDialog.cpp');
 const migratedViews = [
   'SandboxiePlus/SandMan/Views/FileView.cpp',
   'SandboxiePlus/SandMan/Views/NtObjectView.cpp',
@@ -48,6 +50,7 @@ const checks = [
   [docs.includes('M3DialogHost::Install(this)') && destructive.includes('M3DialogHost::Install(this)'), 'docs and destructive dialogs use M3 chrome'],
   [dialogHost.includes('InstallForApplication') && dialogHost.includes('QEvent::Show') && mainSource.includes('InstallForApplication(&app)'), 'all application dialogs are routed through the M3 host'],
   [extractHeader.includes('m_name') && extractSource.includes('QFormLayout') && !extractSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/ExtractDialog.ui')), 'extract dialog is rebuilt without a legacy .ui form'],
+  [renameHeader.includes('m_boxName') && renameSource.includes('QFormLayout') && !renameSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/RenameSandboxDialog.ui')), 'rename dialog is rebuilt without a legacy .ui form'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);

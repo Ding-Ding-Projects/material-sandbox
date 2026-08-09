@@ -1,7 +1,11 @@
 #include "stdafx.h"
 #include "RenameSandboxDialog.h"
 #include "../MiscHelpers/Common/Settings.h"
-#include <QLayout>
+#include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QLabel>
+#include <QLineEdit>
 
 CRenameSandboxDialog::CRenameSandboxDialog(const QString& boxName, const QString& alias, bool aliasDisabled, bool hasAliasSetting, QWidget* parent)
 	: QDialog(parent)
@@ -13,23 +17,38 @@ CRenameSandboxDialog::CRenameSandboxDialog(const QString& boxName, const QString
 	flags &= ~Qt::WindowContextHelpButtonHint;
 	setWindowFlags(flags);
 
-	ui.setupUi(this);
-	this->setWindowTitle(tr("Sandboxie-Plus - Rename Sandbox"));
+	setWindowTitle(tr("Rename sandbox"));
+	auto* form = new QFormLayout(this);
+	m_boxName = new QLineEdit(this);
+	m_boxName->setAccessibleName(tr("Sandbox name"));
+	form->addRow(tr("Name"), m_boxName);
+	m_aliasPrompt = new QLabel(tr("Alias"), this);
+	m_alias = new QLineEdit(this);
+	m_alias->setAccessibleName(tr("Sandbox alias"));
+	form->addRow(m_aliasPrompt, m_alias);
+	m_aliasDisabled = new QCheckBox(tr("Disable alias display"), this);
+	m_aliasDisabled->setAccessibleName(tr("Disable alias display"));
+	form->addRow(QString(), m_aliasDisabled);
+	m_hideAlias = new QCheckBox(tr("Hide alias input"), this);
+	m_hideAlias->setAccessibleName(tr("Hide alias input"));
+	form->addRow(QString(), m_hideAlias);
+	auto* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+	form->addRow(QString(), buttons);
 
-	ui.txtBoxName->setText(boxName);
-	ui.txtBoxAlias->setText(alias);
-	ui.chkAliasDisabled->setChecked(aliasDisabled);
+	m_boxName->setText(boxName);
+	m_alias->setText(alias);
+	m_aliasDisabled->setChecked(aliasDisabled);
 
-	ui.chkAliasDisabled->setToolTip(tr("When enabled, alias display is disabled for this sandbox."));
-	ui.chkHideAlias->setToolTip(tr("Hide alias input in this dialog. This preference is remembered."));
+	m_aliasDisabled->setToolTip(tr("When enabled, alias display is disabled for this sandbox."));
+	m_hideAlias->setToolTip(tr("Hide alias input in this dialog. This preference is remembered."));
 
 	const bool hideAlias = theConf->GetBool("Options/HideAliasInput", true);
-	ui.chkHideAlias->setChecked(hideAlias);
+	m_hideAlias->setChecked(hideAlias);
 
-	connect(ui.chkHideAlias, SIGNAL(toggled(bool)), this, SLOT(OnHideAliasToggled(bool)));
-	connect(ui.txtBoxAlias, SIGNAL(textChanged(const QString&)), this, SLOT(OnAliasTextChanged(const QString&)));
-	connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+	connect(m_hideAlias, &QCheckBox::toggled, this, &CRenameSandboxDialog::OnHideAliasToggled);
+	connect(m_alias, &QLineEdit::textChanged, this, &CRenameSandboxDialog::OnAliasTextChanged);
+	connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
+	connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
 	UpdateAliasDisabledState();
 	OnHideAliasToggled(hideAlias);
@@ -43,9 +62,8 @@ CRenameSandboxDialog::~CRenameSandboxDialog()
 
 void CRenameSandboxDialog::OnHideAliasToggled(bool checked)
 {
-	ui.lblAliasPrompt->setVisible(!checked);
-	ui.txtBoxAlias->setVisible(!checked);
-	ui.gridLayout->invalidate();
+	m_aliasPrompt->setVisible(!checked);
+	m_alias->setVisible(!checked);
 	layout()->activate();
 	UpdateFixedHeight();
 }
@@ -58,10 +76,10 @@ void CRenameSandboxDialog::OnAliasTextChanged(const QString& text)
 
 void CRenameSandboxDialog::UpdateAliasDisabledState()
 {
-	const bool hasAliasText = !ui.txtBoxAlias->text().trimmed().isEmpty();
-	ui.chkAliasDisabled->setEnabled(hasAliasText);
+	const bool hasAliasText = !m_alias->text().trimmed().isEmpty();
+	m_aliasDisabled->setEnabled(hasAliasText);
 	if (!hasAliasText)
-		ui.chkAliasDisabled->setChecked(false);
+		m_aliasDisabled->setChecked(false);
 }
 
 void CRenameSandboxDialog::UpdateFixedHeight()
