@@ -1992,6 +1992,19 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		migrateLeaderButton(ui.btnAddLeader);
 		migrateLeaderButton(ui.btnDelLeader);
 		migrateLeaderCheck(ui.chkShowLeaderTmpl);
+		auto* nativeLeaderTree = new QTreeWidget(this);
+		nativeLeaderTree->setObjectName(ui.treeLeader->objectName());
+		nativeLeaderTree->setColumnCount(ui.treeLeader->columnCount());
+		nativeLeaderTree->setHeaderLabels({ui.treeLeader->headerItem()->text(0)});
+		nativeLeaderTree->setSortingEnabled(ui.treeLeader->isSortingEnabled());
+		nativeLeaderTree->setRootIsDecorated(ui.treeLeader->rootIsDecorated());
+		nativeLeaderTree->setAlternatingRowColors(ui.treeLeader->alternatingRowColors());
+		nativeLeaderTree->setSelectionMode(ui.treeLeader->selectionMode());
+		nativeLeaderTree->setEditTriggers(ui.treeLeader->editTriggers());
+		nativeLeaderTree->setProperty("m3NativeSurface", true);
+		ui.gridLayout_58->replaceWidget(ui.treeLeader, nativeLeaderTree);
+		ui.treeLeader->deleteLater();
+		ui.treeLeader = nativeLeaderTree;
 	}
 
 	// Start Restrictions replaces its Designer controls while retaining the
