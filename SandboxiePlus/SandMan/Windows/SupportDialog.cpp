@@ -158,7 +158,9 @@ bool CSupportDialog::ShowDialog(bool NoGo, int Wait)
 #ifdef SANDBOXIE_CONTRIBUTOR_BUILD
 	Q_UNUSED(NoGo);
 	Q_UNUSED(Wait);
-	return false;
+	// No reminder is shown, and callers must treat the no-op as allowed.  A
+	// false result here would make legacy seat-check code quit the application.
+	return true;
 #endif
 	QDateTime InstallDate = GetSbieInstallationDate();
 

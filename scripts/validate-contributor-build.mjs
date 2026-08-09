@@ -71,15 +71,38 @@ requireWindow(
   'SandboxiePlus/SandMan/Windows/SupportDialog.cpp',
   'bool CSupportDialog::ShowDialog',
   'CSupportDialog::CSupportDialog',
-  ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'return false;', '#endif'],
-  'support dialog display guard',
+  ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'return true;', '#endif'],
+  'support dialog display no-op is allowed',
 );
 requireWindow(
   'SandboxiePlus/SandMan/Windows/SettingsWindow.cpp',
   'ui.setupUi(this);',
   'this->setWindowTitle',
-  ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'ui.tabs->removeTab', '#endif'],
-  'support settings tab removal',
+  ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'ui.tabsSupport->removeTab', 'ui.tabs->setTabText', '#endif'],
+  'support certificate child-tab removal with updater retained',
+);
+{
+  const settings = read('SandboxiePlus/SandMan/Windows/SettingsWindow.cpp');
+  const begin = settings.indexOf('ui.setupUi(this);');
+  const finish = settings.indexOf('// Apply the highest-priority local schedule', begin);
+  const window = settings.slice(begin, finish);
+  if (window.includes('ui.tabs->removeTab'))
+    throw new Error('SettingsWindow.cpp: contributor path must retain the updater parent tab');
+  checks.push('updater parent retained');
+}
+requireWindow(
+  'SandboxiePlus/SandMan/Windows/SettingsWindow.cpp',
+  'void CSettingsWindow::UpdateUpdater()',
+  '//ui.radLive->setEnabled(false);',
+  ['SANDBOXIE_CONTRIBUTOR_BUILD', 'const bool bOk = true;', '#else', '#endif'],
+  'contributor updater access is certificate-independent',
+);
+requireWindow(
+  'SandboxiePlus/SandMan/Windows/SupportDialog.cpp',
+  'bool CSupportDialog::ShowDialog',
+  'QDateTime InstallDate',
+  ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'return true;', '#endif'],
+  'support dialog no-op is non-blocking for callers',
 );
 requireWindow(
   'SandboxiePlus/SandMan/Windows/SettingsWindow.cpp',
@@ -101,6 +124,13 @@ requireWindow(
   'bool CIntroPage::isComplete()',
   ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'return CSetupWizard::Page_UI;', '#else', '#endif'],
   'setup certificate route exclusion',
+);
+requireWindow(
+  'SandboxiePlus/SandMan/Wizards/SetupWizard.cpp',
+  'QLabel* pNote = new QLabel(tr("Note: this option is persistent"));',
+  'setLayout(layout);',
+  ['#ifdef SANDBOXIE_CONTRIBUTOR_BUILD', 'all Sandboxie capabilities are enabled.', 'UsageFlags', '#endif', '#ifndef SANDBOXIE_CONTRIBUTOR_BUILD', '#endif'],
+  'setup wizard license-choice neutralization',
 );
 requireWindow(
   'SandboxiePlus/SandMan/Windows/OptionsGeneral.cpp',

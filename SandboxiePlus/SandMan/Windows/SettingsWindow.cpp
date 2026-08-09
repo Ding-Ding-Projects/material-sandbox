@@ -288,11 +288,16 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	ui.setupUi(this);
 	#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
 	// Contributor builds expose capabilities without a certificate workflow.
-	// Remove the entire support/certificate page so static UI copy cannot turn
-	// into an unsolicited purchase, renewal, or expiry prompt.
+	// Remove only the certificate child tab: the updater child remains a real,
+	// user-initiated settings surface rather than disappearing with the nags.
+	if (ui.tabsSupport && ui.tabCert) {
+		const int certTabIndex = ui.tabsSupport->indexOf(ui.tabCert);
+		if (certTabIndex >= 0)
+			ui.tabsSupport->removeTab(certTabIndex);
+	}
 	const int supportTabIndex = ui.tabs->indexOf(ui.tabSupport);
 	if (supportTabIndex >= 0)
-		ui.tabs->removeTab(supportTabIndex);
+		ui.tabs->setTabText(supportTabIndex, tr("Updates"));
 	#endif
 	// Apply the highest-priority local schedule before controls read their values.
 	// School mode remains the final presentation gate inside ScheduledSettings.
@@ -3277,7 +3282,12 @@ void CSettingsWindow::UpdateDrives()
 
 void CSettingsWindow::UpdateUpdater()
 {
+	#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+	// Contributor builds never derive update access from certificate state.
+	const bool bOk = true;
+	#else
 	bool bOk = (g_CertInfo.active && !g_CertInfo.expired);
+	#endif
 	//ui.radLive->setEnabled(false);
 	if (!ui.chkAutoUpdate->isChecked()) 
 	{

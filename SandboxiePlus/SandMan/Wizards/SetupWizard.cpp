@@ -198,7 +198,23 @@ CIntroPage::CIntroPage(QWidget *parent)
     QLabel* pNote = new QLabel(tr("Note: this option is persistent"));
     layout->addWidget(pNote);
 
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+    // Contributor builds have no commercial/personal license choice.  Keep
+    // the field registered for ABI compatibility, but remove the old license
+    // wording and clear legacy usage markers so no stale profile can revive a
+    // purchase/evaluation route.
+    m_pLabel->setText(tr("Contributor build: all Sandboxie capabilities are enabled."));
+    m_pLabel->setEnabled(false);
+    m_pPersonal->setChecked(true);
+    m_pPersonal->setVisible(false);
+    m_pBusiness->setVisible(false);
+    pNote->setVisible(false);
+    uchar UsageFlags = 0;
+    theAPI->SetSecureParam("UsageFlags", &UsageFlags, sizeof(UsageFlags));
+#endif
+
     uchar BusinessUse = 2;
+#ifndef SANDBOXIE_CONTRIBUTOR_BUILD
     if (!g_Certificate.isEmpty())
         BusinessUse = CERT_IS_TYPE(g_CertInfo, eCertBusiness) ? 1 : 0;
     else {
@@ -216,6 +232,7 @@ CIntroPage::CIntroPage(QWidget *parent)
         }
         pNote->setEnabled(false);
     }
+#endif
 
     setLayout(layout);
 
