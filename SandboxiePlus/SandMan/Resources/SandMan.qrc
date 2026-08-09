@@ -256,6 +256,7 @@
         <file alias="Docs/scheduled-settings.md">Docs/scheduled-settings.md</file>
         <file alias="Docs/command-palette.md">Docs/command-palette.md</file>
         <file alias="Docs/external-editor.md">Docs/external-editor.md</file>
+        <file alias="Docs/destructive-confirmation.md">Docs/destructive-confirmation.md</file>
     </qresource>
     <qresource prefix="/Boxes">
         <file alias="Busy">Boxes/BusyOverlay.png</file>

@@ -20,6 +20,7 @@
 #include "../Windows/CompressDialog.h"
 #include "../Windows/ExtractDialog.h"
 #include "../Windows/RenameSandboxDialog.h"
+#include "../Windows/DestructiveConfirmationDialog.h"
 #include "../BoxTransfer.h"
 
 #include "qt_windows.h"
@@ -1802,9 +1803,10 @@ void CSbieView::OnSandBoxAction(QAction* Action, const QList<CSandBoxPtr>& SandB
 	}
 	else if (Action == m_pMenuRemove)
 	{
-		QString message = tr("Do you really want to remove the following sandbox(es)?<br /><br />%1<br /><br />Warning: The box content will also be deleted!")
-			.arg(RenderSandboxNameList_(SandBoxes));
-		if (QMessageBox("Sandboxie-Plus", message, QMessageBox::Warning, QMessageBox::Yes, QMessageBox::No | QMessageBox::Default | QMessageBox::Escape, QMessageBox::NoButton, this).exec() != QMessageBox::Yes)
+		QStringList sandboxNames;
+		foreach (const CSandBoxPtr& pBox, SandBoxes)
+			sandboxNames.append(pBox->GetName());
+		if (!CDestructiveConfirmationDialog::Confirm(this, sandboxNames))
 			return;
 
 		bool bChanged = false;

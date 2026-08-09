@@ -501,6 +501,7 @@
     <ClCompile Include="Windows\DimSumSurprise.cpp" />
     <ClCompile Include="Windows\ColorTranslatorDialog.cpp" />
     <ClCompile Include="Windows\AppearanceEditorDialog.cpp" />
+    <ClCompile Include="Windows\DestructiveConfirmationDialog.cpp" />
     <ClCompile Include="Windows\SnapshotsWindow.cpp" />
     <ClCompile Include="Windows\SupportDialog.cpp" />
     <ClCompile Include="Wizards\BoxAssistant.cpp" />
@@ -515,6 +516,7 @@
     <QtMoc Include="Windows\TestProxyDialog.h" />
     <QtMoc Include="Windows\CompressDialog.h" />
     <QtMoc Include="Windows\RenameSandboxDialog.h" />
+    <QtMoc Include="Windows\DestructiveConfirmationDialog.h" />
     <QtMoc Include="Wizards\BoxAssistant.h" />
     <QtMoc Include="Windows\BoxImageWindow.h" />
     <QtMoc Include="Views\StackView.h" />

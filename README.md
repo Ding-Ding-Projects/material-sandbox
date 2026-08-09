@@ -87,6 +87,7 @@ This profile does **not** remove copyright notices, third-party attributions, or
 | Command palette | `Ctrl+Shift+F` discovery route for destinations, features, and settings | [`docs/features/command-palette.md`](docs/features/command-palette.md) |
 | Offline documentation | Bundled feature articles rendered inside the application with local search and completeness validation | [`docs/features/README.md`](docs/features/README.md) |
 | External editor | Detects/configures VS Code and opens the persisted profile folder as a workspace root | [`docs/features/external-editor.md`](docs/features/external-editor.md) |
+| Destructive confirmation | Remove Sandbox uses two independent keys, a full-range slider, reduced-motion-aware progress, Emergency exit, and focus return | [`docs/features/destructive-confirmation.md`](docs/features/destructive-confirmation.md) |
 | Screenshots | A large, honest catalog of tracked visual assets, with runtime-capture boundaries called out | [`docs/screenshots.md`](docs/screenshots.md) |
 
 ### Product behavior that remains unchanged

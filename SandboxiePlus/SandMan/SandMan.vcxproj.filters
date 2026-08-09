@@ -204,6 +204,9 @@
     <ClCompile Include="Windows\AppearanceEditorDialog.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\DestructiveConfirmationDialog.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
     <ClCompile Include="Wizards\BoxAssistant.cpp">
       <Filter>Wizards</Filter>
     </ClCompile>
@@ -345,6 +348,9 @@
       <Filter>Windows</Filter>
     </QtMoc>
     <QtMoc Include="Windows\NotificationCenter.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\DestructiveConfirmationDialog.h">
       <Filter>Windows</Filter>
     </QtMoc>
     <ClInclude Include="Windows\DimSumSurprise.h">

@@ -12,3 +12,4 @@ This category documents local, user-controlled recovery behavior. Each article n
 - [Tab discovery](tab-discovery.md)
 - [Contributor capability and quiet certificate boundary](contributor-build-audit.md)
 - [External editor integration](external-editor.md)
+- [Destructive-action confirmation](destructive-confirmation.md)

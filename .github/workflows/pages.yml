@@ -28,6 +28,7 @@ jobs:
           node scripts/validate-scheduled-settings.mjs
           node scripts/validate-tab-discovery.mjs
           node scripts/validate-contributor-build.mjs
+          node scripts/validate-destructive-confirmation.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs
