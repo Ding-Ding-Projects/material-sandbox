@@ -12,20 +12,30 @@ rules use the real `Options/UseDarkTheme` setting with `light`, `dark`, or
 
 Matching is deterministic: the highest priority wins; equal priorities use the
 lexically smallest stable rule id. Invalid rules are ignored on load and are
-rejected on save. Schema-v1 rules carry a `source` object. `local` is the only
-source currently applied. `https-api` accepts only a bounded HTTPS URL without
-embedded credentials; `home-assistant` accepts only `binary_sensor.*` or
-`input_boolean.*`. Both require an opaque `os-vault://...` credential reference
-and a 15-second-to-24-hour refresh bound. External metadata is retained but
-reports `unsupported-external-source` and remains inert: no network I/O,
-blocking wait, or partial setting change is claimed. Tokens are never stored in
-the schedule. A future schema version is ignored rather than guessed.
+rejected on save. Schema-v1 rules carry a `source` object. `local` is applied
+directly. An external source requires a bounded HTTPS URL without embedded
+credentials, query, fragment, redirects, or a non-standard port; a
+15-second-to-24-hour refresh bound; and an opaque
+`os-vault://scheduled-settings/<id>` credential reference. Tokens are never
+stored in the schedule. A future schema version is ignored rather than guessed.
+
+The **Refresh external sources** control is an explicit activation path. It
+uses only a matching, enabled external rule and a Windows Credential Manager
+generic credential that already exists. It never requests, creates, displays,
+or logs a token. Requests reject TLS errors and redirects, abort after 10
+seconds, and accept at most 64 KiB of `application/json`. A Home Assistant
+source is limited to `/api/states/<entity>` and its `on`/`off` state. An HTTPS
+API source accepts exactly `{"active": true}` or `{"active": false}`. An `on`
+or `true` response temporarily gates the rule's existing local allowlisted
+value. A missing credential, `off`, timeout, redirect, TLS/network failure,
+oversized, or malformed response keeps the base settings unchanged. No remote
+response is persisted as the user's base setting.
 
 The scheduled-rules list shows a localized source status beside each rule and
-in its tooltip. Local rules are labelled active; external rules are labelled
-saved but not active, with the credential-vault/network-adapter recovery reason.
-This makes the safe fallback visible without requesting a token or claiming a
-partial update.
+in its tooltip. Local rules are labelled active. External rules identify an
+invalid reference, a missing Credential Manager item, a safe refresh in
+progress, active/inactive last result, or a fail-safe refresh failure without
+exposing URLs or credentials.
 
 School mode remains the final presentation gate. A matching language rule cannot
 turn Cantonese or bilingual presentation back on while School mode is enabled;

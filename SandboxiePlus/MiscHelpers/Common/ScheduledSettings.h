@@ -8,6 +8,8 @@
 #include <QString>
 #include <QStringList>
 
+#include <functional>
+
 #include "Settings.h"
 
 // A deliberately local, offline scheduler for appearance/presentation values.
@@ -46,10 +48,17 @@ QList<Rule> load(CSettings* settings);
 bool save(CSettings* settings, const QList<Rule>& rules, QString* error = nullptr);
 QStringList validate(const Rule& rule);
 
-// External sources currently return an explicit unsupported status. This keeps
-// schedule evaluation non-blocking and fail-safe while preserving metadata.
+// External sources use an opaque Windows Credential Manager reference. The
+// schedule never contains, displays, or exports the credential value.
 QString sourceStatus(const Source& source);
 QString sourceStatusDescription(const Source& source);
+
+// Starts only bounded, validated external refreshes. Results remain in memory:
+// an "on" response gates that rule's already-local allowlisted values; every
+// error, timeout, redirect, malformed response, or missing credential fails
+// closed to the base settings. The callback contains no source or credential
+// data and is suitable for refreshing a status-only UI.
+void refreshExternalSources(CSettings* settings, bool force = false, const std::function<void()>& changed = {});
 
 // Returns the highest-priority matching rule. Ties are deterministic by id.
 Rule effectiveRule(CSettings* settings, const QDateTime& local = QDateTime::currentDateTime());
