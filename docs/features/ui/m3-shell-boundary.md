@@ -137,6 +137,10 @@ The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.
 
+The Sandboxie Updater child tab is now another concrete native slice: channel
+radios, cadence, version links, and update toggles are created in code while
+certificate gating, release state, and updater handlers remain intact.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls

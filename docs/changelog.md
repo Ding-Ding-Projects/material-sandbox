@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings Updater tab
+
+Commit: [342a7452ef66155a14aaa87952c26d41f8c2a77d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/342a7452ef66155a14aaa87952c26d41f8c2a77d)
+
+- Rebuilt the Sandboxie Updater child tab with native Material 3 channel, cadence, version, and update controls.
+- Preserved certificate gating, release-channel state, and updater handlers.
+
 ## 2026-08-09 · Keep Sandboxie.ini actions visible at narrow widths
 
 Commit: [cf400a7c70c955dddcf24dc304dffdbdd3b145a4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/cf400a7c70c955dddcf24dc304dffdbdd3b145a4)
