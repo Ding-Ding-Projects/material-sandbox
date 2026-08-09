@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Contributor capability initialization and Pages language/tone wiring
+
+Commits: [33202613770e9bb4c1329827fb88b395cb00e26e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/33202613770e9bb4c1329827fb88b395cb00e26e), [4730fbad267a86686cd5fdff6985b050b1f64d95](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4730fbad267a86686cd5fdff6985b050b1f64d95)
+
+- Contributor builds initialize full capability flags before certificate I/O, so missing or malformed certificate data cannot disable security, encryption, networking, image, USB, update, or breakout features.
+- The Day Teet Hui language mode and independent English/Cantonese funny levels now change real rendered hero and status copy with bounded, safe text updates.
+
 ## 2026-08-09 · Native Settings notifications tab
 
 Commit: [2b3cef9e573317efe833a9f72b1cff5a77835ebb](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2b3cef9e573317efe833a9f72b1cff5a77835ebb)
