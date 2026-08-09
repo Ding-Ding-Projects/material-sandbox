@@ -1355,7 +1355,7 @@ void COptionsWindow::OnSetPassword()
 			memcpy(Buffer.data(), NewPassword.utf16(), Buffer.size());
 			SB_STATUS Status = theAPI->ExecImDisk(pBoxEx->GetBoxImagePath(), m_Password, "new_key", true, &Buffer, SECTION_PARAM_ID_KEY);
 			if(Status)
-				QMessageBox::information(this, "Sandboxie-Plus", tr("Image Password Changed"));
+				theGUI->OnLogMessage(tr("Image Password Changed"), true);
 			else
 				QMessageBox::critical(this, "Sandboxie-Plus", tr("Failed to Change Password"));
 		}

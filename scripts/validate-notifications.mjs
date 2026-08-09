@@ -19,6 +19,7 @@ const checks = [
   ['SandboxiePlus/SandMan/BoxTransfer.cpp', 'OnLogMessage(CBoxTransferDialog::tr("Nothing selected for export."), true)'],
   ['SandboxiePlus/SandMan/BoxTransfer.cpp', 'OnLogMessage(CBoxTransferDialog::tr("No boxes selected for separate file export."), true)'],
   ['SandboxiePlus/SandMan/Wizards/BoxAssistant.cpp', 'OnLogMessage(tr("Your issue report has been successfully submitted, thank you."), true)'],
+  ['SandboxiePlus/SandMan/Windows/OptionsGeneral.cpp', 'OnLogMessage(tr("Image Password Changed"), true)'],
   ['SandboxiePlus/SandMan/SandMan.pri', 'NotificationCenter.cpp'],
   ['README.md', 'docs/screenshots.md'],
   ['docs/screenshots.md', 'Material desktop screenshot gallery'],
@@ -40,4 +41,7 @@ if (transfer.includes('QMessageBox::information(parent, "Sandboxie-Plus", CBoxTr
 const assistant = read('SandboxiePlus/SandMan/Wizards/BoxAssistant.cpp');
 if (assistant.includes('QMessageBox::information(this, "Sandboxie-Plus", tr("Your issue report has been successfully submitted, thank you."))'))
   throw new Error('issue report success must use the non-blocking notification center');
+const optionsGeneral = read('SandboxiePlus/SandMan/Windows/OptionsGeneral.cpp');
+if (optionsGeneral.includes('QMessageBox::information(this, "Sandboxie-Plus", tr("Image Password Changed"))'))
+  throw new Error('image-password success must use the non-blocking notification center');
 console.log(`notification-and-gallery-contract checks=${checks.length}`);
