@@ -793,6 +793,39 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Resource Access > Registry with native M3 controls while
+	// retaining access columns, add-menu behavior, templates, and deletion.
+	if (ui.tabsAccess && ui.tabKeys) {
+		const int keysIndex = ui.tabsAccess->indexOf(ui.tabKeys);
+		if (keysIndex >= 0) {
+			auto* legacyKeys = ui.tabKeys;
+			auto* nativeKeys = new QWidget(ui.tabsAccess);
+			auto* keysLayout = new QVBoxLayout(nativeKeys);
+			auto* keysHint = new QLabel(tr("Configure which processes can access the Registry. Open access applies to programs outside the sandbox."), nativeKeys);
+			keysHint->setWordWrap(true);
+			keysLayout->addWidget(keysHint);
+			ui.treeKeys = new QTreeWidget(nativeKeys);
+			ui.treeKeys->setColumnCount(4);
+			ui.treeKeys->setHeaderLabels(QStringList() << tr("Type") << tr("Program") << tr("Access") << tr("Path"));
+			ui.treeKeys->setSortingEnabled(true);
+			keysLayout->addWidget(ui.treeKeys, 1);
+			auto* keysActions = new QHBoxLayout();
+			ui.btnAddKey = new QToolButton(nativeKeys);
+			ui.btnAddKey->setText(tr("Add Reg Key"));
+			ui.btnDelKey = new QPushButton(tr("Remove"), nativeKeys);
+			ui.chkShowKeysTmpl = new QCheckBox(tr("Show Templates"), nativeKeys);
+			keysActions->addWidget(ui.btnAddKey);
+			keysActions->addWidget(ui.btnDelKey);
+			keysActions->addWidget(ui.chkShowKeysTmpl);
+			keysActions->addStretch();
+			keysLayout->addLayout(keysActions);
+			ui.tabsAccess->removeTab(keysIndex);
+			ui.tabsAccess->insertTab(keysIndex, nativeKeys, tr("Registry"));
+			ui.tabKeys = nativeKeys;
+			legacyKeys->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
