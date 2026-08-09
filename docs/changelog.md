@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings GUI labels
+
+Commit: [c1bed0471a7ff2034d4b9241038ad24d045f0e82](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c1bed0471a7ff2034d4b9241038ad24d045f0e82)
+
+- Rebuilt the Interface heading, tri-state guidance, and grouping caption as native Material 3 labels while preserving text, typography, alignment, buddy relationships, and accessible names.
+- Aligned the PowerShell M3 contract with the current `M3DialogHost::Install(this)` path already verified by the Node contract.
+
 ## 2026-08-09 · Native Settings GUI grouping controls
 
 Commit: [5f0abd18f5b76e764a910c49f783b02140782800](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5f0abd18f5b76e764a910c49f783b02140782800)
