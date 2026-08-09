@@ -14,6 +14,12 @@ Commit: [18cdad374ca0b0ec14f13f0231d13101c602610d](https://github.com/Ding-Ding-
 - Rebuilt Stop and Leader guidance labels with native Material 3 metadata while preserving object names, text, wrapping, and formatting.
 - Kept model-backed trees and controls on the documented generated-form boundary.
 
+## 2026-08-09 · Native Start guidance label
+
+Commit: [c7a96dc15eca4f68d6e2699725d6920d9d0178c4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c7a96dc15eca4f68d6e2699725d6920d9d0178c4)
+
+- Rebuilt the Start Restrictions note label with native Material 3 metadata while preserving object name, text, wrapping, and formatting.
+
 ## 2026-08-09 · Name and dock nested option tabs
 
 Commit: [5df08dcbaf189e575a9e710215346604c29b0b72](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5df08dcbaf189e575a9e710215346604c29b0b72)
