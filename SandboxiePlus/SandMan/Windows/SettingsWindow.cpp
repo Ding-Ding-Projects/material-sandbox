@@ -1160,6 +1160,54 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained System Tray child tab with native M3 controls;
+	// all existing option pointers remain intact for persistence and live updates.
+	if (ui.tabsGeneral && ui.tabTray) {
+		const int trayIndex = ui.tabsGeneral->indexOf(ui.tabTray);
+		if (trayIndex >= 0) {
+			auto* nativeTray = new QWidget(ui.tabsGeneral);
+			auto* trayForm = new QFormLayout(nativeTray);
+			ui.lblSysTray = new QLabel(tr("Systray options"), nativeTray);
+			ui.lblSysTray->setProperty("m3NativeSurface", true);
+			ui.lblSysTray->setStyleSheet("font-weight: 600;");
+			trayForm->addRow(ui.lblSysTray);
+			ui.cmbSysTray = new QComboBox(nativeTray);
+			ui.cmbTrayBoxes = new QComboBox(nativeTray);
+			trayForm->addRow(tr("Show Icon in Systray:"), ui.cmbSysTray);
+			trayForm->addRow(tr("Show boxes in tray list:"), ui.cmbTrayBoxes);
+			ui.chkCompactTray = new QCheckBox(tr("Use Compact Box List"), nativeTray);
+			trayForm->addRow(QString(), ui.chkCompactTray);
+			ui.chkBoxOpsNotify = new QCheckBox(tr("Show a tray notification when automatic box operations are started"), nativeTray);
+			trayForm->addRow(QString(), ui.chkBoxOpsNotify);
+			ui.chkTrayIcons = new QCheckBox(tr("Show custom box icons in tray list"), nativeTray);
+			trayForm->addRow(QString(), ui.chkTrayIcons);
+			ui.chkTrayOverlayIcons = new QCheckBox(tr("Show overlay icons for boxes in tray list"), nativeTray);
+			trayForm->addRow(QString(), ui.chkTrayOverlayIcons);
+			auto* aliasRow = new QHBoxLayout();
+			ui.chkTrayUseAlias = new QCheckBox(tr("Show box alias name instead of box name in tray list"), nativeTray);
+			ui.spnTrayAliasChars = new QSpinBox(nativeTray);
+			ui.spnTrayAliasChars->setRange(32, 256);
+			ui.spnTrayAliasChars->setToolTip(tr("Maximum displayed characters for compact tray aliases. Ignored when alias display is disabled (name limit is fixed to 32)."));
+			aliasRow->addWidget(ui.chkTrayUseAlias, 1);
+			aliasRow->addWidget(ui.spnTrayAliasChars);
+			trayForm->addRow(aliasRow);
+			ui.chkTrayStatusTip = new QCheckBox(tr("Show sandbox status as tooltip in tray list"), nativeTray);
+			ui.cmbTrayStatusTipModifier = new QComboBox(nativeTray);
+			ui.chkTrayStatusTip->setTristate(true);
+			trayForm->addRow(ui.chkTrayStatusTip, ui.cmbTrayStatusTipModifier);
+			ui.cmbOnClose = new QComboBox(nativeTray);
+			ui.chkMinimize = new QCheckBox(tr("Minimize to tray"), nativeTray);
+			trayForm->addRow(tr("On main window close:"), ui.cmbOnClose);
+			trayForm->addRow(QString(), ui.chkMinimize);
+			ui.chkSingleShow = new QCheckBox(tr("Open/Close from/to tray with a single click"), nativeTray);
+			trayForm->addRow(QString(), ui.chkSingleShow);
+			trayForm->addRow(new QLabel(tr("Changes apply immediately to the tray and notification surfaces."), nativeTray));
+			ui.tabsGeneral->removeTab(trayIndex);
+			ui.tabsGeneral->insertTab(trayIndex, nativeTray, tr("System Tray"));
+			ui.tabTray->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.
