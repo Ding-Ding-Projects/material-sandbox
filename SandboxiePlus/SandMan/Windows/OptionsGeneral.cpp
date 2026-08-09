@@ -49,6 +49,14 @@ void COptionsWindow__AddCertIcon(QWidget* pOriginalWidget, bool bAdvanced = fals
 	pOriginalWidget->parentWidget()->layout()->replaceWidget(pOriginalWidget, pWidget);
 	pLayout->insertWidget(0, pOriginalWidget);
 }
+#else
+// Contributor builds keep the call-site ABI intact while intentionally omitting
+// certificate/purchase affordances from the UI.
+void COptionsWindow__AddCertIcon(QWidget* pOriginalWidget, bool bAdvanced)
+{
+	Q_UNUSED(pOriginalWidget);
+	Q_UNUSED(bAdvanced);
+}
 #endif
 
 void COptionsWindow::CreateGeneral()
