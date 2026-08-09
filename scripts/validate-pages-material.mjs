@@ -18,6 +18,9 @@ const required = [
   ['non-blocking notification', 'role="status"'],
   ['conditional installer status', 'No installer is advertised'],
   ['feature inventory', 'feature-card'],
+  ['settings search', 'id="settingsSearch"'],
+  ['settings regex builder', 'id="settingsRegexBuilder"'],
+  ['settings search wiring', 'filterSettings'],
 ];
 const failures = required.filter(([, token]) => !source.includes(token));
 const externalAsset = /<(?:script|link|img)[^>]+(?:https?:|fonts\.googleapis|googletagmanager|analytics)/i.test(source);
