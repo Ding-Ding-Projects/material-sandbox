@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options tracing controls
+
+Commit: [d77784d1444c922ffc0fcb262705694517460a34](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d77784d1444c922ffc0fcb262705694517460a34)
+
+- Rebuilt the Advanced Options Tracing checkbox cluster with native Material 3 controls.
+- Preserved labels, tooltips, trace signal wiring, and configuration persistence.
+
 ## 2026-08-09 · Native Options user controls
 
 Commit: [e8aae67f15c101869a1b4d509fd673e79711ab20](https://github.com/Ding-Ding-Projects/material-sandbox/commit/e8aae67f15c101869a1b4d509fd673e79711ab20)

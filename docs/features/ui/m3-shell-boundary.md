@@ -54,6 +54,11 @@ and administrator-only monitor toggle. Account selection and monitor settings
 continue to load and save through the existing handlers, with the surrounding
 Designer grid retained only as a bounded migration seam.
 
+Advanced Options > Tracing now rebuilds every trace switch as a native M3
+checkbox, copying the shipped labels and tooltips. Trace signal wiring and
+configuration persistence remain unchanged while the generated grid stays a
+temporary, explicit migration seam.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action
