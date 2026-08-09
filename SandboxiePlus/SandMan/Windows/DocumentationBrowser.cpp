@@ -256,6 +256,19 @@ void CDocumentationBrowser::renderChangelog()
         html += rendered + QStringLiteral("<hr>"); ++shown;
     }
     if (shown == 0) html = tr("<p>No changelog entries match the active filters.</p>");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (shown > 0) {
+        QString markdown;
+        for (const ChangelogEntry& entry : m_changelogEntries) {
+            if (from.isValid() && entry.date.isValid() && entry.date < from) continue;
+            if (to.isValid() && entry.date.isValid() && entry.date > to) continue;
+            if (!query.isEmpty() && !expression.match(entry.title + '\n' + entry.body).hasMatch()) continue;
+            markdown += entry.body + QStringLiteral("\n\n---\n\n");
+        }
+        m_changelogView->setMarkdown(markdown);
+        return;
+    }
+#endif
     m_changelogView->setHtml(html);
 }
 
