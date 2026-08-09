@@ -462,8 +462,6 @@ CRecoveryWindow::CRecoveryWindow(const CSandBoxPtr& pBox, bool bImmediate, QWidg
 	ui.chkShowIgnored->setChecked(false);
 	UpdateShowIgnoredState();
 
-	QStyle* pStyle = QStyleFactory::create("windows");
-	ui.treeFiles->setStyle(pStyle);
 	ui.treeFiles->setItemDelegate(new CTreeItemDelegate());
 	ui.treeFiles->setExpandsOnDoubleClick(false);
 

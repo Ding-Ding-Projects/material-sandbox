@@ -14,9 +14,6 @@ CSplitTreeView::CSplitTreeView(QAbstractItemModel* pModel, QWidget *parent) : QW
 	m_pSplitter->setOrientation(Qt::Horizontal);
 	m_pMainLayout->addWidget(m_pSplitter);
 	
-#ifdef WIN32
-	QStyle* pStyle = QStyleFactory::create("windows");
-#endif
 
 	m_LockSelection = 0;
 
@@ -29,9 +26,6 @@ CSplitTreeView::CSplitTreeView(QAbstractItemModel* pModel, QWidget *parent) : QW
 	//m_pTree->setModel(m_pSortProxy);
 
 	m_pTree->setSelectionMode(QAbstractItemView::ExtendedSelection);
-#ifdef WIN32
-	m_pTree->setStyle(pStyle);
-#endif
 	//m_pTree->setSortingEnabled(true);
 	m_pTree->setSortingEnabled(false);
 	m_pTree->setUniformRowHeights(true);
@@ -59,9 +53,6 @@ CSplitTreeView::CSplitTreeView(QAbstractItemModel* pModel, QWidget *parent) : QW
 	m_pList->setModel(m_pModel);
 
 	m_pList->setSelectionMode(QAbstractItemView::ExtendedSelection);
-#ifdef WIN32
-	m_pList->setStyle(pStyle);
-#endif
 	m_pList->setSortingEnabled(true);
 	m_pList->setUniformRowHeights(true);
 	connect(m_pList->header(), SIGNAL(sectionClicked(int)), this, SLOT(OnListCustomSortByColumn(int)));

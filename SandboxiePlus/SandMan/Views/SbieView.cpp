@@ -98,8 +98,6 @@ CSbieView::CSbieView(QWidget* parent) : CPanelView(parent)
 		connect(m_pSbieTree->header(), SIGNAL(sectionResized(int, int, int)), this, SLOT(OnHeaderChange()));
 	}
 
-	QStyle* pStyle = QStyleFactory::create("windows");
-	m_pSbieTree->setStyle(pStyle);
 	m_pSbieTree->setItemDelegate(iLargeIcons ? new CTreeItemDelegate2() : new CTreeItemDelegate());
 
 	m_pSbieTree->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -331,8 +329,6 @@ void CSbieView::CreateGroupsMenu()
 	m_pGroupTree->setHeaderHidden(true);
 	m_pGroupTree->setSelectionMode(QAbstractItemView::NoSelection);
 	m_pGroupTree->setItemDelegate(new CTrayBoxesItemDelegate());
-
-	m_pGroupTree->setStyle(QStyleFactory::create(theGUI->m_DefaultStyle));
 
 	pLayout->insertSpacing(0, 1);// 32);
 

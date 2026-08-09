@@ -172,10 +172,6 @@ public:
 		m_pTreeList->setModel(m_pSortProxy);
 
 		m_pTreeList->setSelectionMode(QAbstractItemView::ExtendedSelection);
-#ifdef WIN32
-		QStyle* pStyle = QStyleFactory::create("windows");
-		m_pTreeList->setStyle(pStyle);
-#endif
 		m_pTreeList->setExpandsOnDoubleClick(false);
 		m_pTreeList->setSortingEnabled(true);
 

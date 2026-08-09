@@ -95,8 +95,6 @@ CTraceTree::CTraceTree(QWidget* parent)
 
 	m_pTreeList->setModel(m_pTraceModel);
 
-	QStyle* pStyle = QStyleFactory::create("windows");
-	m_pTreeList->setStyle(pStyle);
 	m_pTreeList->setItemDelegate(new CTreeItemDelegate());
 	m_pTreeList->setExpandsOnDoubleClick(false);
 	//m_pTreeList->setSortingEnabled(true);
@@ -199,8 +197,6 @@ CMonitorList::CMonitorList(QWidget* parent)
 
 	m_pTreeList->setModel(m_pSortProxy);
 
-	QStyle* pStyle = QStyleFactory::create("windows");
-	m_pTreeList->setStyle(pStyle);
 	m_pTreeList->setItemDelegate(new CTreeItemDelegate());
 	
 	m_pTreeList->setExpandsOnDoubleClick(false);

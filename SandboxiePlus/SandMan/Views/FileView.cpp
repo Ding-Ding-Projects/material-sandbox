@@ -218,9 +218,7 @@ CFileView::CFileView(QWidget *parent)
     m_pTreeView->setSortingEnabled(true);
     m_pTreeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-	QStyle* pStyle = QStyleFactory::create("windows");
-	m_pTreeView->setStyle(pStyle);
-    m_pTreeView->setItemDelegate(new CTreeItemDelegate());
+	m_pTreeView->setItemDelegate(new CTreeItemDelegate());
 
 	m_pTreeView->setExpandsOnDoubleClick(false);
 

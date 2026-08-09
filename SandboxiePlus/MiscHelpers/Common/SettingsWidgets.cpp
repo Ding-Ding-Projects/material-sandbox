@@ -170,8 +170,6 @@ QWidget* CConfigDialog::ConvertToTree(QTabWidget* pTabWidget)
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 	m_pTree->setMinimumWidth(200.0*(QApplication::desktop()->logicalDpiX()/96.0)); // todo Qt6
 #endif
-	QStyle* pStyle = QStyleFactory::create("windows"); // show lines
-	m_pTree->setStyle(pStyle);
 	connect(m_pTree, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(OnItemClicked(QTreeWidgetItem*, int)));
 	QWidget* searchRow = new QWidget(pAltView);
 	QHBoxLayout* searchLayout = new QHBoxLayout(searchRow);

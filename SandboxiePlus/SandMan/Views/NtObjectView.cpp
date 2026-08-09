@@ -26,9 +26,7 @@ CNtObjectView::CNtObjectView(QWidget* parent)
     m_pTreeList->setSortingEnabled(true);
     m_pTreeList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-	QStyle* pStyle = QStyleFactory::create("windows");
-	m_pTreeList->setStyle(pStyle);
-    m_pTreeList->setItemDelegate(new CTreeItemDelegate());
+	m_pTreeList->setItemDelegate(new CTreeItemDelegate());
 
 	m_pTreeList->setExpandsOnDoubleClick(false);
 

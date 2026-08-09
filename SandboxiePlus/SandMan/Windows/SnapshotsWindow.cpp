@@ -28,8 +28,6 @@ CSnapshotsWindow::CSnapshotsWindow(const CSandBoxPtr& pBox, QWidget *parent)
 	m_pBox = pBox;
 	m_SaveInfoPending = 0;
 
-	QStyle* pStyle = QStyleFactory::create("windows");
-	ui.treeSnapshots->setStyle(pStyle);
 	ui.treeSnapshots->setItemDelegate(new CTreeItemDelegate());
 	ui.treeSnapshots->setExpandsOnDoubleClick(false);
 
