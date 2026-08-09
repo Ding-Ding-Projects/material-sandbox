@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native recovery dialog
+
+Commit: [2731f5c79014350fae265fa58fe3bb9d588a2996](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2731f5c79014350fae265fa58fe3bb9d588a2996)
+
+- Replaced `RecoveryWindow.ui` with native Material 3 recovery controls for the file tree, target picker, filters, and actions.
+- Preserved grouped file recovery, refresh/add-folder flows, delete menus, remembered targets, and geometry persistence.
+
 ## 2026-08-09 · Native box image password dialog
 
 Commit: [cabbef7aae1019c95e81e10e4997a9b25a3f0155](https://github.com/Ding-Ding-Projects/material-sandbox/commit/cabbef7aae1019c95e81e10e4997a9b25a3f0155)

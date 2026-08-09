@@ -44,6 +44,9 @@ double-click launch, force-child/admin actions, and geometry persistence without
 the retired Designer form. `BoxImageWindow` likewise owns its password, image
 size, cipher, and protection controls in code while retaining action-specific
 visibility and validation behavior.
+`RecoveryWindow` now also owns its tree, target picker, filters, and recovery
+actions in code while retaining the existing model, remembered targets, and
+delete/recovery menu semantics.
 
 ## Failure and accessibility notes
 
