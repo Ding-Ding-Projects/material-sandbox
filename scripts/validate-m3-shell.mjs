@@ -79,6 +79,7 @@ const checks = [
   [popupHeader.includes('QTableWidget* table') && popupSource.includes('QTableWidget') && popupSource.includes('M3ShellHost::Install(this, nullptr)') && !popupSource.includes('ui.setupUi') && !fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/PopUpWindow.ui')), 'notification popup is rebuilt without a legacy .ui form'],
   [optionsSource.includes('M3DialogHost::Install(this)') && optionsSource.includes('ui.setupUi') && fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/OptionsWindow.ui')), 'options dialog uses native M3 chrome while its large content remains an explicit migration boundary'],
   [settingsSource.includes('M3DialogHost::Install(this)') && settingsSource.includes('ui.setupUi') && settingsSource.includes('ui.chkFusionTheme->setVisible(false)') && fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/Forms/SettingsWindow.ui')), 'settings dialog uses native M3 chrome while its large content remains an explicit migration boundary'],
+  [settingsSource.includes('nativeLocation') && settingsSource.includes('ui.tabsGUI->insertTab') && settingsSource.includes('ui.cmbFallbackActiveMonitor = new QComboBox(nativeLocation)'), 'settings window options tab is rebuilt with native controls'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);

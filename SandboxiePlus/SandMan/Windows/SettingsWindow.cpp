@@ -1060,6 +1060,35 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	ui.cmbOnClose->addItem(tr("Close"), "Close");
 	ui.cmbOnClose->addItem(tr("Hide (Run invisible in Background)"), "Hide");
 
+	// Replace the self-contained Window Options tab with a native M3 form. Its
+	// six combo boxes keep the generated object names so all persistence and
+	// change handlers below continue to operate on the same pointers.
+	if (ui.tabsGUI && ui.tabWindowLocation) {
+		const int locationIndex = ui.tabsGUI->indexOf(ui.tabWindowLocation);
+		if (locationIndex >= 0) {
+			auto* nativeLocation = new QWidget(ui.tabsGUI);
+			auto* locationForm = new QFormLayout(nativeLocation);
+			ui.cmbLaunchMonitor = new QComboBox(nativeLocation);
+			ui.cmbNonMainLaunchMonitor = new QComboBox(nativeLocation);
+			ui.cmbRecoveryLaunchMonitor = new QComboBox(nativeLocation);
+			ui.cmbNotificationLaunchMonitor = new QComboBox(nativeLocation);
+			ui.cmbSupportDialogLaunchMonitor = new QComboBox(nativeLocation);
+			ui.cmbFallbackActiveMonitor = new QComboBox(nativeLocation);
+			locationForm->addRow(tr("Main:"), ui.cmbLaunchMonitor);
+			locationForm->addRow(tr("Non-main:"), ui.cmbNonMainLaunchMonitor);
+			locationForm->addRow(tr("File Recovery:"), ui.cmbRecoveryLaunchMonitor);
+			locationForm->addRow(tr("Notifications:"), ui.cmbNotificationLaunchMonitor);
+			locationForm->addRow(tr("Support Dialog:"), ui.cmbSupportDialogLaunchMonitor);
+			locationForm->addRow(tr("Fallback:"), ui.cmbFallbackActiveMonitor);
+			auto* hint = new QLabel(tr("Specific window settings override non-main settings. Fallback is used when the target monitor cannot be used; when disabled, each window uses its default current-monitor behavior."), nativeLocation);
+			hint->setWordWrap(true);
+			locationForm->addRow(QString(), hint);
+			ui.tabsGUI->removeTab(locationIndex);
+			ui.tabsGUI->insertTab(locationIndex, nativeLocation, tr("Window Options"));
+			ui.tabWindowLocation->deleteLater();
+		}
+	}
+
 	const QString sameAsMainLabel = tr("Same as main");
 	const QString keepCurrentLabel = tr("Keep current monitor");
 	const QString activeMonitorLabel = tr("Active monitor");
