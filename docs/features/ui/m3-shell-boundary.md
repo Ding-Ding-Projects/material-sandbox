@@ -121,6 +121,10 @@ The Local Templates child tab is now another concrete native slice: its filter,
 multi-select tree, and add/open/remove actions are created in code while
 pending-change tracking and template handlers remain intact.
 
+The App Compatibility child tab is now another concrete native slice: its
+detected-app tree, enable/disable actions, update link, and preference toggle
+are created in code while compatibility-template handlers remain intact.
+
 The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.

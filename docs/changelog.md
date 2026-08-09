@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings App Compatibility tab
+
+Commit: [dab079866c9160de106328cc5dba37c69b68c585](https://github.com/Ding-Ding-Projects/material-sandbox/commit/dab079866c9160de106328cc5dba37c69b68c585)
+
+- Rebuilt the App Compatibility child tab with native Material 3 detected-app tree, enable/disable actions, and preference toggle.
+- Preserved compatibility-template handlers and preference persistence.
+
 ## 2026-08-09 · Native Settings Local Templates tab
 
 Commit: [4b6ec4969a0c417560d905a7566d2161b4e3951d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4b6ec4969a0c417560d905a7566d2161b4e3951d)
