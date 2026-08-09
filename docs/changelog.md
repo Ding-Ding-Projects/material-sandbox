@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native sandbox import dialog
+
+Commit: [f2c3e874db5a1673a689b310e55b5cc2a752f935](https://github.com/Ding-Ding-Projects/material-sandbox/commit/f2c3e874db5a1673a689b310e55b5cc2a752f935)
+
+- Replaced `ExtractDialog.ui` with a native Material 3 layout and accessible controls.
+- Removed the retired Qt Designer resource and project registrations.
+
 ## 2026-08-09 · Application-wide dialog chrome
 
 Commit: [d284a99552e7df6ef6c38e129db9c72018764cce](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d284a99552e7df6ef6c38e129db9c72018764cce)
