@@ -3887,6 +3887,7 @@ SB_STATUS CSandMan::ReloadCert(QWidget* pWidget)
 	qDebug() << "g_CertInfo.level" << CSettingsWindow::GetCertLevel();
 #endif
 
+	#ifndef SANDBOXIE_CONTRIBUTOR_BUILD
 	if (g_CertInfo.active)
 	{
 		// behave as if there would be no certificate at all
@@ -3931,6 +3932,7 @@ SB_STATUS CSandMan::ReloadCert(QWidget* pWidget)
 				g_CertInfo.level = Level;
 		}
 	}
+	#endif
 
 	#ifndef SANDBOXIE_CONTRIBUTOR_BUILD
 	if (CERT_IS_TYPE(g_CertInfo, eCertBusiness))

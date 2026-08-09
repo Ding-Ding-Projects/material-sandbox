@@ -282,6 +282,13 @@ bool DoAboutDialog(bool bReminder)
 
     g_bReminder = bReminder;
 
+#ifdef SANDBOXIE_CONTRIBUTOR_BUILD
+    // Contributor builds never show the legacy supporter reminder, even when
+    // the driver is unavailable during startup and cannot report a cert state.
+    if (g_bReminder)
+        return true;
+#endif
+
     if (g_bReminder) {
 
         __declspec(align(8)) SCertInfo CertInfo = { 0 };

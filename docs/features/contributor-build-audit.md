@@ -1,9 +1,17 @@
 # Contributor capability and quiet certificate boundary
 
 Contributor builds define `SANDBOXIE_CONTRIBUTOR_BUILD` for the native driver,
-service, and SandMan targets. The profile enables the highest capability shape
+service, SandMan, and start-helper targets. The driver initializes the highest capability shape
 and makes certificate checks succeed without asking the user to purchase,
 renew, donate, or wait through a supporter reminder.
+
+Capability initialization happens before optional `Certificate.dat` I/O. Missing,
+malformed, or unreadable certificate data therefore leaves `active=1`, clears
+expiry/outdated/grace/lock state, selects `eCertContributor` at
+`eCertMaxLevel`, and enables security, encryption, network, and desktop options.
+The native driver, service, and UI consume the same record; contributor builds
+also compile out debug certificate simulation so it cannot reintroduce a split
+state.
 
 The Settings support page is removed from the contributor build and its
 certificate-refresh slot is inert. Options and troubleshooting surfaces compile
@@ -25,7 +33,7 @@ the define keeps upstream certificate behavior. Certificate files from an old
 profile are not treated as a reason to show a purchase prompt. Driver and
 service capability agreement still requires the matching contributor build;
 runtime testing must exercise encrypted/file-image, security/privacy, network,
-desktop, and breakout paths.
+desktop/USB, and breakout paths.
 
 ## Verification
 
@@ -35,7 +43,7 @@ Run:
 node scripts/validate-contributor-build.mjs
 ```
 
-The validator checks every reminder boundary, certificate feature gate, Setup
+The validator checks the early native capability contract, every reminder boundary, certificate feature gate, Setup
 Wizard route, support-tab removal, Options and troubleshooting footer guards,
 and the legal-notice boundary. A Qt/MSVC
 runtime build remains a separate gate; static source evidence must not be
