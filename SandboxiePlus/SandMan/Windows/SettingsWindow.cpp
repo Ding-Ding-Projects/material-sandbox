@@ -673,7 +673,16 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		});
 		connect(editAppearance, &QPushButton::clicked, this, [this, editAppearance]() {
 			Q_UNUSED(editAppearance);
-			CAppearanceEditorDialog editor(QApplication::font(), QColor(theConf->GetString("UIConfig/AccentSeed", "#6750A4")), this);
+			QFont initial = QApplication::font();
+			initial.setUnderline(static_cast<QFont::UnderlineStyle>(theConf->GetInt("UIConfig/UIFontUnderline", QFont::NoUnderline)));
+			initial.setStrikeOut(theConf->GetInt("UIConfig/UIFontStrikeOut", 0) != 0);
+			initial.setOverline(theConf->GetInt("UIConfig/UIFontOverline", 0) != 0);
+			initial.setCapitalization(static_cast<QFont::Capitalization>(theConf->GetInt("UIConfig/UIFontCapitalization", QFont::MixedCase)));
+			initial.setLetterSpacing(QFont::AbsoluteSpacing, theConf->GetString("UIConfig/UIFontLetterSpacing", "0").toDouble());
+			initial.setWordSpacing(theConf->GetString("UIConfig/UIFontWordSpacing", "0").toDouble());
+			CAppearanceEditorDialog editor(initial, QColor(theConf->GetString("UIConfig/AccentSeed", "#6750A4")),
+				QColor(theConf->GetString("UIConfig/UIFontTextColor", "#FF000000")),
+				QColor(theConf->GetString("UIConfig/UIFontHighlight", "#00000000")), this);
 			if (editor.exec() != QDialog::Accepted)
 				return;
 			QFont chosen = editor.selectedFont();
@@ -690,6 +699,14 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			theConf->SetValue("UIConfig/UIFontFamily", chosen.family());
 			theConf->SetValue("UIConfig/UIFontWeight", static_cast<int>(chosen.weight()));
 			theConf->SetValue("UIConfig/UIFontStyle", static_cast<int>(chosen.style()));
+			theConf->SetValue("UIConfig/UIFontUnderline", static_cast<int>(chosen.underline()));
+			theConf->SetValue("UIConfig/UIFontStrikeOut", chosen.strikeOut() ? 1 : 0);
+			theConf->SetValue("UIConfig/UIFontOverline", chosen.overline() ? 1 : 0);
+			theConf->SetValue("UIConfig/UIFontCapitalization", static_cast<int>(chosen.capitalization()));
+			theConf->SetValue("UIConfig/UIFontLetterSpacing", chosen.letterSpacing());
+			theConf->SetValue("UIConfig/UIFontWordSpacing", chosen.wordSpacing());
+			theConf->SetValue("UIConfig/UIFontTextColor", editor.selectedTextColor().name(QColor::HexArgb));
+			theConf->SetValue("UIConfig/UIFontHighlight", editor.selectedHighlightColor().name(QColor::HexArgb));
 			theConf->SetValue("UIConfig/AccentSeed", editor.selectedAccent().name(QColor::HexArgb));
 			QApplication::setFont(chosen);
 			ui.lblUiFont->setText(chosen.family());
@@ -699,6 +716,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			theConf->SetValue("UIConfig/AppDisplayName", "Sandboxie-Plus");
 			theConf->SetValue("UIConfig/Density", 1);
 			theConf->SetValue("UIConfig/AccentSeed", "#6750A4");
+			for (const char* key : {"UIFontFamily", "UIFontPointSize", "UIFontWeight", "UIFontStyle", "UIFontUnderline", "UIFontStrikeOut", "UIFontOverline", "UIFontCapitalization", "UIFontLetterSpacing", "UIFontWordSpacing", "UIFontTextColor", "UIFontHighlight"})
+				theConf->DelValue(QStringLiteral("UIConfig/") + QString::fromLatin1(key));
 			appName->setText("Sandboxie-Plus");
 			density->setCurrentIndex(1);
 			accent->setStyleSheet(QStringLiteral("background:#6750A4;"));

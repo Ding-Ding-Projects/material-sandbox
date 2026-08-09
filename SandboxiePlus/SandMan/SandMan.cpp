@@ -5018,6 +5018,14 @@ void CSandMan::SetUITheme()
 	const int customStyle = theConf->GetInt("UIConfig/UIFontStyle", -1);
 	if (customStyle >= QFont::StyleNormal && customStyle <= QFont::StyleOblique)
 		font.setStyle(static_cast<QFont::Style>(customStyle));
+	const int customUnderline = theConf->GetInt("UIConfig/UIFontUnderline", QFont::NoUnderline);
+	if (customUnderline >= QFont::NoUnderline && customUnderline <= QFont::WaveUnderline)
+		font.setUnderline(static_cast<QFont::UnderlineStyle>(customUnderline));
+	font.setStrikeOut(theConf->GetInt("UIConfig/UIFontStrikeOut", 0) != 0);
+	font.setOverline(theConf->GetInt("UIConfig/UIFontOverline", 0) != 0);
+	font.setCapitalization(static_cast<QFont::Capitalization>(theConf->GetInt("UIConfig/UIFontCapitalization", QFont::MixedCase)));
+	font.setLetterSpacing(QFont::AbsoluteSpacing, theConf->GetString("UIConfig/UIFontLetterSpacing", "0").toDouble());
+	font.setWordSpacing(theConf->GetString("UIConfig/UIFontWordSpacing", "0").toDouble());
 	const int customPointSize = theConf->GetInt("UIConfig/UIFontPointSize", 0);
 	if (customPointSize > 0)
 		font.setPointSize(customPointSize);
@@ -5031,6 +5039,12 @@ void CSandMan::SetUITheme()
 	const QColor accentSeed(theConf->GetString("UIConfig/AccentSeed", "#6750A4"));
 	const int density = qBound(0, theConf->GetInt("UIConfig/Density", 1), 2);
 	MaterialTheme::Apply(qobject_cast<QApplication*>(QApplication::instance()), bDark, accentSeed, density);
+	QPalette appearancePalette = QApplication::palette();
+	const QColor textColor(theConf->GetString("UIConfig/UIFontTextColor", "#FF000000"));
+	const QColor highlight(theConf->GetString("UIConfig/UIFontHighlight", "#00000000"));
+	if (textColor.isValid()) { appearancePalette.setColor(QPalette::WindowText, textColor); appearancePalette.setColor(QPalette::Text, textColor); }
+	if (highlight.isValid() && highlight.alpha() > 0) appearancePalette.setColor(QPalette::Highlight, highlight);
+	QApplication::setPalette(appearancePalette);
 	QApplication::setStyle(new KeepSubMenusVisibleStyle(new CustomTabStyle(QApplication::style())));
 	QApplication::setApplicationDisplayName(SandManDisplayName());
 	QString displayTitle = tr("%1 v%2").arg(SandManDisplayName()).arg(GetVersion());

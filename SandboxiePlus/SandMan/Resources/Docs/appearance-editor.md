@@ -4,15 +4,15 @@ The Settings → Material appearance identity surface opens a native Material 3 
 
 ## Configuration and reset
 
-The editor stores `UIConfig/UIFontFamily`, `UIConfig/UIFontPointSize`, `UIConfig/UIFontWeight`, `UIConfig/UIFontStyle`, and `UIConfig/AccentSeed`. **Reset to shipped defaults** clears the custom point size and uses the platform general font plus the Material purple seed. The global appearance reset in Settings restores display name, density, and accent; the typography editor is the focused path for font values.
+The editor stores `UIConfig/UIFontFamily`, `UIConfig/UIFontPointSize`, `UIConfig/UIFontWeight`, `UIConfig/UIFontStyle`, `UIConfig/UIFontUnderline`, `UIConfig/UIFontStrikeOut`, `UIConfig/UIFontOverline`, `UIConfig/UIFontCapitalization`, `UIConfig/UIFontLetterSpacing`, `UIConfig/UIFontWordSpacing`, `UIConfig/UIFontTextColor`, `UIConfig/UIFontHighlight`, and `UIConfig/AccentSeed`. **Reset to shipped defaults** clears the custom typography values and uses the platform general font plus the Material purple seed. The global appearance reset in Settings restores display name, density, and accent; the typography editor is the focused path for font values.
 
 ## Supported and unsupported properties
 
-This bounded native slice supports installed family selection, point size, weight, style, accent HEX/RGB/HSL translation, alpha, preview, persistence, and reset. It does not yet claim full Word-depth editing: variable-font axes, underline variants, strikethrough, overline, capitalization, small caps, superscript, subscript, text effects, character or word spacing, baseline offset, and per-element overrides remain explicitly listed as unsupported in the dialog.
+This bounded native slice supports installed family selection, point size, weight, style, underline style, strikeout, overline, capitalization, letter/word spacing, accent HEX/RGB/HSL translation, preview text/highlight colors, persistence, and reset. It does not claim full Word-depth editing: variable-font axes, line-height, baseline offset, superscript, subscript, text effects, and per-element overrides remain explicitly listed as unsupported in the dialog. Qt applies the supported font attributes globally; line-height and baseline are not fabricated because the native application-font API cannot apply them consistently to every widget.
 
 ## Failure modes and security
 
-An unavailable family falls back to the current Qt application font. Invalid colors remain in the translator's validation state and cannot be accepted. Values are bounded to 8–72 points and installed Qt font families; no network, credential, licensing, or signing path is involved.
+An unavailable family falls back to the current Qt application font. Invalid colors remain in the translator's validation state and cannot be accepted. Values are bounded to 8–72 points, spacing is bounded to -20–100 px, and families come from installed Qt fonts; no network, credential, licensing, or signing path is involved.
 
 ## Verification
 
