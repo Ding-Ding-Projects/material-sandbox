@@ -2018,6 +2018,29 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		ui.chkShellMenu = SecretCheckBox;
 	}
 
+	// All Settings child pages now use native M3 surfaces; replace the outer
+	// Designer tab host while preserving every page, label, and current index.
+	if (ui.tabs) {
+		auto* legacySettingsTabs = ui.tabs;
+		auto* nativeSettingsTabs = new QTabWidget(legacySettingsTabs->parentWidget());
+		nativeSettingsTabs->setObjectName(QStringLiteral("tabs"));
+		nativeSettingsTabs->setTabPosition(QTabWidget::West);
+		nativeSettingsTabs->setAccessibleName(tr("Settings pages"));
+		const int currentSettingsIndex = legacySettingsTabs->currentIndex();
+		while (legacySettingsTabs->count() > 0) {
+			const int index = legacySettingsTabs->count() - 1;
+			nativeSettingsTabs->insertTab(0, legacySettingsTabs->widget(index), legacySettingsTabs->tabText(index));
+			nativeSettingsTabs->setTabIcon(0, legacySettingsTabs->tabIcon(index));
+			legacySettingsTabs->removeTab(index);
+		}
+		nativeSettingsTabs->setCurrentIndex(qBound(0, currentSettingsIndex, nativeSettingsTabs->count() - 1));
+		nativeSettingsTabs->setProperty("m3NativeSurface", true);
+		if (auto* settingsHostLayout = legacySettingsTabs->parentWidget()->layout())
+			settingsHostLayout->replaceWidget(legacySettingsTabs, nativeSettingsTabs);
+		legacySettingsTabs->deleteLater();
+		ui.tabs = nativeSettingsTabs;
+	}
+
 	m_HoldChange = false;
 	m_SkipSaveOnToggle = false;
 
