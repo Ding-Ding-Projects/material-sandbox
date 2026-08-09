@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings Force Process tab
+
+Commit: [b5b3cdc6689a0cd467bec058f775246a050aaff6](https://github.com/Ding-Ding-Projects/material-sandbox/commit/b5b3cdc6689a0cd467bec058f775246a050aaff6)
+
+- Rebuilt the Force Process Options child tab with native Material 3 Mark of The Web selector and force controls.
+- Preserved model-populated sandbox choices and global settings handlers.
+
 ## 2026-08-09 · Native Settings Program Alerts tab
 
 Commit: [55213da2d0ec319baae5ef961d66929434bed47d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/55213da2d0ec319baae5ef961d66929434bed47d)
