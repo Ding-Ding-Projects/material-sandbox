@@ -20,6 +20,7 @@
 #include <QVBoxLayout>
 #include <QPixmap>
 #include <QRegularExpression>
+#include <QWindow>
 
 extern QString g_PendingMessage;
 
