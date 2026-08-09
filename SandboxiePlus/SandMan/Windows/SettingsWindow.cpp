@@ -1208,6 +1208,42 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		}
 	}
 
+	// Replace the self-contained Run Menu child tab with native M3 controls;
+	// the editable tree and command actions keep their generated pointers.
+	if (ui.tabsGeneral && ui.tabRun) {
+		const int runIndex = ui.tabsGeneral->indexOf(ui.tabRun);
+		if (runIndex >= 0) {
+			auto* nativeRun = new QWidget(ui.tabsGeneral);
+			auto* runLayout = new QVBoxLayout(nativeRun);
+			auto* runHint = new QLabel(tr("You can configure custom entries for all sandboxes run menus."), nativeRun);
+			runHint->setWordWrap(true);
+			runLayout->addWidget(runHint);
+			ui.treeRun = new QTreeWidget(nativeRun);
+			ui.treeRun->setColumnCount(2);
+			ui.treeRun->setHeaderLabels(QStringList() << tr("Name") << tr("Command Line"));
+			ui.treeRun->setRootIsDecorated(false);
+			runLayout->addWidget(ui.treeRun, 1);
+			auto* runActions = new QHBoxLayout();
+			ui.btnAddCmd = new QToolButton(nativeRun);
+			ui.btnAddCmd->setText(tr("Add program"));
+			ui.btnCmdUp = new QToolButton(nativeRun);
+			ui.btnCmdUp->setText(tr("Move Up"));
+			ui.btnCmdDown = new QToolButton(nativeRun);
+			ui.btnCmdDown->setText(tr("Move Down"));
+			ui.btnDelCmd = new QToolButton(nativeRun);
+			ui.btnDelCmd->setText(tr("Remove"));
+			runActions->addWidget(ui.btnAddCmd);
+			runActions->addWidget(ui.btnCmdUp);
+			runActions->addWidget(ui.btnCmdDown);
+			runActions->addWidget(ui.btnDelCmd);
+			runActions->addStretch();
+			runLayout->addLayout(runActions);
+			ui.tabsGeneral->removeTab(runIndex);
+			ui.tabsGeneral->insertTab(runIndex, nativeRun, tr("Run Menu"));
+			ui.tabRun->deleteLater();
+		}
+	}
+
 	// Replace the self-contained Window Options tab with a native M3 form. Its
 	// six combo boxes keep the generated object names so all persistence and
 	// change handlers below continue to operate on the same pointers.

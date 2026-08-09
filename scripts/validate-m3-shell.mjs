@@ -85,6 +85,7 @@ const checks = [
   [settingsSource.includes('nativeNotifications') && settingsSource.includes('ui.tabsGeneral->insertTab(notificationIndex, nativeNotifications') && settingsSource.includes('ui.treeMessages = new QTreeWidget(nativeNotifications)') && settingsSource.includes('ui.chkSilentMode = new QCheckBox'), 'settings notifications child tab is rebuilt with native controls'],
   [settingsSource.includes('nativeGeneral') && settingsSource.includes('ui.tabsGeneral->insertTab(generalIndex, nativeGeneral') && settingsSource.includes('ui.uiLang = new QComboBox(nativeGeneral)') && settingsSource.includes('addShortcut(ui.chkPanic, ui.keyPanic'), 'settings general child tab is rebuilt with native controls'],
   [settingsSource.includes('nativeTray') && settingsSource.includes('ui.tabsGeneral->insertTab(trayIndex, nativeTray') && settingsSource.includes('ui.cmbSysTray = new QComboBox(nativeTray)') && settingsSource.includes('ui.spnTrayAliasChars = new QSpinBox(nativeTray)'), 'settings system tray child tab is rebuilt with native controls'],
+  [settingsSource.includes('nativeRun') && settingsSource.includes('ui.tabsGeneral->insertTab(runIndex, nativeRun') && settingsSource.includes('ui.treeRun = new QTreeWidget(nativeRun)') && settingsSource.includes('ui.btnAddCmd = new QToolButton(nativeRun)'), 'settings run menu child tab is rebuilt with native controls'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);
