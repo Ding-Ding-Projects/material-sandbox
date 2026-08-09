@@ -24,6 +24,7 @@ public:
 
     QFont selectedFont() const;
     int selectedUnderlineStyle() const;
+    void setUnderlineStyle(int style);
     QColor selectedAccent() const { return m_accent; }
     QColor selectedTextColor() const { return m_textColor; }
     QColor selectedHighlightColor() const { return m_highlight; }
