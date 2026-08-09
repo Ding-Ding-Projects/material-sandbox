@@ -149,6 +149,11 @@ The Edit ini Section child tab is now another concrete native slice: its
 toolbar, validation/completion toggles, editor settings, and plain-text buffer
 are created in code while edit/save/cancel handlers remain intact.
 
+OptionsWindow File Options is now another native slice: virtualization,
+encryption, deletion, and disk-access controls are created in code while the
+OptionsGeneral pointers and handlers remain intact; other OptionsWindow tabs
+remain an explicit staged boundary.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls

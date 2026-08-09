@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options File tab
+
+Commit: [6fbd0e4f649c015fead2f7e5e875497e7d249ed3](https://github.com/Ding-Ding-Projects/material-sandbox/commit/6fbd0e4f649c015fead2f7e5e875497e7d249ed3)
+
+- Rebuilt the OptionsWindow File Options child tab with native Material 3 virtualization, encryption, deletion, and disk-access controls.
+- Preserved OptionsGeneral pointers, persistence, and handlers.
+
 ## 2026-08-09 · Contributor update channels
 
 Commit: [4b37c38ed68644f5860af6e28d54138347a4d9c4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4b37c38ed68644f5860af6e28d54138347a4d9c4)
