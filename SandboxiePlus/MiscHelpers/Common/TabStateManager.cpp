@@ -101,7 +101,7 @@ void CTabStateManager::load()
     // QFont attributes that Qt widgets can apply without inventing layout
     // semantics such as line-height or baseline offsets.
     const QJsonObject appearance = root.value(QStringLiteral("appearance")).toObject();
-    for (auto it = appearance.cbegin(); it != appearance.cend(); ++it) {
+    for (auto it = appearance.begin(); it != appearance.end(); ++it) {
         m_appearanceOverrides.insert(it.key());
         QWidget* page = nullptr;
         for (int i = 0; i < m_tabs->count(); ++i)
