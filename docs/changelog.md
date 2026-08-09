@@ -7,6 +7,13 @@ Commit: [137ccb70f0af7b7fb55a05141d3d351e099e10af](https://github.com/Ding-Ding-
 - Empty multi-sandbox export selections now report through the notification center instead of a blocking information box.
 - Preserved decision prompts and genuine error dialogs while keeping informational feedback non-blocking.
 
+## 2026-08-09 · Native Options security tab host
+
+Commit: [1c283bd8b1998320e7ff10cf087698f518ed213b](https://github.com/Ding-Ding-Projects/material-sandbox/commit/1c283bd8b1998320e7ff10cf087698f518ed213b)
+
+- Rebuilt the Security Options tab host with native Material 3 tabs.
+- Preserved Security, Isolation, Protection, Job, and Advanced Security page state, order, icons, and child behavior.
+
 ## 2026-08-09 · Native Options general tab host
 
 Commit: [18aeda5aed2951fff91d27163640ab9b661026ba](https://github.com/Ding-Ding-Projects/material-sandbox/commit/18aeda5aed2951fff91d27163640ab9b661026ba)
