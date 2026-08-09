@@ -316,6 +316,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	// them behind an opaque "default" label.
 	if (QGridLayout* uiLayout = qobject_cast<QGridLayout*>(ui.tabUI->layout())) {
 		QGroupBox* presentation = new QGroupBox(tr("Language, tone, and message presentation"), ui.tabUI);
+		presentation->setObjectName(QStringLiteral("m3PresentationSurface"));
+		presentation->setProperty("m3NativeSurface", true);
 		QFormLayout* presentationForm = new QFormLayout(presentation);
 
 		QComboBox* languageMode = new QComboBox(presentation);
@@ -433,6 +435,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		});
 
 		QGroupBox* appearance = new QGroupBox(tr("Material appearance identity"), ui.tabUI);
+		appearance->setObjectName(QStringLiteral("m3AppearanceIdentitySurface"));
+		appearance->setProperty("m3NativeSurface", true);
 		QFormLayout* appearanceForm = new QFormLayout(appearance);
 		QLineEdit* appName = new QLineEdit(theConf->GetString("UIConfig/AppDisplayName", "Sandboxie-Plus"), appearance);
 		appName->setAccessibleName(tr("Application display name"));
@@ -483,6 +487,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		uiLayout->addWidget(appearance, 2, 0);
 
 		QGroupBox* scheduled = new QGroupBox(tr("Scheduled presentation and appearance"), ui.tabUI);
+		scheduled->setObjectName(QStringLiteral("m3ScheduledAppearanceSurface"));
+		scheduled->setProperty("m3NativeSurface", true);
 		QVBoxLayout* scheduledLayout = new QVBoxLayout(scheduled);
 		QLabel* scheduledHelp = new QLabel(tr("Rules use local time. The highest priority matching rule wins; equal priorities use the stable rule id. Empty weekdays means every day. School mode remains the final presentation gate."), scheduled);
 		scheduledHelp->setWordWrap(true);
@@ -863,6 +869,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		});
 
 		QGroupBox* externalEditor = new QGroupBox(tr("External editor"), ui.tabUI);
+		externalEditor->setObjectName(QStringLiteral("m3ExternalEditorSurface"));
+		externalEditor->setProperty("m3NativeSurface", true);
 		QFormLayout* externalForm = new QFormLayout(externalEditor);
 		QLineEdit* editorCommand = new QLineEdit(theConf->GetString("UIConfig/ExternalEditorCommand"), externalEditor);
 		editorCommand->setPlaceholderText(tr("Automatic: detect VS Code or the code command"));
