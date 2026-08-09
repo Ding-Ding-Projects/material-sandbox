@@ -4906,16 +4906,21 @@ void CSandMan::SetUITheme()
 
 
 	QFont font = QApplication::font();
-	QString customFontStr = theConf->GetString("UIConfig/UIFont", "");
-	if (customFontStr != "") {
+	QString customFontStr = theConf->GetString("UIConfig/UIFontFamily", theConf->GetString("UIConfig/UIFont", ""));
+	if (!customFontStr.isEmpty())
 		font.setFamily(customFontStr);
-		QApplication::setFont(font);
-	}
-	double newFontSize = m_DefaultFontSize * theConf->GetInt("Options/FontScaling", 100) / 100.0;
-	if (newFontSize != font.pointSizeF()) {
-		font.setPointSizeF(newFontSize);
-		QApplication::setFont(font);
-	}
+	const int customWeight = theConf->GetInt("UIConfig/UIFontWeight", -1);
+	if (customWeight >= QFont::Thin && customWeight <= QFont::Black)
+		font.setWeight(static_cast<QFont::Weight>(customWeight));
+	const int customStyle = theConf->GetInt("UIConfig/UIFontStyle", -1);
+	if (customStyle >= QFont::StyleNormal && customStyle <= QFont::StyleOblique)
+		font.setStyle(static_cast<QFont::Style>(customStyle));
+	const int customPointSize = theConf->GetInt("UIConfig/UIFontPointSize", 0);
+	if (customPointSize > 0)
+		font.setPointSize(customPointSize);
+	else
+		font.setPointSizeF(m_DefaultFontSize * theConf->GetInt("Options/FontScaling", 100) / 100.0);
+	QApplication::setFont(font);
 
 	// Keep the existing persisted light/dark choice, but apply one shared
 	// Material 3 token system to the complete widget tree.  This replaces the

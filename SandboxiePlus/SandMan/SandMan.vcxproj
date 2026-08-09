@@ -500,6 +500,7 @@
     <ClCompile Include="Windows\NotificationCenter.cpp" />
     <ClCompile Include="Windows\DimSumSurprise.cpp" />
     <ClCompile Include="Windows\ColorTranslatorDialog.cpp" />
+    <ClCompile Include="Windows\AppearanceEditorDialog.cpp" />
     <ClCompile Include="Windows\SnapshotsWindow.cpp" />
     <ClCompile Include="Windows\SupportDialog.cpp" />
     <ClCompile Include="Wizards\BoxAssistant.cpp" />
@@ -533,6 +534,7 @@
     <QtMoc Include="Windows\NotificationCenter.h" />
     <ClInclude Include="Windows\DimSumSurprise.h" />
     <QtMoc Include="Windows\ColorTranslatorDialog.h" />
+    <QtMoc Include="Windows\AppearanceEditorDialog.h" />
     <QtMoc Include="Windows\OptionsWindow.h" />
     <QtMoc Include="Windows\EditorSettingsWindow.h" />
     <QtMoc Include="Views\SbieView.h" />

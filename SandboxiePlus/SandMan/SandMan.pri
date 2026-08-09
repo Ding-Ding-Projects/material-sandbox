@@ -42,6 +42,7 @@ HEADERS += ./stdafx.h \
     ./Windows/NotificationCenter.h \
     ./Windows/DimSumSurprise.h \
     ./Windows/ColorTranslatorDialog.h \
+    ./Windows/AppearanceEditorDialog.h \
     ./OnlineUpdater.h \
     ./Wizards/NewBoxWizard.h \
     ./Wizards/TemplateWizard.h \
@@ -108,6 +109,7 @@ SOURCES += ./main.cpp \
     ./Windows/NotificationCenter.cpp \
     ./Windows/DimSumSurprise.cpp \
     ./Windows/ColorTranslatorDialog.cpp \
+    ./Windows/AppearanceEditorDialog.cpp \
     ./OnlineUpdater.cpp \
     ./Wizards/NewBoxWizard.cpp \
     ./Wizards/TemplateWizard.cpp \

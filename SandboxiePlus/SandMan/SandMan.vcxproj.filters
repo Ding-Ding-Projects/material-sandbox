@@ -201,6 +201,9 @@
     <ClCompile Include="Windows\ColorTranslatorDialog.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\AppearanceEditorDialog.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
     <ClCompile Include="Wizards\BoxAssistant.cpp">
       <Filter>Wizards</Filter>
     </ClCompile>
@@ -348,6 +351,9 @@
       <Filter>Windows</Filter>
     </ClInclude>
     <QtMoc Include="Windows\ColorTranslatorDialog.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\AppearanceEditorDialog.h">
       <Filter>Windows</Filter>
     </QtMoc>
     <QtMoc Include="Windows\SnapshotsWindow.h">

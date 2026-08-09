@@ -38,6 +38,7 @@
 #include <QSaveFile>
 #include <QTextStream>
 #include "ColorTranslatorDialog.h"
+#include "AppearanceEditorDialog.h"
 #include <QListWidget>
 #include <QStackedWidget>
 #include <QDateEdit>
@@ -361,6 +362,10 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		accent->setStyleSheet(QStringLiteral("background:%1;").arg(accentValue));
 		accent->setToolTip(tr("Continuous color selection is applied as the Material primary seed and persists across restarts."));
 		appearanceForm->addRow(tr("Accent"), accent);
+		QPushButton* editAppearance = new QPushButton(tr("Edit Material typography and color"), appearance);
+		editAppearance->setAccessibleName(tr("Edit Material typography and color"));
+		editAppearance->setToolTip(tr("Open the native editor for installed font family, size, weight, style, and the Material accent translator."));
+		appearanceForm->addRow(QString(), editAppearance);
 
 		QLabel* appearanceProvenance = new QLabel(tr("Provenance: Sandboxie-Plus, comfortable density, and #6750A4 are the compiled-in values until this profile writes another choice."), appearance);
 		appearanceProvenance->setWordWrap(true);
@@ -595,6 +600,30 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			const QColor chosen = editor.color();
 			theConf->SetValue("UIConfig/AccentSeed", chosen.name(QColor::HexArgb));
 			accent->setStyleSheet(QStringLiteral("background:%1;").arg(chosen.name(QColor::HexArgb)));
+			theGUI->UpdateTheme();
+		});
+		connect(editAppearance, &QPushButton::clicked, this, [this, editAppearance]() {
+			Q_UNUSED(editAppearance);
+			CAppearanceEditorDialog editor(QApplication::font(), QColor(theConf->GetString("UIConfig/AccentSeed", "#6750A4")), this);
+			if (editor.exec() != QDialog::Accepted)
+				return;
+			QFont chosen = editor.selectedFont();
+			if (chosen.family().isEmpty())
+				return;
+			const int pointSize = chosen.pointSize();
+			if (pointSize > 0)
+				theConf->SetValue("UIConfig/UIFontPointSize", pointSize);
+			else {
+				theConf->DelValue("UIConfig/UIFontPointSize");
+				chosen.setPointSizeF(QApplication::font().pointSizeF());
+			}
+			theConf->SetValue("UIConfig/UIFont", chosen.family());
+			theConf->SetValue("UIConfig/UIFontFamily", chosen.family());
+			theConf->SetValue("UIConfig/UIFontWeight", static_cast<int>(chosen.weight()));
+			theConf->SetValue("UIConfig/UIFontStyle", static_cast<int>(chosen.style()));
+			theConf->SetValue("UIConfig/AccentSeed", editor.selectedAccent().name(QColor::HexArgb));
+			QApplication::setFont(chosen);
+			ui.lblUiFont->setText(chosen.family());
 			theGUI->UpdateTheme();
 		});
 		connect(resetAppearance, &QPushButton::clicked, this, [appName, density, accent]() {

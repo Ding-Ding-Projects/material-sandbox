@@ -245,6 +245,7 @@
         <file>Actions/Expand.png</file>
         <file>Actions/Quit.png</file>
         <file alias="Docs/material-design.md">Docs/material-design.md</file>
+        <file alias="Docs/appearance-editor.md">Docs/appearance-editor.md</file>
         <file alias="Docs/contributor-build.md">Docs/contributor-build.md</file>
         <file alias="Docs/changelog.md">Docs/changelog.md</file>
         <file alias="Docs/settings-history.md">Docs/settings-history.md</file>

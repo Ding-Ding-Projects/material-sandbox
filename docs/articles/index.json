@@ -2,6 +2,7 @@
   "version": 1,
   "articles": [
     {"slug":"material-design","path":"../material-design.md","related":["contributor-build"]},
+    {"slug":"appearance-editor","path":"../features/appearance-editor.md","related":["material-design","color-translator","settings-history"]},
     {"slug":"contributor-build","path":"../contributor-build.md","related":["material-design"]},
     {"slug":"settings-history","path":"../features/settings-history.md","related":["material-design","contributor-build"]},
     {"slug":"notifications","path":"../features/notifications.md","related":["settings-history","material-design"]},
