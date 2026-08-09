@@ -260,6 +260,7 @@
         <file alias="Docs/destructive-confirmation.md">Docs/destructive-confirmation.md</file>
         <file alias="Docs/build-entrypoints.md">Docs/build-entrypoints.md</file>
         <file alias="Docs/m3-shell-boundary.md">Docs/m3-shell-boundary.md</file>
+        <file alias="Docs/editor-settings.md">Docs/editor-settings.md</file>
     </qresource>
     <qresource prefix="/Boxes">
         <file alias="Busy">Boxes/BusyOverlay.png</file>
