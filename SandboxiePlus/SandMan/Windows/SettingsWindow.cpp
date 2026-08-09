@@ -967,6 +967,28 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		ui.gridLayout_15->replaceWidget(ui.cmbGrouping, grouping);
 		ui.cmbGrouping->deleteLater();
 		ui.cmbGrouping = grouping;
+		auto migrateGuiLabel = [&](QLabel*& control) {
+			auto* native = new QLabel(control->text(), ui.tabUI);
+			native->setObjectName(control->objectName());
+			native->setAlignment(control->alignment());
+			native->setWordWrap(control->wordWrap());
+			native->setTextFormat(control->textFormat());
+			native->setTextInteractionFlags(control->textInteractionFlags());
+			native->setOpenExternalLinks(control->openExternalLinks());
+			native->setSizePolicy(control->sizePolicy());
+			native->setFont(control->font());
+			native->setToolTip(control->toolTip());
+			native->setAccessibleName(control->accessibleName().isEmpty() ? control->text() : control->accessibleName());
+			native->setProperty("m3NativeSurface", true);
+			if (control->buddy())
+				native->setBuddy(control->buddy());
+			ui.gridLayout_15->replaceWidget(control, native);
+			control->deleteLater();
+			control = native;
+		};
+		migrateGuiLabel(ui.lblInterface);
+		migrateGuiLabel(ui.label_11);
+		migrateGuiLabel(ui.label_34);
 	}
 
 	if (theConf->GetBool("Options/AltRowColors", false)) {
