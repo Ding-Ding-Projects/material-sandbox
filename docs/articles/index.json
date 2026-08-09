@@ -6,5 +6,5 @@
     {"slug":"settings-history","path":"../features/settings-history.md","related":["material-design","contributor-build"]},
     {"slug":"notifications","path":"../features/notifications.md","related":["settings-history","material-design"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"7c8f9d9e"}
+  "changelog": {"path":"../changelog.md","commit":"062426ff"}
 }
