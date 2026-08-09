@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-09 · Improve Debug tab focus and accessibility
+
+Commit: [a785021779e98f99bf4efebf596046d17a9f6c75](https://github.com/Ding-Ding-Projects/material-sandbox/commit/a785021779e98f99bf4efebf596046d17a9f6c75)
+
+- Moved the Debug tab strip above its content for a predictable keyboard focus order.
+- Added accessible names to the Debug tab host and scroll surface, with validator coverage.
+
+Debug 頁籤放返內容上面，焦點路線清楚，讀屏亦有正式名稱。
+
 ## 2026-08-09 · Native Options app-template tab host
 
 Commit: [5d77ba0d19e7828ac8bbfaca0d691a9d9830d5e3](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5d77ba0d19e7828ac8bbfaca0d691a9d9830d5e3)
