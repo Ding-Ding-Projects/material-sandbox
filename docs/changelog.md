@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Resource Files tab
+
+Commit: [0519b002d7926aaeaf0a3e57ba28eac72c681949](https://github.com/Ding-Ding-Projects/material-sandbox/commit/0519b002d7926aaeaf0a3e57ba28eac72c681949)
+
+- Rebuilt the Resource Access > Files child tab with native Material 3 access-rule and action controls.
+- Preserved four-column access data, add-menu semantics, template toggles, and deletion handlers.
+
 ## 2026-08-09 · Native Options Start Restrictions tab
 
 Commit: [4d7ef2bf0f10833b6f16ee85b01579f184e24523](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4d7ef2bf0f10833b6f16ee85b01579f184e24523)

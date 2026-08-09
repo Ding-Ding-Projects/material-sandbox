@@ -213,6 +213,11 @@ while the existing radio semantics, delegate, and persistence remain intact;
 the intentionally hidden template toggle and other OptionsWindow tabs remain
 staged.
 
+OptionsWindow Resource Access > Files is now another native slice: its
+four-column access-rule table and add/remove/template action rail are created
+in code while the existing access model, add-menu semantics, templates, and
+deletion handlers remain intact; other OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
