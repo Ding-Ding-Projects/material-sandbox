@@ -2100,6 +2100,24 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		migrateLingeringCheck(ui.chkShowStopTmpl);
 	}
 
+	// Start Restrictions keeps its QTreeWidget model class and policy event
+	// flow while moving the Designer tree host to a native M3 surface.
+	{
+		auto* nativeStartTree = new QTreeWidget(this);
+		nativeStartTree->setObjectName(ui.treeStart->objectName());
+		nativeStartTree->setColumnCount(ui.treeStart->columnCount());
+		nativeStartTree->setHeaderLabels({ui.treeStart->headerItem()->text(0)});
+		nativeStartTree->setSortingEnabled(ui.treeStart->isSortingEnabled());
+		nativeStartTree->setRootIsDecorated(ui.treeStart->rootIsDecorated());
+		nativeStartTree->setAlternatingRowColors(ui.treeStart->alternatingRowColors());
+		nativeStartTree->setSelectionMode(ui.treeStart->selectionMode());
+		nativeStartTree->setEditTriggers(ui.treeStart->editTriggers());
+		nativeStartTree->setProperty("m3NativeSurface", true);
+		ui.gridLayout_19->replaceWidget(ui.treeStart, nativeStartTree);
+		ui.treeStart->deleteLater();
+		ui.treeStart = nativeStartTree;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
