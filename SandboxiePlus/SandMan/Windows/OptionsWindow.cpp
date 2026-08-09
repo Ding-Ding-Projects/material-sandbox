@@ -1442,6 +1442,39 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		migrateTraceCheck(ui.chkErrTrace);
 	}
 
+	// Config Dump keeps its dynamically supplied tree, but its filter switches
+	// and refresh action are native M3 controls so the dump surface no longer
+	// depends on Designer chrome for its user-facing controls.
+	{
+		auto replaceCfgControl = [](QWidget* oldControl, QWidget* nativeControl, QGridLayout* layout) {
+			if (oldControl && nativeControl && layout) {
+				layout->replaceWidget(oldControl, nativeControl);
+				oldControl->deleteLater();
+			}
+		};
+		auto makeCfgCheck = [this](QCheckBox* oldControl) {
+			auto* native = new QCheckBox(oldControl->text(), this);
+			native->setObjectName(oldControl->objectName());
+			native->setChecked(oldControl->isChecked());
+			native->setProperty("m3NativeSurface", true);
+			return native;
+		};
+		auto* nativeCfgNoGlobal = makeCfgCheck(ui.chkCfgNoGlobal);
+		auto* nativeCfgNoTemplates = makeCfgCheck(ui.chkCfgNoTemplates);
+		auto* nativeCfgNoExpand = makeCfgCheck(ui.chkCfgNoExpand);
+		auto* nativeCfgUpdate = new QPushButton(ui.btnCfgUpdate->text(), this);
+		nativeCfgUpdate->setObjectName(QStringLiteral("btnCfgUpdate"));
+		nativeCfgUpdate->setProperty("m3NativeSurface", true);
+		replaceCfgControl(ui.chkCfgNoGlobal, nativeCfgNoGlobal, ui.gridLayout_88);
+		replaceCfgControl(ui.chkCfgNoTemplates, nativeCfgNoTemplates, ui.gridLayout_88);
+		replaceCfgControl(ui.chkCfgNoExpand, nativeCfgNoExpand, ui.gridLayout_88);
+		replaceCfgControl(ui.btnCfgUpdate, nativeCfgUpdate, ui.gridLayout_88);
+		ui.chkCfgNoGlobal = nativeCfgNoGlobal;
+		ui.chkCfgNoTemplates = nativeCfgNoTemplates;
+		ui.chkCfgNoExpand = nativeCfgNoExpand;
+		ui.btnCfgUpdate = nativeCfgUpdate;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
