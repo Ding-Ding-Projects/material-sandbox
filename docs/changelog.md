@@ -37,6 +37,13 @@ Commit: [1b8f26db640cff9013259ba47bd96ea716aab72f](https://github.com/Ding-Ding-
 - Rebuilt Start Restrictions policy radios, actions, and warning switches with native Material 3 widgets.
 - Preserved start handlers, tree state, and the hidden template toggle.
 
+## 2026-08-09 · Native Options lingering controls
+
+Commit: [4b81078773c1fb4191633deea1a199db8c95a2a6](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4b81078773c1fb4191633deea1a199db8c95a2a6)
+
+- Rebuilt Lingering Programs Add, Remove, and Show Templates controls with native Material 3 widgets.
+- Preserved the editable program tree, delegate, and stop handlers.
+
 ## 2026-08-09 · Native Options resource-access tab host
 
 Commit: [01cf568a6d36d64b7e2450e532ffc3785cf0d0b1](https://github.com/Ding-Ding-Projects/material-sandbox/commit/01cf568a6d36d64b7e2450e532ffc3785cf0d0b1)

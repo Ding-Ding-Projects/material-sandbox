@@ -143,6 +143,9 @@ Start Restrictions now uses native M3 policy radios, actions, and warning
 switches while preserving start handlers, tree state, and the hidden template
 toggle.
 
+Lingering Programs now uses native M3 Add, Remove, and Show Templates controls
+while preserving the editable program tree, delegate, and stop handlers.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

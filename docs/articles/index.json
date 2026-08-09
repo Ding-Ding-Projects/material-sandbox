@@ -23,7 +23,7 @@
     ,{"slug":"pages-language-tone","path":"../features/pages-language-tone.md","related":["material-design","school-mode","notifications"]}
     ,{"slug":"pages-a11y-boundary","path":"../features/pages-a11y-boundary.md","related":["material-design","tab-discovery","command-palette"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"1b8f26db640cff9013259ba47bd96ea716aab72f"}
+  "changelog": {"path":"../changelog.md","commit":"4b81078773c1fb4191633deea1a199db8c95a2a6"}
 }
 
 
