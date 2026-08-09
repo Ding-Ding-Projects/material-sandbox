@@ -469,6 +469,41 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Security Isolation with native M3 controls while preserving
+	// OptionsAdvanced's safety dependencies and compatibility semantics.
+	if (ui.tabsSecurity && ui.tabIsolation) {
+		const int isolationIndex = ui.tabsSecurity->indexOf(ui.tabIsolation);
+		if (isolationIndex >= 0) {
+			auto* nativeSecurityIsolation = new QWidget(ui.tabsSecurity);
+			auto* securityLayout = new QVBoxLayout(nativeSecurityIsolation);
+			auto* compatibilityHint = new QLabel(tr("Isolation features can affect compatibility. Disable them only when this sandbox is used for portability rather than security."), nativeSecurityIsolation);
+			compatibilityHint->setWordWrap(true);
+			securityLayout->addWidget(compatibilityHint);
+			ui.lblIsolation = new QLabel(tr("Security Isolation & Filtering"), nativeSecurityIsolation);
+			ui.lblIsolation->setProperty("m3NativeSurface", true);
+			ui.lblIsolation->setStyleSheet("font-weight: 600;");
+			securityLayout->addWidget(ui.lblIsolation);
+			ui.chkNoSecurityIsolation = new QCheckBox(tr("Disable Security Isolation"), nativeSecurityIsolation);
+			ui.chkNoSecurityIsolation->setToolTip(tr("Disabling token isolation reduces security and enables application-compartment behavior."));
+			ui.chkNoSecurityFiltering = new QCheckBox(tr("Disable Security Filtering (not recommended)"), nativeSecurityIsolation);
+			ui.chkNoSecurityFiltering->setToolTip(tr("Security filtering enforces filesystem, registry, and process-access restrictions."));
+			securityLayout->addWidget(ui.chkNoSecurityIsolation);
+			securityLayout->addWidget(ui.chkNoSecurityFiltering);
+			ui.lblDesktop = new QLabel(tr("Desktop Isolation"), nativeSecurityIsolation);
+			ui.lblDesktop->setProperty("m3NativeSurface", true);
+			ui.lblDesktop->setStyleSheet("font-weight: 600;");
+			securityLayout->addWidget(ui.lblDesktop);
+			ui.chkSbieDesktop = new QCheckBox(tr("Run processes on an own sandboxed desktop"), nativeSecurityIsolation);
+			ui.chkOpenWndStation = new QCheckBox(tr("Open Window Station (improves compatibility by reducing desktop isolation)"), nativeSecurityIsolation);
+			securityLayout->addWidget(ui.chkSbieDesktop);
+			securityLayout->addWidget(ui.chkOpenWndStation);
+			securityLayout->addStretch();
+			ui.tabsSecurity->removeTab(isolationIndex);
+			ui.tabsSecurity->insertTab(isolationIndex, nativeSecurityIsolation, tr("Security Isolation"));
+			ui.tabIsolation->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
