@@ -8,7 +8,7 @@ Sandboxie is a Windows desktop sandbox manager. This repository contains the Qt 
 
 **Project site:** [ding-ding-projects.github.io/material-sandbox](https://ding-ding-projects.github.io/material-sandbox/)
 
-**Source baseline documented here:** `d189d9e9` (the current contributor-safe Material desktop integration baseline with runtime smoke, Qt typography controls, Day Teet Hui settings search, notification regex tooling, aggregate cleanup confirmation, and scheduled-source status).
+**Source baseline documented here:** `59a26591` (the current contributor-safe Material desktop integration baseline with runtime smoke, Qt typography controls, Day Teet Hui settings search, notification regex tooling, aggregate cleanup confirmation, and vault-backed scheduled sources).
 
 ## Quick index
 
@@ -88,7 +88,7 @@ This profile does **not** remove copyright notices, third-party attributions, or
 | Offline documentation | Bundled feature articles rendered inside the application with local search and completeness validation | [`docs/features/README.md`](docs/features/README.md) |
 | External editor | Detects/configures VS Code and opens the persisted profile folder as a workspace root | [`docs/features/external-editor.md`](docs/features/external-editor.md) |
 | Destructive confirmation | Remove Sandbox and aggregate Cleanup use a two-key, full-range destructive-action confirmation with reduced-motion-aware progress, Emergency exit, and focus return | [`docs/features/destructive-confirmation.md`](docs/features/destructive-confirmation.md) |
-| Native CI evidence | [Run 31303525765](https://github.com/Ding-Ding-Projects/material-sandbox/actions/runs/31303525765) completed successfully for x64/ARM64 Qt builds and the bounded x64 startup smoke; [run 31301196079](https://github.com/Ding-Ding-Projects/material-sandbox/actions/runs/31301196079) retains the uploaded JSON evidence | [`docs/features/native-ci-evidence.md`](docs/features/native-ci-evidence.md) |
+| Native CI evidence | [Run 31304058726](https://github.com/Ding-Ding-Projects/material-sandbox/actions/runs/31304058726) completed successfully for x64/ARM64 Qt builds and the bounded x64 startup smoke; [run 31301196079](https://github.com/Ding-Ding-Projects/material-sandbox/actions/runs/31301196079) retains the uploaded JSON evidence | [`docs/features/native-ci-evidence.md`](docs/features/native-ci-evidence.md) |
 | Screenshots | A large, honest catalog of tracked visual assets, with runtime-capture boundaries called out | [`docs/screenshots.md`](docs/screenshots.md) |
 
 ### Product behavior that remains unchanged
