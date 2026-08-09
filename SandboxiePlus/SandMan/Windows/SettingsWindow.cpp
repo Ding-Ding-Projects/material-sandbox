@@ -41,6 +41,7 @@
 #include "ColorTranslatorDialog.h"
 #include "AppearanceEditorDialog.h"
 #include <QListWidget>
+#include <QHeaderView>
 #include <QStackedWidget>
 #include <QDateEdit>
 #include <QTimeEdit>
@@ -1537,8 +1538,12 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			ui.treeImport->setColumnCount(1);
 			ui.treeImport->setHeaderLabels(QStringList() << tr("Import Path"));
 			ui.treeImport->setRootIsDecorated(false);
+			ui.treeImport->header()->setSectionResizeMode(QHeaderView::Stretch);
+			ui.treeImport->setAccessibleName(tr("Sandboxie.ini imported paths"));
 			lockLayout->addWidget(ui.treeImport, 1);
-			auto* importActions = new QHBoxLayout();
+			// Keep the action row usable at narrow widths and in bilingual mode.
+			// A single horizontal row clipped the final action on compact windows.
+			auto* importActions = new QGridLayout();
 			ui.btnAddBox = new QToolButton(nativeLock);
 			ui.btnAddBox->setText(tr("Add Portable Box"));
 			ui.btnMkBox = new QToolButton(nativeLock);
@@ -1547,11 +1552,12 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			ui.btnAddRoot->setText(tr("Add Portable Root"));
 			ui.btnRemBox = new QToolButton(nativeLock);
 			ui.btnRemBox->setText(tr("Remove Entry"));
-			importActions->addWidget(ui.btnAddBox);
-			importActions->addWidget(ui.btnMkBox);
-			importActions->addWidget(ui.btnAddRoot);
-			importActions->addWidget(ui.btnRemBox);
-			importActions->addStretch();
+			importActions->addWidget(ui.btnAddBox, 0, 0);
+			importActions->addWidget(ui.btnMkBox, 0, 1);
+			importActions->addWidget(ui.btnAddRoot, 1, 0);
+			importActions->addWidget(ui.btnRemBox, 1, 1);
+			importActions->setColumnStretch(0, 1);
+			importActions->setColumnStretch(1, 1);
 			lockLayout->addLayout(importActions);
 			ui.lblProtection = new QLabel(tr("Config protection"), nativeLock);
 			ui.lblProtection->setProperty("m3NativeSurface", true);
