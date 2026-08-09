@@ -20,5 +20,5 @@
     ,{"slug":"m3-shell-boundary","path":"../features/ui/m3-shell-boundary.md","related":["material-design","appearance-editor","tab-discovery"]}
     ,{"slug":"editor-settings","path":"../features/editor-settings.md","related":["m3-shell-boundary","settings-history","appearance-editor"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"a371d3d674db6d49c8928ef98bd8b91d5e6dc696"}
+  "changelog": {"path":"../changelog.md","commit":"3f2dfb141f76a3acce2ff9c51ea210455d9d23b4"}
 }

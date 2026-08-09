@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-09 · Native proxy and image dialogs
+
+Commit: [3f2dfb141f76a3acce2ff9c51ea210455d9d23b4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/3f2dfb141f76a3acce2ff9c51ea210455d9d23b4)
+
+- Rebuilt the proxy test dialog in native Material 3 controls and removed its Designer form.
+- Routed the image dialog through shared frameless M3 chrome and kept accessible close/focus behavior.
+- Removed the remaining pending-change legacy style factory so highlights use the live Material palette.
+
 ## 2026-08-09 · Native editor settings dialog
 
 Commit: [a371d3d674db6d49c8928ef98bd8b91d5e6dc696](https://github.com/Ding-Ding-Projects/material-sandbox/commit/a371d3d674db6d49c8928ef98bd8b91d5e6dc696)
