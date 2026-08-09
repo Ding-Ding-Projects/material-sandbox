@@ -596,7 +596,6 @@
     <QtUic Include="Forms\SelectBoxWindow.ui" />
     <QtUic Include="Forms\SettingsWindow.ui" />
     <QtUic Include="Forms\SnapshotsWindow.ui" />
-    <QtUic Include="Forms\TestProxyDialog.ui" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\finder.cur" />

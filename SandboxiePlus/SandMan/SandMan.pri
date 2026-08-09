@@ -143,8 +143,7 @@ SOURCES += ./main.cpp \
     ./Forms/RecoveryWindow.ui \
     ./Forms/SettingsWindow.ui \
     ./Forms/SnapshotsWindow.ui \
-    ./Forms/BoxImageWindow.ui \
-    ./Forms/TestProxyDialog.ui
+    ./Forms/BoxImageWindow.ui
 
 TRANSLATIONS += sandman_ar.ts \
     sandman_de.ts \
