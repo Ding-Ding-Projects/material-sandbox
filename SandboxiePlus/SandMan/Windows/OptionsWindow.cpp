@@ -964,6 +964,42 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Network Options > Process Restrictions with native M3 controls
+	// while preserving embedded per-program editors and network persistence.
+	if (ui.tabsInternet && ui.tabINet) {
+		const int inetIndex = ui.tabsInternet->indexOf(ui.tabINet);
+		if (inetIndex >= 0) {
+			auto* legacyINet = ui.tabINet;
+			auto* nativeINet = new QWidget(ui.tabsInternet);
+			auto* inetLayout = new QVBoxLayout(nativeINet);
+			auto* modeRow = new QHBoxLayout();
+			modeRow->addWidget(new QLabel(tr("Network access for unlisted processes:"), nativeINet));
+			ui.cmbBlockINet = new QComboBox(nativeINet);
+			modeRow->addWidget(ui.cmbBlockINet, 1);
+			inetLayout->addLayout(modeRow);
+			ui.chkINetBlockPrompt = new QCheckBox(tr("Prompt before allowing a network-access exemption"), nativeINet);
+			ui.chkINetBlockMsg = new QCheckBox(tr("Issue message 1307 when a program is denied internet access"), nativeINet);
+			inetLayout->addWidget(ui.chkINetBlockPrompt);
+			inetLayout->addWidget(ui.chkINetBlockMsg);
+			ui.treeINet = new QTreeWidget(nativeINet);
+			ui.treeINet->setColumnCount(2);
+			ui.treeINet->setHeaderLabels(QStringList() << tr("Name") << tr("Access"));
+			ui.treeINet->setSortingEnabled(true);
+			inetLayout->addWidget(ui.treeINet, 1);
+			auto* inetActions = new QHBoxLayout();
+			ui.btnAddINetProg = new QPushButton(tr("Add Program"), nativeINet);
+			ui.btnDelINetProg = new QPushButton(tr("Remove"), nativeINet);
+			inetActions->addWidget(ui.btnAddINetProg);
+			inetActions->addWidget(ui.btnDelINetProg);
+			inetActions->addStretch();
+			inetLayout->addLayout(inetActions);
+			ui.tabsInternet->removeTab(inetIndex);
+			ui.tabsInternet->insertTab(inetIndex, nativeINet, tr("Process Restrictions"));
+			ui.tabINet = nativeINet;
+			legacyINet->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
