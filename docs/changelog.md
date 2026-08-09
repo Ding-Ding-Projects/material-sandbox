@@ -2,7 +2,7 @@
 
 ## 2026-08-09 · Complete Day Teet Hui feature inventory
 
-Commit: [c84586d5a0ea5056639769b535aa23f460f758de](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c84586d5a0ea5056639769b535aa23f460f758de)
+Commit: [c84586d554191d4d7a0bcfc402215375e915665c](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c84586d554191d4d7a0bcfc402215375e915665c)
 
 - The landing page now exposes all 18 feature articles from the hand-written index, including destructive confirmation, native CI evidence, and editor settings.
 - The Pages validator requires that exact article list and rejects missing or extra feature cards.
@@ -236,3 +236,4 @@ Commit: [bd9aea138f9a401cebea1b854cd84f69cb9494b6](https://github.com/Ding-Ding-
 - Added the Material 3 desktop baseline.
 - Added contributor capability mode and quiet support handling.
 - Published the Material 3 Pages landing site.
+
