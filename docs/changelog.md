@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Responsive App Compatibility actions
+
+Commit: [2de1c11c0ce603a5ffa5a8cbba3611e2bebc8f2](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2de1c11c0ce603a5ffa5a8cbba3611e2bebc8f2)
+
+- Wrapped App Compatibility actions and update link for narrow bilingual layouts.
+- Added explicit accessible names to enable and disable actions.
+
 ## 2026-08-09 · Native Settings Updater tab
 
 Commit: [342a7452ef66155a14aaa87952c26d41f8c2a77d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/342a7452ef66155a14aaa87952c26d41f8c2a77d)

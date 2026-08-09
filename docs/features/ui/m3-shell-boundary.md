@@ -141,6 +141,10 @@ The Sandboxie Updater child tab is now another concrete native slice: channel
 radios, cadence, version links, and update toggles are created in code while
 certificate gating, release state, and updater handlers remain intact.
 
+App Compatibility actions now use a responsive vertical action stack with
+explicit accessible names and a wrapping update link, keeping narrow bilingual
+layouts usable.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls
