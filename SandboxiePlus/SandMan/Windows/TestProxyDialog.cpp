@@ -1,6 +1,20 @@
 #include "stdafx.h"
 #include "TestProxyDialog.h"
+#include "M3DialogHost.h"
 #include <QtConcurrent>
+#include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QProgressBar>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QStackedWidget>
+#include <QTextBrowser>
+#include <QVBoxLayout>
 
 constexpr auto TestProgressMax = 90;
 
@@ -17,13 +31,107 @@ CTestProxyDialog::CTestProxyDialog(const QString& IP, const QString& Port, COpti
 	m_TestShouldCancel = 0;
 	m_Watcher = new QFutureWatcher<bool>(this);
 
-	Qt::WindowFlags flags = windowFlags();
-	setWindowFlags(flags);
+	setWindowTitle(tr("Sandboxie-Plus - Test Proxy"));
+	setFixedSize(680, 420);
 
-	ui.setupUi(this);
+	ui.stackedWidget = new QStackedWidget(this);
+	QWidget* testPage = new QWidget(ui.stackedWidget);
+	QWidget* settingsPage = new QWidget(ui.stackedWidget);
+	ui.stackedWidget->addWidget(testPage);
+	ui.stackedWidget->addWidget(settingsPage);
+
+	// Test page: compact summary card, progress, transcript and actions.
+	auto* testRoot = new QVBoxLayout(testPage);
+	auto* summary = new QHBoxLayout();
+	auto* details = new QFormLayout();
+	details->setHorizontalSpacing(25);
+	ui.labelAddressOut = new QLabel(this);
+	ui.labelAddressOut->setTextInteractionFlags(Qt::TextSelectableByMouse);
+	details->addRow(tr("Address:"), ui.labelAddressOut);
+	details->addRow(tr("Protocol:"), new QLabel(tr("SOCKS 5"), this));
+	ui.labelAuthOut = new QLabel(this);
+	details->addRow(tr("Authentication:"), ui.labelAuthOut);
+	ui.labelUsername = new QLabel(tr("Login:"), this);
+	ui.labelUsernameOut = new QLabel(this);
+	details->addRow(ui.labelUsername, ui.labelUsernameOut);
+	summary->addLayout(details, 3);
+	auto* summaryActions = new QVBoxLayout();
+	ui.btnTestCustomize = new QPushButton(tr("Test Settings…"), this);
+	ui.btnTestCustomize->setMinimumHeight(40);
+	ui.labelTestResults = new QLabel(tr("Testing…"), this);
+	ui.labelTestResults->setAlignment(Qt::AlignCenter);
+	summaryActions->addWidget(ui.btnTestCustomize);
+	summaryActions->addWidget(ui.labelTestResults);
+	summary->addLayout(summaryActions, 2);
+	testRoot->addLayout(summary);
+	ui.progressBar = new QProgressBar(this);
+	ui.progressBar->setTextVisible(false);
+	testRoot->addWidget(ui.progressBar);
+	ui.textBrowser = new QTextBrowser(this);
+	ui.textBrowser->setFont(QFont(QStringLiteral("Consolas"), 9));
+	testRoot->addWidget(ui.textBrowser, 1);
+	ui.buttonBoxTest = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Retry, Qt::Horizontal, this);
+	testRoot->addWidget(ui.buttonBoxTest);
+
+	// Settings page: grouped test switches and bounded numeric inputs.
+	auto* settingsRoot = new QVBoxLayout(settingsPage);
+	auto* timeoutRow = new QHBoxLayout();
+	ui.lineEditTimeout = new QLineEdit(this);
+	ui.lineEditTimeout->setAccessibleName(tr("Timeout in seconds"));
+	ui.lineEditTimeout->setMaximumWidth(90);
+	timeoutRow->addWidget(new QLabel(tr("Timeout (secs):"), this));
+	timeoutRow->addWidget(ui.lineEditTimeout);
+	timeoutRow->addStretch();
+	settingsRoot->addLayout(timeoutRow);
+	QGroupBox* test1 = new QGroupBox(tr("Test 1: Connection to the Proxy Server"), this);
+	auto* test1Layout = new QHBoxLayout(test1);
+	ui.checkBoxTest1 = new QCheckBox(tr("Enable this test"), test1);
+	test1Layout->addWidget(ui.checkBoxTest1);
+	settingsRoot->addWidget(test1);
+	QGroupBox* test2 = new QGroupBox(tr("Test 2: Connection through the Proxy Server"), this);
+	auto* test2Layout = new QVBoxLayout(test2);
+	ui.checkBoxTest2 = new QCheckBox(tr("Enable this test"), test2);
+	test2Layout->addWidget(ui.checkBoxTest2);
+	auto* hostRow = new QHBoxLayout();
+	ui.labelHost = new QLabel(tr("Target host:"), this);
+	ui.lineEditHost = new QLineEdit(this);
+	ui.lineEditHost->setAccessibleName(tr("Target host"));
+	ui.labelPort = new QLabel(tr("Port:"), this);
+	ui.lineEditPort = new QLineEdit(this);
+	ui.lineEditPort->setAccessibleName(tr("Target port"));
+	ui.lineEditPort->setMaximumWidth(90);
+	hostRow->addWidget(ui.labelHost);
+	hostRow->addWidget(ui.lineEditHost, 1);
+	hostRow->addWidget(ui.labelPort);
+	hostRow->addWidget(ui.lineEditPort);
+	test2Layout->addLayout(hostRow);
+	ui.checkBoxTest2Load = new QCheckBox(tr("Load a default web page from the host. (There must be a web server running on the host)"), test2);
+	test2Layout->addWidget(ui.checkBoxTest2Load);
+	settingsRoot->addWidget(test2);
+	QGroupBox* test3 = new QGroupBox(tr("Test 3: Proxy Server latency"), this);
+	auto* test3Layout = new QVBoxLayout(test3);
+	ui.checkBoxTest3 = new QCheckBox(tr("Enable this test"), test3);
+	test3Layout->addWidget(ui.checkBoxTest3);
+	auto* pingRow = new QHBoxLayout();
+	pingRow->addWidget(new QLabel(tr("Ping count:"), this));
+	ui.spinBoxPingCount = new QSpinBox(this);
+	ui.spinBoxPingCount->setRange(1, 10);
+	ui.spinBoxPingCount->setAccessibleName(tr("Ping count"));
+	pingRow->addWidget(ui.spinBoxPingCount);
+	pingRow->addStretch();
+	test3Layout->addLayout(pingRow);
+	auto* hint = new QLabel(tr("Increase ping count to improve the accuracy of the average latency calculation. More pings help to ensure that the average is representative of typical network conditions."), this);
+	hint->setWordWrap(true);
+	test3Layout->addWidget(hint);
+	settingsRoot->addWidget(test3, 1);
+	ui.buttonBoxSettings = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Ok | QDialogButtonBox::RestoreDefaults, Qt::Horizontal, this);
+	settingsRoot->addWidget(ui.buttonBoxSettings);
+	auto* root = new QVBoxLayout(this);
+	root->setContentsMargins(16, 16, 16, 16);
+	root->addWidget(ui.stackedWidget);
+	M3DialogHost::Install(this);
+
 	RestoreDefaults();
-	this->setWindowTitle(tr("Sandboxie-Plus - Test Proxy"));
-	this->setFixedSize(this->size());
 	ui.stackedWidget->setCurrentIndex(0);
 
 	ui.labelAddressOut->setText(IP + ":" + Port);

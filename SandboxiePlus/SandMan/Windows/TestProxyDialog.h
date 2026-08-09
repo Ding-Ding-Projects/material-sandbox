@@ -2,8 +2,17 @@
 
 #include <QtWidgets/QDialog>
 #include "OptionsWindow.h"
-#include "ui_TestProxyDialog.h"
 #include <QPropertyAnimation>
+
+class QCheckBox;
+class QDialogButtonBox;
+class QLabel;
+class QLineEdit;
+class QProgressBar;
+class QPushButton;
+class QSpinBox;
+class QStackedWidget;
+class QTextBrowser;
 
 class CTestProxyDialog : public QDialog
 {
@@ -31,7 +40,32 @@ private slots:
 	void RestoreDefaults();
 
 private:
-	Ui::TestProxyDialog ui;
+	// Native Material 3 controls. Keeping the same names as the former generated
+	// form lets the test pipeline stay focused on behaviour while the chrome is
+	// rebuilt in code and can be themed consistently with the rest of SandMan.
+	struct Controls {
+		QStackedWidget* stackedWidget = nullptr;
+		QPushButton* btnTestCustomize = nullptr;
+		QLabel* labelTestResults = nullptr;
+		QLabel* labelAddressOut = nullptr;
+		QLabel* labelAuthOut = nullptr;
+		QLabel* labelUsername = nullptr;
+		QLabel* labelUsernameOut = nullptr;
+		QProgressBar* progressBar = nullptr;
+		QTextBrowser* textBrowser = nullptr;
+		QDialogButtonBox* buttonBoxTest = nullptr;
+		QDialogButtonBox* buttonBoxSettings = nullptr;
+		QCheckBox* checkBoxTest1 = nullptr;
+		QCheckBox* checkBoxTest2 = nullptr;
+		QCheckBox* checkBoxTest2Load = nullptr;
+		QCheckBox* checkBoxTest3 = nullptr;
+		QLineEdit* lineEditTimeout = nullptr;
+		QLineEdit* lineEditHost = nullptr;
+		QLineEdit* lineEditPort = nullptr;
+		QSpinBox* spinBoxPingCount = nullptr;
+		QLabel* labelHost = nullptr;
+		QLabel* labelPort = nullptr;
+	} ui;
 
 	QString m_ProxyIP;
 	QString m_ProxyPort;
