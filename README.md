@@ -8,7 +8,7 @@ Sandboxie is a Windows desktop sandbox manager. This repository contains the Qt 
 
 **Project site:** [ding-ding-projects.github.io/material-sandbox](https://ding-ding-projects.github.io/material-sandbox/)
 
-**Source baseline documented here:** `13485376` (the current contributor-safe Material desktop integration baseline with runtime smoke).
+**Source baseline documented here:** `6954766f` (the current contributor-safe Material desktop integration baseline with runtime smoke and Qt typography controls).
 
 ## Quick index
 
@@ -75,7 +75,7 @@ This profile does **not** remove copyright notices, third-party attributions, or
 | Area | Shipped behavior | Evidence and details |
 | --- | --- | --- |
 | Material Design 3 shell | Shared light/dark roles, typography baseline, shape, elevation, focus, and responsive control styling | [`docs/material-design.md`](docs/material-design.md) |
-| Appearance editor | Persisted theme, density, accent, display name, font family/size/weight/style, live preview, and reset; unsupported properties are disclosed | [`docs/features/appearance-editor.md`](docs/features/appearance-editor.md) |
+| Appearance editor | Persisted theme, density, accent, display name, per-page Qt typography controls, live preview, and reset; unsupported properties are disclosed | [`docs/features/appearance-editor.md`](docs/features/appearance-editor.md) |
 | Color translator | Validated HEX/HEX8, RGB/RGBA, HSL/HSLA, alpha, preview, contrast feedback, and keyboard-safe editing | [`docs/features/color-translator.md`](docs/features/color-translator.md) |
 | Presentation preferences | English, playful Hong Kong Cantonese, bilingual mode, independent funny-level controls, and dialog/message emoji preference | [`docs/features/scheduled-settings.md`](docs/features/scheduled-settings.md) |
 | Scheduled settings | Versioned local rules for language, theme, density, accent, fonts, motion, and display name; native date/time/weekday editing and deterministic precedence | [`docs/features/scheduled-settings.md`](docs/features/scheduled-settings.md) |
@@ -88,7 +88,7 @@ This profile does **not** remove copyright notices, third-party attributions, or
 | Offline documentation | Bundled feature articles rendered inside the application with local search and completeness validation | [`docs/features/README.md`](docs/features/README.md) |
 | External editor | Detects/configures VS Code and opens the persisted profile folder as a workspace root | [`docs/features/external-editor.md`](docs/features/external-editor.md) |
 | Destructive confirmation | Remove Sandbox uses a two-key, full-range destructive-action confirmation with reduced-motion-aware progress, Emergency exit, and focus return | [`docs/features/destructive-confirmation.md`](docs/features/destructive-confirmation.md) |
-| Native CI evidence | [Run 31301196079](https://github.com/Ding-Ding-Projects/material-sandbox/actions/runs/31301196079) completed successfully: x64/ARM64 builds, artifact manifests, and a passed bounded x64 SandMan startup smoke with uploaded JSON evidence | [`docs/features/native-ci-evidence.md`](docs/features/native-ci-evidence.md) |
+| Native CI evidence | [Run 31301735306](https://github.com/Ding-Ding-Projects/material-sandbox/actions/runs/31301735306) completed successfully for x64/ARM64 Qt builds; the prior [run 31301196079](https://github.com/Ding-Ding-Projects/material-sandbox/actions/runs/31301196079) proves the bounded x64 SandMan startup smoke with uploaded JSON evidence | [`docs/features/native-ci-evidence.md`](docs/features/native-ci-evidence.md) |
 | Screenshots | A large, honest catalog of tracked visual assets, with runtime-capture boundaries called out | [`docs/screenshots.md`](docs/screenshots.md) |
 
 ### Product behavior that remains unchanged
