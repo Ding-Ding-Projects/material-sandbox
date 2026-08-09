@@ -47,7 +47,6 @@
 #include "Windows/NotificationCenter.h"
 #include "Windows/DimSumSurprise.h"
 #include "Windows/DestructiveConfirmationDialog.h"
-#include "CustomStyles.h"
 #include "../MiscHelpers/Common/MaterialTheme.h"
 #include "../MiscHelpers/Common/UserPresentationSettings.h"
 #include <QElapsedTimer>

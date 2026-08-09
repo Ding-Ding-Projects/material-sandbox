@@ -318,9 +318,6 @@
     <ClInclude Include="Engine\V4ScriptDebuggerApi.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="CustomStyles.h">
-      <Filter>SandMan</Filter>
-    </ClInclude>
     <ClInclude Include="Windows\PendingChanges.h">
       <Filter>Windows</Filter>
     </ClInclude>

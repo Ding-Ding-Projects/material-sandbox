@@ -63,7 +63,6 @@ HEADERS += ./stdafx.h \
     ./Engine/V4ScriptDebuggerApi.h \
     ./Engine/JSEngineExt.h \
     ./Engine/WizardObject.h \
-    ./CustomStyles.h \
     ../MiscHelpers/Common/MaterialTheme.h \
     ../MiscHelpers/Common/UserPresentationSettings.h \
     ../MiscHelpers/Common/ScheduledSettings.h \

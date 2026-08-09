@@ -32,6 +32,7 @@ const checks = [
   [migratedViews.every((source) => !source.includes('QStyleFactory::create')), 'data views inherit Material 3 instead of forcing Windows style'],
   [!main.includes('app.setStyle("windowsvista")'), 'startup does not select legacy Windows chrome'],
   [settings.includes('ui.chkUseW11Style->hide()') && settings.includes('SetValue("Options/UseW11Style", false)'), 'legacy Windows style setting is hidden and migrated off'],
+  [!fs.existsSync(path.join(root, 'SandboxiePlus/SandMan/CustomStyles.h')) && !read('SandboxiePlus/SandMan/SandMan.pri').includes('CustomStyles.h'), 'obsolete proxy chrome source is removed from the build'],
 ];
 for (const [pass, message] of checks) if (!pass) throw new Error(`M3 shell validation failed: ${message}`);
 console.log(`m3-shell-contract checks=${checks.length}`);
