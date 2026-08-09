@@ -250,6 +250,11 @@ network mode row, prompt/message toggles, editable per-program table, and
 action rail are created in code while OptionsNetwork keeps embedded editors,
 dependencies, and persistence intact; other OptionsWindow tabs remain staged.
 
+OptionsWindow Network > Firewall is now another native slice: its five-column
+rule table, add/remove/template rail, test fields, and WFP caution are created
+in code while OptionsNetwork keeps embedded rule editors, testing behavior, and
+persistence intact; other OptionsWindow tabs remain staged.
+
 ## Failure and accessibility notes
 
 The host is deliberately compile-safe on Qt 5 and Qt 6. All window controls

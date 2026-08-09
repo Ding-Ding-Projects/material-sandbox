@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options Network Firewall tab
+
+Commit: [3343f4ba493fbf0afbcb1ab8fbe01512ccad257a](https://github.com/Ding-Ding-Projects/material-sandbox/commit/3343f4ba493fbf0afbcb1ab8fbe01512ccad257a)
+
+- Rebuilt the Network > Firewall child tab with native Material 3 rule, test, and warning controls.
+- Preserved five-column rule data, embedded editors, testing behavior, templates, and persistence.
+
 ## 2026-08-09 · Native Options Process Restrictions tab
 
 Commit: [c5be1b490b1b720374d0501d9839c976aedba529](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c5be1b490b1b720374d0501d9839c976aedba529)
