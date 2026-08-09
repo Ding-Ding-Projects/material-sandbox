@@ -69,6 +69,11 @@ tree, and actions. Extended selection, popup menus, filtering, and template
 persistence continue through the same object names and handlers while the
 generated grid remains an explicit migration seam.
 
+App Templates > Template Folders now hosts its editable path delegates inside
+a native M3 tree. Folder loading, in-cell path editors, sorting, and global
+persistence continue unchanged; only the tree host is part of this bounded
+slice.
+
 ## Dialog migration
 
 Appearance, color translation, offline documentation, and destructive-action

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Options template-folder tree
+
+Commit: [cb2025af6fdb151de5f8ae34573904864823d494](https://github.com/Ding-Ding-Projects/material-sandbox/commit/cb2025af6fdb151de5f8ae34573904864823d494)
+
+- Rebuilt the Template Folders tree host with native Material 3 controls.
+- Preserved folder loading, in-cell path editors, sorting, and global persistence.
+
 ## 2026-08-09 · Native Options app template controls
 
 Commit: [07d07026314bfcb35c8a143f0b191868239f8d0f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/07d07026314bfcb35c8a143f0b191868239f8d0f)
