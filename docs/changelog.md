@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Document remaining Designer boundary
+
+Commit: [60c60cbc3a2e27bd3f7e99151fee575b9991678b](https://github.com/Ding-Ding-Projects/material-sandbox/commit/60c60cbc3a2e27bd3f7e99151fee575b9991678b)
+
+- Documented why `OptionsWindow.ui` and `SettingsWindow.ui` remain registered while live generated controls still back model and persistence paths.
+- Kept the boundary explicit instead of removing forms without a native compile proof.
+
 ## 2026-08-09 · Name and dock nested option tabs
 
 Commit: [5df08dcbaf189e575a9e710215346604c29b0b72](https://github.com/Ding-Ding-Projects/material-sandbox/commit/5df08dcbaf189e575a9e710215346604c29b0b72)
