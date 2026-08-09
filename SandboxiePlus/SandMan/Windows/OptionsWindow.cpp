@@ -1230,6 +1230,56 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	ui.tabsRecovery->setTabIcon(0, CSandMan::GetIcon("QuickRecovery"));
 	ui.tabsRecovery->setTabIcon(1, CSandMan::GetIcon("ImmidiateRecovery"));
 
+	// Native M3 controls for Immediate Recovery: keep the generated layout and
+	// object names so persistence, signal wiring, and the later recovery-tab
+	// merge continue to use the same pointers without a Designer chrome tax.
+	{
+		auto replaceRecoveryControl = [](QWidget* oldControl, QWidget* nativeControl, QGridLayout* layout) {
+			if (oldControl && nativeControl && layout) {
+				layout->replaceWidget(oldControl, nativeControl);
+				oldControl->deleteLater();
+			}
+		};
+		auto m3Check = [this](const QString& objectName, const QString& text) {
+			auto* control = new QCheckBox(text, this);
+			control->setObjectName(objectName);
+			control->setProperty("m3NativeSurface", true);
+			return control;
+		};
+		auto m3Button = [this](const QString& objectName, const QString& text) {
+			auto* control = new QPushButton(text, this);
+			control->setObjectName(objectName);
+			control->setProperty("m3NativeSurface", true);
+			return control;
+		};
+		auto m3Tree = [this](const QString& objectName) {
+			auto* control = new QTreeWidget(this);
+			control->setObjectName(objectName);
+			control->setSortingEnabled(true);
+			control->setHeaderLabels({ tr("Name") });
+			control->setProperty("m3NativeSurface", true);
+			return control;
+		};
+
+		auto* nativeAutoRecovery = m3Check(
+			QStringLiteral("chkAutoRecovery"),
+			tr("Enable Immediate Recovery prompt to be able to recover files as soon as they are created."));
+		auto* nativeRecIgnore = m3Tree(QStringLiteral("treeRecIgnore"));
+		auto* nativeAddIgnore = m3Button(QStringLiteral("btnAddRecIgnore"), tr("Ignore Folder"));
+		auto* nativeAddIgnoreExt = m3Button(QStringLiteral("btnAddRecIgnoreExt"), tr("Ignore Extension"));
+		auto* nativeDelIgnore = m3Button(QStringLiteral("btnDelRecIgnore"), tr("Remove"));
+		replaceRecoveryControl(ui.chkAutoRecovery, nativeAutoRecovery, ui.gridLayout_40);
+		replaceRecoveryControl(ui.treeRecIgnore, nativeRecIgnore, ui.gridLayout_40);
+		replaceRecoveryControl(ui.btnAddRecIgnore, nativeAddIgnore, ui.gridLayout_40);
+		replaceRecoveryControl(ui.btnAddRecIgnoreExt, nativeAddIgnoreExt, ui.gridLayout_40);
+		replaceRecoveryControl(ui.btnDelRecIgnore, nativeDelIgnore, ui.gridLayout_40);
+		ui.chkAutoRecovery = nativeAutoRecovery;
+		ui.treeRecIgnore = nativeRecIgnore;
+		ui.btnAddRecIgnore = nativeAddIgnore;
+		ui.btnAddRecIgnoreExt = nativeAddIgnoreExt;
+		ui.btnDelRecIgnore = nativeDelIgnore;
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
