@@ -859,6 +859,41 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Resource Access > Wnd with native M3 controls while preserving
+	// window-class access columns, templates, and no-rename policy behavior.
+	if (ui.tabsAccess && ui.tabWnd) {
+		const int wndIndex = ui.tabsAccess->indexOf(ui.tabWnd);
+		if (wndIndex >= 0) {
+			auto* legacyWnd = ui.tabWnd;
+			auto* nativeWnd = new QWidget(ui.tabsAccess);
+			auto* wndLayout = new QVBoxLayout(nativeWnd);
+			auto* wndHint = new QLabel(tr("Configure which processes can access desktop objects such as windows."), nativeWnd);
+			wndHint->setWordWrap(true);
+			wndLayout->addWidget(wndHint);
+			ui.treeWnd = new QTreeWidget(nativeWnd);
+			ui.treeWnd->setColumnCount(4);
+			ui.treeWnd->setHeaderLabels(QStringList() << tr("Type") << tr("Program") << tr("Access") << tr("Wnd Class"));
+			ui.treeWnd->setSortingEnabled(true);
+			wndLayout->addWidget(ui.treeWnd, 1);
+			auto* wndActions = new QHBoxLayout();
+			ui.btnAddWnd = new QToolButton(nativeWnd);
+			ui.btnAddWnd->setText(tr("Add Wnd Class"));
+			ui.btnDelWnd = new QPushButton(tr("Remove"), nativeWnd);
+			ui.chkShowWndTmpl = new QCheckBox(tr("Show Templates"), nativeWnd);
+			wndActions->addWidget(ui.btnAddWnd);
+			wndActions->addWidget(ui.btnDelWnd);
+			wndActions->addWidget(ui.chkShowWndTmpl);
+			wndActions->addStretch();
+			wndLayout->addLayout(wndActions);
+			ui.chkNoWindowRename = new QCheckBox(tr("Do not alter window class names created by sandboxed programs"), nativeWnd);
+			wndLayout->addWidget(ui.chkNoWindowRename);
+			ui.tabsAccess->removeTab(wndIndex);
+			ui.tabsAccess->insertTab(wndIndex, nativeWnd, tr("Wnd"));
+			ui.tabWnd = nativeWnd;
+			legacyWnd->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
