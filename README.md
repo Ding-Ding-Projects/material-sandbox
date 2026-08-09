@@ -88,7 +88,7 @@ This profile does **not** remove copyright notices, third-party attributions, or
 | Offline documentation | Bundled feature articles rendered inside the application with local search and completeness validation | [`docs/features/README.md`](docs/features/README.md) |
 | External editor | Detects/configures VS Code and opens the persisted profile folder as a workspace root | [`docs/features/external-editor.md`](docs/features/external-editor.md) |
 | Destructive confirmation | Remove Sandbox uses a two-key, full-range destructive-action confirmation with reduced-motion-aware progress, Emergency exit, and focus return | [`docs/features/destructive-confirmation.md`](docs/features/destructive-confirmation.md) |
-| Native CI evidence | [Run 31301196079](https://github.com/Ding-Ding-Projects/material-sandbox/actions/runs/31301196079) is running x64/ARM64 builds plus a bounded x64 SandMan startup smoke; the previous [run 31300538500](https://github.com/Ding-Ding-Projects/material-sandbox/actions/runs/31300538500) verified artifacts, manifests, and unsigned outputs | [`docs/features/native-ci-evidence.md`](docs/features/native-ci-evidence.md) |
+| Native CI evidence | [Run 31301196079](https://github.com/Ding-Ding-Projects/material-sandbox/actions/runs/31301196079) completed successfully: x64/ARM64 builds, artifact manifests, and a passed bounded x64 SandMan startup smoke with uploaded JSON evidence | [`docs/features/native-ci-evidence.md`](docs/features/native-ci-evidence.md) |
 | Screenshots | A large, honest catalog of tracked visual assets, with runtime-capture boundaries called out | [`docs/screenshots.md`](docs/screenshots.md) |
 
 ### Product behavior that remains unchanged
