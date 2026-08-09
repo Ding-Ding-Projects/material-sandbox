@@ -8,7 +8,7 @@ Sandboxie is a Windows desktop sandbox manager. This repository contains the Qt 
 
 **Project site:** [ding-ding-projects.github.io/material-sandbox](https://ding-ding-projects.github.io/material-sandbox/)
 
-**Source baseline documented here:** `bc61226eea96eece1645e3338866763f40bbfc00` (the interactive Material 3 GitHub Pages and generated-article baseline, layered on the contributor-safe desktop integration with native build and startup-smoke evidence).
+**Source baseline documented here:** `acd0c449164398798b1a0d9bbdadd6b7c2635083` (the complete 22-article offline browser inventory and interactive Material 3 GitHub Pages baseline, layered on the contributor-safe desktop integration with native build and startup-smoke evidence).
 
 ## Quick index
 

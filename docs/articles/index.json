@@ -27,5 +27,5 @@
   "supplemental": [
     {"slug":"screenshots","title":"Material desktop screenshot gallery","path":"../screenshots.md"}
   ],
-  "changelog": {"path":"../changelog.md","commit":"bc61226eea96eece1645e3338866763f40bbfc00"}
+  "changelog": {"path":"../changelog.md","commit":"acd0c449164398798b1a0d9bbdadd6b7c2635083"}
 }
