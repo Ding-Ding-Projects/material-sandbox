@@ -196,6 +196,70 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	// the shared host replaces its platform chrome while each tab is migrated.
 	M3DialogHost::Install(this);
 
+	// Replace the self-contained File Options child tab with native M3 controls
+	// while preserving OptionsGeneral's generated pointers and handlers.
+	if (ui.tabsGeneral && ui.tabFile) {
+		const int fileIndex = ui.tabsGeneral->indexOf(ui.tabFile);
+		if (fileIndex >= 0) {
+			auto* nativeFile = new QWidget(ui.tabsGeneral);
+			auto* fileLayout = new QVBoxLayout(nativeFile);
+			ui.lblStructure = new QLabel(tr("Box Structure"), nativeFile);
+			ui.lblStructure->setProperty("m3NativeSurface", true);
+			ui.lblStructure->setStyleSheet("font-weight: 600;");
+			fileLayout->addWidget(ui.lblStructure);
+			ui.lblWhenEmpty = new QLabel(tr("The box structure can only be changed when the sandbox is empty"), nativeFile);
+			ui.lblWhenEmpty->setWordWrap(true);
+			fileLayout->addWidget(ui.lblWhenEmpty);
+			ui.lblScheme = new QLabel(tr("Virtualization scheme"), nativeFile);
+			ui.cmbVersion = new QComboBox(nativeFile);
+			fileLayout->addWidget(ui.lblScheme);
+			fileLayout->addWidget(ui.cmbVersion);
+			ui.chkSeparateUserFolders = new QCheckBox(tr("Separate user folders"), nativeFile);
+			ui.chkUseVolumeSerialNumbers = new QCheckBox(tr("Use volume serial numbers for drives, like: \\drive\\C~1234-ABCD"), nativeFile);
+			ui.chkRamBox = new QCheckBox(tr("Store the sandbox content in a Ram Disk"), nativeFile);
+			ui.chkEncrypt = new QCheckBox(tr("Encrypt sandbox content"), nativeFile);
+			ui.btnPassword = new QToolButton(nativeFile);
+			ui.btnPassword->setText(tr("Set Password"));
+			fileLayout->addWidget(ui.chkSeparateUserFolders);
+			fileLayout->addWidget(ui.chkUseVolumeSerialNumbers);
+			fileLayout->addWidget(ui.chkRamBox);
+			fileLayout->addWidget(ui.chkEncrypt);
+			fileLayout->addWidget(ui.btnPassword);
+			ui.lblImDisk = new QLabel(tr("<a href=\"addon://ImDisk\">Install ImDisk</a> driver to enable Ram Disk and Disk Image support."), nativeFile);
+			ui.lblImDisk->setOpenExternalLinks(false);
+			ui.lblImDisk->setWordWrap(true);
+			fileLayout->addWidget(ui.lblImDisk);
+			ui.lblCrypto = new QLabel(nativeFile);
+			ui.lblCrypto->setWordWrap(true);
+			fileLayout->addWidget(ui.lblCrypto);
+			ui.lblDelete = new QLabel(tr("Box Delete options"), nativeFile);
+			ui.lblDelete->setProperty("m3NativeSurface", true);
+			ui.lblDelete->setStyleSheet("font-weight: 600;");
+			fileLayout->addWidget(ui.lblDelete);
+			ui.chkForceProtection = new QCheckBox(tr("Force protection on mount"), nativeFile);
+			ui.chkAutoEmpty = new QCheckBox(tr("Auto delete content changes when last sandboxed process terminates"), nativeFile);
+			ui.chkProtectBox = new QCheckBox(tr("Protect this sandbox from deletion or emptying"), nativeFile);
+			ui.chkProtectBox->setTristate(true);
+			fileLayout->addWidget(ui.chkForceProtection);
+			fileLayout->addWidget(ui.chkAutoEmpty);
+			fileLayout->addWidget(ui.chkProtectBox);
+			ui.lblRawDisk = new QLabel(tr("Disk/File access"), nativeFile);
+			ui.lblRawDisk->setProperty("m3NativeSurface", true);
+			ui.lblRawDisk->setStyleSheet("font-weight: 600;");
+			fileLayout->addWidget(ui.lblRawDisk);
+			ui.chkRawDiskRead = new QCheckBox(tr("Allow elevated sandboxed applications to read the harddrive"), nativeFile);
+			ui.chkRawDiskNotify = new QCheckBox(tr("Warn when an application opens a harddrive handle"), nativeFile);
+			ui.chkAllowEfs = new QCheckBox(tr("Allow sandboxed processes to open files protected by EFS"), nativeFile);
+			fileLayout->addWidget(ui.chkRawDiskRead);
+			fileLayout->addWidget(ui.chkRawDiskNotify);
+			fileLayout->addWidget(ui.chkAllowEfs);
+			fileLayout->addStretch();
+			ui.tabsGeneral->removeTab(fileIndex);
+			ui.tabsGeneral->insertTab(fileIndex, nativeFile, tr("File Options"));
+			ui.tabFile->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
