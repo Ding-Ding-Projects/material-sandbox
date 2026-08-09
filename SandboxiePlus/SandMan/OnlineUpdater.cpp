@@ -607,8 +607,8 @@ void COnlineUpdater::OnUpdateData(const QVariantMap& Data, const QVariantMap& Pa
 #endif
 	}
 	else if (bNothing)  {
-		QMessageBox::information(theGUI, "Sandboxie-Plus", tr("No new updates found, your Sandboxie-Plus is up-to-date.\n"
-			"\nNote: The update check is often behind the latest GitHub release to ensure that only tested updates are offered."));
+		theGUI->OnLogMessage(tr("No new updates found, your Sandboxie-Plus is up-to-date.\n"
+			"\nNote: The update check is often behind the latest GitHub release to ensure that only tested updates are offered."), true);
 	}
 }
 
