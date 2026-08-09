@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native M3 settings dialog shell
+
+Commit: [dcd3f5f45ad2e6fc61cbb9f83803ee590feea6a0](https://github.com/Ding-Ding-Projects/material-sandbox/commit/dcd3f5f45ad2e6fc61cbb9f83803ee590feea6a0)
+
+- Applied the shared frameless Material 3 host to the nine-tab global settings surface.
+- Retired the visible Fusion switch and preserved the existing settings content as an explicit staged migration boundary; no controls were dropped.
+
 ## 2026-08-09 · Native M3 options dialog shell
 
 Commit: [257440d19e43b025af0f0b1cc5ec5e79a4fbef4c](https://github.com/Ding-Ding-Projects/material-sandbox/commit/257440d19e43b025af0f0b1cc5ec5e79a4fbef4c)

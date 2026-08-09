@@ -57,6 +57,10 @@ progress-entry behavior.
 behavior-rich content. Its Designer form remains deliberately tracked as a
 staged migration boundary until all controls have programmatic replacements;
 this slice does not claim the old form is retired.
+`SettingsWindow` now follows the same boundary: its nine-tab content keeps its
+existing behavior while the native M3 host owns dialog chrome, and the exposed
+Fusion style switch remains retired. The Designer form is still tracked until
+all of its controls have safe programmatic replacements.
 
 ## Failure and accessibility notes
 
