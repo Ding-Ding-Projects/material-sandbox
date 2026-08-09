@@ -6,4 +6,4 @@ The current implementation intentionally does not store an unlock credential. Ad
 
 Verification: `node scripts/validate-school-mode.mjs`; CI also bundles `Docs/school-mode.md` through the SandMan resource file.
 
-Suggested articles: [Material design](material-design.md), [Settings history](settings-history.md), [Notifications](notifications.md).
+Suggested articles: [Material design](../material-design.md), [Settings history](settings-history.md), [Notifications](notifications.md).

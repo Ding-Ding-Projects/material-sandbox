@@ -24,4 +24,4 @@ The toast is delayed until after startup, uses `WA_ShowWithoutActivating` and `Q
 
 Run `node scripts/validate-dim-sum-surprise.mjs`. The validator checks the single 10% draw, one-launch scheduling, delayed non-blocking flags, suppression paths, bilingual names/alt text, public source URLs, cache validation, qmake/MSVC registration, documentation, and the absence of tracked image assets. Runtime screenshot verification still requires a built Qt artifact and the cheap headless route; no local Qt toolchain is assumed by this contract.
 
-Suggested articles: [Material 3 appearance](material-design.md), [Notifications](notifications.md), [Settings history](settings-history.md).
+Suggested articles: [Material 3 appearance](../material-design.md), [Notifications](notifications.md), [Settings history](settings-history.md).

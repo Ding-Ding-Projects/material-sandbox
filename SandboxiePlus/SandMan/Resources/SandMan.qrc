@@ -244,23 +244,31 @@
         <file>Actions/FakeShield.png</file>
         <file>Actions/Expand.png</file>
         <file>Actions/Quit.png</file>
-        <file alias="Docs/material-design.md">Docs/material-design.md</file>
-        <file alias="Docs/appearance-editor.md">Docs/appearance-editor.md</file>
-        <file alias="Docs/settings-provenance.md">Docs/settings-provenance.md</file>
-        <file alias="Docs/contributor-build.md">Docs/contributor-build.md</file>
-        <file alias="Docs/changelog.md">Docs/changelog.md</file>
-        <file alias="Docs/settings-history.md">Docs/settings-history.md</file>
-        <file alias="Docs/notifications.md">Docs/notifications.md</file>
-        <file alias="Docs/dim-sum-surprise.md">Docs/dim-sum-surprise.md</file>
-        <file alias="Docs/color-translator.md">Docs/color-translator.md</file>
-        <file alias="Docs/school-mode.md">Docs/school-mode.md</file>
-        <file alias="Docs/scheduled-settings.md">Docs/scheduled-settings.md</file>
-        <file alias="Docs/command-palette.md">Docs/command-palette.md</file>
-        <file alias="Docs/external-editor.md">Docs/external-editor.md</file>
-        <file alias="Docs/destructive-confirmation.md">Docs/destructive-confirmation.md</file>
-        <file alias="Docs/build-entrypoints.md">Docs/build-entrypoints.md</file>
-        <file alias="Docs/m3-shell-boundary.md">Docs/m3-shell-boundary.md</file>
-        <file alias="Docs/editor-settings.md">Docs/editor-settings.md</file>
+        <file alias="Docs/articles/index.json">../../../docs/articles/index.json</file>
+        <file alias="Docs/articles/material-design.md">../../../docs/material-design.md</file>
+        <file alias="Docs/articles/appearance-editor.md">../../../docs/features/appearance-editor.md</file>
+        <file alias="Docs/articles/settings-provenance.md">../../../docs/features/settings-provenance.md</file>
+        <file alias="Docs/articles/contributor-build.md">../../../docs/contributor-build.md</file>
+        <file alias="Docs/articles/contributor-build-audit.md">../../../docs/features/contributor-build-audit.md</file>
+        <file alias="Docs/articles/settings-history.md">../../../docs/features/settings-history.md</file>
+        <file alias="Docs/articles/notifications.md">../../../docs/features/notifications.md</file>
+        <file alias="Docs/articles/color-translator.md">../../../docs/features/color-translator.md</file>
+        <file alias="Docs/articles/school-mode.md">../../../docs/features/school-mode.md</file>
+        <file alias="Docs/articles/dim-sum-surprise.md">../../../docs/features/dim-sum-surprise.md</file>
+        <file alias="Docs/articles/scheduled-settings.md">../../../docs/features/scheduled-settings.md</file>
+        <file alias="Docs/articles/tab-discovery.md">../../../docs/features/tab-discovery.md</file>
+        <file alias="Docs/articles/command-palette.md">../../../docs/features/command-palette.md</file>
+        <file alias="Docs/articles/external-editor.md">../../../docs/features/external-editor.md</file>
+        <file alias="Docs/articles/destructive-confirmation.md">../../../docs/features/destructive-confirmation.md</file>
+        <file alias="Docs/articles/native-ci-evidence.md">../../../docs/features/native-ci-evidence.md</file>
+        <file alias="Docs/articles/build-entrypoints.md">../../../docs/features/build-entrypoints.md</file>
+        <file alias="Docs/articles/m3-shell-boundary.md">../../../docs/features/ui/m3-shell-boundary.md</file>
+        <file alias="Docs/articles/editor-settings.md">../../../docs/features/editor-settings.md</file>
+        <file alias="Docs/articles/changelog-viewer.md">../../../docs/features/changelog-viewer.md</file>
+        <file alias="Docs/articles/pages-language-tone.md">../../../docs/features/pages-language-tone.md</file>
+        <file alias="Docs/articles/pages-a11y-boundary.md">../../../docs/features/pages-a11y-boundary.md</file>
+        <file alias="Docs/supplemental/screenshots.md">../../../docs/screenshots.md</file>
+        <file alias="Docs/changelog.md">../../../docs/changelog.md</file>
     </qresource>
     <qresource prefix="/Boxes">
         <file alias="Busy">Boxes/BusyOverlay.png</file>

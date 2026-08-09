@@ -50,6 +50,9 @@
 #include "../MiscHelpers/Common/MaterialTheme.h"
 #include "../MiscHelpers/Common/UserPresentationSettings.h"
 #include <QElapsedTimer>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QScreen>
 #include <QRegularExpression>
 #include <QSignalBlocker>
@@ -876,7 +879,7 @@ void CSandMan::CreateHelpMenu(bool bAdvanced)
 			results->setAccessibleName(tr("Command palette results"));
 			results->setSelectionMode(QAbstractItemView::SingleSelection);
 			struct PaletteCommand { QString label; QString keywords; std::function<void()> run; };
-			const QVector<PaletteCommand> commands = {
+			QVector<PaletteCommand> commands = {
 				{ tr("Open Global Settings"), tr("settings preferences configuration"), [this]() { OpenSettings(); } },
 				{ tr("General Settings"), tr("settings general sandbox"), [this]() { OpenSettings("General"); } },
 				{ tr("Appearance and Presentation Settings"), tr("settings appearance material theme language density"), [this]() { OpenSettings("UI"); } },
@@ -886,6 +889,27 @@ void CSandMan::CreateHelpMenu(bool bAdvanced)
 				{ tr("Check for Updates"), tr("update updater release"), [this]() { CheckForUpdates(); } },
 				{ tr("About Sandboxie-Plus"), tr("about version contributor"), [this]() { if (m_pAbout) m_pAbout->trigger(); } }
 			};
+			QFile documentationManifest(QStringLiteral(":/Docs/articles/index.json"));
+			if (documentationManifest.open(QIODevice::ReadOnly | QIODevice::Text)) {
+				const QJsonDocument manifest = QJsonDocument::fromJson(documentationManifest.readAll());
+				for (const QJsonValue& value : manifest.object().value(QStringLiteral("articles")).toArray()) {
+					const QJsonObject article = value.toObject();
+					const QString slug = article.value(QStringLiteral("slug")).toString();
+					const QString title = article.value(QStringLiteral("title")).toString();
+					if (slug.isEmpty() || title.isEmpty())
+						continue;
+					commands.append({
+						tr("Documentation · %1 (%2)").arg(title, slug),
+						tr("offline documentation article %1 %2").arg(slug, title),
+						[this, slug]() {
+							CDocumentationBrowser* browser = new CDocumentationBrowser(this);
+							browser->setAttribute(Qt::WA_DeleteOnClose);
+							browser->openArticle(slug);
+							browser->show();
+						}
+					});
+				}
+			}
 			for (int i = 0; i < commands.size(); ++i) {
 				QListWidgetItem* item = new QListWidgetItem(commands.at(i).label, results);
 				item->setData(Qt::UserRole, i);

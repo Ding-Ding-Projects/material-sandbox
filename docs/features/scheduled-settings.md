@@ -49,4 +49,4 @@ Verification: run `node scripts/validate-scheduled-settings.mjs`. Native runtime
 verification still requires the supported Qt/MSVC build; the static contract does
 not claim that hosted compilation or a rendered dialog has passed.
 
-Suggested articles: [appearance](appearance.md), [settings history](settings-history.md), and [language and tone](language-and-tone.md).
+Suggested articles: [appearance](appearance-editor.md), [settings history](settings-history.md), and [language and tone](pages-language-tone.md).
