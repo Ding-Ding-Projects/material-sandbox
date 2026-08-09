@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Retired legacy theme controls
+
+Commit: [2081b5d9ab793667acf710066a81ba62dceda6e6](https://github.com/Ding-Ding-Projects/material-sandbox/commit/2081b5d9ab793667acf710066a81ba62dceda6e6)
+
+- Removed the obsolete Fusion and Windows 11 style controls from SettingsWindow.
+- Preserved one-way migration keys while keeping Material 3 as the only rendered chrome path.
+
 ## 2026-08-09 · Native settings window-options tab
 
 Commit: [3e2b189577bb18a629c72f1d0e9c4e95db01b1ad](https://github.com/Ding-Ding-Projects/material-sandbox/commit/3e2b189577bb18a629c72f1d0e9c4e95db01b1ad)
