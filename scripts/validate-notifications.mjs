@@ -15,6 +15,7 @@ const checks = [
   ['SandboxiePlus/SandMan/Windows/NotificationCenter.cpp', 'CaseInsensitiveOption'],
   ['SandboxiePlus/SandMan/SandMan.cpp', 'm_pNotificationCenter->post'],
   ['SandboxiePlus/SandMan/OnlineUpdater.cpp', 'OnLogMessage(tr("No new updates found'],
+  ['SandboxiePlus/SandMan/OnlineUpdater.cpp', 'OnLogMessage(tr("Failed to check for updates, error: %1").arg(Error), true)'],
   ['SandboxiePlus/SandMan/BoxTransfer.cpp', 'OnLogMessage(CBoxTransferDialog::tr("Nothing selected for export."), true)'],
   ['SandboxiePlus/SandMan/BoxTransfer.cpp', 'OnLogMessage(CBoxTransferDialog::tr("No boxes selected for separate file export."), true)'],
   ['SandboxiePlus/SandMan/Wizards/BoxAssistant.cpp', 'OnLogMessage(tr("Your issue report has been successfully submitted, thank you."), true)'],
@@ -29,6 +30,8 @@ for (const [file, needle] of checks) {
 const updater = read('SandboxiePlus/SandMan/OnlineUpdater.cpp');
 if (updater.includes('QMessageBox::information(theGUI') && updater.includes('No new updates found'))
   throw new Error('manual update success must use the non-blocking notification center');
+if (updater.includes('QMessageBox::critical(theGUI, "Sandboxie-Plus", tr("Failed to check for updates'))
+  throw new Error('manual update-check failure must use the non-blocking notification center');
 const transfer = read('SandboxiePlus/SandMan/BoxTransfer.cpp');
 if (transfer.includes('QMessageBox::information(parent, "Sandboxie-Plus", CBoxTransferDialog::tr("Nothing selected for export."))'))
   throw new Error('empty export selection must use the non-blocking notification center');

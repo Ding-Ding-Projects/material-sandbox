@@ -578,7 +578,7 @@ void COnlineUpdater::OnUpdateData(const QVariantMap& Data, const QVariantMap& Pa
 		QString Error = Data.isEmpty() ? tr("server not reachable") : Data["errorMsg"].toString();
 		theGUI->OnLogMessage(tr("Failed to check for updates, error: %1").arg(Error), m_CheckMode != eManual);
 		if (m_CheckMode == eManual)
-			QMessageBox::critical(theGUI, "Sandboxie-Plus", tr("Failed to check for updates, error: %1").arg(Error));
+			theGUI->OnLogMessage(tr("Failed to check for updates, error: %1").arg(Error), true);
 		m_CheckMode = eInit;
 		return;
 	}
