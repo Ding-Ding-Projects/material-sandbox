@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-09 · Filtered history exports
+
+Commit: [6a19a278](https://github.com/Ding-Ding-Projects/material-sandbox/commit/6a19a27803a08397908316e6c2d3b8f371268450)
+
+- Added atomic JSON/Markdown exports for filtered notification and settings-history views.
+
 ## 2026-08-09 · Material color translator
 
 Commit: [f144d7fb](https://github.com/Ding-Ding-Projects/material-sandbox/commit/f144d7fbfb9b09010311772d0397339b1fd0472a)
