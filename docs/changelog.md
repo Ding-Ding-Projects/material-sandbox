@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Native Settings System Tray tab
+
+Commit: [00b68f7d93e602816d42db6376f3d5a5de834adf](https://github.com/Ding-Ding-Projects/material-sandbox/commit/00b68f7d93e602816d42db6376f3d5a5de834adf)
+
+- Rebuilt the Settings System Tray child tab with native Material 3 selectors, alias limits, tri-state status tips, and close behavior.
+- Preserved tray settings persistence, live update handlers, and existing control semantics.
+
 ## 2026-08-09 · Native Settings General tab
 
 Commit: [454ff6e40ebb33bdddc5c77d6860b175d6de68e2](https://github.com/Ding-Ding-Projects/material-sandbox/commit/454ff6e40ebb33bdddc5c77d6860b175d6de68e2)

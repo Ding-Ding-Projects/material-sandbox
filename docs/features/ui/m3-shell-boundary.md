@@ -78,6 +78,11 @@ option checkboxes, hotkey editors, and recovery controls are created in code
 and retain the existing settings keys and signal paths; the remaining Settings
 tabs stay explicitly staged.
 
+The System Tray child tab is now another concrete native slice: tray selectors,
+alias limits, tri-state status tips, and close behavior are created in code and
+retain the existing persistence and update handlers; the remaining Settings
+tabs stay explicitly staged.
+
 The Notifications child tab is now a concrete native slice: message options,
 message tree, and add/delete actions are created in code and retain the
 existing persistence and handlers; the remaining Settings tabs stay staged.
