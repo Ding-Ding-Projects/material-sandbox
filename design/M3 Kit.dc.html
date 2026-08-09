@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0}
+body{background:#0B0A0E;color:#E6E0E9;font-family:Roboto,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:20px;letter-spacing:.25px;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{border:0;background:none;cursor:pointer;font:inherit;color:inherit}
+a{color:#D0BCFF}
+a:hover{color:#EADDFF}
+.ms{font-family:"Material Symbols Outlined";font-weight:400;font-style:normal;line-height:1;letter-spacing:normal;display:inline-block;user-select:none}
+</style>
+</helmet>
+
+<div style="padding:56px 56px 120px;max-width:2200px">
+  <div style="margin-bottom:48px;max-width:900px">
+    <p style="margin:0 0 8px;color:#D0BCFF;font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase">Sandboxie&#8209;Plus &#183; drop-in kit</p>
+    <h1 style="margin:0 0 12px;font-size:44px;line-height:52px;font-weight:300;letter-spacing:0">Material 3 kit and overlay inventory</h1>
+    <p style="margin:0;color:#CAC4D0;font-size:16px;line-height:24px">Every token, component and overlay used by <a href="SandMan M3.dc.html">SandMan M3</a>, in both themes. Values here are the ones in <a href="HANDOFF.md">HANDOFF.md</a> &#167;2&#8211;&#167;3 and in the drop-in <span style="font-family:Roboto Mono,monospace">MaterialTheme.cpp</span>.</p>
+  </div>
+
+  <h2 style="margin:0 0 20px;font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#938F99">01 &#183; Colour roles</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(520px,1fr));gap:24px;margin-bottom:56px">
+    <sc-for list="{{ palettes }}" as="pal" hint-placeholder-count="2">
+      <div style="border-radius:16px;padding:24px;{{ pal.shell }}">
+        <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:20px">
+          <h3 style="margin:0;font-size:22px;font-weight:400">{{ pal.name }}</h3>
+          <span style="font-size:12px;font-weight:500;letter-spacing:.5px;opacity:.7">{{ pal.note }}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">
+          <sc-for list="{{ pal.swatches }}" as="sw" hint-placeholder-count="12">
+            <div style="border-radius:12px;padding:12px;min-height:76px;display:flex;flex-direction:column;justify-content:space-between;{{ sw.style }}">
+              <span style="font-size:11px;font-weight:500;letter-spacing:.4px">{{ sw.role }}</span>
+              <span style="font-family:Roboto Mono,monospace;font-size:11px;opacity:.85">{{ sw.hex }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <h2 style="margin:0 0 20px;font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#938F99">02 &#183; Components, both themes</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(520px,1fr));gap:24px;margin-bottom:56px">
+    <sc-for list="{{ themes }}" as="th" hint-placeholder-count="2">
+      <div style="border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:24px;{{ th.shell }}">
+        <div style="display:flex;align-items:baseline;gap:12px">
+          <h3 style="margin:0;font-size:22px;font-weight:400">{{ th.name }}</h3>
+          <span style="font-size:12px;font-weight:500;letter-spacing:.5px;opacity:.7">{{ th.note }}</span>
+        </div>
+
+        <div>
+          <div style="font-size:11px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:10px;{{ th.dim }}">Buttons &#183; 40px h &#183; r20 &#183; label-large</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button style="height:40px;padding:0 24px;border-radius:20px;font-weight:500;{{ th.filled }}">Filled</button>
+            <button style="height:40px;padding:0 24px;border-radius:20px;font-weight:500;{{ th.tonal }}">Tonal</button>
+            <button style="height:40px;padding:0 24px;border-radius:20px;font-weight:500;{{ th.outlined }}">Outlined</button>
+            <button style="height:40px;padding:0 12px;border-radius:20px;font-weight:500;{{ th.textBtn }}">Text</button>
+            <button style="height:40px;padding:0 24px;border-radius:20px;font-weight:500;{{ th.danger }}">Destructive</button>
+            <button style="height:56px;padding:0 20px;border-radius:16px;font-weight:500;display:flex;align-items:center;gap:8px;{{ th.fab }}"><span class="ms" style="font-size:24px">add</span>Prominent</button>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:10px;{{ th.dim }}">Search bar &#183; 56px &#183; r28 &#183; always carries the builder</div>
+          <div style="display:flex;align-items:center;gap:8px;height:56px;padding:0 8px 0 16px;border-radius:28px;{{ th.field }}">
+            <span class="ms" style="font-size:24px;{{ th.dim }}">search</span>
+            <span style="flex:1;font-size:16px;{{ th.dim }}">Search boxes and processes</span>
+            <span style="width:40px;height:40px;border-radius:20px;display:grid;place-items:center;font-family:Roboto Mono,monospace;font-weight:500;{{ th.accentText }}">.*</span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:10px;{{ th.dim }}">Chips &#183; 32px &#183; r8 &#8195;&#8195; Switch &#183; 52&#215;32</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <span style="height:32px;padding:0 16px;border-radius:8px;font-weight:500;display:inline-flex;align-items:center;gap:8px;{{ th.chipOn }}"><span class="ms" style="font-size:18px">check</span>Selected</span>
+            <span style="height:32px;padding:0 16px;border-radius:8px;font-weight:500;display:inline-flex;align-items:center;{{ th.chipOff }}">Unselected</span>
+            <span style="height:24px;padding:0 10px;border-radius:8px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;{{ th.memChip }}">memory seed</span>
+            <span style="width:52px;height:32px;border-radius:16px;padding:2px;display:inline-flex;align-items:center;justify-content:flex-end;border:2px solid;{{ th.switchOn }}"><span style="width:24px;height:24px;border-radius:12px;{{ th.knobOn }}"></span></span>
+            <span style="width:52px;height:32px;border-radius:16px;padding:2px;display:inline-flex;align-items:center;border:2px solid;{{ th.switchOff }}"><span style="width:16px;height:16px;border-radius:8px;margin:0 4px;{{ th.knobOff }}"></span></span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:10px;{{ th.dim }}">Menu &#183; 304px &#183; r12 &#183; search field on every menu</div>
+          <div style="width:304px;border-radius:12px;padding:8px 0 4px;{{ th.menu }}">
+            <div style="padding:0 8px 8px">
+              <div style="display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border-radius:20px;{{ th.field }}">
+                <span class="ms" style="font-size:20px;{{ th.dim }}">search</span>
+                <span style="flex:1;{{ th.dim }}">Search sandbox actions</span>
+                <span style="font-family:Roboto Mono,monospace;font-size:12px;font-weight:500;{{ th.accentText }}">.*</span>
+              </div>
+            </div>
+            <div style="min-height:48px;display:flex;align-items:center;gap:12px;padding:0 12px;font-weight:500"><span class="ms" style="font-size:24px;{{ th.dim }}">play_arrow</span><span style="flex:1">Run Program</span></div>
+            <div style="min-height:48px;display:flex;align-items:center;gap:12px;padding:0 12px;font-weight:500;{{ th.rowHover }}"><span class="ms" style="font-size:24px;{{ th.dim }}">restore_page</span><span style="flex:1">Recover Files</span></div>
+            <div style="height:1px;margin:8px 0;{{ th.rule }}"></div>
+            <div style="min-height:48px;display:flex;align-items:center;gap:12px;padding:0 12px;font-weight:500;{{ th.dangerText }}"><span class="ms" style="font-size:24px">delete</span><span style="flex:1">Remove Sandbox</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:10px;{{ th.dim }}">Rail item &#183; 56&#215;32 indicator &#8195;&#8195; Tab &#183; 48px &#183; 3px indicator &#8195;&#8195; Snackbar</div>
+          <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+            <div style="width:80px;display:flex;flex-direction:column;align-items:center;gap:4px">
+              <span style="width:56px;height:32px;border-radius:16px;display:grid;place-items:center;{{ th.railOn }}"><span class="ms" style="font-size:24px">inventory_2</span></span>
+              <span style="font-size:12px;font-weight:500;letter-spacing:.5px;{{ th.accentText }}">Boxes</span>
+            </div>
+            <div style="width:80px;display:flex;flex-direction:column;align-items:center;gap:4px">
+              <span style="width:56px;height:32px;border-radius:16px;display:grid;place-items:center;{{ th.dim }}"><span class="ms" style="font-size:24px">sync</span></span>
+              <span style="font-size:12px;font-weight:500;letter-spacing:.5px;{{ th.dim }}">Sync</span>
+            </div>
+            <div style="display:flex;align-items:flex-end;height:48px">
+              <span style="height:48px;padding:0 16px;display:flex;align-items:center;gap:8px;font-weight:500;position:relative;{{ th.accentText }}"><span class="ms" style="font-size:18px">inventory_2</span>Sandboxes<span style="position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:3px 3px 0 0;{{ th.indicator }}"></span></span>
+              <span style="height:48px;padding:0 16px;display:flex;align-items:center;gap:8px;font-weight:500;{{ th.dim }}"><span class="ms" style="font-size:18px">sync</span>Memory sync</span>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;align-items:center;gap:8px;min-height:48px;max-width:520px;padding:8px 8px 8px 16px;border-radius:4px;{{ th.snack }}">
+            <span style="flex:1">Trace logging enabled.</span>
+            <span style="height:36px;padding:0 12px;border-radius:18px;display:grid;place-items:center;font-weight:500;{{ th.snackAction }}">Undo</span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:10px;{{ th.dim }}">Table row &#183; 48px &#183; selection uses secondary-container</div>
+          <div style="border-radius:12px;overflow:hidden;{{ th.card }}">
+            <div style="display:grid;grid-template-columns:1fr 130px 90px;font-size:12px;font-weight:500;letter-spacing:.5px;{{ th.dim }}{{ th.ruleBottom }}">
+              <span style="padding:14px 16px">Name</span><span style="padding:14px 16px">Status</span><span style="padding:14px 16px">Info</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 130px 90px;min-height:48px;align-items:center;{{ th.selected }}">
+              <span style="padding:6px 16px;display:flex;align-items:center;gap:10px"><span class="ms" style="font-size:22px">inventory_2</span>Chrome-Sandbox</span>
+              <span style="padding:6px 16px">In Use</span><span style="padding:6px 16px;font-family:Roboto Mono,monospace;font-size:12px">742 MB</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 130px 90px;min-height:48px;align-items:center">
+              <span style="padding:6px 16px;display:flex;align-items:center;gap:10px;padding-left:44px"><span class="ms" style="font-size:22px;{{ th.dim }}">memory</span>chrome.exe</span>
+              <span style="padding:6px 16px;{{ th.okText }}">Running</span><span style="padding:6px 16px;font-family:Roboto Mono,monospace;font-size:12px;{{ th.dim }}">09:41:02</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <h2 style="margin:0 0 20px;font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#938F99">03 &#183; Type, shape, density</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px;margin-bottom:56px">
+    <div style="background:#211F26;border-radius:16px;padding:24px">
+      <h3 style="margin:0 0 16px;font-size:22px;font-weight:400">Type scale</h3>
+      <div style="font-size:32px;line-height:40px;font-weight:400">Display small &#183; 32/40</div>
+      <div style="font-size:24px;line-height:32px;font-weight:400">Headline small &#183; 24/32</div>
+      <div style="font-size:22px;line-height:28px;font-weight:400">Title large &#183; 22/28</div>
+      <div style="font-size:16px;line-height:24px;font-weight:500;letter-spacing:.15px">Title medium &#183; 16/24 &#183; 500</div>
+      <div style="font-size:16px;line-height:24px;letter-spacing:.5px">Body large &#183; 16/24</div>
+      <div style="font-size:14px;line-height:20px">Body medium &#183; 14/20 &#8212; the table and body default</div>
+      <div style="font-size:14px;line-height:20px;font-weight:500;letter-spacing:.1px">Label large &#183; 14/20 &#183; 500 &#8212; buttons, menus, tabs</div>
+      <div style="font-size:12px;line-height:16px;font-weight:500;letter-spacing:.5px;color:#CAC4D0">Label medium &#183; 12/16 &#183; 500 &#8212; column headers, status bar</div>
+      <div style="font-size:11px;line-height:16px;font-weight:500;letter-spacing:1.5px;color:#D0BCFF;text-transform:uppercase">Label small &#183; 11/16 &#183; eyebrows</div>
+      <div style="margin-top:16px;font-family:Roboto Mono,monospace;font-size:12px;color:#CAC4D0">Roboto Mono &#183; paths, PIDs, hashes, log lines</div>
+    </div>
+    <div style="background:#211F26;border-radius:16px;padding:24px">
+      <h3 style="margin:0 0 16px;font-size:22px;font-weight:400">Shape</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <sc-for list="{{ shapes }}" as="sh" hint-placeholder-count="6">
+          <div style="width:96px">
+            <div style="height:64px;background:#4F378B;{{ sh.style }}"></div>
+            <div style="font-size:12px;font-weight:500;margin-top:8px">{{ sh.name }}</div>
+            <div style="font-size:11px;color:#CAC4D0;font-family:Roboto Mono,monospace">{{ sh.px }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <h3 style="margin:24px 0 12px;font-size:22px;font-weight:400">Elevation</h3>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="width:96px;height:56px;border-radius:12px;background:#2B2930;display:grid;place-items:center;font-size:12px;box-shadow:0 1px 3px 1px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.4)">level 1</div>
+        <div style="width:96px;height:56px;border-radius:12px;background:#2B2930;display:grid;place-items:center;font-size:12px;box-shadow:0 2px 6px 2px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.4)">level 2</div>
+        <div style="width:96px;height:56px;border-radius:12px;background:#2B2930;display:grid;place-items:center;font-size:12px;box-shadow:0 4px 8px 3px rgba(0,0,0,.3),0 1px 3px rgba(0,0,0,.4)">level 3</div>
+      </div>
+    </div>
+    <div style="background:#211F26;border-radius:16px;padding:24px">
+      <h3 style="margin:0 0 16px;font-size:22px;font-weight:400">Density</h3>
+      <div style="border-radius:12px;overflow:hidden;background:#2B2930">
+        <sc-for list="{{ densities }}" as="d" hint-placeholder-count="3">
+          <div style="display:grid;grid-template-columns:1fr 80px 90px 80px 60px;align-items:center;font-size:13px;border-bottom:1px solid #49454F">
+            <span style="padding:12px 16px;font-weight:500">{{ d.name }}</span>
+            <span style="padding:12px 8px;font-family:Roboto Mono,monospace;color:#CAC4D0">{{ d.row }}</span>
+            <span style="padding:12px 8px;font-family:Roboto Mono,monospace;color:#CAC4D0">{{ d.control }}</span>
+            <span style="padding:12px 8px;font-family:Roboto Mono,monospace;color:#CAC4D0">{{ d.pad }}</span>
+            <span style="padding:12px 8px;font-family:Roboto Mono,monospace;color:#CAC4D0">{{ d.gap }}</span>
+          </div>
+        </sc-for>
+        <div style="display:grid;grid-template-columns:1fr 80px 90px 80px 60px;font-size:11px;color:#938F99;letter-spacing:.5px">
+          <span style="padding:8px 16px"></span><span style="padding:8px">row</span><span style="padding:8px">control</span><span style="padding:8px">pad</span><span style="padding:8px">gap</span>
+        </div>
+      </div>
+      <p style="margin:16px 0 0;color:#CAC4D0;font-size:13px;line-height:19px">Fixed at every density: app bar 64, tab strip 48, rail 80, indicator 56&#215;32, status bar 40, menu row 48, search bar 56, dialog padding 24. Minimum target 40&#215;40.</p>
+    </div>
+  </div>
+
+  <h2 style="margin:0 0 20px;font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#938F99">04 &#183; Overlay inventory &#8212; all fifteen are live in the app</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px">
+    <sc-for list="{{ overlays }}" as="ov" hint-placeholder-count="15">
+      <div style="background:#211F26;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="width:40px;height:40px;border-radius:20px;background:#4A4458;color:#E8DEF8;display:grid;place-items:center;flex:none"><span class="ms" style="font-size:22px">{{ ov.icon }}</span></span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:16px;font-weight:500">{{ ov.name }}</div>
+            <div style="font-size:12px;color:#CAC4D0;font-family:Roboto Mono,monospace">{{ ov.size }}</div>
+          </div>
+        </div>
+        <p style="margin:0;color:#CAC4D0;font-size:13px;line-height:19px">{{ ov.desc }}</p>
+        <div style="font-size:11px;color:#938F99;font-family:Roboto Mono,monospace;line-height:17px">{{ ov.src }}</div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const DARK = {
+  surface: '#141218', low: '#1D1B20', cont: '#211F26', high: '#2B2930', highest: '#36343B',
+  on: '#E6E0E9', onVar: '#CAC4D0', outline: '#938F99', outlineVar: '#49454F',
+  primary: '#D0BCFF', onPrimary: '#381E72', primaryCont: '#4F378B', onPrimaryCont: '#EADDFF',
+  secCont: '#4A4458', onSecCont: '#E8DEF8', error: '#F2B8B5', errorCont: '#8C1D18', onErrorCont: '#F9DEDC',
+  mem: '#82D5CC', memCont: '#00504A', onMemCont: '#9EF2E6', ok: '#B7F397',
+  inverse: '#E6E0E9', onInverse: '#322F35', state: 'rgba(230,224,233,.08)'
+};
+const LIGHT = {
+  surface: '#FEF7FF', low: '#F7F2FA', cont: '#F3EDF7', high: '#ECE6F0', highest: '#E6E0E9',
+  on: '#1D1B20', onVar: '#49454F', outline: '#79747E', outlineVar: '#CAC4D0',
+  primary: '#6750A4', onPrimary: '#FFFFFF', primaryCont: '#EADDFF', onPrimaryCont: '#21005D',
+  secCont: '#E8DEF8', onSecCont: '#1D192B', error: '#B3261E', errorCont: '#F9DEDC', onErrorCont: '#410E0B',
+  mem: '#006A63', memCont: '#9EF2E6', onMemCont: '#00201D', ok: '#2E6B12',
+  inverse: '#322F35', onInverse: '#F5EFF7', state: 'rgba(29,27,32,.08)'
+};
+
+const ROLE_KEYS = [
+  ['surface', 'surface'], ['low', 'surface-container-low'], ['cont', 'surface-container'],
+  ['high', 'surface-container-high'], ['highest', 'surface-container-highest'],
+  ['on', 'on-surface'], ['onVar', 'on-surface-variant'], ['outline', 'outline'], ['outlineVar', 'outline-variant'],
+  ['primary', 'primary'], ['onPrimary', 'on-primary'], ['primaryCont', 'primary-container'], ['onPrimaryCont', 'on-primary-container'],
+  ['secCont', 'secondary-container'], ['onSecCont', 'on-secondary-container'],
+  ['error', 'error'], ['errorCont', 'error-container'], ['onErrorCont', 'on-error-container'],
+  ['mem', 'mem (seed 2)'], ['memCont', 'mem-container'], ['onMemCont', 'on-mem-container'], ['ok', 'ok']
+];
+
+const OVERLAYS = [
+  { name: 'Command palette', icon: 'keyboard_command_key', size: '720 × 80vh · r28 · Ctrl+Shift+F', desc: 'Destinations, tools and settings in one list. Setting rows carry a live switch so the palette changes state without navigating; the rest teleport to the exact page.', src: 'docs/features/command-palette.md' },
+  { name: 'Regex builder', icon: 'regular_expression', size: '680 × auto · r28', desc: 'Token palette, pattern, flags (i m s x U), sample text, live validation and capture preview. Opens from every single search field, including menu searches.', src: 'docs/features/product/regex-builder.md · docs/regex-builder.html' },
+  { name: 'Menu with search', icon: 'menu_open', size: '304 × ≤72vh · r12 · elev 2', desc: 'The four menu-bar menus and all four context menus share one popup: focused search field, live filter, suppressed separators while filtering, regex button.', src: 'SandMan.cpp:1002 · SbieView.cpp:176' },
+  { name: 'Tabs, groups, safe closing', icon: 'tab_group', size: '980 × 88vh · r28', desc: 'Four independent searches, group create/rename/collapse, per-tab group and pin, close-containing and its inverse with a mandatory preview before authorising.', src: 'docs/features/tab-discovery.md · docs/features/product/tab-navigation.md' },
+  { name: 'Notification centre', icon: 'notifications', size: '480 × full-height sheet · r28', desc: 'Local reviewable history, per-item dismiss, dismiss all, clear, JSON and Markdown export of the filtered set. Plain search by default, opt-in bounded regex.', src: 'Windows/NotificationCenter.cpp' },
+  { name: 'Appearance editor', icon: 'palette', size: '760 × 88vh · r28', desc: 'Anchored to one element. Family, capitalization, style, size, weight, letter and word spacing, radius, decorations, accent with the infinite picker, live preview, honest unsupported-property notice.', src: 'Windows/AppearanceEditorDialog.cpp' },
+  { name: 'Colour translator', icon: 'colorize', size: '560 × auto · r28', desc: 'HEX/HEX8, RGB/RGBA and HSL/HSLA in sync, live preview, and contrast against white and black computed with the WCAG relative-luminance formula.', src: 'Windows/ColorTranslatorDialog.cpp' },
+  { name: 'Destructive gate', icon: 'warning', size: '560 × auto · r28 · elev 3', desc: 'Two independent key confirmations unlock a full-range slider; Authorize stays disabled until both keys and 100%. Emergency exit is always reachable and Escape never authorises.', src: 'Windows/DestructiveConfirmationDialog.cpp' },
+  { name: 'New Box wizard', icon: 'add_box', size: '720 × 88vh · r28 · 4 steps', desc: 'Box type and name, isolation and privacy, storage and encryption, review. Step bar, working Back/Next, and a create action that reports the resulting box and group.', src: 'Wizards/NewBoxWizard.cpp' },
+  { name: 'Sandbox Options', icon: 'tune', size: '1000 × 760 · r28 · 8 pages', desc: 'General, File, Security, Network, Recovery, Start/Run, Stop, Advanced. Its own cross-page search; page list or nested tabs depending on Options/UsePageTree.', src: 'Windows/OptionsWindow.cpp · Options*.cpp' },
+  { name: 'Settings history', icon: 'manage_history', size: '880 × 88vh · r28', desc: 'Append-only revisions with stable IDs, action and ISO date filters with their exact validation strings, restore-as-new-revision, and filtered JSON/Markdown export.', src: 'docs/features/settings-history.md' },
+  { name: 'Scheduled settings', icon: 'schedule', size: '860 × 88vh · r28', desc: 'Versioned local rules per weekday and time range for theme, density, language and motion. Later rules win ties; each application appends a history revision.', src: 'docs/features/scheduled-settings.md' },
+  { name: 'School mode gate', icon: 'school', size: '520 × auto · r28', desc: 'User-renamable gate with a persisted unlock state and a documented local reset path. Gates presentation language and playful copy only — never isolation.', src: 'docs/features/school-mode.md' },
+  { name: 'Dim-sum surprise', icon: 'restaurant', size: '420 · bottom-right · r28', desc: 'One delayed, non-blocking 10% startup draw with bilingual name and alt text. Includes the fail-closed state for when the public catalogue does not resolve.', src: 'Windows/DimSumSurprise.cpp · docs/features/dim-sum-surprise.md' },
+  { name: 'About / quit', icon: 'info', size: '560 / 480 · r28', desc: 'Version agreement across manager, service and driver, the contributor-profile boundary stated plainly, and a quit dialog that never terminates boxed processes silently.', src: 'SandMan.cpp OnAbout · docs/contributor-build.md' }
+];
+
+class Component extends DCLogic {
+  panel(t, dark) {
+    return {
+      shell: 'background:' + t.low + ';color:' + t.on,
+      card: 'background:' + t.cont,
+      menu: 'background:' + t.cont + ';color:' + t.on + ';box-shadow:0 2px 6px 2px rgba(0,0,0,' + (dark ? '.3' : '.15') + ')',
+      field: 'background:' + t.cont,
+      dim: 'color:' + t.onVar,
+      rule: 'background:' + t.outlineVar,
+      ruleBottom: 'border-bottom:1px solid ' + t.outlineVar,
+      rowHover: 'background:' + t.state,
+      filled: 'background:' + t.primary + ';color:' + t.onPrimary,
+      tonal: 'background:' + t.secCont + ';color:' + t.onSecCont,
+      outlined: 'border:1px solid ' + t.outline + ';color:' + t.on,
+      textBtn: 'color:' + t.primary,
+      danger: 'background:' + t.errorCont + ';color:' + t.onErrorCont,
+      dangerText: 'color:' + t.error,
+      fab: 'background:' + t.primaryCont + ';color:' + t.onPrimaryCont + ';box-shadow:0 4px 8px 3px rgba(0,0,0,' + (dark ? '.3' : '.15') + ')',
+      accentText: 'color:' + t.primary,
+      chipOn: 'background:' + t.secCont + ';color:' + t.onSecCont,
+      chipOff: 'border:1px solid ' + t.outline + ';color:' + t.on,
+      memChip: 'background:' + t.memCont + ';color:' + t.onMemCont,
+      switchOn: 'background:' + t.primary + ';border-color:' + t.primary,
+      knobOn: 'background:' + t.onPrimary,
+      switchOff: 'background:' + t.highest + ';border-color:' + t.outline,
+      knobOff: 'background:' + t.outline,
+      railOn: 'background:' + t.secCont + ';color:' + t.onSecCont,
+      indicator: 'background:' + t.primary,
+      selected: 'background:' + t.secCont + ';color:' + t.onSecCont,
+      snack: 'background:' + t.inverse + ';color:' + t.onInverse,
+      snackAction: 'color:' + (dark ? '#6750A4' : '#D0BCFF'),
+      okText: 'color:' + t.ok
+    };
+  }
+
+  renderVals() {
+    const mk = (t, dark, name, note) => ({ name, note, ...this.panel(t, dark) });
+    return {
+      themes: [mk(DARK, true, 'Dark', 'default'), mk(LIGHT, false, 'Light', 'Options/UseDarkTheme = 0')],
+      palettes: [
+        { name: 'Dark roles', note: '#141218 base', shell: 'background:' + DARK.low,
+          swatches: ROLE_KEYS.map(([k, role]) => ({ role, hex: DARK[k].toUpperCase(),
+            style: 'background:' + DARK[k] + ';color:' + (['on', 'onVar', 'primary', 'outline', 'mem', 'ok', 'error', 'onPrimaryCont', 'onSecCont', 'onErrorCont', 'onMemCont'].includes(k) ? '#141218' : DARK.on) + ';border:1px solid ' + DARK.outlineVar })) },
+        { name: 'Light roles', note: '#FEF7FF base', shell: 'background:' + LIGHT.low + ';color:' + LIGHT.on,
+          swatches: ROLE_KEYS.map(([k, role]) => ({ role, hex: LIGHT[k].toUpperCase(),
+            style: 'background:' + LIGHT[k] + ';color:' + (['on', 'onVar', 'primary', 'outline', 'mem', 'ok', 'error', 'onPrimaryCont', 'onSecCont', 'onErrorCont', 'onMemCont'].includes(k) ? '#FFFFFF' : LIGHT.on) + ';border:1px solid ' + LIGHT.outlineVar })) }
+      ],
+      shapes: [
+        { name: 'Extra small', px: '4 px', style: 'border-radius:4px' },
+        { name: 'Small', px: '8 px', style: 'border-radius:8px' },
+        { name: 'Medium', px: '12 px', style: 'border-radius:12px' },
+        { name: 'Large', px: '16 px', style: 'border-radius:16px' },
+        { name: 'Extra large', px: '28 px', style: 'border-radius:28px' },
+        { name: 'Full', px: '999 px', style: 'border-radius:999px' }
+      ],
+      densities: [
+        { name: 'Compact (−4)', row: '40', control: '36', pad: '16', gap: '8' },
+        { name: 'Comfortable (0)', row: '48', control: '40', pad: '24', gap: '16' },
+        { name: 'Spacious (+4)', row: '56', control: '48', pad: '32', gap: '24' }
+      ],
+      overlays: OVERLAYS
+    };
+  }
+}
+</script>
+</body>
+</html>
