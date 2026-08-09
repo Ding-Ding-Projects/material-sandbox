@@ -760,6 +760,39 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		}
 	}
 
+	// Replace Resource Access > Files with native M3 controls while retaining
+	// access-rule columns, add-menu semantics, templates, and deletion handlers.
+	if (ui.tabsAccess && ui.tabFiles) {
+		const int filesIndex = ui.tabsAccess->indexOf(ui.tabFiles);
+		if (filesIndex >= 0) {
+			auto* legacyFiles = ui.tabFiles;
+			auto* nativeFiles = new QWidget(ui.tabsAccess);
+			auto* filesLayout = new QVBoxLayout(nativeFiles);
+			auto* filesHint = new QLabel(tr("Configure which processes can access files, folders, and pipes. Open access applies to programs outside the sandbox."), nativeFiles);
+			filesHint->setWordWrap(true);
+			filesLayout->addWidget(filesHint);
+			ui.treeFiles = new QTreeWidget(nativeFiles);
+			ui.treeFiles->setColumnCount(4);
+			ui.treeFiles->setHeaderLabels(QStringList() << tr("Type") << tr("Program") << tr("Access") << tr("Path"));
+			ui.treeFiles->setSortingEnabled(true);
+			filesLayout->addWidget(ui.treeFiles, 1);
+			auto* filesActions = new QHBoxLayout();
+			ui.btnAddFile = new QToolButton(nativeFiles);
+			ui.btnAddFile->setText(tr("Add File/Folder"));
+			ui.btnDelFile = new QPushButton(tr("Remove"), nativeFiles);
+			ui.chkShowFilesTmpl = new QCheckBox(tr("Show Templates"), nativeFiles);
+			filesActions->addWidget(ui.btnAddFile);
+			filesActions->addWidget(ui.btnDelFile);
+			filesActions->addWidget(ui.chkShowFilesTmpl);
+			filesActions->addStretch();
+			filesLayout->addLayout(filesActions);
+			ui.tabsAccess->removeTab(filesIndex);
+			ui.tabsAccess->insertTab(filesIndex, nativeFiles, tr("Files"));
+			ui.tabFiles = nativeFiles;
+			legacyFiles->deleteLater();
+		}
+	}
+
 	ui.tabs->setTabPosition(QTabWidget::West);
 
 	ui.tabs->setCurrentIndex(0);
