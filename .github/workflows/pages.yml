@@ -59,7 +59,7 @@ jobs:
       - name: Stamp exact deployed revision
         shell: bash
         run: node scripts/stamp-pages-revision.mjs docs .pages-site "$GITHUB_SHA"
-      - name: Build local rendered documentation articles
+      - name: Build local documentation entry routes
         shell: bash
         run: node scripts/build-pages-articles.mjs docs .pages-site "$GITHUB_SHA"
       - uses: actions/upload-pages-artifact@v3
