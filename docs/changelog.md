@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-08-09 · Windows entrypoints and contributor capability cleanup
+
+Commit: [d7012a106615c8b1033580d7500e92805a3c5b04](https://github.com/Ding-Ding-Projects/material-sandbox/commit/d7012a106615c8b1033580d7500e92805a3c5b04)
+
+- Contributor builds now keep USB automation enabled and omit the non-commercial title restriction.
+- Added silent Windows build and unsigned-installer entrypoints with explicit missing-tool reporting.
+
+## 2026-08-09 · Pure Material 3 chrome boundary
+
+Commit: [62639ad9ba5ef2a9a7f3e24f43b0573990c0618a](https://github.com/Ding-Ding-Projects/material-sandbox/commit/62639ad9ba5ef2a9a7f3e24f43b0573990c0618a)
+
+- Retired the exposed Fusion-theme switch so stale profiles cannot re-enable a competing style path.
+
 ## Unreleased — scheduled-source status
 
 - Scheduled-rules rows now show a localized active/inactive source status and a

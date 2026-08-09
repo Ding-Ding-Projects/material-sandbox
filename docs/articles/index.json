@@ -16,6 +16,7 @@
     {"slug":"external-editor","path":"../features/external-editor.md","related":["appearance-editor","settings-history","scheduled-settings"]}
     ,{"slug":"destructive-confirmation","path":"../features/destructive-confirmation.md","related":["notifications","settings-history","appearance-editor"]}
     ,{"slug":"native-ci-evidence","path":"../features/native-ci-evidence.md","related":["contributor-build","material-design","destructive-confirmation"]}
+    ,{"slug":"build-entrypoints","path":"../features/build-entrypoints.md","related":["native-ci-evidence","contributor-build","material-design"]}
   ],
   "changelog": {"path":"../changelog.md","commit":"731a5a336fde7e6e3ce1a341a02d4e5b0e5dc995"}
 }
