@@ -630,7 +630,7 @@ Commit: [dddeb77dad72ef484f58dae938edd07e94b7d0a4](https://github.com/Ding-Ding-
 - Rebuilt the Optional Add-Ons child tab with native Material 3 add-on tree, install/remove actions, and update link.
 - Preserved the existing add-on model and selection behavior.
 
-## 2026-08-09 · Complete Day Teet Hui article inventory
+## 2026-08-09 · Complete GitHub Pages article inventory
 
 Commit: [afffeccc09c69f76651d635f510491cfb26b530f](https://github.com/Ding-Ding-Projects/material-sandbox/commit/afffeccc09c69f76651d635f510491cfb26b530f)
 
@@ -684,14 +684,14 @@ Commit: [454ff6e40ebb33bdddc5c77d6860b175d6de68e2](https://github.com/Ding-Ding-
 - Rebuilt the Settings General Options child tab with native Material 3 language, checkbox, hotkey, and recovery controls.
 - Preserved the existing settings keys, shortcut editors, signal handlers, and elevation behavior.
 
-## 2026-08-09 · Day Teet Hui keyboard and overlay semantics
+## 2026-08-09 · GitHub Pages keyboard and overlay semantics
 
 Commit: [693e09d16f8d1f86a2ecc144eb050a657131ea76](https://github.com/Ding-Ding-Projects/material-sandbox/commit/693e09d16f8d1f86a2ecc144eb050a657131ea76)
 
 - Tab navigation now exposes explicit horizontal semantics, roving focus, Home/End movement, and semantically hidden inactive panels.
 - The command palette now exposes its open state, traps focus, locks background scrolling, and restores focus after close.
 
-## 2026-08-09 · Complete Day Teet Hui feature inventory
+## 2026-08-09 · Documented GitHub Pages feature inventory
 
 Commit: [c84586d554191d4d7a0bcfc402215375e915665c](https://github.com/Ding-Ding-Projects/material-sandbox/commit/c84586d554191d4d7a0bcfc402215375e915665c)
 
@@ -703,7 +703,7 @@ Commit: [c84586d554191d4d7a0bcfc402215375e915665c](https://github.com/Ding-Ding-
 Commits: [33202613770e9bb4c1329827fb88b395cb00e26e](https://github.com/Ding-Ding-Projects/material-sandbox/commit/33202613770e9bb4c1329827fb88b395cb00e26e), [4730fbad267a86686cd5fdff6985b050b1f64d95](https://github.com/Ding-Ding-Projects/material-sandbox/commit/4730fbad267a86686cd5fdff6985b050b1f64d95)
 
 - Contributor builds initialize full capability flags before certificate I/O, so missing or malformed certificate data cannot disable security, encryption, networking, image, USB, update, or breakout features.
-- The Day Teet Hui language mode and independent English/Cantonese funny levels now change real rendered hero and status copy with bounded, safe text updates.
+- The GitHub Pages language mode and independent English/Cantonese funny levels now change real rendered hero and status copy with bounded, safe text updates.
 
 ## 2026-08-09 · Native Settings notifications tab
 
