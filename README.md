@@ -76,6 +76,7 @@ This profile does **not** remove copyright notices, third-party attributions, or
 | --- | --- | --- |
 | Material Design 3 shell | Shared light/dark roles, typography baseline, shape, elevation, focus, and responsive control styling | [`docs/material-design.md`](docs/material-design.md) |
 | Settings provenance | Shows whether presentation and Material values come from the user's profile or compiled-in fallback, with live refresh after edits and reset | [`docs/features/settings-provenance.md`](docs/features/settings-provenance.md) |
+| Windows build entrypoints | `build.bat /s` builds the pinned Windows target; `build-installer.bat /s` stages and hashes an explicitly unsigned installer | [`docs/features/native-ci-evidence.md`](docs/features/native-ci-evidence.md) |
 | Appearance editor | Persisted theme, density, accent, display name, per-page Qt typography controls, live preview, and reset; unsupported properties are disclosed | [`docs/features/appearance-editor.md`](docs/features/appearance-editor.md) |
 | Color translator | Validated HEX/HEX8, RGB/RGBA, HSL/HSLA, alpha, preview, contrast feedback, and keyboard-safe editing | [`docs/features/color-translator.md`](docs/features/color-translator.md) |
 | Presentation preferences | English, playful Hong Kong Cantonese, bilingual mode, independent funny-level controls, and dialog/message emoji preference | [`docs/features/scheduled-settings.md`](docs/features/scheduled-settings.md) |
