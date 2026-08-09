@@ -33,6 +33,19 @@ function Write-SmokeEvidence {
     $evidence | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $evidencePath -Encoding utf8
 }
 
+function Stop-SmokeProcessTree {
+    param([Parameter(Mandatory = $true)] [int]$RootProcessId)
+
+    # SandMan can launch helper processes (for example MiniDump.exe) during
+    # startup. Kill only descendants of this exact smoke process before
+    # removing its temporary copy; leaving one helper alive makes cleanup fail.
+    $children = @(Get-CimInstance Win32_Process -Filter "ParentProcessId = $RootProcessId" -ErrorAction SilentlyContinue)
+    foreach ($child in $children) {
+        Stop-SmokeProcessTree -RootProcessId ([int]$child.ProcessId)
+        Stop-Process -Id ([int]$child.ProcessId) -Force -ErrorAction SilentlyContinue
+    }
+}
+
 $artifactRoot = (Resolve-Path -LiteralPath $ArtifactDirectory -ErrorAction Stop).Path
 $evidencePath = Join-Path $artifactRoot 'ci-runtime-smoke.json'
 $sandMan = Join-Path $artifactRoot 'SandMan.exe'
@@ -99,9 +112,12 @@ catch {
     throw
 }
 finally {
-    if ($null -ne $process -and -not $process.HasExited) {
-        $process.Kill()
-        $process.WaitForExit(5000) | Out-Null
+    if ($null -ne $process) {
+        Stop-SmokeProcessTree -RootProcessId $process.Id
+        if (-not $process.HasExited) {
+            $process.Kill()
+            $process.WaitForExit(5000) | Out-Null
+        }
     }
     if (Test-Path -LiteralPath $smokeRoot) {
         Remove-Item -LiteralPath $smokeRoot -Recurse -Force
