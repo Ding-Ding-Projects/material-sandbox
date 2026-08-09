@@ -2118,6 +2118,25 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		ui.treeStart = nativeStartTree;
 	}
 
+	// Replace the remaining unreferenced Designer guidance labels in the
+	// Stop/Leader pages by object name, preserving text and wrapping semantics.
+	{
+		auto migrateGuidanceLabel = [&](QLayout* layout, const char* objectName) {
+			auto* legacy = findChild<QLabel*>(QString::fromLatin1(objectName));
+			if (!legacy)
+				return;
+			auto* native = new QLabel(legacy->text(), this);
+			native->setObjectName(legacy->objectName());
+			native->setWordWrap(legacy->wordWrap());
+			native->setTextFormat(legacy->textFormat());
+			native->setProperty("m3NativeSurface", true);
+			layout->replaceWidget(legacy, native);
+			legacy->deleteLater();
+		};
+		migrateGuidanceLabel(ui.gridLayout_14, "label_2");
+		migrateGuidanceLabel(ui.gridLayout_58, "label_71");
+	}
+
 	ui.tabsOther->setCurrentIndex(0);
 	ui.tabsOther->setTabIcon(0, CSandMan::GetIcon("Presets"));
 	ui.tabsOther->setTabIcon(1, CSandMan::GetIcon("Dll"));
