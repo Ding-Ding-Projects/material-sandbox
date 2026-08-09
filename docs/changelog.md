@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · M3 modal dialog host
+
+Commit: [fefd451cef268a46f507f6bdd6ce790d70b659b4](https://github.com/Ding-Ding-Projects/material-sandbox/commit/fefd451cef268a46f507f6bdd6ce790d70b659b4)
+
+- Added a reusable frameless Material 3 dialog host.
+- Migrated appearance, color, offline documentation, and destructive-confirmation dialogs to the shared title and close surface.
+
 ## 2026-08-09 · Obsolete proxy chrome removed
 
 Commit: [f5a66a18a49a3482a757c5b2dce3c4462593e1fa](https://github.com/Ding-Ding-Projects/material-sandbox/commit/f5a66a18a49a3482a757c5b2dce3c4462593e1fa)
