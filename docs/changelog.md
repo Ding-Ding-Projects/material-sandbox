@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-09 · Non-blocking empty export notices
+
+Commit: [137ccb70f0af7b7fb55a05141d3d351e099e10af](https://github.com/Ding-Ding-Projects/material-sandbox/commit/137ccb70f0af7b7fb55a05141d3d351e099e10af)
+
+- Empty multi-sandbox export selections now report through the notification center instead of a blocking information box.
+- Preserved decision prompts and genuine error dialogs while keeping informational feedback non-blocking.
+
 ## 2026-08-09 · Native Options advanced tab host
 
 Commit: [f79390ea140113787d80be18ad2184735fc0fe94](https://github.com/Ding-Ding-Projects/material-sandbox/commit/f79390ea140113787d80be18ad2184735fc0fe94)
