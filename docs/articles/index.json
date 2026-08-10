@@ -1,30 +1,31 @@
 {
   "version": 1,
   "articles": [
-    {"slug":"material-design","path":"../material-design.md","related":["contributor-build"]},
-    {"slug":"appearance-editor","path":"../features/appearance-editor.md","related":["material-design","color-translator","settings-history"]},
-    {"slug":"settings-provenance","path":"../features/settings-provenance.md","related":["appearance-editor","settings-history","scheduled-settings"]},
-    {"slug":"contributor-build","path":"../contributor-build.md","related":["contributor-build-audit","material-design"]},
-    {"slug":"contributor-build-audit","path":"../features/contributor-build-audit.md","related":["contributor-build","native-ci-evidence","material-design"]},
-    {"slug":"settings-history","path":"../features/settings-history.md","related":["material-design","contributor-build"]},
-    {"slug":"notifications","path":"../features/notifications.md","related":["settings-history","material-design"]},
-    {"slug":"color-translator","path":"../features/color-translator.md","related":["material-design","settings-history"]},
-    {"slug":"school-mode","path":"../features/school-mode.md","related":["material-design","notifications"]},
-    {"slug":"dim-sum-surprise","path":"../features/dim-sum-surprise.md","related":["notifications","material-design","school-mode"]},
-    {"slug":"scheduled-settings","path":"../features/scheduled-settings.md","related":["material-design","school-mode","settings-history"]},
-    {"slug":"tab-discovery","path":"../features/tab-discovery.md","related":["appearance-editor","settings-history","scheduled-settings"]},
-    {"slug":"command-palette","path":"../features/command-palette.md","related":["material-design","scheduled-settings","settings-history"]},
-    {"slug":"external-editor","path":"../features/external-editor.md","related":["appearance-editor","settings-history","scheduled-settings"]}
-    ,{"slug":"destructive-confirmation","path":"../features/destructive-confirmation.md","related":["notifications","settings-history","appearance-editor"]}
-    ,{"slug":"native-ci-evidence","path":"../features/native-ci-evidence.md","related":["contributor-build","material-design","destructive-confirmation"]}
-    ,{"slug":"build-entrypoints","path":"../features/build-entrypoints.md","related":["native-ci-evidence","contributor-build","material-design"]}
-    ,{"slug":"m3-shell-boundary","path":"../features/ui/m3-shell-boundary.md","related":["material-design","appearance-editor","tab-discovery"]}
-    ,{"slug":"editor-settings","path":"../features/editor-settings.md","related":["m3-shell-boundary","settings-history","appearance-editor"]}
-    ,{"slug":"changelog-viewer","path":"../features/changelog-viewer.md","related":["settings-history","command-palette","material-design"]}
-    ,{"slug":"pages-language-tone","path":"../features/pages-language-tone.md","related":["material-design","school-mode","notifications"]}
-    ,{"slug":"pages-a11y-boundary","path":"../features/pages-a11y-boundary.md","related":["material-design","tab-discovery","command-palette"]}
+    {"slug":"material-design","title":"Material Design 3 desktop shell","path":"../material-design.md","related":["contributor-build"]},
+    {"slug":"appearance-editor","title":"Material appearance editor","path":"../features/appearance-editor.md","related":["material-design","color-translator","settings-history"]},
+    {"slug":"settings-provenance","title":"Settings explanations and provenance","path":"../features/settings-provenance.md","related":["appearance-editor","settings-history","scheduled-settings"]},
+    {"slug":"contributor-build","title":"Contributor capability mode","path":"../contributor-build.md","related":["contributor-build-audit","material-design"]},
+    {"slug":"contributor-build-audit","title":"Contributor capability and quiet certificate boundary","path":"../features/contributor-build-audit.md","related":["contributor-build","native-ci-evidence","material-design"]},
+    {"slug":"settings-history","title":"Local settings history","path":"../features/settings-history.md","related":["material-design","contributor-build"]},
+    {"slug":"notifications","title":"Notification center","path":"../features/notifications.md","related":["settings-history","material-design"]},
+    {"slug":"color-translator","title":"Material color translator","path":"../features/color-translator.md","related":["material-design","settings-history"]},
+    {"slug":"school-mode","title":"School mode","path":"../features/school-mode.md","related":["material-design","notifications"]},
+    {"slug":"dim-sum-surprise","title":"Dim-sum startup surprise","path":"../features/dim-sum-surprise.md","related":["notifications","material-design","school-mode"]},
+    {"slug":"scheduled-settings","title":"Scheduled settings","path":"../features/scheduled-settings.md","related":["material-design","school-mode","settings-history"]},
+    {"slug":"tab-discovery","title":"Tab discovery","path":"../features/tab-discovery.md","related":["appearance-editor","settings-history","scheduled-settings"]},
+    {"slug":"command-palette","title":"Command palette","path":"../features/command-palette.md","related":["material-design","scheduled-settings","settings-history"]},
+    {"slug":"external-editor","title":"External editor integration","path":"../features/external-editor.md","related":["appearance-editor","settings-history","scheduled-settings"]},
+    {"slug":"destructive-confirmation","title":"Destructive-action confirmation","path":"../features/destructive-confirmation.md","related":["notifications","settings-history","appearance-editor"]},
+    {"slug":"native-ci-evidence","title":"Native CI evidence and stale-run control","path":"../features/native-ci-evidence.md","related":["contributor-build","material-design","destructive-confirmation"]},
+    {"slug":"build-entrypoints","title":"Windows build entrypoints","path":"../features/build-entrypoints.md","related":["native-ci-evidence","contributor-build","material-design"]},
+    {"slug":"m3-shell-boundary","title":"Material 3 shell boundary","path":"../features/ui/m3-shell-boundary.md","related":["material-design","appearance-editor","tab-discovery"]},
+    {"slug":"editor-settings","title":"Editor settings","path":"../features/editor-settings.md","related":["m3-shell-boundary","settings-history","appearance-editor"]},
+    {"slug":"changelog-viewer","title":"In-app changelog viewer","path":"../features/changelog-viewer.md","related":["settings-history","command-palette","material-design"]},
+    {"slug":"pages-language-tone","title":"GitHub Pages language, tone, and appearance controls","path":"../features/pages-language-tone.md","related":["material-design","school-mode","notifications"]},
+    {"slug":"pages-a11y-boundary","title":"GitHub Pages navigation and overlay boundary","path":"../features/pages-a11y-boundary.md","related":["material-design","tab-discovery","command-palette"]}
   ],
-  "changelog": {"path":"../changelog.md","commit":"bc61226eea96eece1645e3338866763f40bbfc00"}
+  "supplemental": [
+    {"slug":"screenshots","title":"Material desktop screenshot gallery","path":"../screenshots.md"}
+  ],
+  "changelog": {"path":"../changelog.md","commit":"acd0c449164398798b1a0d9bbdadd6b7c2635083"}
 }
-
-

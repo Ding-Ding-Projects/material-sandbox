@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-08-09 · Complete offline documentation browser inventory
+
+Commit: [acd0c449164398798b1a0d9bbdadd6b7c2635083](https://github.com/Ding-Ding-Projects/material-sandbox/commit/acd0c449164398798b1a0d9bbdadd6b7c2635083)
+
+- Replaced the two-entry hard-coded article loader with the ordered 22-article manifest shared by the documentation source, Qt resources, command palette, and browser.
+- Bundled the screenshot gallery as an explicit supplemental document and pointed every Qt alias directly at its canonical UTF-8 source instead of stale resource copies.
+- Routed relative article links and fragments inside the browser, allowed only credential-free HTTPS destinations to leave it, and rejected HTTP, file, script, traversal, and unknown destinations.
+- Enabled HTML-disabled GitHub Markdown on Qt 5.14 and newer, bounded regex evaluation, live accessible result counts, honest no-match content, and exact-slug command-palette navigation.
+- Added an exact-set, realpath, no-link, registration, resource-byte, and Markdown-link validator with seven mutation and safety tests; the changed browser, MOC, resource, and palette translation units compile with Qt 6.8.3/MSVC.
+
 ## 2026-08-09 · Interactive Material 3 GitHub Pages documentation
 
 Commit: [bc61226eea96eece1645e3338866763f40bbfc00](https://github.com/Ding-Ding-Projects/material-sandbox/commit/bc61226eea96eece1645e3338866763f40bbfc00)

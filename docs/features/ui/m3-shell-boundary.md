@@ -501,3 +501,9 @@ hosts are guarded against duplicate installation. Both the Node and PowerShell
 contracts recognize the current `M3DialogHost::Install(this)` path used by
 `BoxImageWindow`. A native compile remains part of the Windows CI gate because
 this checkout does not guarantee a Qt SDK on every agent.
+
+## Suggested articles
+
+- [Material Design 3 desktop shell](../../material-design.md)
+- [Tab discovery](../tab-discovery.md)
+- [Material appearance editor](../appearance-editor.md)

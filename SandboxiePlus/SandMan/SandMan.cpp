@@ -51,6 +51,9 @@
 #include "../MiscHelpers/Common/MaterialTheme.h"
 #include "../MiscHelpers/Common/UserPresentationSettings.h"
 #include <QElapsedTimer>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QScreen>
 #include <QRegularExpression>
 #include <QSignalBlocker>
@@ -61,6 +64,15 @@ static QString SandManDisplayName()
 {
 	const QString configured = theConf ? theConf->GetString("UIConfig/AppDisplayName", "Sandboxie-Plus").trimmed() : QString();
 	return configured.isEmpty() ? QStringLiteral("Sandboxie-Plus") : configured;
+}
+
+static QRegularExpression BoundedPaletteExpression(const QString& pattern,
+	QRegularExpression::PatternOptions options)
+{
+	if (pattern.isEmpty())
+		return QRegularExpression();
+	return QRegularExpression(QStringLiteral("(*LIMIT_MATCH=100000)(*LIMIT_DEPTH=1000)(?:%1)")
+		.arg(pattern.left(512)), options);
 }
 
 #include <wtypes.h>
@@ -878,7 +890,7 @@ void CSandMan::CreateHelpMenu(bool bAdvanced)
 			results->setAccessibleName(tr("Command palette results"));
 			results->setSelectionMode(QAbstractItemView::SingleSelection);
 			struct PaletteCommand { QString label; QString keywords; std::function<void()> run; };
-			const QVector<PaletteCommand> commands = {
+			QVector<PaletteCommand> commands = {
 				{ tr("Open Global Settings"), tr("settings preferences configuration"), [this]() { OpenSettings(); } },
 				{ tr("General Settings"), tr("settings general sandbox"), [this]() { OpenSettings("General"); } },
 				{ tr("Appearance and Presentation Settings"), tr("settings appearance material theme language density"), [this]() { OpenSettings("UI"); } },
@@ -888,6 +900,42 @@ void CSandMan::CreateHelpMenu(bool bAdvanced)
 				{ tr("Check for Updates"), tr("update updater release"), [this]() { CheckForUpdates(); } },
 				{ tr("About Sandboxie-Plus"), tr("about version contributor"), [this]() { if (m_pAbout) m_pAbout->trigger(); } }
 			};
+			QFile documentationManifest(QStringLiteral(":/Docs/articles/index.json"));
+			if (documentationManifest.open(QIODevice::ReadOnly | QIODevice::Text)) {
+				const QJsonDocument manifest = QJsonDocument::fromJson(documentationManifest.readAll());
+				const QJsonObject inventory = manifest.object();
+				const auto appendDocumentationCommands = [this, &commands](const QJsonArray& records) {
+					for (const QJsonValue& value : records) {
+						const QJsonObject article = value.toObject();
+						const QString slug = article.value(QStringLiteral("slug")).toString();
+						const QString title = article.value(QStringLiteral("title")).toString();
+						if (slug.isEmpty() || title.isEmpty())
+							continue;
+						commands.append({
+							tr("Documentation · %1 (%2)").arg(title, slug),
+							tr("offline documentation article %1 %2").arg(slug, title),
+							[this, slug]() {
+								CDocumentationBrowser* browser = new CDocumentationBrowser(this);
+								browser->setAttribute(Qt::WA_DeleteOnClose);
+								browser->openArticle(slug);
+								browser->show();
+							}
+						});
+					}
+				};
+				appendDocumentationCommands(inventory.value(QStringLiteral("articles")).toArray());
+				appendDocumentationCommands(inventory.value(QStringLiteral("supplemental")).toArray());
+			}
+			commands.append({
+				tr("Documentation · Changelog (changelog)"),
+				tr("offline documentation changelog releases"),
+				[this]() {
+					CDocumentationBrowser* browser = new CDocumentationBrowser(this);
+					browser->setAttribute(Qt::WA_DeleteOnClose);
+					browser->openChangelog();
+					browser->show();
+				}
+			});
 			for (int i = 0; i < commands.size(); ++i) {
 				QListWidgetItem* item = new QListWidgetItem(commands.at(i).label, results);
 				item->setData(Qt::UserRole, i);
@@ -903,7 +951,7 @@ void CSandMan::CreateHelpMenu(bool bAdvanced)
 				const QString pattern = regexEnabled ? palette->property("paletteRegexPattern").toString() : text;
 				const auto options = palette->property("paletteRegexCaseInsensitive").toBool()
 					? QRegularExpression::CaseInsensitiveOption : QRegularExpression::NoPatternOption;
-				const QRegularExpression expression(pattern, options);
+				const QRegularExpression expression = BoundedPaletteExpression(pattern, options);
 				const bool valid = !regexEnabled || pattern.isEmpty() || expression.isValid();
 				for (int i = 0; i < results->count(); ++i) {
 					QListWidgetItem* item = results->item(i);
@@ -957,7 +1005,7 @@ void CSandMan::CreateHelpMenu(bool bAdvanced)
 				connect(apply, &QPushButton::clicked, builder, [builder, palette, query, pattern, insensitive, updateResults]() {
 					const QString candidate = pattern->text().left(512);
 					const auto options = insensitive->isChecked() ? QRegularExpression::CaseInsensitiveOption : QRegularExpression::NoPatternOption;
-					const QRegularExpression expression(candidate, options);
+					const QRegularExpression expression = BoundedPaletteExpression(candidate, options);
 					if (!candidate.isEmpty() && !expression.isValid()) {
 						pattern->setToolTip(QObject::tr("Invalid regular expression: %1").arg(expression.errorString()));
 						pattern->setFocus();
