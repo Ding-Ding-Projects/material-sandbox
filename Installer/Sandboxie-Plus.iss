@@ -34,7 +34,8 @@ UsedUserAreasWarning=no
 VersionInfoCopyright=Copyright (C) 2020-{#CurrentYear} by David Xanatos (xanasoft.com)
 VersionInfoVersion={#MyAppVersion}
 SetupIconFile=SandManInstall.ico
-SignTool=sha256
+; Packaging is permanently unsigned; signing hooks are prohibited by repository policy.
+SignedUninstaller=no
 ; Require windows 10 or later
 ;MinVersion=10.0
 
