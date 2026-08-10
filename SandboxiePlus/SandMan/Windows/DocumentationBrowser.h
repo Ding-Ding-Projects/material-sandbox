@@ -3,6 +3,7 @@
 #include <QDialog>
 #include <QHash>
 #include <QRegularExpression>
+#include <QSet>
 #include <QVector>
 
 class QListWidget;
@@ -13,6 +14,7 @@ class QTabWidget;
 class QDateEdit;
 class QDate;
 class QUrl;
+class QTextDocument;
 
 class CDocumentationBrowser : public QDialog
 {
@@ -20,6 +22,7 @@ class CDocumentationBrowser : public QDialog
 public:
     explicit CDocumentationBrowser(QWidget* parent = nullptr);
     bool openArticle(const QString& slug);
+    void openChangelog();
 
 private slots:
     void filterArticles();
@@ -39,8 +42,11 @@ private:
     void loadArticles();
     void renderArticle(const Article& article);
     void renderChangelog();
+    void clearArticleSearchState();
     void setArticleStatus(const QString& text);
+    void setChangelogStatus(const QString& text);
     bool changelogDateRangeValid(QDate* from, QDate* to);
+    static QSet<QString> installHeadingAnchorsForDocument(QTextDocument* document);
 
     QTabWidget* m_tabs;
     QListWidget* m_articleList;
@@ -50,11 +56,15 @@ private:
     QVector<Article> m_articles;
     QHash<QString, int> m_articleBySourcePath;
     QHash<QString, int> m_articleBySlug;
+    QSet<QString> m_currentArticleAnchors;
+    QSet<QString> m_changelogAnchors;
     int m_featureArticleCount = 0;
     int m_supplementalArticleCount = 0;
     int m_currentArticleIndex = -1;
     QRegularExpression m_searchExpression;
     QRegularExpression m_changelogExpression;
+    bool m_searchRegexCaseInsensitive = true;
+    bool m_changelogRegexCaseInsensitive = true;
     QVector<ChangelogEntry> m_changelogEntries;
     QLineEdit* m_changelogSearch = nullptr;
     QLineEdit* m_changelogFrom = nullptr;
@@ -62,4 +72,5 @@ private:
     QLabel* m_changelogDateError = nullptr;
     QLabel* m_changelogStatus = nullptr;
     QTextBrowser* m_changelogView = nullptr;
+    QString m_changelogLoadError;
 };
