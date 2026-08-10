@@ -59,10 +59,10 @@ function insertBeforeSuggestedArticles(file, text) {
   fs.writeFileSync(file, original.replace(marker, `\n${text}\n${marker}`), 'utf8');
 }
 
-test('complete repository contract validates 22 feature articles and one supplemental document', () => {
+test('complete repository contract validates 23 feature articles and one supplemental document', () => {
   const result = runValidator(makeFixture('complete'));
   assert.equal(result.status, 0, result.stderr || result.stdout);
-  assert.match(result.stdout, /articles=22 supplemental=1 suggested=22 images=24 internal-links=63 external-links=138/);
+  assert.match(result.stdout, /articles=23 supplemental=1 suggested=23 images=24 internal-links=64 external-links=138/);
 });
 
 test('oversized and excessive changelog inventories fail before offline splitting or rendering', () => {
@@ -86,12 +86,11 @@ test('oversized and excessive changelog inventories fail before offline splittin
 test('removing a Qt article resource fails the exact inventory guard', () => {
   const fixture = makeFixture('missing-qrc-article');
   const qrc = path.join(fixture, 'SandboxiePlus', 'SandMan', 'Resources', 'SandMan.qrc');
-  replaceOnce(qrc,
-    '        <file alias="Docs/articles/pages-a11y-boundary.md">../../../docs/features/pages-a11y-boundary.md</file>\n',
-    '');
+  const entry = '        <file alias="Docs/articles/pages-a11y-boundary.md">../../../docs/features/pages-a11y-boundary.md</file>';
+  replaceOnce(qrc, entry, '');
   const result = runValidator(fixture);
   assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /Qt documentation resource set must contain exactly 49 entries; found 48/);
+  assert.match(result.stderr, /Qt documentation resource set must contain exactly 50 entries; found 49/);
 });
 
 test('commenting out a Qt article resource fails the comment-aware inventory guard', () => {
@@ -101,7 +100,7 @@ test('commenting out a Qt article resource fails the comment-aware inventory gua
   replaceOnce(qrc, entry, `        <!-- ${entry.trim()} -->`);
   const result = runValidator(fixture);
   assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /Qt documentation resource set must contain exactly 49 entries; found 48/);
+  assert.match(result.stderr, /Qt documentation resource set must contain exactly 50 entries; found 49/);
 });
 
 test('wrapping a Qt article resource in a processing instruction fails the structural inventory guard', () => {
@@ -111,7 +110,7 @@ test('wrapping a Qt article resource in a processing instruction fails the struc
   replaceOnce(qrc, entry, `        <?ignored ${entry.trim()} ?>`);
   const result = runValidator(fixture);
   assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /Qt documentation resource set must contain exactly 49 entries; found 48/);
+  assert.match(result.stderr, /Qt documentation resource set must contain exactly 50 entries; found 49/);
 });
 
 test('Qt documentation resources reject attributes that change RCC payload semantics', () => {
@@ -606,7 +605,7 @@ test('supplemental image syntax must remain exact inline, non-angle, and rewrite
   }
 });
 
-test('all 22 feature articles require a nonempty final Suggested articles section', () => {
+test('all 23 feature articles require a nonempty final Suggested articles section', () => {
   for (const mutation of [
     { name: 'missing-suggestions', before: '## Suggested articles', after: '## Related reading', expected: /must end with a Suggested articles section/ },
     {
@@ -771,11 +770,11 @@ test('link resolution retains fragments and rejects unsafe destinations', () => 
   const known = new Set(['material-design.md', 'features/pages-a11y-boundary.md']);
   const headings = new Map([
     ['material-design.md', buildHeadingSlugs('# Material Design 3 desktop shell\n\n## Failure modes and security\n')],
-    ['features/pages-a11y-boundary.md', buildHeadingSlugs('# GitHub Pages navigation and overlay boundary\n\n## Source verification and remaining proof\n')],
+    ['features/pages-a11y-boundary.md', buildHeadingSlugs('# GitHub Pages navigation and overlay boundary\n\n## Verification\n')],
   ]);
   assert.deepEqual(
-    resolveInternalDocumentationLink('features/pages-a11y-boundary.md', '#source-verification-and-remaining-proof', known, headings),
-    { source: 'features/pages-a11y-boundary.md', fragment: 'source-verification-and-remaining-proof' });
+    resolveInternalDocumentationLink('features/pages-a11y-boundary.md', '#verification', known, headings),
+    { source: 'features/pages-a11y-boundary.md', fragment: 'verification' });
   assert.deepEqual(
     resolveInternalDocumentationLink('features/pages-a11y-boundary.md', '../material-design.md#failure-modes-and-security', known, headings),
     { source: 'material-design.md', fragment: 'failure-modes-and-security' });
@@ -787,7 +786,7 @@ test('link resolution retains fragments and rejects unsafe destinations', () => 
   assert.throws(() => resolveInternalDocumentationLink('material-design.md', 'file:///tmp/readme.md', known), /unsupported external documentation scheme/);
   assert.throws(() => resolveInternalDocumentationLink('material-design.md', '../outside.md', known), /local documentation link escapes docs/);
   assert.throws(() => resolveInternalDocumentationLink('material-design.md', 'missing.md', known), /local documentation destination is not bundled/);
-  assert.throws(() => resolveInternalDocumentationLink('features/pages-a11y-boundary.md', '#verification', known, headings), /fragment does not match a canonical heading/);
+  assert.throws(() => resolveInternalDocumentationLink('features/pages-a11y-boundary.md', '#source-verification-and-remaining-proof', known, headings), /fragment does not match a canonical heading/);
   assert.throws(() => resolveInternalDocumentationLink('features/pages-a11y-boundary.md', '../material-design.md#failure-modes', known, headings), /fragment does not match a canonical heading/);
   assert.deepEqual([...buildHeadingSlugs('## Repeated\n\n## Repeated\n\n## Repeated\n')], ['repeated', 'repeated-1', 'repeated-2']);
 });

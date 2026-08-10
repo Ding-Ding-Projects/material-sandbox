@@ -263,6 +263,7 @@
         <file alias="Docs/articles/native-ci-evidence.md">../../../docs/features/native-ci-evidence.md</file>
         <file alias="Docs/articles/build-entrypoints.md">../../../docs/features/build-entrypoints.md</file>
         <file alias="Docs/articles/m3-shell-boundary.md">../../../docs/features/ui/m3-shell-boundary.md</file>
+        <file alias="Docs/articles/material-sandbox-ui-rewrite.md">../../../docs/features/ui/material-sandbox-ui-rewrite.md</file>
         <file alias="Docs/articles/editor-settings.md">../../../docs/features/editor-settings.md</file>
         <file alias="Docs/articles/changelog-viewer.md">../../../docs/features/changelog-viewer.md</file>
         <file alias="Docs/articles/pages-language-tone.md">../../../docs/features/pages-language-tone.md</file>

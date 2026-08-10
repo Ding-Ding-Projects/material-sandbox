@@ -24,6 +24,7 @@ export const canonicalArticles = Object.freeze([
   { slug: 'native-ci-evidence', title: 'Native CI evidence and stale-run control', path: '../features/native-ci-evidence.md' },
   { slug: 'build-entrypoints', title: 'Windows build entrypoints', path: '../features/build-entrypoints.md' },
   { slug: 'm3-shell-boundary', title: 'Material 3 shell boundary', path: '../features/ui/m3-shell-boundary.md' },
+  { slug: 'material-sandbox-ui-rewrite', title: 'Material Sandbox UI rewrite overlay', path: '../features/ui/material-sandbox-ui-rewrite.md' },
   { slug: 'editor-settings', title: 'Editor settings', path: '../features/editor-settings.md' },
   { slug: 'changelog-viewer', title: 'In-app changelog viewer', path: '../features/changelog-viewer.md' },
   { slug: 'pages-language-tone', title: 'GitHub Pages language, tone, and appearance controls', path: '../features/pages-language-tone.md' },
@@ -1094,9 +1095,9 @@ export function validateDocumentationRepository(root = process.cwd(), { validate
     else internalLinkCount += 1;
   }
   const samePageFragment = resolveInternalDocumentationLink('features/pages-a11y-boundary.md',
-    '#source-verification-and-remaining-proof', knownSources, headingSlugsBySource);
+    '#verification', knownSources, headingSlugsBySource);
   assert(samePageFragment.source === 'features/pages-a11y-boundary.md'
-    && samePageFragment.fragment === 'source-verification-and-remaining-proof', 'same-page fragment routing contract failed');
+    && samePageFragment.fragment === 'verification', 'same-page fragment routing contract failed');
   const crossPageFragment = resolveInternalDocumentationLink('features/pages-a11y-boundary.md',
     '../material-design.md#failure-modes-and-security', knownSources, headingSlugsBySource);
   assert(crossPageFragment.source === 'material-design.md'

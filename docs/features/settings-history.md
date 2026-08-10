@@ -1,4 +1,4 @@
-# Local Git settings history
+# Local settings history
 
 ## Behavior
 

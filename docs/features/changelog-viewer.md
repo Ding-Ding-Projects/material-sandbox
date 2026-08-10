@@ -4,7 +4,7 @@ The Help → Offline Documentation window keeps the bundled changelog available 
 
 ## Article inventory and navigation
 
-The Articles tab reads the ordered slug, title, canonical source, and related-article records from `docs/articles/index.json` through the bundled `:/Docs/articles/index.json` resource. Its inventory contains exactly 22 feature articles plus the separately labelled screenshot supplement. Qt resource aliases point at those canonical UTF-8 files directly, so the desktop browser and documentation site cannot quietly publish different copies.
+The Articles tab reads the ordered slug, title, canonical source, and related-article records from `docs/articles/index.json` through the bundled `:/Docs/articles/index.json` resource. Its inventory contains exactly 23 feature articles plus the separately labelled screenshot supplement. Qt resource aliases point at those canonical UTF-8 files directly, so the desktop browser and documentation site cannot quietly publish different copies.
 
 Relative Markdown links resolve against the current article's canonical source path, select and render the destination in the same browser, and retain heading fragments. The command palette creates one destination per manifest slug and opens that exact article instead of stopping at the generic documentation window.
 

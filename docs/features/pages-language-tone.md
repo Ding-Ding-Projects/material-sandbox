@@ -1,4 +1,4 @@
-# GitHub Pages language and tone controls
+# GitHub Pages language, tone, and appearance controls
 
 ## Behaviour
 
@@ -25,7 +25,7 @@ is rendered inside the Pages shell at `#/articles/<slug>`. Article links are
 resolved only when the local route registry names them; unknown Markdown or
 desktop-resource links render an honest unavailable state instead of a guessed
 destination. The deployment also emits stable `articles/<slug>.html` entry
-pages for all 22 catalogued articles plus changelog and screenshot routes;
+pages for all 23 catalogued articles plus changelog and screenshot routes;
 each entry redirects locally into the same rendered shell. Related routes
 appear in the **Suggested articles** area at the end of each rendered article.
 

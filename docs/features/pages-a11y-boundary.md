@@ -1,4 +1,4 @@
-# GitHub Pages keyboard and overlay boundary
+# GitHub Pages navigation and overlay boundary
 
 ## Behaviour
 

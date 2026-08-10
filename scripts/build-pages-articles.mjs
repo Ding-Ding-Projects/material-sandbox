@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const FEATURE_ARTICLE_COUNT = 22;
+const FEATURE_ARTICLE_COUNT = 23;
 const MAX_MANIFEST_BYTES = 128 * 1024;
 const MAX_MARKDOWN_BYTES = 1024 * 1024;
 const RESERVED_SLUGS = new Set(['changelog', 'screenshots']);

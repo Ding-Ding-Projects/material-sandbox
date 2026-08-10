@@ -192,6 +192,17 @@
       "paletteDestination": { "id": "palette:article:m3-shell-boundary", "kind": "article", "route": "#/articles/m3-shell-boundary" }
     },
     {
+      "slug": "material-sandbox-ui-rewrite",
+      "route": "#/articles/material-sandbox-ui-rewrite",
+      "relatedArticles": [
+        { "slug": "m3-shell-boundary", "route": "#/articles/m3-shell-boundary" },
+        { "slug": "tab-discovery", "route": "#/articles/tab-discovery" },
+        { "slug": "native-ci-evidence", "route": "#/articles/native-ci-evidence" }
+      ],
+      "featureDestination": { "id": "feature:material-sandbox-ui-rewrite", "route": "#/articles/material-sandbox-ui-rewrite" },
+      "paletteDestination": { "id": "palette:article:material-sandbox-ui-rewrite", "kind": "article", "route": "#/articles/material-sandbox-ui-rewrite" }
+    },
+    {
       "slug": "editor-settings",
       "route": "#/articles/editor-settings",
       "relatedArticles": [
