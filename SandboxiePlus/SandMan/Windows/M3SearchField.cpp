@@ -49,6 +49,7 @@ CM3SearchField::CM3SearchField(QWidget* parent)
     m_regexButton->setText(QStringLiteral(".*"));
     m_regexButton->setToolTip(tr("Open regular expression builder"));
     m_regexButton->setAccessibleName(m_regexButton->toolTip());
+    m_regexButton->setCheckable(true);
     m_regexButton->setAutoRaise(true);
 
     auto* layout = new QHBoxLayout(this);

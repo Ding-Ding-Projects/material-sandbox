@@ -97,7 +97,7 @@ CMemorySyncView::CMemorySyncView(const QString& repositoryRoot, QWidget* parent)
 
     connect(refreshButton, &QPushButton::clicked, this, &CMemorySyncView::refresh);
     connect(statusButton, &QPushButton::clicked, this, [this] { copyCommand(QStringLiteral("pwsh ./scripts/sync-agent-memory.ps1 status")); });
-    connect(dryRunButton, &QPushButton::clicked, this, [this] { copyCommand(QStringLiteral("pwsh ./scripts/sync-agent-memory.ps1 install")); });
+    connect(dryRunButton, &QPushButton::clicked, this, [this] { copyCommand(QStringLiteral("pwsh ./scripts/sync-agent-memory.ps1 install -DryRun")); });
     connect(installButton, &QPushButton::clicked, this, [this] { copyCommand(QStringLiteral("pwsh ./scripts/sync-agent-memory.ps1 install -Yes")); });
     refresh();
 }
@@ -149,7 +149,9 @@ void CMemorySyncView::refresh()
     for (const QString& line : targetLines) {
         QStringList cells = line.split(QLatin1Char('|'), Qt::SkipEmptyParts);
         for (QString& cell : cells) cell = cell.trimmed().remove(QLatin1Char('`'));
-        if (cells.size() < 2 || cells.first().contains(QStringLiteral("runtime"), Qt::CaseInsensitive))
+        if (cells.size() < 2 || cells.first().contains(QStringLiteral("runtime"), Qt::CaseInsensitive)
+            || cells.first().compare(QStringLiteral("target"), Qt::CaseInsensitive) == 0
+            || cells.first().compare(QStringLiteral("name"), Qt::CaseInsensitive) == 0)
             continue;
         const int row = m_targets->rowCount();
         m_targets->insertRow(row);
