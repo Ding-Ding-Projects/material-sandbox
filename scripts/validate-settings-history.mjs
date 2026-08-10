@@ -80,7 +80,7 @@ const checks = [
   [sources.window, 'M3DialogHost::Install(dialog)', 'Material history dialog host'],
   [sources.qmake, './Common/LocalSettingsHistory.cpp', 'qmake implementation registration'],
   [sources.msbuild, String.raw`Common\LocalSettingsHistory.cpp`, 'MSBuild implementation registration'],
-  [sources.qrc, 'Docs/settings-history.md', 'offline article registration'],
+  [sources.qrc, 'Docs/articles/settings-history.md', 'offline article registration'],
   [sources.article, 'git init', 'documented initialization command'],
   [sources.article, 'git commit', 'documented commit command'],
   [sources.article, 'git log', 'documented browse command'],

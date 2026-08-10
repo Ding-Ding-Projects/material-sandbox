@@ -19,6 +19,7 @@
     {"slug":"native-ci-evidence","title":"Native CI evidence and stale-run control","path":"../features/native-ci-evidence.md","related":["contributor-build","material-design","destructive-confirmation"]},
     {"slug":"build-entrypoints","title":"Windows build entrypoints","path":"../features/build-entrypoints.md","related":["native-ci-evidence","contributor-build","material-design"]},
     {"slug":"m3-shell-boundary","title":"Material 3 shell boundary","path":"../features/ui/m3-shell-boundary.md","related":["material-design","appearance-editor","tab-discovery"]},
+    {"slug":"material-sandbox-ui-rewrite","title":"Material Sandbox UI rewrite overlay","path":"../features/ui/material-sandbox-ui-rewrite.md","related":["m3-shell-boundary","tab-discovery","native-ci-evidence"]},
     {"slug":"editor-settings","title":"Editor settings","path":"../features/editor-settings.md","related":["m3-shell-boundary","settings-history","appearance-editor"]},
     {"slug":"changelog-viewer","title":"In-app changelog viewer","path":"../features/changelog-viewer.md","related":["settings-history","command-palette","material-design"]},
     {"slug":"pages-language-tone","title":"GitHub Pages language, tone, and appearance controls","path":"../features/pages-language-tone.md","related":["material-design","school-mode","notifications"]},

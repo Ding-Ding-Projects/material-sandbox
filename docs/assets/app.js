@@ -72,7 +72,7 @@ const STATIC_ARTICLES = [
   'features/tab-discovery.md', 'features/settings-history.md', 'features/notifications.md', 'features/external-editor.md',
   'features/command-palette.md', 'features/dim-sum-surprise.md', 'features/color-translator.md', 'features/contributor-build-audit.md',
   'features/settings-provenance.md', 'features/build-entrypoints.md', 'features/destructive-confirmation.md', 'features/native-ci-evidence.md',
-  'features/ui/m3-shell-boundary.md', 'features/editor-settings.md', 'features/changelog-viewer.md', 'features/pages-language-tone.md', 'features/pages-a11y-boundary.md',
+  'features/ui/m3-shell-boundary.md', 'features/ui/material-sandbox-ui-rewrite.md', 'features/editor-settings.md', 'features/changelog-viewer.md', 'features/pages-language-tone.md', 'features/pages-a11y-boundary.md',
 ].map((path) => ({ path, slug: path.replace(/^features\//, '').replace(/^ui\//, '').replace(/\.md$/, ''), related: [] }));
 
 const COPY = {

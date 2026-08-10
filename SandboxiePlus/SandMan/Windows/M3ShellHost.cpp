@@ -715,7 +715,7 @@ void Refresh(QMainWindow* window, QMenuBar* menuBar)
     auto* shellLayout = new QVBoxLayout(shellRoot);
     shellLayout->setContentsMargins(0, 0, 0, 0);
     shellLayout->setSpacing(0);
-    auto* bar = new AppBar(window, menuBar);
+    auto* bar = new ::AppBar(window, menuBar);
     shellLayout->addWidget(bar);
 
     QPointer<QWidget> previous = window->menuWidget();

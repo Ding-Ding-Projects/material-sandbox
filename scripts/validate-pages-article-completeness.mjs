@@ -6,7 +6,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const docsRoot = path.join(root, 'docs');
 const manifestPath = path.join(docsRoot, 'articles', 'index.json');
 const routeRegistryPath = path.join(docsRoot, 'assets', 'article-routes.json');
-const expectedArticleCount = 22;
+const expectedArticleCount = 23;
 const failures = [];
 
 function fail(message) {

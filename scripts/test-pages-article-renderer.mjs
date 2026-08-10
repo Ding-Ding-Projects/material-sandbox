@@ -34,7 +34,7 @@ test('build creates a local direct-entry route for every catalogued and suppleme
     fs.mkdirSync(output); fs.writeFileSync(path.join(output, 'retired.html'), 'retired', 'utf8'); fs.writeFileSync(path.join(output, 'keep.txt'), 'keep', 'utf8');
     const result = build(fixture);
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /features=22 supplemental=2/);
+    assert.match(result.stdout, /features=23 supplemental=2/);
     const manifest = JSON.parse(fs.readFileSync(path.join(fixture, 'docs', 'articles', 'index.json'), 'utf8'));
     const expected = [...manifest.articles.map((article) => article.slug), 'changelog', 'screenshots'].sort();
     const actual = fs.readdirSync(output).filter((name) => name.endsWith('.html')).map((name) => name.slice(0, -5)).sort();
@@ -52,14 +52,14 @@ test('build creates a local direct-entry route for every catalogued and suppleme
   });
 });
 
-test('build rejects a manifest that no longer represents the canonical 22-article catalog', () => {
+test('build rejects a manifest that no longer represents the canonical 23-article catalog', () => {
   withFixture((fixture) => {
     const manifestPath = path.join(fixture, 'docs', 'articles', 'index.json');
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
     manifest.articles.pop(); fs.writeFileSync(manifestPath, JSON.stringify(manifest), 'utf8');
     const result = build(fixture);
     assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /exactly 22 feature articles/);
+    assert.match(result.stderr, /exactly 23 feature articles/);
   });
 });
 

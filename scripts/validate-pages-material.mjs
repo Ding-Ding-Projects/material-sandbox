@@ -71,7 +71,7 @@ const checks = [
   ['legacy browser confirmation and prompt calls are absent', !/\bconfirm\s*\(/.test(app) && !/\bprompt\s*\(/.test(app)],
   ['public dim-sum asset is the only network image exception', app.includes('dim-sum-photos/releases/download/catalog-v1-part-003/')],
   ['installer remains honestly absent without a verified manifest', app.includes('No installer is advertised')],
-  ['feature articles are catalogued', Array.isArray(manifest.articles) && manifest.articles.length === 22],
+  ['feature articles are catalogued', Array.isArray(manifest.articles) && manifest.articles.length === 23],
   ['article routes cover the whole catalog', Array.isArray(routeRegistry.articles) && routeRegistry.articles.length === manifest.articles.length],
 ];
 

@@ -14,8 +14,6 @@ If a stored family is unavailable, Qt falls back to its current application fami
 
 Run `node scripts/validate-appearance-editor.mjs`, then open the editor, change each supported control, accept, reopen to confirm persistence, and activate **Reset to shipped defaults**. The dialog and page-target editor explicitly disclose that line-height, baseline offset, superscript, subscript, underline variants, and text effects are unsupported. Qt 6.8 can represent variable axes, but this editor does not expose or persist them until global widget-style behavior is verified. The stable-keyed per-tab override styles the tab page content, not its `QTabBar` label, and uses only safe `QFont` properties rather than fabricating rich-text layout controls.
 
-Suggested articles: [Material Design](../material-design.md), [Color translator](color-translator.md), [Settings history](settings-history.md).
-
 ## GitHub Pages workspace
 
 The GitHub Pages site has a separate browser-local M3 editor for marked cards and
@@ -31,3 +29,5 @@ path. Malformed colors and any value that is not a bounded allowed field are
 discarded during import before CSS is applied. Run
 `node scripts/validate-pages-material.mjs` and test an exported/imported
 preference file in a browser for the Pages-specific boundary.
+
+Suggested articles: [Material Design](../material-design.md), [Color translator](color-translator.md), [Settings history](settings-history.md).
