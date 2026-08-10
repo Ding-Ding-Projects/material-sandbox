@@ -1,9 +1,17 @@
 #include "stdafx.h"
 #include "BoxImageWindow.h"
-#include "M3ShellHost.h"
+#include "M3DialogHost.h"
 #include "SandMan.h"
 #include "../MiscHelpers/Common/Settings.h"
 #include "../MiscHelpers/Common/Common.h"
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QGridLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPixmap>
 
 
 CBoxImageWindow::CBoxImageWindow(EAction Action, QWidget *parent)
@@ -20,9 +28,58 @@ CBoxImageWindow::CBoxImageWindow(EAction Action, QWidget *parent)
 	//flags &= ~Qt::WindowSystemMenuHint;
 	setWindowFlags(flags);
 
-	ui.setupUi(this);
-	this->setWindowTitle(tr("Sandboxie-Plus - Password Entry"));
-	M3ShellHost::InstallDialog(this, windowTitle());
+	setWindowTitle(tr("Sandboxie-Plus - Password Entry"));
+	ui.lblIcon = new QLabel(this);
+	ui.lblInfo = new QLabel(this);
+	ui.lblInfo->setWordWrap(true);
+	ui.lblPassword = new QLabel(tr("Enter Password"), this);
+	ui.lblNewPassword = new QLabel(tr("New Password"), this);
+	ui.lblRepeatPassword = new QLabel(tr("Repeat Password"), this);
+	ui.lblImageSize = new QLabel(tr("Disk Image Size"), this);
+	ui.lblImageSizeKb = new QLabel(tr("kilobytes"), this);
+	ui.lblCipher = new QLabel(tr("Encryption Cipher"), this);
+	ui.txtPassword = new QLineEdit(this);
+	ui.txtNewPassword = new QLineEdit(this);
+	ui.txtRepeatPassword = new QLineEdit(this);
+	ui.txtPassword->setEchoMode(QLineEdit::Password);
+	ui.txtNewPassword->setEchoMode(QLineEdit::Password);
+	ui.txtRepeatPassword->setEchoMode(QLineEdit::Password);
+	ui.lblPassword->setBuddy(ui.txtPassword);
+	ui.lblNewPassword->setBuddy(ui.txtNewPassword);
+	ui.lblRepeatPassword->setBuddy(ui.txtRepeatPassword);
+	ui.txtImageSize = new QLineEdit(this);
+	ui.txtImageSize->setMaximumWidth(110);
+	ui.lblImageSize->setBuddy(ui.txtImageSize);
+	ui.cmbCipher = new QComboBox(this);
+	ui.lblCipher->setBuddy(ui.cmbCipher);
+	ui.chkShow = new QCheckBox(tr("Show Password"), this);
+	ui.chkProtect = new QCheckBox(tr("Protect Box Root from access by unsandboxed processes"), this);
+	ui.chkProtect->setChecked(true);
+	ui.chkAutoLock = new QCheckBox(tr("Lock the box when all processes stop."), this);
+	ui.buttonBox = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Ok, Qt::Horizontal, this);
+
+	auto* root = new QGridLayout(this);
+	root->setContentsMargins(16, 16, 16, 16);
+	root->setHorizontalSpacing(12);
+	root->setVerticalSpacing(8);
+	root->addWidget(ui.lblIcon, 0, 0);
+	root->addWidget(ui.lblInfo, 0, 1, 1, 4);
+	root->addWidget(ui.lblPassword, 1, 0, 1, 2, Qt::AlignRight);
+	root->addWidget(ui.txtPassword, 1, 2, 1, 2);
+	root->addWidget(ui.lblNewPassword, 2, 0, 1, 2, Qt::AlignRight);
+	root->addWidget(ui.txtNewPassword, 2, 2, 1, 2);
+	root->addWidget(ui.lblRepeatPassword, 3, 0, 1, 2, Qt::AlignRight);
+	root->addWidget(ui.txtRepeatPassword, 3, 2, 1, 2);
+	root->addWidget(ui.chkShow, 4, 3);
+	root->addWidget(ui.lblImageSize, 6, 0, 1, 2, Qt::AlignRight);
+	root->addWidget(ui.txtImageSize, 6, 2);
+	root->addWidget(ui.lblImageSizeKb, 6, 3);
+	root->addWidget(ui.lblCipher, 7, 0, 1, 2, Qt::AlignRight);
+	root->addWidget(ui.cmbCipher, 7, 2);
+	root->addWidget(ui.chkProtect, 8, 2, 1, 3);
+	root->addWidget(ui.chkAutoLock, 9, 2, 1, 3);
+	root->addWidget(ui.buttonBox, 10, 0, 1, 5);
+	M3DialogHost::Install(this);
 
 	m_Action = Action;
 
