@@ -208,10 +208,12 @@ dialogs now use the reusable `M3DialogHost`. It supplies a frameless title
 surface, accessible close action, keyboard-sized target, and drag behavior while
 preserving each dialog's existing content and decision semantics.
 
-`M3ShellHost::InstallDialog` is the first dialog migration slice. `BoxImageWindow`
-and `TestProxyDialog` retain their tested controls and async behavior while
-their native dialog chrome is replaced by the same frameless M3 header, close
-control, focus styling, and 40×32px target contract. `SelectBoxWindow` now also
+`M3ShellHost::InstallDialog` was the first dialog migration slice. `TestProxyDialog`
+now owns its proxy summary, progress, transcript, test settings, and actions in
+code; its retired Designer form no longer participates in the build. The shared
+`M3DialogHost` supplies its frameless M3 header, close control, focus styling,
+and 40×32px target contract while preserving the tested async behavior.
+`SelectBoxWindow` now also
 owns its sandbox-selection controls in code, preserving grouped tree selection,
 double-click launch, force-child/admin actions, and geometry persistence without
 the retired Designer form. `BoxImageWindow` likewise owns its password, image
