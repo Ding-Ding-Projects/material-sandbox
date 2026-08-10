@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SandMan.h"
 #include "Windows/M3ShellHost.h"
+#include "Windows/M3WorkspaceHost.h"
 #include "../MiscHelpers/Common/Common.h"
 #include "../MiscHelpers/Common/ExitDialog.h"
 #include "../MiscHelpers/Common/SortFilterProxyModel.h"
@@ -575,6 +576,7 @@ CSandMan::CSandMan(QWidget *parent)
 	// routable underneath it while they migrate to native M3 components.
 	M3ShellHost::Install(this, m_pMenuBar);
 
+	CM3WorkspaceHost::install(this);
 	m_iRefreshTick = 0;
 
 	m_pSummaryInfo = new QLabel();
@@ -4507,6 +4509,12 @@ void CSandMan::RebuildUI()
 
 	CreateUI();
 
+
+	// MATERIAL_SANDBOX_M3_REWRITE: rebind the Material shell to the rebuilt action graph.
+
+	M3ShellHost::Refresh(this, m_pMenuBar);
+
+	CM3WorkspaceHost::install(this);
 	m_pTrayMenu->deleteLater();
 	CreateTrayMenu();
 

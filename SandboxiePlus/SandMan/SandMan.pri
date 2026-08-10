@@ -166,3 +166,38 @@ TRANSLATIONS += sandman_ar.ts \
 
 
 RESOURCES += Resources/SandMan.qrc
+
+# BEGIN MATERIAL_SANDBOX_M3_REWRITE
+HEADERS += \
+    Windows/M3Menu.h \
+    Windows/M3NavigationRail.h \
+    Windows/M3PageNavigationHost.h \
+    Windows/M3SearchField.h \
+    Windows/M3TabStrip.h \
+    Windows/M3WorkspaceHost.h \
+    Windows/RegexBuilderDialog.h \
+    Windows/SnackBar.h \
+    Views/LocalMemoryRepository.h \
+    Views/MemorySyncView.h \
+    Views/SkillsView.h \
+    Views/MemoryInventoryView.h \
+    Views/OperationsView.h \
+    Views/StatusHubView.h \
+    ../MiscHelpers/Common/M3Tokens.h
+SOURCES += \
+    Windows/M3Menu.cpp \
+    Windows/M3NavigationRail.cpp \
+    Windows/M3PageNavigationHost.cpp \
+    Windows/M3SearchField.cpp \
+    Windows/M3TabStrip.cpp \
+    Windows/M3WorkspaceHost.cpp \
+    Windows/RegexBuilderDialog.cpp \
+    Windows/SnackBar.cpp \
+    Views/LocalMemoryRepository.cpp \
+    Views/MemorySyncView.cpp \
+    Views/SkillsView.cpp \
+    Views/MemoryInventoryView.cpp \
+    Views/OperationsView.cpp \
+    Views/StatusHubView.cpp \
+    ../MiscHelpers/Common/M3Tokens.cpp
+# END MATERIAL_SANDBOX_M3_REWRITE

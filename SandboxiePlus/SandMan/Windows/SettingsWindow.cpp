@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SettingsWindow.h"
 #include "M3DialogHost.h"
+#include "M3PageNavigationHost.h"
 #include "EditorSettingsWindow.h"
 #include "SandMan.h"
 #include "../MiscHelpers/Common/Settings.h"
@@ -316,6 +317,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	// tracked separately because this form owns hundreds of controls.
 	M3DialogHost::Install(this);
 
+	// MATERIAL_SANDBOX_M3_REWRITE: retain the live tab/state graph and replace only its presentation.
+	CM3PageNavigationHost::adapt(this, ui.tabs, tr("Search settings"));
 	// Global presentation settings live beside the existing interface controls
 	// so they persist with the profile and are discoverable by the settings
 	// search.  The explanatory text names the real defaults instead of hiding
