@@ -33,9 +33,11 @@ CSettings::CSettings(const QString& AppDir, const QString& AppName, const QStrin
 	}
 
 	m_pConf = new QSettings(m_ConfigDir + "/" + AppName + ".ini", QSettings::IniFormat, this);
-	m_History = new CLocalSettingsHistory(m_ConfigDir + "/history/settings-history.jsonl");
-
 	m_pConf->sync();
+	m_History = new CLocalSettingsHistory(
+		m_ConfigDir + "/history/settings-history",
+		m_ConfigDir + "/history/settings-history.jsonl");
+	m_History->initialize(this);
 
 	//m_DefaultValues = DefaultValues;
 	//foreach (const QString& Key, m_DefaultValues.keys())
@@ -69,7 +71,7 @@ void CSettings::DelValue(const QString& key)
 		m_ValueCache.clear();
 	}
 	if (m_History)
-		m_History->record(key, hadBefore, before, false, QVariant(), QStringLiteral("setting deleted"));
+		m_History->record(this, key, hadBefore, before, false, QVariant(), QStringLiteral("setting deleted"));
 }
 
 bool CSettings::SetValue(const QString &key, const QVariant &value)
@@ -94,7 +96,7 @@ bool CSettings::SetValue(const QString &key, const QVariant &value)
 		m_ValueCache.clear();
 	}
 	if (m_History)
-		m_History->record(key, hadBefore, before, true, value);
+		m_History->record(this, key, hadBefore, before, true, value);
 	return true;
 }
 

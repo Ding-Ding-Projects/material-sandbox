@@ -10,10 +10,10 @@
 #include "../mischelpers_global.h"
 
 class CSettings;
-class QJsonObject;
 
-// Append-only, local settings history. The history file lives beside the
-// profile, never inside the user's project and never leaves the machine.
+// Append-only settings revisions stored in an isolated local Git repository.
+// The repository lives beside the application profile, never in a user's own
+// project, and is deliberately kept without a remote.
 class MISCHELPERS_EXPORT CLocalSettingsHistory
 {
 public:
@@ -23,34 +23,44 @@ public:
         QDateTime timestamp;
         QString key;
         QString action;
-        bool hadBefore = false;
-        QVariant before;
-        bool hadAfter = false;
-        QVariant after;
-        // A checkpoint stores the complete settings key/value map.  Delta
-        // records keep this false so existing callers remain source-compatible.
         bool isSnapshot = false;
-        QVariantMap snapshot;
     };
 
-    explicit CLocalSettingsHistory(const QString& filePath, int maxEntries = 500);
+    explicit CLocalSettingsHistory(const QString& repositoryPath,
+        const QString& legacyJsonlPath = QString(), int maxEntries = 500);
 
-    void record(const QString& key, bool hadBefore, const QVariant& before,
-        bool hadAfter, const QVariant& after, const QString& action = QStringLiteral("settings changed"));
+    bool initialize(CSettings* settings, QString* error = nullptr);
+    void record(CSettings* settings, const QString& key, bool hadBefore,
+        const QVariant& before, bool hadAfter, const QVariant& after,
+        const QString& action = QStringLiteral("settings changed"));
     bool checkpoint(CSettings* settings, QString* id = nullptr,
-        QString* error = nullptr, const QString& action = QStringLiteral("settings checkpoint"));
+        QString* error = nullptr,
+        const QString& action = QStringLiteral("settings checkpoint"));
     QVector<Entry> entries() const;
-    bool restore(const QString& id, CSettings* settings, QString* error = nullptr) const;
-    QString filePath() const { return m_filePath; }
+    bool restore(const QString& id, CSettings* settings, QString* error = nullptr);
+    bool exportBundle(const QString& path, QString* error = nullptr) const;
+
+    QString repositoryPath() const { return m_repositoryPath; }
+    QString gitExecutable() const { return m_gitExecutable; }
+    bool isAvailable() const;
+    QString lastError() const;
 
 private:
-    void load();
-    bool write() const;
-    static QJsonObject toJson(const Entry& entry);
-    static Entry fromJson(const QJsonObject& object);
-
-    QString m_filePath;
+    bool ensureRepository(QString* error);
+    bool archiveLegacyHistory(QString* error);
+    bool commitCurrentSnapshot(CSettings* settings, const QString& action,
+        const QString& key, bool isSnapshot, QString* id, QString* error);
+    bool writeSnapshot(const QVariantMap& values, QString* error) const;
+    bool readSnapshot(const QString& id, QVariantMap* values, QString* error) const;
+    bool loadEntries(QString* error);
+    bool runGit(const QStringList& arguments, QByteArray* standardOutput,
+        QString* error, int timeoutMs = 10000) const;
+    QString m_repositoryPath;
+    QString m_legacyJsonlPath;
+    QString m_gitExecutable;
     int m_maxEntries;
     mutable QMutex m_mutex;
     QVector<Entry> m_entries;
+    bool m_available = false;
+    QString m_lastError;
 };

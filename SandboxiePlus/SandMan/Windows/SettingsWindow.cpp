@@ -794,38 +794,57 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		connect(historyButton, &QPushButton::clicked, this, [this]() {
 			if (!theConf->History())
 				return;
+			CLocalSettingsHistory* history = theConf->History();
 			QDialog* dialog = new QDialog(this, Qt::Tool | Qt::WindowStaysOnTopHint);
 			dialog->setAttribute(Qt::WA_DeleteOnClose);
 			dialog->setWindowTitle(tr("Settings history"));
 			dialog->resize(640, 420);
 			QVBoxLayout* layout = new QVBoxLayout(dialog);
+			QLabel* repositoryStatus = new QLabel(dialog);
+			repositoryStatus->setWordWrap(true);
+			repositoryStatus->setTextInteractionFlags(Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
+			repositoryStatus->setAccessibleName(tr("Local Git history status"));
+			const QString historyError = history->lastError();
+			repositoryStatus->setText(history->isAvailable()
+				? (historyError.isEmpty()
+					? tr("Local Git repository: %1").arg(QDir::toNativeSeparators(history->repositoryPath()))
+					: tr("Local Git repository: %1\nLatest history warning: %2").arg(QDir::toNativeSeparators(history->repositoryPath()), historyError))
+				: tr("Local Git history is unavailable: %1").arg(historyError));
+			layout->addWidget(repositoryStatus);
 			QLineEdit* search = new QLineEdit(dialog);
 			search->setPlaceholderText(tr("Filter revisions by key, action, or date"));
 			search->setAccessibleName(tr("Settings history search"));
 			layout->addWidget(search);
 			QListWidget* revisions = new QListWidget(dialog);
+			revisions->setAccessibleName(tr("Local Git settings revisions"));
 			revisions->setSelectionMode(QAbstractItemView::SingleSelection);
 			layout->addWidget(revisions, 1);
 			QPushButton* restore = new QPushButton(tr("Restore selected revision"), dialog);
 			restore->setEnabled(false);
+			restore->setAccessibleName(tr("Restore selected Git revision"));
 			layout->addWidget(restore);
 			QPushButton* checkpoint = new QPushButton(tr("Create full settings checkpoint"), dialog);
-			checkpoint->setToolTip(tr("Save one bounded, type-preserving snapshot of all settings on this device."));
+			checkpoint->setToolTip(tr("Commit one bounded, type-preserving snapshot to the local Git repository."));
+			checkpoint->setEnabled(history->isAvailable());
 			layout->addWidget(checkpoint);
 			QHBoxLayout* exportLayout = new QHBoxLayout();
 			QPushButton* exportJson = new QPushButton(tr("Export JSON"), dialog);
 			QPushButton* exportMarkdown = new QPushButton(tr("Export Markdown"), dialog);
+			QPushButton* exportBundle = new QPushButton(tr("Export Git bundle"), dialog);
+			exportBundle->setToolTip(tr("Export the complete, re-importable local history repository as one Git bundle."));
+			exportBundle->setEnabled(history->isAvailable());
 			exportLayout->addWidget(exportJson);
 			exportLayout->addWidget(exportMarkdown);
+			exportLayout->addWidget(exportBundle);
 			layout->addLayout(exportLayout);
-			QSharedPointer<QVector<CLocalSettingsHistory::Entry>> entries(new QVector<CLocalSettingsHistory::Entry>(theConf->History()->entries()));
+			QSharedPointer<QVector<CLocalSettingsHistory::Entry>> entries(new QVector<CLocalSettingsHistory::Entry>(history->entries()));
 			auto refill = [entries, revisions, search]() {
 				revisions->clear();
 				const QString query = search->text().trimmed();
 				for (int i = entries->size() - 1; i >= 0; --i) {
 					const auto& entry = entries->at(i);
 					const QString kind = entry.isSnapshot ? QObject::tr("[Snapshot]") : QString();
-					const QString text = QStringLiteral("%1 · %2 · %3 %4").arg(QLocale().toString(entry.timestamp.toLocalTime(), QLocale::ShortFormat), entry.action, kind, entry.key);
+					const QString text = QStringLiteral("%1 · %2 · %3 %4 · %5").arg(QLocale().toString(entry.timestamp.toLocalTime(), QLocale::ShortFormat), entry.action, kind, entry.key, entry.id.left(8));
 					if (!query.isEmpty() && !text.contains(query, Qt::CaseInsensitive))
 						continue;
 					QListWidgetItem* item = new QListWidgetItem(text, revisions);
@@ -863,6 +882,14 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			};
 			connect(exportJson, &QPushButton::clicked, dialog, [dialog, exportHistory]() { const QString path = QFileDialog::getSaveFileName(dialog, QObject::tr("Export settings history"), QString(), QObject::tr("JSON files (*.json)")); if (!path.isEmpty()) exportHistory(path, false); });
 			connect(exportMarkdown, &QPushButton::clicked, dialog, [dialog, exportHistory]() { const QString path = QFileDialog::getSaveFileName(dialog, QObject::tr("Export settings history"), QString(), QObject::tr("Markdown files (*.md)")); if (!path.isEmpty()) exportHistory(path, true); });
+			connect(exportBundle, &QPushButton::clicked, dialog, [dialog, history]() {
+				const QString path = QFileDialog::getSaveFileName(dialog, QObject::tr("Export complete settings history"), QString(), QObject::tr("Git bundle (*.bundle)"));
+				if (path.isEmpty())
+					return;
+				QString error;
+				if (!history->exportBundle(path, &error))
+					QToolTip::showText(QCursor::pos(), error, dialog);
+			});
 			connect(restore, &QPushButton::clicked, dialog, [this, dialog, revisions]() {
 				QListWidgetItem* item = revisions->currentItem();
 				if (!item)
@@ -871,11 +898,14 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 				if (theConf->History()->restore(item->data(Qt::UserRole).toString(), theConf, &error)) {
 					theConf->Sync();
 					theGUI->UpdateSettings(true);
+					if (!error.isEmpty())
+						theGUI->OnLogMessage(error, true);
 					dialog->close();
 				} else {
 					QToolTip::showText(QCursor::pos(), error, dialog);
 				}
 			});
+			M3DialogHost::Install(dialog);
 			dialog->show();
 		});
 
