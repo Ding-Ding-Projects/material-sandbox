@@ -32,6 +32,7 @@ function makeFixture(name) {
     'SandboxiePlus/SandMan/SandMan.cpp',
     'SandboxiePlus/SandMan/SandMan.pri',
     'SandboxiePlus/SandMan/SandMan.vcxproj',
+    'scripts/validate-color-translator.mjs',
   ]) copyFile(fixture, relativePath);
   for (const asset of canonicalScreenshotAssets)
     copyFile(fixture, `SandboxiePlus/SandMan/Resources/${asset.resource}`);
@@ -201,6 +202,15 @@ test('resource copies cannot replace the canonical documentation source', () => 
   const result = runValidator(fixture);
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Qt documentation resource source for Docs\/articles\/material-design\.md must be/);
+});
+
+test('documentation validators reject a legacy canonical-article QRC alias', () => {
+  const fixture = makeFixture('legacy-validator-qrc-alias');
+  const validator = path.join(fixture, 'scripts', 'validate-color-translator.mjs');
+  replaceOnce(validator, 'Docs/articles/color-translator.md', 'Docs/color-translator.md');
+  const result = runValidator(fixture);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /documentation validator validate-color-translator\.mjs uses the legacy article alias Docs\/color-translator\.md/);
 });
 
 test('an unresolved or escaping Markdown destination fails the link guard', () => {

@@ -11,7 +11,7 @@ const checks = [
   ['SandboxiePlus/SandMan/Windows/ColorTranslatorDialog.cpp', 'QString normalized = value.trimmed()'],
   ['SandboxiePlus/SandMan/Windows/SettingsWindow.cpp', 'CColorTranslatorDialog'],
   ['SandboxiePlus/SandMan/SandMan.pri', 'ColorTranslatorDialog.cpp'],
-  ['SandboxiePlus/SandMan/Resources/SandMan.qrc', 'Docs/color-translator.md'],
+  ['SandboxiePlus/SandMan/Resources/SandMan.qrc', 'Docs/articles/color-translator.md'],
   ['docs/features/color-translator.md', 'HEX/HEX8'],
 ];
 for (const [file, needle] of checks) {

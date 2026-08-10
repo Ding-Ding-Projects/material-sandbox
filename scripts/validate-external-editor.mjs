@@ -19,7 +19,7 @@ const requiredSource = [
   'Open profile folder in VS Code', 'QProcess::startDetached'
 ];
 for (const token of requiredSource) if (!source.includes(token)) throw new Error(`missing source contract: ${token}`);
-if (!qrc.includes('Docs/external-editor.md')) throw new Error('offline documentation is not bundled in SandMan.qrc');
+if (!qrc.includes('Docs/articles/external-editor.md')) throw new Error('offline documentation is not bundled in SandMan.qrc');
 for (const text of [feature, offline]) {
   if (!text.startsWith('# ')) throw new Error('external-editor article has no title');
   if (!/Suggested articles:/i.test(text)) throw new Error('external-editor article has no suggested articles');

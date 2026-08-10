@@ -31,7 +31,7 @@ const checks = [
   ['per-element target boundary', tabs.includes('Edit tab page typography') && tabs.includes('tab page content, not the tab-bar label') && docs.includes('tab page content rather than its `QTabBar` label')],
   ['qmake registration', pri.includes('./Windows/AppearanceEditorDialog.h') && pri.includes('./Windows/AppearanceEditorDialog.cpp')],
   ['MSVC registration', vcxproj.includes('Windows\\AppearanceEditorDialog.cpp') && vcxproj.includes('Windows\\AppearanceEditorDialog.h')],
-  ['offline article bundle', qrc.includes('Docs/appearance-editor.md')],
+  ['offline article bundle', qrc.includes('Docs/articles/appearance-editor.md')],
 ];
 const failed = checks.filter(([, ok]) => !ok).map(([name]) => name);
 if (failed.length) {

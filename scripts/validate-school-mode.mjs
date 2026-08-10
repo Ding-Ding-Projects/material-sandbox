@@ -9,7 +9,7 @@ const checks = [
   ['SandboxiePlus/MiscHelpers/Common/UserPresentationSettings.cpp', 'Options/SchoolModeEnabled'],
   ['SandboxiePlus/MiscHelpers/Common/UserPresentationSettings.cpp', 'return LanguageMode::English'],
   ['SandboxiePlus/SandMan/Windows/SettingsWindow.cpp', 'Reset mode name'],
-  ['SandboxiePlus/SandMan/Resources/SandMan.qrc', 'Docs/school-mode.md'],
+  ['SandboxiePlus/SandMan/Resources/SandMan.qrc', 'Docs/articles/school-mode.md'],
   ['docs/features/school-mode.md', 'operating-system credential-vault'],
 ];
 for (const [file, needle] of checks) {

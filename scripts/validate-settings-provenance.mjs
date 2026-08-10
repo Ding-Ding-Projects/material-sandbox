@@ -11,7 +11,7 @@ const checks = [
   ['font provenance is disclosed', source.includes('UIConfig/UIFontFamily') && source.includes('typography')],
   ['provenance refreshes after edits', source.includes('refreshPresentationProvenance();') && source.includes('refreshAppearanceProvenance();')],
   ['docs describe fallback semantics', docs.includes('compiled-in value') && docs.includes('profile value') && docs.includes('does not claim')],
-  ['offline article bundle', qrc.includes('Docs/settings-provenance.md')],
+  ['offline article bundle', qrc.includes('Docs/articles/settings-provenance.md')],
 ];
 const failed = checks.filter(([, ok]) => !ok).map(([name]) => name);
 if (failed.length) throw new Error(`settings-provenance-contract failed: ${failed.join(', ')}`);

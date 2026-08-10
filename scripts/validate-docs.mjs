@@ -1183,6 +1183,21 @@ export function validateDocumentationRepository(root = process.cwd(), { validate
   }
   assert(new Set(actualQrc.map(record => record.alias)).size === actualQrc.length, 'Qt documentation resource aliases must be unique');
 
+  const validatorsDirectory = path.join(repositoryRoot, 'scripts');
+  if (fs.existsSync(validatorsDirectory)) {
+    for (const entry of fs.readdirSync(validatorsDirectory, { withFileTypes: true })) {
+      if (!entry.isFile() || !/^validate-[a-z0-9-]+\.mjs$/.test(entry.name)) continue;
+      const validatorPath = path.join(validatorsDirectory, entry.name);
+      const validator = decodeUtf8(assertContainedRegularFile(repositoryRoot, validatorPath,
+        `documentation validator ${entry.name}`).bytes, `documentation validator ${entry.name}`);
+      for (const article of canonicalArticles) {
+        const legacyAlias = `Docs/${article.slug}.md`;
+        assert(!validator.includes(`'${legacyAlias}'`) && !validator.includes(`"${legacyAlias}"`) && !validator.includes(`\`${legacyAlias}\``),
+          `documentation validator ${entry.name} uses the legacy article alias ${legacyAlias}; use Docs/articles/${article.slug}.md`);
+      }
+    }
+  }
+
   const pri = decodeUtf8(assertContainedRegularFile(repositoryRoot, path.join(repositoryRoot, 'SandboxiePlus', 'SandMan', 'SandMan.pri'), 'SandMan.pri').bytes, 'SandMan.pri');
   const vcxproj = decodeUtf8(assertContainedRegularFile(repositoryRoot, path.join(repositoryRoot, 'SandboxiePlus', 'SandMan', 'SandMan.vcxproj'), 'SandMan.vcxproj').bytes, 'SandMan.vcxproj');
   for (const token of [
