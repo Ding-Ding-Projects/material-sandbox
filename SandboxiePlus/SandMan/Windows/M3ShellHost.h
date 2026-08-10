@@ -1,24 +1,26 @@
 #pragma once
 
-#include <QMainWindow>
+#include <QString>
 
-class QMenuBar;
 class QDialog;
+class QMainWindow;
+class QMenuBar;
+class QWidget;
 
-// Material 3 application chrome boundary.
-//
-// The existing SandMan views remain functional children of the window, but
-// native/platform title-bar chrome is no longer part of the product surface.
-// Keeping this boundary in one small host lets each legacy view migrate
-// independently without re-introducing a second title-bar implementation.
-namespace M3ShellHost {
+namespace M3ShellHost
+{
+    // Installs the Material 3 app bar without replacing the existing QMainWindow,
+    // QAction graph, central widget, status bar, or window-domain behavior.
+    void Install(QMainWindow* window, QMenuBar* menuBar = nullptr);
 
-/// Install the frameless M3 title bar and menu surface on a QMainWindow.
-/// The operation is idempotent and safe to call during UI rebuilds.
-void Install(QMainWindow* window, QMenuBar* menuBar);
+    // Rebinds the app bar to the current menu/action graph after SandMan rebuilds
+    // its UI. This is intentionally separate from Install so runtime UI refreshes
+    // do not duplicate global installers, snackbars, or window flags.
+    void Refresh(QMainWindow* window, QMenuBar* menuBar = nullptr);
 
-/// Replace native dialog chrome while preserving the dialog's existing
-/// content layout. Safe to call once per Designer-backed dialog.
-void InstallDialog(QDialog* dialog, const QString& title);
+    // Applies the shared Material dialog treatment. Settings and Box Options are
+    // adapted to the two-pane contract in-place while retaining their live pages.
+    void InstallDialog(QDialog* dialog, const QString& title = QString());
 
+    QWidget* AppBar(QMainWindow* window);
 }

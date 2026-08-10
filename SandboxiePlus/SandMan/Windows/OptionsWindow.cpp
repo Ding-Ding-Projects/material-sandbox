@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "OptionsWindow.h"
 #include "M3DialogHost.h"
+#include "M3PageNavigationHost.h"
 #include "EditorSettingsWindow.h"
 #include "SandMan.h"
 #include "SettingsWindow.h"
@@ -196,6 +197,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	// the shared host replaces its platform chrome while each tab is migrated.
 	M3DialogHost::Install(this);
 
+	// MATERIAL_SANDBOX_M3_REWRITE: retain the live tab/state graph and replace only its presentation.
+	CM3PageNavigationHost::adapt(this, ui.tabs, tr("Search sandbox options"));
 	// Replace the self-contained File Options child tab with native M3 controls
 	// while preserving OptionsGeneral's generated pointers and handlers.
 	if (ui.tabsGeneral && ui.tabFile) {

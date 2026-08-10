@@ -17,3 +17,4 @@ This category documents local, user-controlled recovery behavior. Each article n
 - [Native CI evidence and stale-run control](native-ci-evidence.md)
 - [In-app changelog viewer](changelog-viewer.md)
 - [Windows build entrypoints](build-entrypoints.md)
+- [Material Sandbox UI rewrite overlay](ui/material-sandbox-ui-rewrite.md)
