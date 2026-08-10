@@ -5,7 +5,9 @@
 #include <QWidget>
 
 class CRegexBuilderDialog;
+class QEvent;
 class QLineEdit;
+class QPaintEvent;
 class QPushButton;
 
 class CM3SearchField final : public QWidget
@@ -47,6 +49,11 @@ signals:
                        bool valid,
                        QString error);
 
+protected:
+    void changeEvent(QEvent* event) override;
+    bool eventFilter(QObject* watched, QEvent* event) override;
+    void paintEvent(QPaintEvent* event) override;
+
 private slots:
     void onTextEdited(const QString& text);
     void clearSearch();
@@ -57,6 +64,7 @@ private slots:
 private:
     void ensureRegexBuilder();
     void rebuildExpression(bool notify);
+    void updateAccessibleNames();
     void updateControlState();
     void returnFocusToEditor();
     static QRegularExpression compileRegex(const QString& pattern, const QString& flags, QString* error);
