@@ -35,6 +35,8 @@ const required = [
   `${base}/Windows/M3TabStrip.h`, `${base}/Windows/M3TabStrip.cpp`,
   `${base}/Windows/M3WorkspaceHost.h`, `${base}/Windows/M3WorkspaceHost.cpp`,
   `${base}/Windows/M3PageNavigationHost.h`, `${base}/Windows/M3PageNavigationHost.cpp`,
+  `${base}/Tests/M3PageNavigationHostTests.cpp`, `${base}/Tests/M3PageNavigationHostTests.pro`,
+  `${base}/Tests/M3PageNavigationHostTests.vcxproj`,
   `${base}/Windows/SnackBar.h`, `${base}/Windows/SnackBar.cpp`,
   `${base}/Views/LocalMemoryRepository.h`, `${base}/Views/LocalMemoryRepository.cpp`,
   `${base}/Views/MemorySyncView.h`, `${base}/Views/MemorySyncView.cpp`,
@@ -84,10 +86,36 @@ expect(workspace.includes('new CMemorySyncView'), 'memory views are registered')
 expect(!workspace.includes('QStringLiteral("settings"), QStringLiteral("options")'), 'Settings adapter does not select broad Box Options actions');
 
 const pageHost = read(`${base}/Windows/M3PageNavigationHost.cpp`);
+const pageHostHeader = read(`${base}/Windows/M3PageNavigationHost.h`);
 expect(pageHost.includes('replaceWidget(tabs, host'), 'Settings/Options are adapted in place');
 expect(pageHost.includes('setData(Qt::UserRole'), 'page identity is retained');
 expect(pageHost.includes('m_adaptedTabs->setCurrentIndex'), 'original QTabWidget remains authoritative');
+expect(pageHostHeader.includes('void rebind(QTabWidget* tabs)'), 'page host can rebind a final tab container');
+expect(pageHostHeader.includes('QStackedLayout* pages'), 'page host can bind a final tree-converted stack');
+expect(pageHost.includes('m_adaptedStack->setCurrentIndex'), 'M3 navigation drives tree-converted pages');
 expect(!pageHost.includes('removeTab('), 'Settings/Options adapter does not detach live pages');
+
+const pageHostTests = read(`${base}/Tests/M3PageNavigationHostTests.cpp`);
+const pageHostTestProject = read(`${base}/Tests/M3PageNavigationHostTests.pro`);
+const pageHostVisualStudioProject = read(`${base}/Tests/M3PageNavigationHostTests.vcxproj`);
+const visualStudioSolution = read('SandboxiePlus/SandboxiePlus.sln');
+const qmakeBuild = read('SandboxiePlus/qmake_plus.cmd');
+expect((pageHostTests.match(/QEvent::DeferredDelete/g) || []).length >= 1, 'page-host tests process deferred deletes');
+for (const scenario of [
+  'settingsNormalRebindSurvivesDeferredDelete',
+  'settingsOptionTreeRebindSurvivesDeferredDeletes',
+  'optionsNormalRefreshSurvivesDeferredDelete',
+  'optionsOptionTreeRebindSurvivesDeferredDelete',
+]) {
+  expect(pageHostTests.includes(scenario), `page-host lifecycle test covers ${scenario}`);
+}
+expect(pageHostTests.includes('navigation->setCurrentRow(index)'), 'page-host tests drive every page through visible M3 navigation');
+expect(pageHostTests.includes('QCOMPARE(host->currentPage(), expectedPages.at(index))'), 'page-host tests assert each current widget');
+expect(pageHostTestProject.includes('QT += core gui network widgets testlib'), 'page-host QtTest target links Qt Test and Widgets');
+expect(pageHostVisualStudioProject.includes('<QtModules>core;gui;network;widgets;testlib</QtModules>'), 'page-host QtTest target is wired for Visual Studio');
+expect(visualStudioSolution.includes('SandMan\\Tests\\M3PageNavigationHostTests.vcxproj'), 'page-host QtTest target is present in the Visual Studio solution');
+expect(qmakeBuild.includes('SandMan\\Tests\\M3PageNavigationHostTests.pro'), 'x64 qmake build compiles the page-host QtTest target');
+expect(qmakeBuild.includes('M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt'), 'x64 qmake build runs the page-host lifecycle suite');
 
 const memoryFiles = required.filter(file => file.includes('/Views/')).map(read).join('\n');
 for (const forbidden of ['QProcess', 'QNetworkAccessManager', 'QTcpSocket', 'system(', 'ShellExecute', 'CreateProcess']) {
@@ -116,6 +144,10 @@ const settingsWindow = read(`${base}/Windows/SettingsWindow.cpp`);
 const optionsWindow = read(`${base}/Windows/OptionsWindow.cpp`);
 expect(settingsWindow.includes('CM3PageNavigationHost::adapt(this, ui.tabs, tr("Search settings"))'), 'Settings uses live-tab two-pane adapter');
 expect(optionsWindow.includes('CM3PageNavigationHost::adapt(this, ui.tabs, tr("Search sandbox options"))'), 'Box Options uses live-tab two-pane adapter');
+expect(settingsWindow.includes('m_pPageNavigationHost->rebind(ui.tabs)'), 'Settings rebinds the final normal tab container');
+expect(optionsWindow.includes('m_pPageNavigationHost->rebind(ui.tabs)'), 'Box Options refreshes the final normal tab topology');
+expect(settingsWindow.includes('m_pPageNavigationHost->rebind(pAltView, m_pStack, m_pTree)'), 'Settings keeps M3 navigation in OptionTree mode');
+expect(optionsWindow.includes('m_pPageNavigationHost->rebind(pAltView, m_pStack, m_pTree)'), 'Box Options keeps M3 navigation in OptionTree mode');
 
 const tabStrip = read(`${base}/Windows/M3TabStrip.cpp`);
 expect(!tabStrip.includes('m_tabBar->clear()'), 'tab strip avoids nonexistent QTabBar::clear API');

@@ -11,8 +11,10 @@ class CM3SearchField;
 class QDialog;
 class QLabel;
 class QListWidget;
+class QStackedLayout;
 class QStackedWidget;
 class QTabWidget;
+class QTreeWidget;
 class QVBoxLayout;
 
 class CM3PageNavigationHost final : public QWidget
@@ -29,9 +31,16 @@ public:
                                         QTabWidget* tabs,
                                         const QString& searchPlaceholder = QString());
 
+    // Settings and Options finish rebuilding their page containers after the
+    // shared shell is installed. Rebind the host to that final container so a
+    // queued delete of the Designer tab widget cannot strand the navigation.
+    void rebind(QTabWidget* tabs);
+    void rebind(QWidget* container, QStackedLayout* pages, QTreeWidget* titles);
+
     void addPage(QWidget* page, const QString& title, const QIcon& icon = QIcon());
     int pageCount() const;
     int currentIndex() const;
+    QWidget* currentPage() const;
     void setCurrentIndex(int index);
     void setProvenanceText(const QString& text);
     CM3SearchField* searchField() const;
@@ -49,7 +58,12 @@ private slots:
                      QString error);
 
 private:
-    void bindExistingTabs(QTabWidget* tabs);
+    enum class PageSource { InternalStack, TabWidget, ExternalStack };
+
+    void disconnectPageContainer();
+    void hostContainer(QWidget* container);
+    void rebuildTabNavigation();
+    void rebuildStackNavigation(QTreeWidget* titles);
     void addNavigationItem(const QString& title, const QIcon& icon, int index);
     QWidget* pageAt(int index) const;
     QString searchableText(QWidget* page) const;
@@ -61,6 +75,9 @@ private:
     QStackedWidget* m_stack;
     QVBoxLayout* m_rightLayout;
     QLabel* m_provenance;
+    QPointer<QWidget> m_adaptedContainer;
     QPointer<QTabWidget> m_adaptedTabs;
+    QPointer<QStackedLayout> m_adaptedStack;
+    PageSource m_pageSource = PageSource::InternalStack;
     QStringList m_titles;
 };

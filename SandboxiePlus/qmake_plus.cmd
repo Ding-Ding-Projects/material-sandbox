@@ -125,6 +125,26 @@ if "%qt_version:~0,1%" == "6" (
 IF %ERRORLEVEL% NEQ 0 goto :error
 if NOT EXIST %~dp0\bin\%build_arch%\Release\SandMan.exe goto :error
 
+IF NOT "%build_arch%"=="x64" GOTO :after_page_host_tests
+
+mkdir %~dp0\Build_M3PageNavigationHostTests_%build_arch%
+cd %~dp0\Build_M3PageNavigationHostTests_%build_arch%
+
+%qt_path%\bin\qmake.exe %~dp0\SandMan\Tests\M3PageNavigationHostTests.pro %qt_params%
+%~dp0..\..\Qt\Tools\QtCreator\bin\jom.exe -f Makefile.Release -j 8
+IF %ERRORLEVEL% NEQ 0 goto :error
+if NOT EXIST release\M3PageNavigationHostTests.exe goto :error
+
+set QT_QPA_PLATFORM=offscreen
+release\M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt
+IF %ERRORLEVEL% NEQ 0 (
+  type M3PageNavigationHostTests.txt
+  goto :error
+)
+type M3PageNavigationHostTests.txt
+
+:after_page_host_tests
+
 
 
 cd %~dp0

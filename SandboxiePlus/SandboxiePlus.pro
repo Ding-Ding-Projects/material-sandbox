@@ -11,4 +11,5 @@ TEMPLATE = subdirs
 SUBDIRS += SandMan/SandMan.qc.pro \
     QSbieAPI/QSbieAPI.qc.pro \
     MiscHelpers/MiscHelpers.qc.pro \
-    QtSingleApp/qtsingleapp/qtsingleapp/qtsingleapp.qc.pro
+    QtSingleApp/qtsingleapp/qtsingleapp/qtsingleapp.qc.pro \
+    SandMan/Tests/M3PageNavigationHostTests.pro

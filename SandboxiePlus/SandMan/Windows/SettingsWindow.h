@@ -7,6 +7,7 @@
 #include "../../MiscHelpers/Common/SettingsWidgets.h"
 
 void FixTriStateBoxPallete(QWidget* pWidget);
+class CM3PageNavigationHost;
 
 class CSecretCheckBox : public QCheckBox
 {
@@ -226,6 +227,7 @@ private:
 	void WriteTextList(const QString& Setting, const QStringList& List);
 
 	Ui::SettingsWindow ui;
+	CM3PageNavigationHost* m_pPageNavigationHost = nullptr;
 
 	class CCodeEdit* m_pCodeEdit = nullptr;
 	class CIniHighlighter* m_pIniHighlighter = nullptr;
@@ -252,4 +254,4 @@ extern QByteArray g_Certificate;
 extern SCertInfo g_CertInfo;
 
 #define EVAL_MAX 3		// for UI only actual limits enforced on server
-#define EVAL_DAYS 10	
+#define EVAL_DAYS 10

@@ -6,6 +6,8 @@
 #include "PendingChanges.h"
 #include "../../MiscHelpers/Common/SettingsWidgets.h"
 
+class CM3PageNavigationHost;
+
 //////////////////////////////////////////////////////////////////////////
 // COptionsWindow
 
@@ -659,6 +661,7 @@ private:
 	QString ReadTextSafe(const QString& Name, const QString& Default);
 
 	Ui::OptionsWindow ui;
+	CM3PageNavigationHost* m_pPageNavigationHost = nullptr;
 	QCheckBox* m_pUseIcon;
 	QToolButton* m_pPickIcon;
 	QSlider* m_pColorSlider;

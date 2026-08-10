@@ -318,7 +318,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	M3DialogHost::Install(this);
 
 	// MATERIAL_SANDBOX_M3_REWRITE: retain the live tab/state graph and replace only its presentation.
-	CM3PageNavigationHost::adapt(this, ui.tabs, tr("Search settings"));
+	m_pPageNavigationHost = CM3PageNavigationHost::adapt(this, ui.tabs, tr("Search settings"));
 	// Global presentation settings live beside the existing interface controls
 	// so they persist with the profile and are discoverable by the settings
 	// search.  The explanatory text names the real defaults instead of hiding
@@ -2636,6 +2636,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		pSetTree->setShortcut(QKeySequence("Ctrl+Alt+T"));
 		pSetTree->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 		this->addAction(pSetTree);
+		if (m_pPageNavigationHost)
+			m_pPageNavigationHost->rebind(ui.tabs);
 	}
 	m_pSearch->setPlaceholderText(tr("Search for settings"));
 
@@ -2702,8 +2704,31 @@ void CSettingsWindow::OnResetUiFont()
 void CSettingsWindow::OnSetTree()
 {
 	if (!ui.tabs) return;
+	if (m_pPageNavigationHost)
+		m_pPageNavigationHost->rebind(ui.tabs);
+	QWidget* currentPage = ui.tabs->currentWidget();
+	if (currentPage) {
+		QGridLayout* pageLayout = qobject_cast<QGridLayout*>(currentPage->layout());
+		QLayoutItem* firstItem = pageLayout ? pageLayout->itemAt(0) : NULL;
+		QTabWidget* childTabs = firstItem ? qobject_cast<QTabWidget*>(firstItem->widget()) : NULL;
+		if (childTabs && childTabs->currentWidget())
+			currentPage = childTabs->currentWidget();
+	}
 	QWidget* pAltView = ConvertToTree(ui.tabs);
-	ui.verticalLayout->replaceWidget(ui.tabs, pAltView);
+	const int currentPageIndex = m_pStack->indexOf(currentPage);
+	if (currentPageIndex >= 0)
+		m_pStack->setCurrentIndex(currentPageIndex);
+	if (m_pPageNavigationHost) {
+		m_pTree->hide();
+		m_pSearch->parentWidget()->hide();
+		m_pPageNavigationHost->rebind(pAltView, m_pStack, m_pTree);
+		connect(m_pStack, &QStackedLayout::currentChanged, this, [this](int index) {
+			OnTab(m_pStack->widget(index));
+		});
+	}
+	else {
+		ui.verticalLayout->replaceWidget(ui.tabs, pAltView);
+	}
 	ui.tabs->deleteLater();
 	ui.tabs = NULL;
 }
