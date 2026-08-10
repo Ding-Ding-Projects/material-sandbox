@@ -7,14 +7,32 @@ when the pinned Qt/MSVC toolchain or a build step is unavailable.
 
 `build.bat` calls the supported `SandboxiePlus/qmake_plus.cmd` path and verifies
 that `SandMan.exe` exists for the selected architecture. `build-installer.bat`
-stages the x64 output through `Installer/copy_build.cmd`, removes the legacy
-Inno Setup `SignTool` directive from a temporary script, builds an explicitly
-unsigned installer, and prints its SHA-256 digest.
+stages the x64 output through `Installer/copy_build.cmd`, compiles the canonical
+Inno Setup script with no signing route, rejects any installer that is not
+reported as `NotSigned`, and prints its SHA-256 digest.
 
-The scripts do not collect credentials, install signing material, publish, or
-create releases. If the pinned Qt kit or Visual Studio environment is absent,
-the scripts report the exact path and stop. This checkout currently has no local
-Qt qmake kit, so hosted Windows CI remains the build proof.
+Every `SboxDrv.vcxproj` debug and release configuration for Win32, x64, and
+ARM64 sets the scalar WDK `SignMode` property to `Off`, so staging cannot inherit a
+freshly signed driver from the supported build. The unsigned-packaging contract
+enumerates all six configurations rather than trusting whichever one happened
+to build locally. A global `SignMode=Off` default and an evaluated pre-build
+target fail closed if a command-line or imported property tries to reactivate
+driver signing.
+
+Signing is permanently disabled. The obsolete `Sandboxie/install/build.bat`
+route fails closed and points callers to the repository-root installer entry
+point; it no longer contains or invokes the historical signing machinery. The
+supported scripts do not collect credentials, install signing material,
+publish, or create releases. If the pinned Qt kit or Visual Studio environment
+is absent, the scripts report the exact path and stop. This checkout currently
+has no local Qt qmake kit, so hosted Windows CI remains the build proof.
+
+Run `node scripts/validate-unsigned-packaging.mjs --self-test` to verify the
+permanent unsigned invariant and prove that representative signing directives,
+executables, inputs, included Inno scripts, signed-uninstaller and file-signing
+routes, environment/preprocessor construction, and enabled driver-signing modes
+are rejected. `node scripts/validate-build-entrypoints.mjs` also invokes that
+contract.
 
 ## Suggested articles
 

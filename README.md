@@ -161,6 +161,8 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/validate-pages-a11y.ps1 -S
 node --test scripts/test-pages-stamp.mjs
 node --test scripts/test-pages-interactions.mjs
 node --test scripts/test-pages-article-renderer.mjs
+node scripts/validate-build-entrypoints.mjs
+node scripts/validate-unsigned-packaging.mjs --self-test
 node scripts/validate-contributor-build.mjs
 node scripts/validate-appearance-editor.mjs
 node scripts/validate-color-translator.mjs

@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 
-rem Build the unsigned Windows installer from the same x64 path used by CI.
+rem Build the permanently unsigned Windows installer from the same x64 path used by CI.
 set "SILENT_MODE=0"
 if /I "%SILENT%"=="1" set "SILENT_MODE=1"
 if /I "%1"=="/s" set "SILENT_MODE=1"
@@ -25,20 +25,21 @@ if not defined ISCC (
 )
 set "VERSION=0.0.0-local"
 for /F "tokens=2 delims==" %%V in ('findstr /B /C:"#define MyAppVersion" "%ROOT%Installer\Sandboxie-Plus.iss"') do set "VERSION=%%~V"
-set "TEMP_ISS=%TEMP%\Sandboxie-Plus-unsigned-%RANDOM%.iss"
-findstr /V /C:"SignTool=" "%ROOT%Installer\Sandboxie-Plus.iss" > "%TEMP_ISS%"
-echo [installer] Building unsigned installer; no signing tool is invoked.
-"%ISCC%" /O"%ROOT%Installer\Output" "%TEMP_ISS%" /DMyAppVersion=%VERSION% /DMyAppArch=x64 /DMyAppSrc=SbiePlus_x64
+echo [installer] Building the permanently unsigned installer; signing hooks are disabled in the canonical source.
+"%ISCC%" /O"%ROOT%Installer\Output" "%ROOT%Installer\Sandboxie-Plus.iss" /DMyAppVersion=%VERSION% /DMyAppArch=x64 /DMyAppSrc=SbiePlus_x64
 set "RESULT=%ERRORLEVEL%"
-del /Q "%TEMP_ISS%" >nul 2>&1
 if not "%RESULT%"=="0" (
   echo [installer] Inno Setup failed with errorlevel %RESULT%.
   exit /b %RESULT%
 )
 for %%F in ("%ROOT%Installer\Output\Sandboxie-Plus-x64-v*.exe") do (
-  echo [installer] Unsigned installer: %%~fF
-  certutil -hashfile "%%~fF" SHA256 | findstr /R /V /C:"CertUtil:" 
+  set "SBIE_UNSIGNED_INSTALLER=%%~fF"
+  "%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoLogo -NoProfile -NonInteractive -Command "$result = Get-AuthenticodeSignature -LiteralPath $env:SBIE_UNSIGNED_INSTALLER; if ($result.Status -ne 'NotSigned') { Write-Error 'Installer violates the permanent unsigned-packaging policy.'; exit 1 }"
+  if errorlevel 1 exit /b 30
+  echo [installer] Verified unsigned installer: %%~fF
+  "%SystemRoot%\System32\certutil.exe" -hashfile "%%~fF" SHA256 | findstr /R /V /C:"CertUtil:"
 )
+set "SBIE_UNSIGNED_INSTALLER="
 if "%SILENT_MODE%"=="1" exit /b 0
 echo [installer] Build complete. The installer is unsigned by permanent project policy.
 exit /b 0
