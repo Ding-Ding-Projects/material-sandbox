@@ -19,7 +19,7 @@ if (failures.length) {
 
 // Publishing workflows intentionally do not inherit this contract: cancelling
 // a deployment or release halfway through can strand external state.
-for (const publishingWorkflow of ['.github/workflows/pages.yml', '.github/workflows/announcements.yml']) {
+for (const publishingWorkflow of ['.github/workflows/pages.yml', '.github/workflows/announcements.yml', '.github/workflows/release.yml']) {
   const text = fs.existsSync(path.join(root, publishingWorkflow))
     ? fs.readFileSync(path.join(root, publishingWorkflow), 'utf8')
     : '';

@@ -34,6 +34,18 @@ routes, environment/preprocessor construction, and enabled driver-signing modes
 are rejected. `node scripts/validate-build-entrypoints.mjs` also invokes that
 contract.
 
+The `Windows Release` workflow is the publication owner. It prepares its hosted
+toolchain and then calls the two root scripts rather than recreating their build
+commands in YAML. Only after `build-installer.bat /s` succeeds does the workflow
+verify exactly one `NotSigned` installer, its product version, size, SHA-256,
+source commit/tree, and deep-recomputed line-count evidence. The root scripts themselves never tag or
+publish, so running either one locally cannot create external release state.
+
+No local installer was produced while the release contract was added because
+this checkout does not contain the pinned native Qt/MSVC toolchain. The static
+workflow and counter checks are reproducible locally, but they are not a
+substitute for a successful hosted build and verified downloadable release.
+
 ## Suggested articles
 
 - [Material Design 3](../material-design.md)

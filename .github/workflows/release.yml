@@ -1,0 +1,383 @@
+name: Windows Release
+
+# Release publication is intentionally not placed in a concurrency group.
+# Every accepted run must finish independently so a newer run cannot cancel
+# another run after it starts creating immutable external state.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+env:
+  RELEASE_TAG: v0.0.0-build.${{ github.run_number }}
+  DIM_SUM_CATALOG_URL: https://github.com/Ding-Ding-Projects/dim-sum-photos/releases
+
+jobs:
+  release:
+    name: Build, verify, and publish unsigned installer
+    runs-on: windows-2022
+    timeout-minutes: 180
+
+    steps:
+      - name: Create safe evidence directory
+        shell: pwsh
+        run: |
+          $env:RELEASE_EVIDENCE = Join-Path $env:RUNNER_TEMP 'sandboxie-release-evidence'
+          "RELEASE_EVIDENCE=$env:RELEASE_EVIDENCE" >> $env:GITHUB_ENV
+          New-Item -ItemType Directory -Force -Path $env:RELEASE_EVIDENCE | Out-Null
+          [ordered]@{
+            repository = $env:GITHUB_REPOSITORY
+            runId = $env:GITHUB_RUN_ID
+            runAttempt = $env:GITHUB_RUN_ATTEMPT
+            sourceSha = $env:GITHUB_SHA
+            sourceRef = $env:GITHUB_REF
+            runnerOs = $env:RUNNER_OS
+            runnerArch = $env:RUNNER_ARCH
+            runnerName = $env:RUNNER_NAME
+          } | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $env:RELEASE_EVIDENCE 'run-context.json')
+
+      - name: Checkout full source history
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.19.0
+
+      - name: Set up MSBuild
+        uses: microsoft/setup-msbuild@v3
+
+      - name: Check release identity and token
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ([string]::IsNullOrWhiteSpace($env:GH_TOKEN)) {
+            throw 'No release token resolved from RELEASE_TOKEN, ORG_TOKEN, or GITHUB_TOKEN.'
+          }
+          if ($env:RELEASE_TAG -notmatch '^v0[.]0[.]0-build[.][1-9][0-9]*$') {
+            throw "Release tag is not monotonic: $env:RELEASE_TAG"
+          }
+          $head = (git rev-parse HEAD).Trim()
+          if ($head -ne $env:GITHUB_SHA) {
+            throw "Checked-out HEAD $head does not match release source $env:GITHUB_SHA"
+          }
+          if ((git rev-parse --is-shallow-repository).Trim() -ne 'false') {
+            throw 'Release checkout is shallow; surviving-line attribution requires full history.'
+          }
+          if (git tag --list $env:RELEASE_TAG) {
+            throw "Local tag already exists: $env:RELEASE_TAG"
+          }
+          if (git ls-remote --tags origin "refs/tags/$env:RELEASE_TAG") {
+            throw "Remote tag already exists: $env:RELEASE_TAG"
+          }
+          $priorBuilds = @(git ls-remote --tags origin 'refs/tags/v0.0.0-build.*' | ForEach-Object {
+            if ($_ -match 'refs/tags/v0[.]0[.]0-build[.](?<number>[1-9][0-9]*)$') { [int64]$Matches.number }
+          })
+          if ($priorBuilds.Count -gt 0 -and [int64]$env:GITHUB_RUN_NUMBER -le ($priorBuilds | Measure-Object -Maximum).Maximum) {
+            throw "Release build number $env:GITHUB_RUN_NUMBER is not greater than the prior monotonic tag."
+          }
+          if (gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY 2>$null) {
+            throw "Release already exists: $env:RELEASE_TAG"
+          }
+          $run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID" | ConvertFrom-Json
+          if ([string]::IsNullOrWhiteSpace($run.run_started_at)) {
+            throw 'GitHub did not return an authoritative run_started_at value.'
+          }
+          $run.run_started_at | Set-Content -Encoding ascii (Join-Path $env:RELEASE_EVIDENCE 'workflow-started-at.txt')
+
+      - name: Validate release source contracts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node scripts/validate-release-contract.mjs
+          node scripts/validate-release-contract.mjs --self-test
+          node --test scripts/test-count-lines.mjs
+          node scripts/validate-build-entrypoints.mjs
+          node scripts/validate-ci-concurrency.mjs
+          git diff --check
+
+      - name: Bootstrap declared Windows build dependencies
+        shell: cmd
+        run: |
+          @echo on
+          call Installer\buildVariables.cmd build_qt6
+          if errorlevel 1 exit /b %errorlevel%
+          echo qt_version=%qt6_version%>>"%GITHUB_ENV%"
+          call SandboxiePlus\install_qt.cmd x64
+          if errorlevel 1 exit /b %errorlevel%
+          call SandboxiePlus\install_jom.cmd
+          if errorlevel 1 exit /b %errorlevel%
+          if exist "%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" exit /b 0
+          if exist "%ProgramFiles%\Inno Setup 6\ISCC.exe" exit /b 0
+          choco install innosetup --version=6.4.3 -y --no-progress
+          if errorlevel 1 exit /b %errorlevel%
+
+      - name: Build through repository entrypoints
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $output = [IO.Path]::GetFullPath((Join-Path $env:GITHUB_WORKSPACE 'Installer\Output'))
+          $installerRoot = [IO.Path]::GetFullPath((Join-Path $env:GITHUB_WORKSPACE 'Installer'))
+          if (-not $output.StartsWith($installerRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to clear output outside Installer: $output"
+          }
+          if (Test-Path -LiteralPath $output) {
+            Remove-Item -LiteralPath $output -Recurse -Force
+          }
+          New-Item -ItemType Directory -Force -Path $output | Out-Null
+          $buildLog = Join-Path $env:RELEASE_EVIDENCE 'build.log'
+          $buildError = Join-Path $env:RELEASE_EVIDENCE 'build-error.log'
+          $build = Start-Process -FilePath (Join-Path $env:GITHUB_WORKSPACE 'build.bat') -ArgumentList '/s' -NoNewWindow -Wait -PassThru -RedirectStandardOutput $buildLog -RedirectStandardError $buildError
+          if ($build.ExitCode -ne 0) {
+            throw "build.bat /s failed with exit code $($build.ExitCode)"
+          }
+          $installerLog = Join-Path $env:RELEASE_EVIDENCE 'build-installer.log'
+          $installerError = Join-Path $env:RELEASE_EVIDENCE 'build-installer-error.log'
+          $installer = Start-Process -FilePath (Join-Path $env:GITHUB_WORKSPACE 'build-installer.bat') -ArgumentList '/s' -NoNewWindow -Wait -PassThru -RedirectStandardOutput $installerLog -RedirectStandardError $installerError
+          if ($installer.ExitCode -ne 0) {
+            throw "build-installer.bat /s failed with exit code $($installer.ExitCode)"
+          }
+
+      - name: Count project and surviving attributed lines
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $json = Join-Path $env:RELEASE_EVIDENCE 'line-count.json'
+          $markdown = Join-Path $env:RELEASE_EVIDENCE 'line-count.md'
+          node scripts/count-lines.mjs --json $json --markdown $markdown
+          node scripts/count-lines.mjs --verify $json
+          $report = Get-Content -Raw -LiteralPath $json | ConvertFrom-Json
+          if ($report.revision -ne $env:GITHUB_SHA) {
+            throw "Line count revision $($report.revision) does not match $env:GITHUB_SHA"
+          }
+          if (-not $report.clean -or $report.grand.attribution.unattributed -ne 0) {
+            throw 'Release line-count evidence must come from a clean committed tree.'
+          }
+
+      - name: Verify one unsigned installer
+        id: installer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $installers = @(Get-ChildItem -LiteralPath (Join-Path $env:GITHUB_WORKSPACE 'Installer\Output') -Filter 'Sandboxie-Plus-x64-v*.exe' -File)
+          if ($installers.Count -ne 1) {
+            throw "Expected exactly one x64 installer; found $($installers.Count)."
+          }
+          $installer = $installers[0]
+          if ($installer.Length -lt 1MB) {
+            throw "Installer is unexpectedly small: $($installer.Length) bytes."
+          }
+          $signature = Get-AuthenticodeSignature -LiteralPath $installer.FullName
+          if ($signature.Status -ne [Management.Automation.SignatureStatus]::NotSigned) {
+            throw "Installer must be unsigned; Authenticode status was $($signature.Status)."
+          }
+          $version = $installer.VersionInfo.ProductVersion
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            throw 'Installer ProductVersion is empty.'
+          }
+          $hash = (Get-FileHash -LiteralPath $installer.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          $safeInstaller = Join-Path $env:RELEASE_EVIDENCE $installer.Name
+          Copy-Item -LiteralPath $installer.FullName -Destination $safeInstaller
+          "$hash  $($installer.Name)" | Set-Content -Encoding ascii (Join-Path $env:RELEASE_EVIDENCE 'sha256-checksums.txt')
+          [ordered]@{
+            sourceSha = $env:GITHUB_SHA
+            sourceRef = $env:GITHUB_REF
+            tag = $env:RELEASE_TAG
+            runId = $env:GITHUB_RUN_ID
+            installer = $installer.Name
+            bytes = $installer.Length
+            productVersion = $version
+            sha256 = $hash
+            authenticode = 'NotSigned'
+          } | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $env:RELEASE_EVIDENCE 'release-provenance.json')
+          "name=$($installer.Name)" >> $env:GITHUB_OUTPUT
+          "path=$safeInstaller" >> $env:GITHUB_OUTPUT
+          "sha256=$hash" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Publish exactly one verified release
+        id: publish
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN }}
+          INSTALLER_NAME: ${{ steps.installer.outputs.name }}
+          INSTALLER_PATH: ${{ steps.installer.outputs.path }}
+          INSTALLER_SHA256: ${{ steps.installer.outputs.sha256 }}
+          INSTALLER_VERSION: ${{ steps.installer.outputs.version }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $initialNotes = Join-Path $env:RELEASE_EVIDENCE 'release-notes-initial.md'
+          @(
+            "# Sandboxie Plus $env:RELEASE_TAG"
+            ''
+            'Publication evidence is being finalized by this workflow.'
+            ''
+            'The installer is unsigned by permanent project policy.'
+          ) | Set-Content -Encoding utf8 $initialNotes
+          $assets = @(
+            $env:INSTALLER_PATH
+            (Join-Path $env:RELEASE_EVIDENCE 'sha256-checksums.txt')
+            (Join-Path $env:RELEASE_EVIDENCE 'release-provenance.json')
+            (Join-Path $env:RELEASE_EVIDENCE 'line-count.json')
+            (Join-Path $env:RELEASE_EVIDENCE 'line-count.md')
+          )
+          gh release create $env:RELEASE_TAG $assets --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Sandboxie Plus $env:RELEASE_TAG" --notes-file $initialNotes --draft
+          $draft = gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --json isDraft,targetCommitish,tagName | ConvertFrom-Json
+          if (-not $draft.isDraft -or $draft.targetCommitish -ne $env:GITHUB_SHA -or $draft.tagName -ne $env:RELEASE_TAG) {
+            throw 'Draft release identity verification failed.'
+          }
+          gh release edit $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --draft=false
+          $release = $null
+          for ($attempt = 0; $attempt -lt 12; $attempt += 1) {
+            $release = gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --json isDraft,isPrerelease,publishedAt,targetCommitish,tagName,assets,body | ConvertFrom-Json
+            if (-not $release.isDraft -and -not [string]::IsNullOrWhiteSpace($release.publishedAt)) {
+              break
+            }
+            Start-Sleep -Seconds 5
+          }
+          if ($release.isDraft -or $release.isPrerelease -or [string]::IsNullOrWhiteSpace($release.publishedAt)) {
+            throw 'Published release state did not become authoritative.'
+          }
+          $startedText = (Get-Content -Raw -LiteralPath (Join-Path $env:RELEASE_EVIDENCE 'workflow-started-at.txt')).Trim()
+          $started = [DateTimeOffset]::Parse($startedText).ToUniversalTime()
+          $completed = [DateTimeOffset]::Parse($release.publishedAt).ToUniversalTime()
+          if ($completed -lt $started) {
+            throw 'Published timestamp precedes the workflow start.'
+          }
+          $elapsed = $completed - $started
+          $duration = '{0:00}:{1:00}:{2:00}' -f [Math]::Floor($elapsed.TotalHours), $elapsed.Minutes, $elapsed.Seconds
+          $startedIso = $started.ToString('yyyy-MM-ddTHH:mm:ssZ')
+          $completedIso = $completed.ToString('yyyy-MM-ddTHH:mm:ssZ')
+          $finalNotes = Join-Path $env:RELEASE_EVIDENCE 'release-notes-final.md'
+          $lineTable = (Get-Content -Raw -LiteralPath (Join-Path $env:RELEASE_EVIDENCE 'line-count.md')).Replace("`r`n", "`n").Replace("`r", "`n").TrimEnd([char]10)
+          $noteLines = @(
+            "# Sandboxie Plus $env:RELEASE_TAG"
+            ''
+            '## Build identity'
+            ''
+            "- Commit: $env:GITHUB_SHA"
+            "- Installer: $env:INSTALLER_NAME"
+            "- Product version: $env:INSTALLER_VERSION"
+            "- SHA-256: $env:INSTALLER_SHA256"
+            '- Authenticode: NotSigned'
+            ''
+            '## Workflow timing'
+            ''
+            "- Workflow started: $startedIso"
+            "- Workflow completed: $completedIso"
+            "- Workflow duration: $duration"
+            ''
+            '## Line-count evidence'
+            ''
+            '<!-- line-count:start -->'
+            $lineTable
+            '<!-- line-count:end -->'
+            ''
+            '## Unsigned installer warning'
+            ''
+            'This installer is intentionally unsigned by permanent project policy. Windows may show an unknown-publisher or SmartScreen warning. The SHA-256 above verifies downloaded bytes against this release record; it is not a code signature.'
+            ''
+            '## Public dim-sum catalog'
+            ''
+            "Release dishes and public photos live in the [Ding-Ding-Projects dim-sum catalog]($env:DIM_SUM_CATALOG_URL). This release links to that public catalog and does not copy or attach a dim-sum image."
+            ''
+            'Reproduce the line table with: node scripts/count-lines.mjs'
+          )
+          [IO.File]::WriteAllText($finalNotes, ($noteLines -join "`n") + "`n", [Text.UTF8Encoding]::new($false))
+          gh release edit $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --notes-file $finalNotes
+          $verified = gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --json isDraft,isPrerelease,publishedAt,targetCommitish,tagName,assets,body,url | ConvertFrom-Json
+          if ($verified.isDraft -or $verified.isPrerelease -or $verified.targetCommitish -ne $env:GITHUB_SHA) {
+            throw 'Final release state, type, or target commit does not match the verified candidate.'
+          }
+          $expectedAssets = @($env:INSTALLER_NAME, 'line-count.json', 'line-count.md', 'release-provenance.json', 'sha256-checksums.txt') | Sort-Object
+          $actualAssets = @($verified.assets | ForEach-Object { $_.name }) | Sort-Object
+          if (($expectedAssets -join [char]0) -ne ($actualAssets -join [char]0)) {
+            throw "Release assets differ from the exact allowlist: $($actualAssets -join ', ')"
+          }
+          if ($actualAssets | Where-Object { $_ -match '(?i)[.](png|jpe?g|gif|webp|bmp|tiff?)$' }) {
+            throw 'A copied dim-sum image was attached to the consumer release.'
+          }
+          foreach ($marker in @($env:GITHUB_SHA, $env:INSTALLER_SHA256, 'Authenticode: NotSigned', 'Workflow started:', 'Workflow completed:', 'Workflow duration:', 'Project total', 'Grand total', $env:DIM_SUM_CATALOG_URL, 'does not copy or attach')) {
+            if (-not $verified.body.Contains($marker)) {
+              throw "Release notes are missing required evidence: $marker"
+            }
+          }
+          $normalizedBody = $verified.body.Replace("`r`n", "`n").Replace("`r", "`n")
+          $lineBlock = [regex]::Match($normalizedBody, '(?s)<!-- line-count:start -->\n(.*?)\n<!-- line-count:end -->')
+          if (-not $lineBlock.Success -or $lineBlock.Groups[1].Value -cne $lineTable) {
+            throw 'Published release line-count block does not byte-match the generated Markdown after newline normalization.'
+          }
+          $sameTag = @(gh release list --repo $env:GITHUB_REPOSITORY --limit 1000 --json tagName | ConvertFrom-Json | Where-Object { $_.tagName -eq $env:RELEASE_TAG })
+          if ($sameTag.Count -ne 1) {
+            throw "Expected one release with tag $env:RELEASE_TAG; found $($sameTag.Count)."
+          }
+          git fetch --force --no-tags origin "refs/tags/$env:RELEASE_TAG:refs/tags/$env:RELEASE_TAG"
+          $tagCommit = (git rev-list -n 1 $env:RELEASE_TAG).Trim()
+          if ($tagCommit -ne $env:GITHUB_SHA) {
+            throw "Published tag resolves to $tagCommit instead of $env:GITHUB_SHA"
+          }
+          $download = Join-Path $env:RUNNER_TEMP 'sandboxie-release-download'
+          New-Item -ItemType Directory -Force -Path $download | Out-Null
+          gh release download $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --dir $download
+          foreach ($assetName in $expectedAssets) {
+            $downloadedAsset = Join-Path $download $assetName
+            $localAsset = if ($assetName -eq $env:INSTALLER_NAME) { $env:INSTALLER_PATH } else { Join-Path $env:RELEASE_EVIDENCE $assetName }
+            if (-not (Test-Path -LiteralPath $downloadedAsset) -or -not (Test-Path -LiteralPath $localAsset)) {
+              throw "Release asset verification is missing $assetName"
+            }
+            $downloadedAssetHash = (Get-FileHash -LiteralPath $downloadedAsset -Algorithm SHA256).Hash
+            $localAssetHash = (Get-FileHash -LiteralPath $localAsset -Algorithm SHA256).Hash
+            if ($downloadedAssetHash -cne $localAssetHash) {
+              throw "Downloaded release asset differs from the verified local file: $assetName"
+            }
+          }
+          $downloadedInstaller = Join-Path $download $env:INSTALLER_NAME
+          $downloadedHash = (Get-FileHash -LiteralPath $downloadedInstaller -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($downloadedHash -ne $env:INSTALLER_SHA256) {
+            throw 'Downloaded installer hash does not match the verified build.'
+          }
+          if ((Get-AuthenticodeSignature -LiteralPath $downloadedInstaller).Status -ne [Management.Automation.SignatureStatus]::NotSigned) {
+            throw 'Downloaded release installer is not unsigned as required.'
+          }
+          $verified | ConvertTo-Json -Depth 8 | Set-Content -Encoding utf8 (Join-Path $env:RELEASE_EVIDENCE 'release-verified.json')
+          "url=$($verified.url)" >> $env:GITHUB_OUTPUT
+      - name: Collect safe release evidence
+        if: ${{ always() }}
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path $env:RELEASE_EVIDENCE | Out-Null
+          [ordered]@{
+            jobStatus = '${{ job.status }}'
+            sourceSha = $env:GITHUB_SHA
+            runId = $env:GITHUB_RUN_ID
+            releaseTag = $env:RELEASE_TAG
+            buildOutcome = '${{ steps.installer.outcome }}'
+            publishOutcome = '${{ steps.publish.outcome }}'
+          } | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $env:RELEASE_EVIDENCE 'job-outcome.json')
+          $installerOutput = Join-Path $env:GITHUB_WORKSPACE 'Installer\Output'
+          if (Test-Path -LiteralPath $installerOutput) {
+            Get-ChildItem -LiteralPath $installerOutput -Filter 'Sandboxie-Plus-x64-v*.exe' -File | ForEach-Object {
+              Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $env:RELEASE_EVIDENCE $_.Name) -Force
+            }
+          }
+
+      - name: Upload safe release evidence
+        if: ${{ always() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: sandboxie-release-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}\sandboxie-release-evidence
+          if-no-files-found: warn
+          retention-days: 30
