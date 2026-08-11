@@ -85,7 +85,7 @@ mkdir "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
 IF %ERRORLEVEL% NEQ 0 goto :error
 cd /d "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
 
-%qt_path%\bin\qmake.exe %~dp0\SandMan\Tests\M3PageNavigationHostTests.pro %qt_params%
+"%qt_path%\bin\qmake.exe" "%~dp0SandMan\Tests\M3PageNavigationHostTests.pro" %qt_params%
 IF %ERRORLEVEL% NEQ 0 goto :error
 "%jom%" -f Makefile.Release -j 8
 IF %ERRORLEVEL% NEQ 0 goto :error
