@@ -208,6 +208,8 @@ expect(qmakeBuild.includes('set "qt_path=%SBIE_QT_ROOT%\\%qt6_version%\\msvc2022
   'ARM64 qmake uses the target Qt installation while retaining the x64 host tools');
 expect(qmakeBuild.includes('set "qt_host_path=%SBIE_QT_ROOT%\\%qt6_version%\\msvc2022_64"'),
   'ARM64 qmake uses the separately installed x64 host Qt tools');
+expect(qmakeBuild.includes('set "qt_host_path=%SBIE_QT_ROOT%\\%qt_version%\\msvc2022_64"'),
+  'x64 qmake host path is assigned without relying on block-time variable expansion');
 expect(qmakeBuild.includes('"%qt_host_path%\\bin\\qmake.exe"'),
   'qmake invocation is routed through the host Qt installation for cross-compiled targets');
 

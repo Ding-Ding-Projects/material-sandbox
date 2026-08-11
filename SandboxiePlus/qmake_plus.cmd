@@ -13,7 +13,7 @@ set "jom=%SBIE_QT_ROOT%\Tools\QtCreator\bin\jom.exe"
 
 if /I "%~1"=="Win32" (
   set "qt_path=%SBIE_QT_ROOT%\%qt_version%\msvc2022"
-  set "qt_host_path=%qt_path%"
+  set "qt_host_path=%SBIE_QT_ROOT%\%qt_version%\msvc2022"
   set "private_headers=%SBIE_QT_ROOT%\%qt_version%\msvc2022\include\QtCore\%qt_version%\QtCore"
   set "private_target=%SBIE_QT_ROOT%\%qt_version%\msvc2022\include\QtCore"
   set "build_arch=Win32"
@@ -22,7 +22,7 @@ if /I "%~1"=="Win32" (
 )
 if /I "%~1"=="x64" (
   set "qt_path=%SBIE_QT_ROOT%\%qt_version%\msvc2022_64"
-  set "qt_host_path=%qt_path%"
+  set "qt_host_path=%SBIE_QT_ROOT%\%qt_version%\msvc2022_64"
   set "private_headers=%SBIE_QT_ROOT%\%qt_version%\msvc2022_64\include\QtCore\%qt_version%\QtCore"
   set "private_target=%SBIE_QT_ROOT%\%qt_version%\msvc2022_64\include\QtCore"
   set "build_arch=x64"
