@@ -1,32 +1,58 @@
+@echo off
+setlocal EnableExtensions
+
 call "%~dp0..\Installer\buildVariables.cmd" %*
+if errorlevel 1 exit /b %errorlevel%
+@echo off
 
-REM echo %*
-REM IF "%~7" == "" ( set "ghQtBuilds_hash_x64=673c288feeabd11ec66f9f454d49cde3945cbd3e3f71283b7a6c4df0893b19f2" ) ELSE ( set "ghQtBuilds_hash_x64=%~7" )
-REM IF "%~6" == "" ( set "ghQtBuilds_hash_x86=502e9a36a52918af4e116cd74c16c6c260d029087aaeee3775ab0e5d3f6a2705" ) ELSE ( set "ghQtBuilds_hash_x86=%~6" )
-REM IF "%~5" == "" ( set "ghQtBuilds_repo=qt-builds" ) ELSE ( set "ghQtBuilds_repo=%~5" )
-REM IF "%~4" == "" ( set "ghQtBuilds_user=xanasoft" ) ELSE ( set "ghQtBuilds_user=%~4" )
-REM IF "%~3" == "" ( set "qt6_version=6.3.1" ) ELSE ( set "qt6_version=%~3" )
-REM IF "%~2" == "" ( set "qt_version=5.15.16" ) ELSE ( set "qt_version=%~2" )
-
-if %1 == Win32 (
-    if exist %~dp0..\..\Qt\%qt_version%\msvc2022\bin\qmake.exe goto done
-
-    curl -LsSO --output-dir %~dp0..\..\ https://github.com/%ghQtBuilds_user%/%ghQtBuilds_repo%/releases/download/v%qt_version%-ssl-lgpl/qt-everywhere-%qt_version%-Windows_7-MSVC2022-x86.7z
-    "C:\Program Files\7-Zip\7z.exe" x -aoa -o%~dp0..\..\Qt\ %~dp0..\..\qt-everywhere-%qt_version%-Windows_7-MSVC2022-x86.7z
-    certutil -hashfile %~dp0..\..\qt-everywhere-%qt_version%-Windows_7-MSVC2022-x86.7z SHA256 | find /i "%ghQtBuilds_hash_x86%"
-)
-if %1 == x64 (
-    if exist %~dp0..\..\Qt\%qt_version%\msvc2022_64\bin\qmake.exe goto done
-
-    curl -LsSO --output-dir %~dp0..\..\ https://github.com/%ghQtBuilds_user%/%ghQtBuilds_repo%/releases/download/v%qt_version%-ssl-lgpl/qt-everywhere-%qt_version%-Windows_7-MSVC2022-x86_64.7z
-    "C:\Program Files\7-Zip\7z.exe" x -aoa -o%~dp0..\..\Qt\ %~dp0..\..\qt-everywhere-%qt_version%-Windows_7-MSVC2022-x86_64.7z
-    certutil -hashfile %~dp0..\..\qt-everywhere-%qt_version%-Windows_7-MSVC2022-x86_64.7z SHA256 | find /i "%ghQtBuilds_hash_x64%"
+if not defined SBIE_QT_ROOT set "SBIE_QT_ROOT=%~dp0..\Qt"
+if not defined SBIE_7ZIP_EXE set "SBIE_7ZIP_EXE=C:\Program Files\7-Zip\7z.exe"
+if not exist "%SBIE_7ZIP_EXE%" (
+  echo [qt] Missing 7-Zip at "%SBIE_7ZIP_EXE%".
+  exit /b 2
 )
 
-if %ERRORLEVEL% == 1 exit /b 1
+if /I "%~1"=="x64" goto install_x64
+if /I "%~1"=="Win32" goto install_x86
 
-:done
+echo [qt] Unsupported architecture "%~1".
+exit /b 2
 
-REM dir %~dp0..\..\
-REM dir %~dp0..\..\Qt
-REM dir %~dp0..\..\Qt\%qt_version%
+:install_x64
+call :install_archive "msvc2022_64" "qt-everywhere-%qt_version%-Windows_7-MSVC2022-x86_64.7z" "%ghQtBuilds_hash_x64%"
+exit /b %errorlevel%
+
+:install_x86
+call :install_archive "msvc2022" "qt-everywhere-%qt_version%-Windows_7-MSVC2022-x86.7z" "%ghQtBuilds_hash_x86%"
+exit /b %errorlevel%
+
+:install_archive
+set "QT_ARCH=%~1"
+set "QT_ARCHIVE_NAME=%~2"
+set "QT_ARCHIVE_HASH=%~3"
+set "QT_QMAKE=%SBIE_QT_ROOT%\%qt_version%\%QT_ARCH%\bin\qmake.exe"
+if exist "%QT_QMAKE%" exit /b 0
+if not defined QT_ARCHIVE_HASH (
+  echo [qt] No pinned SHA-256 is configured for %QT_ARCH%.
+  exit /b 3
+)
+
+set "QT_DOWNLOAD_ROOT=%SBIE_QT_ROOT%\.downloads"
+set "QT_ARCHIVE=%QT_DOWNLOAD_ROOT%\%QT_ARCHIVE_NAME%"
+if not exist "%QT_DOWNLOAD_ROOT%\." mkdir "%QT_DOWNLOAD_ROOT%" || exit /b 4
+curl.exe --fail --location --silent --show-error "https://github.com/%ghQtBuilds_user%/%ghQtBuilds_repo%/releases/download/v%qt_version%-ssl-lgpl/%QT_ARCHIVE_NAME%" --output "%QT_ARCHIVE%"
+if errorlevel 1 exit /b %errorlevel%
+set "QT_ACTUAL_HASH="
+for /F "tokens=1" %%H in ('certutil -hashfile "%QT_ARCHIVE%" SHA256 ^| findstr /R /I "^[0-9a-f][0-9a-f]*$"') do if not defined QT_ACTUAL_HASH set "QT_ACTUAL_HASH=%%H"
+if /I not "%QT_ACTUAL_HASH%"=="%QT_ARCHIVE_HASH%" (
+  echo [qt] SHA-256 mismatch for "%QT_ARCHIVE%".
+  exit /b 5
+)
+
+"%SBIE_7ZIP_EXE%" x -y "-o%SBIE_QT_ROOT%" "%QT_ARCHIVE%"
+if errorlevel 1 exit /b %errorlevel%
+if not exist "%QT_QMAKE%" (
+  echo [qt] Extraction completed without producing "%QT_QMAKE%".
+  exit /b 6
+)
+exit /b 0

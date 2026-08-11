@@ -1,140 +1,135 @@
+@echo off
+setlocal EnableExtensions
+
 call "%~dp0..\Installer\buildVariables.cmd" %*
+if errorlevel 1 exit /b %errorlevel%
+@echo off
 
-REM @echo off
-REM echo Current dir: %cd%
-REM echo folder: %~dp0
-REM echo arch: %1
-REM echo qt_version: %2
-REM echo qt6_version: %3
+if not defined SBIE_QT_ROOT set "SBIE_QT_ROOT=%~dp0..\Qt"
+set "jom=%SBIE_QT_ROOT%\Tools\QtCreator\bin\jom.exe"
 
-REM echo %*
-REM IF "%~3" == "" ( set "qt6_version=6.3.1" ) ELSE ( set "qt6_version=%~3" )
-REM IF "%~2" == "" ( set "qt_version=5.15.16" ) ELSE ( set "qt_version=%~2" )
-
-IF %1 == Win32 (
-  set qt_path=%~dp0..\..\Qt\%qt_version%\msvc2022
-
-  REM get private headers for QtCore
-  Xcopy /E /I /Y /Q %~dp0..\..\Qt\%qt_version%\msvc2022\include\QtCore\%qt_version%\QtCore %~dp0..\..\Qt\%qt_version%\msvc2022\include\QtCore
-  
-  set build_arch=Win32
-  set qt_params= 
-call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+if /I "%~1"=="Win32" (
+  set "qt_path=%SBIE_QT_ROOT%\%qt_version%\msvc2022"
+  set "private_headers=%SBIE_QT_ROOT%\%qt_version%\msvc2022\include\QtCore\%qt_version%\QtCore"
+  set "private_target=%SBIE_QT_ROOT%\%qt_version%\msvc2022\include\QtCore"
+  set "build_arch=Win32"
+  set "qt_params="
+  set "vcvars_arg=x86"
 )
-IF %1 == x64 (
-  set qt_path=%~dp0..\..\Qt\%qt_version%\msvc2022_64
-REM  set qt_path=%~dp0..\..\Qt\%qt6_version%\msvc2022_64
-  
-  REM get private headers for QtCore
-  Xcopy /E /I /Y /Q %~dp0..\..\Qt\%qt_version%\msvc2022_64\include\QtCore\%qt_version%\QtCore %~dp0..\..\Qt\%qt_version%\msvc2022_64\include\QtCore
-REM  Xcopy /E /I /Y /Q %~dp0..\..\Qt\%qt6_version%\msvc2022_64\include\QtCore\%qt6_version%\QtCore %~dp0..\..\Qt\%qt6_version%\msvc2022_64\include\QtCore
-  
-  set build_arch=x64
-  set qt_params= 
-  call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+if /I "%~1"=="x64" (
+  set "qt_path=%SBIE_QT_ROOT%\%qt_version%\msvc2022_64"
+  set "private_headers=%SBIE_QT_ROOT%\%qt_version%\msvc2022_64\include\QtCore\%qt_version%\QtCore"
+  set "private_target=%SBIE_QT_ROOT%\%qt_version%\msvc2022_64\include\QtCore"
+  set "build_arch=x64"
+  set "qt_params="
+  set "vcvars_arg=amd64"
 )
-IF %1 == ARM64 (
-  set qt_path=%~dp0..\..\Qt\%qt6_version%\msvc2022_64
-  
-  REM get private headers for QtCore
-  Xcopy /E /I /Y /Q %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\include\QtCore\%qt6_version%\QtCore %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\include\QtCore
-  
-  set build_arch=ARM64
-  
-REM  set qt_params=-qtconf "%~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\target_qt.conf"
-  
-REM type %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\target_qt.conf
-  
-  REM
-  REM The target_qt.conf as provided by the windows-2022 github action runner
-  REM is non functional, hence we create our own working edition here.
-  REM
-  
-  echo [DevicePaths] > %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  echo Prefix=C:/Qt/Qt-%qt6_version% >> %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  echo [Paths] >> %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  echo Prefix=../ >> %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  echo HostPrefix=../../msvc2022_64 >> %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  echo HostData=../msvc2022_arm64 >> %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  echo Sysroot= >> %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  echo SysrootifyPrefix=false >> %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  echo TargetSpec=win32-arm64-msvc >> %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  echo HostSpec=win32-msvc >> %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  echo Documentation=../../Docs/Qt-%qt6_version% >> %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  echo Examples=../../Examples/Qt-%qt6_version% >> %~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf
-  
-  set qt_params=-qtconf "%~dp0..\..\Qt\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf"
-  
-REM  set VSCMD_DEBUG=3
-call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsamd64_arm64.bat"
+if /I "%~1"=="ARM64" (
+  set "qt_path=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_64"
+  set "private_headers=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\include\QtCore\%qt6_version%\QtCore"
+  set "private_target=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\include\QtCore"
+  set "build_arch=ARM64"
+  set "target_qt_conf=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf"
+  >"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo [DevicePaths]
+  >>"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo Prefix=%SBIE_QT_ROOT:\=/%/%qt6_version%
+  >>"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo [Paths]
+  >>"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo Prefix=../
+  >>"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo HostPrefix=../../msvc2022_64
+  >>"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo HostData=../msvc2022_arm64
+  >>"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo Sysroot=
+  >>"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo SysrootifyPrefix=false
+  >>"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo TargetSpec=win32-arm64-msvc
+  >>"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo HostSpec=win32-msvc
+  >>"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo Documentation=../../Docs/Qt-%qt6_version%
+  >>"%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf" echo Examples=../../Examples/Qt-%qt6_version%
+  set "qt_params=-qtconf "%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\bin\my_target_qt.conf""
+  set "vcvars_arg=amd64_arm64"
 )
-@echo on
 
-
-
-mkdir %~dp0\Build_UGlobalHotkey_%build_arch%
-cd %~dp0\Build_UGlobalHotkey_%build_arch%
-
-%qt_path%\bin\qmake.exe %~dp0\UGlobalHotkey\uglobalhotkey.qc.pro %qt_params%
-%~dp0..\..\Qt\Tools\QtCreator\bin\jom.exe -f Makefile.Release -j 8
-IF %ERRORLEVEL% NEQ 0 goto :error
-if NOT EXIST %~dp0\bin\%build_arch%\Release\UGlobalHotkey.dll goto :error
-
-
-
-mkdir %~dp0\Build_qtsingleapp_%build_arch%
-cd %~dp0\Build_qtsingleapp_%build_arch%
-
-%qt_path%\bin\qmake.exe %~dp0\QtSingleApp\qtsingleapp\qtsingleapp\qtsingleapp.qc.pro %qt_params%
-%~dp0..\..\Qt\Tools\QtCreator\bin\jom.exe -f Makefile.Release -j 8
-IF %ERRORLEVEL% NEQ 0 goto :error
-if NOT EXIST %~dp0\bin\%build_arch%\Release\qtsingleapp.dll goto :error
-
-
-
-mkdir %~dp0\Build_MiscHelpers_%build_arch%
-cd %~dp0\Build_MiscHelpers_%build_arch%
-
-%qt_path%\bin\qmake.exe %~dp0\MiscHelpers\MiscHelpers.qc.pro %qt_params%
-%~dp0..\..\Qt\Tools\QtCreator\bin\jom.exe -f Makefile.Release -j 8
-IF %ERRORLEVEL% NEQ 0 goto :error
-if NOT EXIST %~dp0\bin\%build_arch%\Release\MiscHelpers.dll goto :error
-
-
-
-mkdir %~dp0\Build_QSbieAPI_%build_arch%
-cd %~dp0\Build_QSbieAPI_%build_arch%
-
-%qt_path%\bin\qmake.exe %~dp0\QSbieAPI\QSbieAPI.qc.pro %qt_params%
-%~dp0..\..\Qt\Tools\QtCreator\bin\jom.exe -f Makefile.Release -j 8
-IF %ERRORLEVEL% NEQ 0 goto :error
-if NOT EXIST %~dp0\bin\%build_arch%\Release\QSbieAPI.dll goto :error
-
-
-
-mkdir %~dp0\Build_SandMan_%build_arch%
-cd %~dp0\Build_SandMan_%build_arch%
-
-if "%qt_version:~0,1%" == "5" ( 
-    %qt_path%\bin\qmake.exe %~dp0\SandMan\SandMan.qc.pro %qt_params%
+if not defined build_arch (
+  echo [qt] Unsupported architecture "%~1".
+  exit /b 2
 )
-if "%qt_version:~0,1%" == "6" ( 
-    %qt_path%\bin\qmake.exe %~dp0\SandMan\SandMan-Qt6.qc.pro %qt_params%
+if not defined SBIE_TOOLCHAIN_READY (
+  call :load_vs_environment || exit /b 6
 )
-%~dp0..\..\Qt\Tools\QtCreator\bin\jom.exe -f Makefile.Release -j 8
-IF %ERRORLEVEL% NEQ 0 goto :error
-if NOT EXIST %~dp0\bin\%build_arch%\Release\SandMan.exe goto :error
+if not exist "%qt_path%\bin\qmake.exe" (
+  echo [qt] Missing qmake at "%qt_path%\bin\qmake.exe".
+  exit /b 3
+)
+if not exist "%jom%" (
+  echo [qt] Missing jom at "%jom%".
+  exit /b 4
+)
+if not exist "%private_headers%\." (
+  echo [qt] Missing private Qt headers at "%private_headers%".
+  exit /b 5
+)
+xcopy /E /I /Y /Q "%private_headers%" "%private_target%" >nul
+if errorlevel 1 exit /b 5
 
+call :build_qmake "Build_UGlobalHotkey_%build_arch%" "%~dp0UGlobalHotkey\uglobalhotkey.qc.pro" "%~dp0bin\%build_arch%\Release\UGlobalHotkey.dll" || exit /b 10
+call :build_qmake "Build_qtsingleapp_%build_arch%" "%~dp0QtSingleApp\qtsingleapp\qtsingleapp\qtsingleapp.qc.pro" "%~dp0bin\%build_arch%\Release\qtsingleapp.dll" || exit /b 11
+call :build_qmake "Build_MiscHelpers_%build_arch%" "%~dp0MiscHelpers\MiscHelpers.qc.pro" "%~dp0bin\%build_arch%\Release\MiscHelpers.dll" || exit /b 12
+call :build_qmake "Build_QSbieAPI_%build_arch%" "%~dp0QSbieAPI\QSbieAPI.qc.pro" "%~dp0bin\%build_arch%\Release\QSbieAPI.dll" || exit /b 13
 
+if "%qt_version:~0,1%"=="6" (
+  set "sandman_project=%~dp0SandMan\SandMan-Qt6.qc.pro"
+) else (
+  set "sandman_project=%~dp0SandMan\SandMan.qc.pro"
+)
+call :build_qmake "Build_SandMan_%build_arch%" "%sandman_project%" "%~dp0bin\%build_arch%\Release\SandMan.exe" || exit /b 14
 
-cd %~dp0
+echo [qt] Complete for %build_arch%.
+exit /b 0
 
-rem dir .\bin
-rem dir .\bin\%build_arch%
-rem dir .\bin\%build_arch%\Release
+:load_vs_environment
+set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+if not exist "%VSWHERE%" (
+  echo [qt] Missing Visual Studio discovery tool "%VSWHERE%".
+  exit /b 1
+)
+set "VS_INSTALLATION="
+for /F "usebackq delims=" %%V in (`"%VSWHERE%" -latest -products * -version [17.0^,18.0^) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do if not defined VS_INSTALLATION set "VS_INSTALLATION=%%V"
+if not defined VS_INSTALLATION (
+  echo [qt] No compatible Visual Studio 2022 C++ toolchain was discovered.
+  exit /b 1
+)
+set "VCVARSALL=%VS_INSTALLATION%\VC\Auxiliary\Build\vcvarsall.bat"
+if not exist "%VCVARSALL%" (
+  echo [qt] Missing vcvarsall.bat at "%VCVARSALL%".
+  exit /b 1
+)
+call "%VCVARSALL%" %vcvars_arg%
+if errorlevel 1 exit /b %errorlevel%
+set "SBIE_TOOLCHAIN_READY=1"
+exit /b 0
 
-goto :eof
-
-:error
-echo Build failed
-exit 1
+:build_qmake
+set "build_dir=%~dp0%~1"
+if not exist "%build_dir%\." mkdir "%build_dir%"
+if errorlevel 1 exit /b 1
+pushd "%build_dir%"
+"%qt_path%\bin\qmake.exe" "%~2" %qt_params%
+if errorlevel 1 (
+  popd
+  exit /b 1
+)
+if /I "%SBIE_CLEAN_BUILD%"=="1" (
+  "%jom%" -f Makefile.Release clean
+  if errorlevel 1 (
+    popd
+    exit /b 1
+  )
+)
+"%jom%" -f Makefile.Release -j 8
+if errorlevel 1 (
+  popd
+  exit /b 1
+)
+popd
+if not exist "%~3" (
+  echo [qt] Expected output is missing: "%~3".
+  exit /b 1
+)
+exit /b 0
