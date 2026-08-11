@@ -115,7 +115,11 @@ jobs:
       - name: Expose Qt host tools
         shell: pwsh
         run: |
-          $qtHost = Join-Path $env:GITHUB_WORKSPACE ("Qt\{0}\msvc2022_64" -f $env:qt6_version)
+          $qtVersion = $env:qt6_version.Trim()
+          if ([string]::IsNullOrWhiteSpace($qtVersion)) {
+            throw 'Qt version is empty after trimming the buildVariables environment value.'
+          }
+          $qtHost = Join-Path $env:GITHUB_WORKSPACE ("Qt\{0}\msvc2022_64" -f $qtVersion)
           $qmakeCandidates = @(
             (Join-Path $qtHost 'bin\qmake.exe'),
             (Join-Path $qtHost 'bin\qmake.bat'),
@@ -267,7 +271,11 @@ jobs:
       - name: Expose Qt host tools
         shell: pwsh
         run: |
-          $qtHost = if ($env:QT_HOST_PATH) { $env:QT_HOST_PATH } else { Join-Path $env:GITHUB_WORKSPACE ("Qt\{0}\msvc2022_64" -f $env:qt6_version) }
+          $qtVersion = $env:qt6_version.Trim()
+          if ([string]::IsNullOrWhiteSpace($qtVersion)) {
+            throw 'Qt version is empty after trimming the buildVariables environment value.'
+          }
+          $qtHost = if ($env:QT_HOST_PATH) { $env:QT_HOST_PATH } else { Join-Path $env:GITHUB_WORKSPACE ("Qt\{0}\msvc2022_64" -f $qtVersion) }
           $qmakeCandidates = @(
             (Join-Path $qtHost 'bin\qmake.exe'),
             (Join-Path $qtHost 'bin\qmake.bat'),

@@ -59,6 +59,8 @@ if ((workflow.match(/name: Expose Qt host tools/g) || []).length !== 2) {
 for (const marker of [
   'GITHUB_PATH',
   'GITHUB_ENV',
+  'Trim()',
+  'Qt version is empty after trimming',
   'qmake.exe',
   'qmake.bat',
   'qmake6.exe',
