@@ -42,8 +42,28 @@ function sha256(file) {
   return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 }
 
+function hasCrt(root, architecture) {
+  return fs.existsSync(path.join(root, architecture, 'Microsoft.VC143.CRT'));
+}
+
 function findRedistRoot() {
-  if (process.env.VCToolsRedistDir) return path.resolve(process.env.VCToolsRedistDir);
+  const requested = process.env.VCToolsRedistDir ? path.resolve(process.env.VCToolsRedistDir) : null;
+  const candidates = [];
+  if (requested) {
+    candidates.push(requested);
+    const parent = path.dirname(requested);
+    if (parent !== requested) candidates.push(parent);
+  }
+  const addVersionCandidates = (base) => {
+    if (!fs.existsSync(base) || !fs.statSync(base).isDirectory()) return;
+    for (const entry of fs.readdirSync(base, { withFileTypes: true })) {
+      if (entry.isDirectory()) candidates.push(path.join(base, entry.name));
+    }
+  };
+  for (const candidate of [...candidates]) addVersionCandidates(candidate);
+  for (const candidate of candidates) {
+    if (hasCrt(candidate, 'x64') || hasCrt(candidate, 'arm64')) return candidate;
+  }
   const programFilesX86 = process.env['ProgramFiles(x86)'];
   if (!programFilesX86) throw new Error('VCToolsRedistDir is unset and ProgramFiles(x86) cannot be resolved');
   const vswhere = path.join(programFilesX86, 'Microsoft Visual Studio', 'Installer', 'vswhere.exe');
@@ -61,7 +81,10 @@ function findRedistRoot() {
     .map((entry) => entry.name)
     .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
   if (!versions.length) throw new Error(`no VC143 redistributable versions were found below ${base}`);
-  return path.join(base, versions[0]);
+  const discoveredVersions = versions.map((version) => path.join(base, version));
+  const usable = discoveredVersions.find((candidate) => hasCrt(candidate, 'x64') || hasCrt(candidate, 'arm64'));
+  if (!usable) throw new Error(`no VC143 runtime architecture directories were found below ${base}`);
+  return usable;
 }
 
 function resolveSevenZip() {

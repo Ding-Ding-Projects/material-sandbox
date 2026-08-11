@@ -5,6 +5,11 @@ call "%~dp0buildVariables.cmd" %*
 if errorlevel 1 exit /b %errorlevel%
 @echo off
 
+rem install-qt-action may place the target package beside the checkout, while
+rem older x64 runs place it under the checkout. Prefer its explicit target root
+rem and derive the common Qt installation root before falling back to the local
+rem layout. This keeps ARM64 staging from quietly looking in the wrong tree.
+if not defined SBIE_QT_ROOT if defined QT_ROOT_DIR for %%Q in ("%QT_ROOT_DIR%\..\..") do set "SBIE_QT_ROOT=%%~fQ"
 if not defined SBIE_QT_ROOT set "SBIE_QT_ROOT=%~dp0..\Qt"
 if not defined SBIE_7ZIP_EXE set "SBIE_7ZIP_EXE=C:\Program Files\7-Zip\7z.exe"
 

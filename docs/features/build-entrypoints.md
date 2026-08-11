@@ -9,7 +9,10 @@ when the pinned Qt/MSVC toolchain or a build step is unavailable.
 that `SandMan.exe` exists for the selected architecture. `build-installer.bat`
 stages the x64 output through `Installer/copy_build.cmd`, compiles the canonical
 Inno Setup script with no signing route, rejects any installer that is not
-reported as `NotSigned`, and prints its SHA-256 digest.
+reported as `NotSigned`, and prints its SHA-256 digest. CI staging derives the
+Qt root from the installer action's target package when that package lives
+beside the checkout, and artifact verification discovers the installed VC143
+runtime version instead of assuming the `v143` alias exists.
 
 Every `SboxDrv.vcxproj` debug and release configuration for Win32, x64, and
 ARM64 sets the scalar WDK `SignMode` property to `Off`, so staging cannot inherit a

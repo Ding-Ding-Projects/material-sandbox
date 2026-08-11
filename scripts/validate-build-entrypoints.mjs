@@ -62,6 +62,13 @@ assertIncludes(qmake, '%QT_HOST_PATH%\\..\\..', 'qmake host-root derivation');
 const jom = fs.readFileSync('SandboxiePlus/install_jom.cmd', 'utf8');
 assertIncludes(jom, 'QT_HOST_PATH', 'jom host-root fallback');
 assertIncludes(jom, '%QT_HOST_PATH%\\..\\..', 'jom host-root derivation');
+const copyBuild = fs.readFileSync('Installer/copy_build.cmd', 'utf8');
+assertIncludes(copyBuild, 'QT_ROOT_DIR', 'staging target-root fallback');
+assertIncludes(copyBuild, '%QT_ROOT_DIR%\\..\\..', 'staging target-root derivation');
+assertIncludes(copyBuild, 'SBIE_QT_ROOT', 'staging Qt-root override');
+const artifactValidator = fs.readFileSync('scripts/validate-ci-artifacts.mjs', 'utf8');
+assertIncludes(artifactValidator, 'hasCrt', 'artifact VC runtime discovery');
+assertIncludes(artifactValidator, 'discoveredVersions', 'artifact versioned VC runtime fallback');
 for (const marker of [
   'GITHUB_PATH',
   'GITHUB_ENV',
@@ -131,4 +138,4 @@ const statusAfter = run('git.exe', ['status', '--porcelain=v1', '--untracked-fil
 if (statusAfter !== statusBefore) throw new Error('entrypoint self-tests mutated the source tree');
 
 const unsignedChecks = validateUnsignedPackaging();
-console.log(`build-entrypoints-contract checks=${53 + unsignedChecks} helperSelfTests=18`);
+console.log(`build-entrypoints-contract checks=${59 + unsignedChecks} helperSelfTests=18`);
