@@ -18,6 +18,8 @@ The ARM64 Sandboxie-Tools solution maps the `ImBox` Release configuration to
 `Release|ARM64` and includes its build mapping, so the ARM64 staging step cannot
 silently omit the executable. Archive membership checks normalize 7-Zip's
 separator and `./` presentation before matching required troubleshooting files.
+The local entrypoint contract checks both the solution mapping and these listing
+normalizations before a build is considered ready for hosted verification.
 
 Every `SboxDrv.vcxproj` debug and release configuration for Win32, x64, and
 ARM64 sets the scalar WDK `SignMode` property to `Off`, so staging cannot inherit a
