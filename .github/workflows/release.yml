@@ -270,7 +270,12 @@ jobs:
             (Join-Path $env:RELEASE_EVIDENCE 'line-count.md')
           )
           gh release create $env:RELEASE_TAG $assets --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Sandboxie Plus $env:RELEASE_TAG" --notes-file $initialNotes --draft
-          $drafts = @(Get-RepositoryReleases | Where-Object { $_.tag_name -eq $env:RELEASE_TAG })
+          $drafts = @()
+          for ($attempt = 0; $attempt -lt 12; $attempt += 1) {
+            $drafts = @(Get-RepositoryReleases | Where-Object { $_.tag_name -eq $env:RELEASE_TAG })
+            if ($drafts.Count -gt 0) { break }
+            Start-Sleep -Seconds 5
+          }
           if ($drafts.Count -ne 1) {
             throw "Authenticated release inventory found $($drafts.Count) draft candidates for $env:RELEASE_TAG."
           }

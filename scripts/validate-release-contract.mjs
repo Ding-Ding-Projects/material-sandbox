@@ -100,6 +100,11 @@ function validateBundle({ workflow, counter, docs }) {
   if (inventoryAt < createAt || numericIdAt < inventoryAt || publishAt < numericIdAt) {
     errors.push('draft publication must follow authenticated inventory and numeric-ID verification');
   }
+  const retryAt = workflow.indexOf('for ($attempt = 0; $attempt -lt 12; $attempt += 1)', inventoryAt);
+  const retrySleepAt = workflow.indexOf('Start-Sleep -Seconds 5', retryAt);
+  if (retryAt < inventoryAt || retrySleepAt < retryAt) {
+    errors.push('draft inventory must retry eventual-consistency reads before publishing');
+  }
 
   const assetBlock = /\$assets\s*=\s*@\(([\s\S]*?)\n\s*\)/.exec(workflow)?.[1] || '';
   const requiredAssets = [
