@@ -5,7 +5,6 @@
 #include <QSet>
 #include <QApplication>
 #include <QClipboard>
-#include <QDesktopServices>
 #include <QFileInfo>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -13,7 +12,6 @@
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QSplitter>
-#include <QUrl>
 #include <QVBoxLayout>
 
 CStatusHubView::CStatusHubView(const QString& repositoryRoot, QWidget* parent)
@@ -51,7 +49,8 @@ CStatusHubView::CStatusHubView(const QString& repositoryRoot, QWidget* parent)
     auto* refreshButton = new QPushButton(tr("Refresh"), this);
     refreshButton->setProperty("m3", QStringLiteral("tonal"));
     auto* replyButton = new QPushButton(tr("Copy reply instructions"), this);
-    auto* revealButton = new QPushButton(tr("Reveal card"), this);
+    auto* revealButton = new QPushButton(tr("View card here"), this);
+    revealButton->setObjectName(QStringLiteral("statusViewHereButton"));
     revealButton->setProperty("m3", QStringLiteral("filled"));
     actions->addWidget(refreshButton);
     actions->addStretch(1);
@@ -130,11 +129,8 @@ void CStatusHubView::showCurrent()
 
 void CStatusHubView::revealCurrent()
 {
-    CLocalMemoryRepository::Error error = CLocalMemoryRepository::NoError;
-    const QString relative = currentRelativePath();
-    const QString path = relative.isEmpty() ? QString() : m_repository.safeExistingPath(relative, &error);
-    if (!path.isEmpty())
-        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+    showCurrent();
+    m_evidence->setFocus(Qt::OtherFocusReason);
 }
 
 void CStatusHubView::copyReplyInstructions()

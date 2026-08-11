@@ -2,7 +2,6 @@
 #include "OperationsView.h"
 
 #include <QAbstractItemView>
-#include <QFileInfo>
 #include <QFrame>
 #include <QDateTime>
 #include <QGridLayout>
@@ -115,8 +114,7 @@ void COperationsView::refresh()
         const auto text = m_repository.readText(relative);
         if (!text.ok())
             continue;
-        const QFileInfo info(text.absolutePath);
-        newest = newest.isValid() && newest > info.lastModified() ? newest : info.lastModified();
+        newest = newest.isValid() && newest > text.modified ? newest : text.modified;
         failingEvidence = failingEvidence
             || text.text.contains(QStringLiteral("the hui is red"), Qt::CaseInsensitive)
             || text.text.contains(QStringLiteral("workflow failed"), Qt::CaseInsensitive);
@@ -128,7 +126,7 @@ void COperationsView::refresh()
         source->setData(Qt::UserRole, relative);
         m_sources->setItem(row, 0, source);
         m_sources->setItem(row, 1, new QTableWidgetItem(tr("Local evidence")));
-        m_sources->setItem(row, 2, new QTableWidgetItem(info.lastModified().toString(Qt::ISODate)));
+        m_sources->setItem(row, 2, new QTableWidgetItem(text.modified.toString(Qt::ISODate)));
         ++found;
     }
 
