@@ -59,6 +59,9 @@ if ((workflow.match(/name: Expose Qt host tools/g) || []).length !== 2) {
 const qmake = fs.readFileSync('SandboxiePlus/qmake_plus.cmd', 'utf8');
 assertIncludes(qmake, 'QT_HOST_PATH', 'qmake host-root fallback');
 assertIncludes(qmake, '%QT_HOST_PATH%\\..\\..', 'qmake host-root derivation');
+const jom = fs.readFileSync('SandboxiePlus/install_jom.cmd', 'utf8');
+assertIncludes(jom, 'QT_HOST_PATH', 'jom host-root fallback');
+assertIncludes(jom, '%QT_HOST_PATH%\\..\\..', 'jom host-root derivation');
 for (const marker of [
   'GITHUB_PATH',
   'GITHUB_ENV',

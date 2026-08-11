@@ -1,6 +1,9 @@
 @echo off
 setlocal EnableExtensions
 
+rem GitHub's Qt action exports the parent installation through QT_HOST_PATH.
+rem Reuse that root so jom lands beside the host qmake and target Qt package.
+if not defined SBIE_QT_ROOT if defined QT_HOST_PATH for %%H in ("%QT_HOST_PATH%\..\..") do set "SBIE_QT_ROOT=%%~fH"
 if not defined SBIE_QT_ROOT set "SBIE_QT_ROOT=%~dp0..\Qt"
 if not defined SBIE_7ZIP_EXE set "SBIE_7ZIP_EXE=C:\Program Files\7-Zip\7z.exe"
 set "JOM_EXE=%SBIE_QT_ROOT%\Tools\QtCreator\bin\jom.exe"
