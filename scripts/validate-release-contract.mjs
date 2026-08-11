@@ -25,7 +25,7 @@ function validateBundle({ workflow, counter, docs }) {
     if (!docs.includes(token)) errors.push('documentation missing ' + label + ': ' + token);
   };
 
-  requireWorkflow('master push trigger', 'branches: [master]');
+  requireWorkflow('main push trigger', 'branches: [main]');
   requireWorkflow('manual trigger', 'workflow_dispatch:');
   requireWorkflow('pinned Windows runner image', 'runs-on: windows-2022');
   requireWorkflow('exact event revision checkout', 'ref: ${{ github.sha }}');
@@ -43,7 +43,7 @@ function validateBundle({ workflow, counter, docs }) {
   requireWorkflow('required unsigned status', 'SignatureStatus]::NotSigned');
   requireWorkflow('SHA-256 verification', 'Get-FileHash');
   requireWorkflow('authoritative workflow start', 'run_started_at');
-  requireWorkflow('authoritative publication completion', 'publishedAt');
+  requireWorkflow('authoritative publication completion', 'published_at');
   requireWorkflow('workflow start notes', 'Workflow started:');
   requireWorkflow('workflow completion notes', 'Workflow completed:');
   requireWorkflow('workflow duration notes', 'Workflow duration:');
@@ -60,7 +60,11 @@ function validateBundle({ workflow, counter, docs }) {
   requireWorkflow('public dim-sum catalog link', 'https://github.com/Ding-Ding-Projects/dim-sum-photos/releases');
   requireWorkflow('no-copy dim-sum statement', 'does not copy or attach a dim-sum image');
   requireWorkflow('draft staging', '--draft');
-  requireWorkflow('non-draft publication', '--draft=false');
+  requireWorkflow('authenticated paginated release inventory', 'gh api --paginate --slurp');
+  requireWorkflow('numeric draft release identity', '$releaseId = [int64]$draft.id');
+  requireWorkflow('numeric release API', 'repos/$env:GITHUB_REPOSITORY/releases/$releaseId');
+  requireWorkflow('non-draft publication', '-F draft=false');
+  requireWorkflow('file-backed final release body', '-F "body=@$finalNotes"');
   requireWorkflow('release download verification', 'gh release download');
   requireWorkflow('safe evidence collection', 'Collect safe release evidence');
   requireWorkflow('always-run artifact upload', 'if: ${{ always() }}');
@@ -79,9 +83,13 @@ function validateBundle({ workflow, counter, docs }) {
   }
   const createAt = workflow.indexOf('gh release create');
   const unsignedAt = workflow.indexOf('SignatureStatus]::NotSigned');
-  const publishAt = workflow.indexOf('--draft=false');
+  const inventoryAt = workflow.indexOf('$drafts = @(Get-RepositoryReleases');
+  const numericIdAt = workflow.indexOf('$releaseId = [int64]$draft.id');
+  const publishAt = workflow.indexOf('-F draft=false');
   if (unsignedAt < 0 || createAt < unsignedAt) errors.push('release creation must occur after unsigned-installer verification');
-  if (publishAt < createAt) errors.push('draft publication must occur after the single release creation');
+  if (inventoryAt < createAt || numericIdAt < inventoryAt || publishAt < numericIdAt) {
+    errors.push('draft publication must follow authenticated inventory and numeric-ID verification');
+  }
 
   const assetBlock = /\$assets\s*=\s*@\(([\s\S]*?)\n\s*\)/.exec(workflow)?.[1] || '';
   const requiredAssets = [
@@ -133,7 +141,7 @@ function currentBundle() {
 
 function runSelfTest(bundle) {
   const mutations = [
-    ['master trigger', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replace('branches: [master]', 'branches: [main]') })],
+    ['main trigger', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replace('branches: [main]', 'branches: [master]') })],
     ['token chain', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replaceAll('secrets.RELEASE_TOKEN || secrets.ORG_TOKEN || secrets.GITHUB_TOKEN', 'secrets.GITHUB_TOKEN') })],
     ['non-cancelling workflow', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow + '\nconcurrency:\n  cancel-in-progress: true\n' })],
     ['full history', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replace('fetch-depth: 0', 'fetch-depth: 1') })],
@@ -141,6 +149,8 @@ function runSelfTest(bundle) {
     ['root installer script', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replace("'build-installer.bat'", "'Installer\\\\make.bat'") })],
     ['unsigned status', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replaceAll('SignatureStatus]::NotSigned', 'SignatureStatus]::Valid') })],
     ['one release', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replace('gh release create', 'gh release create\ngh release create') })],
+    ['draft inventory', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replaceAll('gh api --paginate --slurp', 'gh api') })],
+    ['numeric release id', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replace('$releaseId = [int64]$draft.id', '$releaseId = 1') })],
     ['monotonic tag', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replace('RELEASE_TAG: v0.0.0-build.${{ github.run_number }}', 'RELEASE_TAG: v0.0.0-build.1') })],
     ['no image attachment', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replace("(Join-Path $env:RELEASE_EVIDENCE 'line-count.md')", "(Join-Path $env:RELEASE_EVIDENCE 'dim-sum.png')") })],
     ['timing evidence', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replaceAll('Workflow duration:', 'Elapsed:') })],

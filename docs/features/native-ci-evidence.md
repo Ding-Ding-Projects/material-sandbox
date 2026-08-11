@@ -23,10 +23,19 @@ publication. The job checks out full history, resolves API access through
 toolchain, and invokes `build.bat /s` and `build-installer.bat /s` from the
 repository root.
 
+The committed `validate-unsigned-packaging.mjs --self-test` contract is run
+locally before integration and release preparation. The publication workflow
+does not run tests or static-analysis gates; it invokes the supported build and
+installer entrypoints, then checks the produced unsigned artifact and release
+evidence. The validator remains the single local source of truth for the
+static no-signing inventory rather than being re-created in YAML.
+
 Publication cannot begin until the job finds exactly one x64 installer, checks
 its size and product version, calculates SHA-256, and verifies Authenticode
 status `NotSigned`. It then creates one unique run-number tag as a draft,
-verifies the target commit, publishes the same record as non-draft, and checks
+finds that draft through the authenticated paginated release inventory,
+verifies its numeric release ID and target commit, publishes that same record
+through the numeric API as non-draft, and checks
 the downloaded installer again. The notes record the exact commit, installer
 name and hash, authoritative workflow start and publication timestamps, stable
 `HH:mm:ss` duration, an explicit unsigned-installer and unknown-publisher

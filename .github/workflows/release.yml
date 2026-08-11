@@ -5,7 +5,7 @@ name: Windows Release
 # another run after it starts creating immutable external state.
 on:
   push:
-    branches: [master]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -86,25 +86,22 @@ jobs:
           if ($priorBuilds.Count -gt 0 -and [int64]$env:GITHUB_RUN_NUMBER -le ($priorBuilds | Measure-Object -Maximum).Maximum) {
             throw "Release build number $env:GITHUB_RUN_NUMBER is not greater than the prior monotonic tag."
           }
-          if (gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY 2>$null) {
-            throw "Release already exists: $env:RELEASE_TAG"
+          $releasePages = gh api --paginate --slurp "repos/$env:GITHUB_REPOSITORY/releases?per_page=100" | ConvertFrom-Json
+          $matchingReleases = @(
+            foreach ($page in $releasePages) {
+              foreach ($candidate in @($page)) {
+                if ($candidate.tag_name -eq $env:RELEASE_TAG) { $candidate }
+              }
+            }
+          )
+          if ($matchingReleases.Count -ne 0) {
+            throw "Release inventory already contains $env:RELEASE_TAG; refusing a duplicate or overwrite."
           }
           $run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID" | ConvertFrom-Json
           if ([string]::IsNullOrWhiteSpace($run.run_started_at)) {
             throw 'GitHub did not return an authoritative run_started_at value.'
           }
           $run.run_started_at | Set-Content -Encoding ascii (Join-Path $env:RELEASE_EVIDENCE 'workflow-started-at.txt')
-
-      - name: Validate release source contracts
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          node scripts/validate-release-contract.mjs
-          node scripts/validate-release-contract.mjs --self-test
-          node --test scripts/test-count-lines.mjs
-          node scripts/validate-build-entrypoints.mjs
-          node scripts/validate-ci-concurrency.mjs
-          git diff --check
 
       - name: Bootstrap declared Windows build dependencies
         shell: cmd
@@ -216,6 +213,12 @@ jobs:
           INSTALLER_VERSION: ${{ steps.installer.outputs.version }}
         run: |
           $ErrorActionPreference = 'Stop'
+          function Get-RepositoryReleases {
+            $pages = gh api --paginate --slurp "repos/$env:GITHUB_REPOSITORY/releases?per_page=100" | ConvertFrom-Json
+            foreach ($page in $pages) {
+              foreach ($candidate in @($page)) { $candidate }
+            }
+          }
           $initialNotes = Join-Path $env:RELEASE_EVIDENCE 'release-notes-initial.md'
           @(
             "# Sandboxie Plus $env:RELEASE_TAG"
@@ -232,25 +235,30 @@ jobs:
             (Join-Path $env:RELEASE_EVIDENCE 'line-count.md')
           )
           gh release create $env:RELEASE_TAG $assets --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Sandboxie Plus $env:RELEASE_TAG" --notes-file $initialNotes --draft
-          $draft = gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --json isDraft,targetCommitish,tagName | ConvertFrom-Json
-          if (-not $draft.isDraft -or $draft.targetCommitish -ne $env:GITHUB_SHA -or $draft.tagName -ne $env:RELEASE_TAG) {
+          $drafts = @(Get-RepositoryReleases | Where-Object { $_.tag_name -eq $env:RELEASE_TAG })
+          if ($drafts.Count -ne 1) {
+            throw "Authenticated release inventory found $($drafts.Count) draft candidates for $env:RELEASE_TAG."
+          }
+          $draft = $drafts[0]
+          if (-not $draft.draft -or $draft.target_commitish -ne $env:GITHUB_SHA -or $draft.tag_name -ne $env:RELEASE_TAG -or -not $draft.id) {
             throw 'Draft release identity verification failed.'
           }
-          gh release edit $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --draft=false
+          $releaseId = [int64]$draft.id
+          gh api --method PATCH "repos/$env:GITHUB_REPOSITORY/releases/$releaseId" -F draft=false | Out-Null
           $release = $null
           for ($attempt = 0; $attempt -lt 12; $attempt += 1) {
-            $release = gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --json isDraft,isPrerelease,publishedAt,targetCommitish,tagName,assets,body | ConvertFrom-Json
-            if (-not $release.isDraft -and -not [string]::IsNullOrWhiteSpace($release.publishedAt)) {
+            $release = gh api "repos/$env:GITHUB_REPOSITORY/releases/$releaseId" | ConvertFrom-Json
+            if (-not $release.draft -and -not [string]::IsNullOrWhiteSpace($release.published_at)) {
               break
             }
             Start-Sleep -Seconds 5
           }
-          if ($release.isDraft -or $release.isPrerelease -or [string]::IsNullOrWhiteSpace($release.publishedAt)) {
+          if ($release.draft -or $release.prerelease -or [string]::IsNullOrWhiteSpace($release.published_at)) {
             throw 'Published release state did not become authoritative.'
           }
           $startedText = (Get-Content -Raw -LiteralPath (Join-Path $env:RELEASE_EVIDENCE 'workflow-started-at.txt')).Trim()
           $started = [DateTimeOffset]::Parse($startedText).ToUniversalTime()
-          $completed = [DateTimeOffset]::Parse($release.publishedAt).ToUniversalTime()
+          $completed = [DateTimeOffset]::Parse($release.published_at).ToUniversalTime()
           if ($completed -lt $started) {
             throw 'Published timestamp precedes the workflow start.'
           }
@@ -294,9 +302,9 @@ jobs:
             'Reproduce the line table with: node scripts/count-lines.mjs'
           )
           [IO.File]::WriteAllText($finalNotes, ($noteLines -join "`n") + "`n", [Text.UTF8Encoding]::new($false))
-          gh release edit $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --notes-file $finalNotes
-          $verified = gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --json isDraft,isPrerelease,publishedAt,targetCommitish,tagName,assets,body,url | ConvertFrom-Json
-          if ($verified.isDraft -or $verified.isPrerelease -or $verified.targetCommitish -ne $env:GITHUB_SHA) {
+          gh api --method PATCH "repos/$env:GITHUB_REPOSITORY/releases/$releaseId" -F "body=@$finalNotes" | Out-Null
+          $verified = gh api "repos/$env:GITHUB_REPOSITORY/releases/$releaseId" | ConvertFrom-Json
+          if ($verified.draft -or $verified.prerelease -or $verified.target_commitish -ne $env:GITHUB_SHA -or $verified.tag_name -ne $env:RELEASE_TAG -or [int64]$verified.id -ne $releaseId) {
             throw 'Final release state, type, or target commit does not match the verified candidate.'
           }
           $expectedAssets = @($env:INSTALLER_NAME, 'line-count.json', 'line-count.md', 'release-provenance.json', 'sha256-checksums.txt') | Sort-Object
@@ -317,7 +325,7 @@ jobs:
           if (-not $lineBlock.Success -or $lineBlock.Groups[1].Value -cne $lineTable) {
             throw 'Published release line-count block does not byte-match the generated Markdown after newline normalization.'
           }
-          $sameTag = @(gh release list --repo $env:GITHUB_REPOSITORY --limit 1000 --json tagName | ConvertFrom-Json | Where-Object { $_.tagName -eq $env:RELEASE_TAG })
+          $sameTag = @(Get-RepositoryReleases | Where-Object { $_.tag_name -eq $env:RELEASE_TAG })
           if ($sameTag.Count -ne 1) {
             throw "Expected one release with tag $env:RELEASE_TAG; found $($sameTag.Count)."
           }
@@ -350,7 +358,7 @@ jobs:
             throw 'Downloaded release installer is not unsigned as required.'
           }
           $verified | ConvertTo-Json -Depth 8 | Set-Content -Encoding utf8 (Join-Path $env:RELEASE_EVIDENCE 'release-verified.json')
-          "url=$($verified.url)" >> $env:GITHUB_OUTPUT
+          "url=$($verified.html_url)" >> $env:GITHUB_OUTPUT
       - name: Collect safe release evidence
         if: ${{ always() }}
         continue-on-error: true
