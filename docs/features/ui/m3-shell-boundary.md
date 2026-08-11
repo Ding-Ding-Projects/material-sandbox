@@ -213,7 +213,10 @@ and adds the M3 title with `QLayout::setMenuBar`. This avoids reparenting a live
 layout into a second root, which Qt 6.8.3 can otherwise represent with a null
 child during a `QMessageBox` show. Dialogs that begin without a layout, such as
 the regex builder before its scroll area is created, still receive the shared
-shell used by their constructor.
+shell used by their constructor. When the application Show filter installs the
+frameless flag on an already-visible dialog, the host immediately shows it
+again because changing a native window flag temporarily hides the dialog; this
+keeps `QMessageBox` and other nested decision surfaces usable.
 
 `M3ShellHost::InstallDialog` was the first dialog migration slice. `TestProxyDialog`
 now owns its proxy summary, progress, transcript, test settings, and actions in

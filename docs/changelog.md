@@ -15,6 +15,17 @@
 - The integrating commit is not guessed in this unreleased entry. The workflow
   records and verifies the exact source SHA when a release actually runs.
 
+## 2026-08-11 · Keep visible dialogs visible after M3 chrome install
+
+Commit: [b9e729ea2e16bd0f0c741339a02dfb368a1a088d](https://github.com/Ding-Ding-Projects/material-sandbox/commit/b9e729ea2e16bd0f0c741339a02dfb368a1a088d)
+
+- Restored visibility when the application Show filter installs frameless M3
+  chrome on a dialog that is already visible, preventing a nested
+  `QMessageBox` event loop from waiting on a hidden dialog.
+- Replaced the unbounded static-message-box fixture with a bounded native
+  visibility watchdog and kept the UI rewrite validator aligned with the real
+  application filter path.
+
 ## 2026-08-11 · Safe native dialog layout chrome
 
 Commit: [ca606b052a32dcc91497f67432e487460115d2b5](https://github.com/Ding-Ding-Projects/material-sandbox/commit/ca606b052a32dcc91497f67432e487460115d2b5)
