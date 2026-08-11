@@ -1,5 +1,6 @@
 @echo off
 setlocal EnableExtensions
+set "SCRIPT_ROOT=%~dp0"
 
 rem Build one verified, permanently unsigned installer. /s, --silent, or SILENT=1 suppresses prompts.
 set "SILENT_ARG="
@@ -31,7 +32,7 @@ if /I "%SBIE_BOOTSTRAP_PLAN%"=="1" set "PLAN_ARG=-PlanOnly"
 set "POWERSHELL_EXE=powershell.exe"
 where pwsh.exe >nul 2>&1 && set "POWERSHELL_EXE=pwsh.exe"
 
-"%POWERSHELL_EXE%" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\windows-build-bootstrap.ps1" -Mode Installer -Architecture "%ARCH%" %SILENT_ARG% %PLAN_ARG%
+"%POWERSHELL_EXE%" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_ROOT%scripts\windows-build-bootstrap.ps1" -Mode Installer -Architecture "%ARCH%" %SILENT_ARG% %PLAN_ARG%
 if errorlevel 1 (
   echo [installer] Unsigned installer build failed with errorlevel %errorlevel%.
   exit /b %errorlevel%

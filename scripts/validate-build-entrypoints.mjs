@@ -25,6 +25,8 @@ const wrappers = ['build.bat', 'build-installer.bat'];
 for (const file of wrappers) {
   if (!fs.existsSync(file)) throw new Error(`missing ${file}`);
   const text = fs.readFileSync(file, 'utf8');
+  assertIncludes(text, 'set "SCRIPT_ROOT=%~dp0"', `${file}: snapshots its directory before argument shifts`);
+  assertIncludes(text, '%SCRIPT_ROOT%scripts\\windows-build-bootstrap.ps1', `${file}: uses the preserved directory after argument parsing`);
   for (const marker of ['/s', '--silent', 'SILENT', 'errorlevel', '--plan', 'windows-build-bootstrap.ps1']) {
     if (!text.toLowerCase().includes(marker.toLowerCase())) throw new Error(`${file}: missing ${marker}`);
   }

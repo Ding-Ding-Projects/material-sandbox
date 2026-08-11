@@ -1,5 +1,6 @@
 @echo off
 setlocal EnableExtensions
+set "SCRIPT_ROOT=%~dp0"
 
 rem Fresh-Windows build entry point. /s, --silent, or SILENT=1 suppresses prompts.
 set "SILENT_ARG="
@@ -36,7 +37,7 @@ if /I not "%ARCH%"=="x64" if /I not "%ARCH%"=="ARM64" (
 set "POWERSHELL_EXE=powershell.exe"
 where pwsh.exe >nul 2>&1 && set "POWERSHELL_EXE=pwsh.exe"
 
-"%POWERSHELL_EXE%" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\windows-build-bootstrap.ps1" -Mode Build -Architecture "%ARCH%" %SILENT_ARG% %PLAN_ARG%
+"%POWERSHELL_EXE%" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_ROOT%scripts\windows-build-bootstrap.ps1" -Mode Build -Architecture "%ARCH%" %SILENT_ARG% %PLAN_ARG%
 if errorlevel 1 (
   echo [build] Windows build failed with errorlevel %errorlevel%.
   exit /b %errorlevel%
