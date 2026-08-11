@@ -52,6 +52,19 @@ for (const marker of [
   "'Sandboxie-Plus.iss'",
 ]) assertIncludes(helper, marker, 'bootstrap helper');
 
+const workflow = fs.readFileSync('.github/workflows/main.yml', 'utf8');
+if ((workflow.match(/name: Expose Qt host tools/g) || []).length !== 2) {
+  throw new Error('main workflow must expose Qt host tools in both x64 and ARM64 jobs');
+}
+for (const marker of [
+  'GITHUB_PATH',
+  'GITHUB_ENV',
+  'qmake.exe',
+  'qmake.bat',
+  'qmake6.exe',
+  'lrelease.exe',
+]) assertIncludes(workflow, marker, 'main workflow Qt host-tool preflight');
+
 const statusBefore = run('git.exe', ['status', '--porcelain=v1', '--untracked-files=all']);
 const probeRoot = path.join(os.tmpdir(), `sandboxie-bootstrap-plan-probe-${process.pid}-${Date.now()}`);
 const planEnv = { ...process.env, SBIE_TOOLCHAIN_ROOT: probeRoot, SBIE_BOOTSTRAP_PLAN: '' };
@@ -110,4 +123,4 @@ const statusAfter = run('git.exe', ['status', '--porcelain=v1', '--untracked-fil
 if (statusAfter !== statusBefore) throw new Error('entrypoint self-tests mutated the source tree');
 
 const unsignedChecks = validateUnsignedPackaging();
-console.log(`build-entrypoints-contract checks=${46 + unsignedChecks} helperSelfTests=18`);
+console.log(`build-entrypoints-contract checks=${53 + unsignedChecks} helperSelfTests=18`);

@@ -112,6 +112,25 @@ jobs:
       #  if: steps.cache-qt.outputs.cache-hit != 'true'
         run: SandboxiePlus\install_jom.cmd
 
+      - name: Expose Qt host tools
+        shell: pwsh
+        run: |
+          $qtHost = Join-Path $env:GITHUB_WORKSPACE ("Qt\{0}\msvc2022_64" -f $env:qt6_version)
+          $qmakeCandidates = @(
+            (Join-Path $qtHost 'bin\qmake.exe'),
+            (Join-Path $qtHost 'bin\qmake.bat'),
+            (Join-Path $qtHost 'bin\qmake6.exe')
+          )
+          if (-not ($qmakeCandidates | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf })) {
+            throw "Qt host qmake is missing under $qtHost\bin."
+          }
+          $lrelease = Join-Path $qtHost 'bin\lrelease.exe'
+          if (-not (Test-Path -LiteralPath $lrelease -PathType Leaf)) {
+            throw "Qt host lrelease.exe is missing at $lrelease."
+          }
+          (Join-Path $qtHost 'bin') | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "SBIE_QT_HOST_PATH=$qtHost" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
     #
     # Compile Sandboxie Plus
     #
@@ -244,6 +263,25 @@ jobs:
       - name: Installing Jom
       #  if: steps.cache-qt.outputs.cache-hit != 'true'
         run: SandboxiePlus\install_jom.cmd
+
+      - name: Expose Qt host tools
+        shell: pwsh
+        run: |
+          $qtHost = if ($env:QT_HOST_PATH) { $env:QT_HOST_PATH } else { Join-Path $env:GITHUB_WORKSPACE ("Qt\{0}\msvc2022_64" -f $env:qt6_version) }
+          $qmakeCandidates = @(
+            (Join-Path $qtHost 'bin\qmake.exe'),
+            (Join-Path $qtHost 'bin\qmake.bat'),
+            (Join-Path $qtHost 'bin\qmake6.exe')
+          )
+          if (-not ($qmakeCandidates | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf })) {
+            throw "Qt host qmake is missing under $qtHost\bin."
+          }
+          $lrelease = Join-Path $qtHost 'bin\lrelease.exe'
+          if (-not (Test-Path -LiteralPath $lrelease -PathType Leaf)) {
+            throw "Qt host lrelease.exe is missing at $lrelease."
+          }
+          (Join-Path $qtHost 'bin') | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "SBIE_QT_HOST_PATH=$qtHost" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     #
     # Compile Sandboxie Plus
