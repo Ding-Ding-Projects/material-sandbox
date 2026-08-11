@@ -13,6 +13,7 @@ set "jom=%SBIE_QT_ROOT%\Tools\QtCreator\bin\jom.exe"
 
 if /I "%~1"=="Win32" (
   set "qt_path=%SBIE_QT_ROOT%\%qt_version%\msvc2022"
+  set "qt_host_path=%qt_path%"
   set "private_headers=%SBIE_QT_ROOT%\%qt_version%\msvc2022\include\QtCore\%qt_version%\QtCore"
   set "private_target=%SBIE_QT_ROOT%\%qt_version%\msvc2022\include\QtCore"
   set "build_arch=Win32"
@@ -21,6 +22,7 @@ if /I "%~1"=="Win32" (
 )
 if /I "%~1"=="x64" (
   set "qt_path=%SBIE_QT_ROOT%\%qt_version%\msvc2022_64"
+  set "qt_host_path=%qt_path%"
   set "private_headers=%SBIE_QT_ROOT%\%qt_version%\msvc2022_64\include\QtCore\%qt_version%\QtCore"
   set "private_target=%SBIE_QT_ROOT%\%qt_version%\msvc2022_64\include\QtCore"
   set "build_arch=x64"
@@ -29,6 +31,9 @@ if /I "%~1"=="x64" (
 )
 if /I "%~1"=="ARM64" (
   set "qt_path=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64"
+  rem The cross-compiled ARM64 Qt package contains target libraries but no host qmake.
+  rem Use the separately installed x64 host qmake with the target qt.conf below.
+  set "qt_host_path=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_64"
   set "private_headers=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\include\QtCore\%qt6_version%\QtCore"
   set "private_target=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\include\QtCore"
   set "build_arch=ARM64"
@@ -56,8 +61,8 @@ if not defined build_arch (
 if not defined SBIE_TOOLCHAIN_READY (
   call :load_vs_environment || exit /b 6
 )
-if not exist "%qt_path%\bin\qmake.exe" (
-  echo [qt] Missing qmake at "%qt_path%\bin\qmake.exe".
+if not exist "%qt_host_path%\bin\qmake.exe" (
+  echo [qt] Missing host qmake at "%qt_host_path%\bin\qmake.exe".
   exit /b 3
 )
 if not exist "%jom%" (
@@ -85,7 +90,7 @@ mkdir "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
 IF %ERRORLEVEL% NEQ 0 goto :error
 cd /d "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
 
-"%qt_path%\bin\qmake.exe" "%~dp0SandMan\Tests\M3PageNavigationHostTests.pro" %qt_params%
+"%qt_host_path%\bin\qmake.exe" "%~dp0SandMan\Tests\M3PageNavigationHostTests.pro" %qt_params%
 IF %ERRORLEVEL% NEQ 0 goto :error
 "%jom%" -f Makefile.Release -j 8
 IF %ERRORLEVEL% NEQ 0 goto :error
@@ -167,7 +172,7 @@ set "build_dir=%~dp0%~1"
 if not exist "%build_dir%\." mkdir "%build_dir%"
 if errorlevel 1 exit /b 1
 pushd "%build_dir%"
-"%qt_path%\bin\qmake.exe" "%~2" %qt_params%
+"%qt_host_path%\bin\qmake.exe" "%~2" %qt_params%
 if errorlevel 1 (
   popd
   exit /b 1

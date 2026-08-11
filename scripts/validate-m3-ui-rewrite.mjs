@@ -206,6 +206,10 @@ expect(qmakeBuild.includes('if /I "%~3"=="build_only" set "SBIE_QMAKE_BUILD_ONLY
 expect(qmakeBuild.includes('IF "%SBIE_QMAKE_BUILD_ONLY%"=="1" GOTO :after_page_host_tests'), 'workflow builds skip the local lifecycle executable');
 expect(qmakeBuild.includes('set "qt_path=%SBIE_QT_ROOT%\\%qt6_version%\\msvc2022_arm64"'),
   'ARM64 qmake uses the target Qt installation while retaining the x64 host tools');
+expect(qmakeBuild.includes('set "qt_host_path=%SBIE_QT_ROOT%\\%qt6_version%\\msvc2022_64"'),
+  'ARM64 qmake uses the separately installed x64 host Qt tools');
+expect(qmakeBuild.includes('"%qt_host_path%\\bin\\qmake.exe"'),
+  'qmake invocation is routed through the host Qt installation for cross-compiled targets');
 
 const pageHostLaunch = 'release\\M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt';
 const runtimePath = 'set "PATH=%qt_path%\\bin;%~dp0bin\\%build_arch%\\Release;%PATH%"';
@@ -226,7 +230,7 @@ expect(!hasRunScopedQtRuntime(qmakeBuild.replace(runtimePath, 'rem runtime path 
 
 const hasFreshPageHostBuild = source => {
   const cleanIndex = source.indexOf('rmdir /S /Q "%~dp0Build_M3PageNavigationHostTests_%build_arch%"');
-  const qmakeIndex = source.indexOf('"%qt_path%\\bin\\qmake.exe" "%~dp0SandMan\\Tests\\M3PageNavigationHostTests.pro"');
+  const qmakeIndex = source.indexOf('"%qt_host_path%\\bin\\qmake.exe" "%~dp0SandMan\\Tests\\M3PageNavigationHostTests.pro"');
   const jomIndex = source.indexOf('"%jom%" -f Makefile.Release -j 8', qmakeIndex);
   const qmakeExitIndex = source.indexOf('IF %ERRORLEVEL% NEQ 0 goto :error', qmakeIndex);
   const launchIndex = source.indexOf(pageHostLaunch, qmakeIndex);
