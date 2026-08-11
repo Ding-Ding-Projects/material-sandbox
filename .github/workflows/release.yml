@@ -174,7 +174,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $installers = @(Get-ChildItem -LiteralPath (Join-Path $env:GITHUB_WORKSPACE 'Installer\Output') -Filter 'Sandboxie-Plus-x64-v*.exe' -File)
+          $installers = @(Get-ChildItem -LiteralPath (Join-Path $env:GITHUB_WORKSPACE 'Installer\Output') -Filter 'Sandboxie-Plus-x64-v*.exe' -File -Recurse)
           if ($installers.Count -ne 1) {
             throw "Expected exactly one x64 installer; found $($installers.Count)."
           }
@@ -383,7 +383,7 @@ jobs:
           } | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $env:RELEASE_EVIDENCE 'job-outcome.json')
           $installerOutput = Join-Path $env:GITHUB_WORKSPACE 'Installer\Output'
           if (Test-Path -LiteralPath $installerOutput) {
-            Get-ChildItem -LiteralPath $installerOutput -Filter 'Sandboxie-Plus-x64-v*.exe' -File | ForEach-Object {
+            Get-ChildItem -LiteralPath $installerOutput -Filter 'Sandboxie-Plus-x64-v*.exe' -File -Recurse | ForEach-Object {
               Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $env:RELEASE_EVIDENCE $_.Name) -Force
             }
           }

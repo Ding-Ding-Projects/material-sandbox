@@ -71,6 +71,9 @@ function validateBundle({ workflow, counter, docs }) {
   requireWorkflow('non-masking artifact handling', 'continue-on-error: true');
   requireWorkflow('bounded artifact retention', 'retention-days: 30');
   requireWorkflow('missing evidence warning', 'if-no-files-found: warn');
+  if (countMatches(workflow, /-Filter 'Sandboxie-Plus-x64-v\*\.exe' -File -Recurse/g) !== 2) {
+    errors.push('installer discovery and evidence collection must recurse into run-scoped output directories');
+  }
 
   if (/^concurrency:/m.test(workflow) || /cancel-in-progress\s*:/m.test(workflow)) {
     errors.push('release workflow must not use workflow concurrency or cancellation');
@@ -156,6 +159,7 @@ function runSelfTest(bundle) {
     ['timing evidence', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replaceAll('Workflow duration:', 'Elapsed:') })],
     ['exact line-table block', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replaceAll('<!-- line-count:start -->', '<!-- line-count-removed -->') })],
     ['failure evidence', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replaceAll('if: ${{ always() }}', 'if: ${{ success() }}') })],
+    ['run-scoped installer discovery', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replaceAll("-Filter 'Sandboxie-Plus-x64-v*.exe' -File -Recurse", "-Filter 'Sandboxie-Plus-x64-v*.exe' -File") })],
     ['full-history counter', ({ counter, ...rest }) => ({ ...rest, counter: counter.replace("'--is-shallow-repository'", "'--show-toplevel'") })],
     ['fail-closed classifier', ({ counter, ...rest }) => ({ ...rest, counter: counter.replace('review-required tracked paths=', 'unclassified paths ignored=') })],
     ['documentation boundary', ({ docs, ...rest }) => ({ ...rest, docs: docs.replace('does not prove that a release has run', 'proves a release ran') })],
