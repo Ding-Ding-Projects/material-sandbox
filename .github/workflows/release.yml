@@ -77,7 +77,8 @@ jobs:
           if (git tag --list $env:RELEASE_TAG) {
             throw "Local tag already exists: $env:RELEASE_TAG"
           }
-          if (git ls-remote --tags origin "refs/tags/$env:RELEASE_TAG") {
+          $tagRef = 'refs/tags/{0}' -f $env:RELEASE_TAG
+          if (git ls-remote --tags origin $tagRef) {
             throw "Remote tag already exists: $env:RELEASE_TAG"
           }
           $priorBuilds = @(git ls-remote --tags origin 'refs/tags/v0.0.0-build.*' | ForEach-Object {
@@ -227,6 +228,30 @@ jobs:
               foreach ($candidate in @($page)) { $candidate }
             }
           }
+          $allReleases = @(Get-RepositoryReleases)
+          $usedDimSumNames = @(
+            foreach ($candidate in $allReleases) {
+              if ($candidate.body -match '(?m)^- Code name: (?<name>.+)$') { $Matches.name.Trim() }
+            }
+          )
+          $catalog = gh api -H 'Accept: application/vnd.github.raw+json' repos/Ding-Ding-Projects/dim-sum-photos/contents/catalog/index.json | ConvertFrom-Json
+          $publishedDimSumAssets = @(gh api --paginate repos/Ding-Ding-Projects/dim-sum-photos/releases/tags/catalog-v1 --jq '.assets[].name')
+          $dimSumCodeName = 'No unused published dish was available.'
+          $dimSumPhotoUrl = 'No public photo is available for this release.'
+          $dishCount = @($catalog.dishes).Count
+          if ($dishCount -gt 0) {
+            $startDish = ([int64]$env:GITHUB_RUN_NUMBER - 1) % $dishCount
+            for ($offset = 0; $offset -lt $dishCount; $offset += 1) {
+              $dish = $catalog.dishes[($startDish + $offset) % $dishCount]
+              $assetName = [IO.Path]::GetFileName([string]$dish.image.path)
+              $candidateName = '{0} · {1}' -f $dish.name.en, $dish.name.zhHant
+              if ($publishedDimSumAssets -contains $assetName -and $usedDimSumNames -notcontains $candidateName) {
+                $dimSumCodeName = $candidateName
+                $dimSumPhotoUrl = "https://github.com/Ding-Ding-Projects/dim-sum-photos/releases/download/catalog-v1/$assetName"
+                break
+              }
+            }
+          }
           $initialNotes = Join-Path $env:RELEASE_EVIDENCE 'release-notes-initial.md'
           @(
             "# Sandboxie Plus $env:RELEASE_TAG"
@@ -234,6 +259,8 @@ jobs:
             'Publication evidence is being finalized by this workflow.'
             ''
             'The installer is unsigned by permanent project policy.'
+            "Code name: $dimSumCodeName"
+            "Public photo: $dimSumPhotoUrl"
           ) | Set-Content -Encoding utf8 $initialNotes
           $assets = @(
             $env:INSTALLER_PATH
@@ -305,6 +332,8 @@ jobs:
             ''
             '## Public dim-sum catalog'
             ''
+            "- Code name: $dimSumCodeName"
+            "- Public photo: $dimSumPhotoUrl"
             "Release dishes and public photos live in the [Ding-Ding-Projects dim-sum catalog]($env:DIM_SUM_CATALOG_URL). This release links to that public catalog and does not copy or attach a dim-sum image."
             ''
             'Reproduce the line table with: node scripts/count-lines.mjs'
@@ -323,7 +352,7 @@ jobs:
           if ($actualAssets | Where-Object { $_ -match '(?i)[.](png|jpe?g|gif|webp|bmp|tiff?)$' }) {
             throw 'A copied dim-sum image was attached to the consumer release.'
           }
-          foreach ($marker in @($env:GITHUB_SHA, $env:INSTALLER_SHA256, 'Authenticode: NotSigned', 'Workflow started:', 'Workflow completed:', 'Workflow duration:', 'Project total', 'Grand total', $env:DIM_SUM_CATALOG_URL, 'does not copy or attach')) {
+          foreach ($marker in @($env:GITHUB_SHA, $env:INSTALLER_SHA256, 'Authenticode: NotSigned', 'Workflow started:', 'Workflow completed:', 'Workflow duration:', 'Project total', 'Grand total', $env:DIM_SUM_CATALOG_URL, $dimSumCodeName, $dimSumPhotoUrl, 'does not copy or attach')) {
             if (-not $verified.body.Contains($marker)) {
               throw "Release notes are missing required evidence: $marker"
             }
@@ -337,7 +366,8 @@ jobs:
           if ($sameTag.Count -ne 1) {
             throw "Expected one release with tag $env:RELEASE_TAG; found $($sameTag.Count)."
           }
-          git fetch --force --no-tags origin "refs/tags/$env:RELEASE_TAG:refs/tags/$env:RELEASE_TAG"
+          $tagRef = 'refs/tags/{0}' -f $env:RELEASE_TAG
+          git fetch --force --no-tags origin ('{0}:{0}' -f $tagRef)
           $tagCommit = (git rev-list -n 1 $env:RELEASE_TAG).Trim()
           if ($tagCommit -ne $env:GITHUB_SHA) {
             throw "Published tag resolves to $tagCommit instead of $env:GITHUB_SHA"

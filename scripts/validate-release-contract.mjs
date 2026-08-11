@@ -51,6 +51,13 @@ function validateBundle({ workflow, counter, docs }) {
   requireWorkflow('exact checked-out HEAD proof', 'Checked-out HEAD $head does not match release source $env:GITHUB_SHA');
   requireWorkflow('exact release target', '--target $env:GITHUB_SHA');
   requireWorkflow('published tag commit proof', 'git rev-list -n 1 $env:RELEASE_TAG');
+  requireWorkflow('safe release tag reference construction', "$tagRef = 'refs/tags/{0}' -f $env:RELEASE_TAG");
+  requireWorkflow('safe release tag fetch refspec', "git fetch --force --no-tags origin ('{0}:{0}' -f $tagRef)");
+  requireWorkflow('dim-sum catalog selection', 'dim-sum-photos/contents/catalog/index.json');
+  requireWorkflow('published dim-sum asset selection', '$publishedDimSumAssets = @(gh api --paginate');
+  requireWorkflow('unused dim-sum code-name selection', '$usedDimSumNames');
+  requireWorkflow('code-name release notes', '- Code name: $dimSumCodeName');
+  requireWorkflow('public photo release notes', '- Public photo: $dimSumPhotoUrl');
   requireWorkflow('project total table marker', 'Project total');
   requireWorkflow('grand total table marker', 'Grand total');
   requireWorkflow('line-table start marker', '<!-- line-count:start -->');
@@ -160,6 +167,8 @@ function runSelfTest(bundle) {
     ['exact line-table block', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replaceAll('<!-- line-count:start -->', '<!-- line-count-removed -->') })],
     ['failure evidence', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replaceAll('if: ${{ always() }}', 'if: ${{ success() }}') })],
     ['run-scoped installer discovery', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replaceAll("-Filter 'Sandboxie-Plus-x64-v*.exe' -File -Recurse", "-Filter 'Sandboxie-Plus-x64-v*.exe' -File") })],
+    ['safe tag refspec', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replace("git fetch --force --no-tags origin ('{0}:{0}' -f $tagRef)", 'git fetch --force --no-tags origin "refs/tags/$env:RELEASE_TAG:refs/tags/$env:RELEASE_TAG"') })],
+    ['dim-sum code name', ({ workflow, ...rest }) => ({ ...rest, workflow: workflow.replace('- Code name: $dimSumCodeName', '- Release code name omitted') })],
     ['full-history counter', ({ counter, ...rest }) => ({ ...rest, counter: counter.replace("'--is-shallow-repository'", "'--show-toplevel'") })],
     ['fail-closed classifier', ({ counter, ...rest }) => ({ ...rest, counter: counter.replace('review-required tracked paths=', 'unclassified paths ignored=') })],
     ['documentation boundary', ({ docs, ...rest }) => ({ ...rest, docs: docs.replace('does not prove that a release has run', 'proves a release ran') })],
@@ -180,4 +189,4 @@ if (failures.length) {
   process.exit(1);
 }
 if (process.argv.includes('--self-test')) runSelfTest(bundle);
-else console.log('release-contract checks=52');
+else console.log('release-contract checks=60');
