@@ -40,7 +40,7 @@ const required = [
   `${base}/Windows/M3WorkspaceHost.h`, `${base}/Windows/M3WorkspaceHost.cpp`,
   `${base}/Windows/M3PageNavigationHost.h`, `${base}/Windows/M3PageNavigationHost.cpp`,
   `${base}/Tests/M3PageNavigationHostTests.cpp`, `${base}/Tests/M3PageNavigationHostTests.pro`,
-  `${base}/Tests/M3PageNavigationHostTests.vcxproj`,
+  `${base}/Tests/M3PageNavigationHostTests.vcxproj`, `${base}/Tests/M3PageNavigationHostTests.vcxproj.filters`,
   `${base}/Windows/SnackBar.h`, `${base}/Windows/SnackBar.cpp`,
   `${base}/Views/LocalMemoryRepository.h`, `${base}/Views/LocalMemoryRepository.cpp`,
   `${base}/Views/MemorySyncView.h`, `${base}/Views/MemorySyncView.cpp`,
@@ -160,8 +160,13 @@ expect(!pageHost.includes('removeTab('), 'Settings/Options adapter does not deta
 const pageHostTests = read(`${base}/Tests/M3PageNavigationHostTests.cpp`);
 const pageHostTestProject = read(`${base}/Tests/M3PageNavigationHostTests.pro`);
 const pageHostVisualStudioProject = read(`${base}/Tests/M3PageNavigationHostTests.vcxproj`);
+const pageHostVisualStudioFilters = read(`${base}/Tests/M3PageNavigationHostTests.vcxproj.filters`);
 const visualStudioSolution = read('SandboxiePlus/SandboxiePlus.sln');
 const qmakeBuild = read('SandboxiePlus/qmake_plus.cmd');
+const qtWidgetsIncludeIndex = pageHostTests.indexOf('#include <QtWidgets>');
+const settingsWidgetsIncludeIndex = pageHostTests.indexOf('#include "../../MiscHelpers/Common/SettingsWidgets.h"');
+expect(qtWidgetsIncludeIndex >= 0 && qtWidgetsIncludeIndex < settingsWidgetsIncludeIndex,
+  'page-host tests declare Qt widget bases before the production settings widgets header');
 expect((pageHostTests.match(/QEvent::DeferredDelete/g) || []).length >= 1, 'page-host tests process deferred deletes');
 for (const scenario of [
   'settingsNormalRebindSurvivesDeferredDelete',
@@ -179,11 +184,19 @@ expect(pageHostTests.includes('PortableSettingsFixture'), 'page-host tests use r
 expect(pageHostTests.includes('findChildren<CTabStateManager*>'), 'page-host tests drive the production state-manager seam');
 expect(pageHostTests.includes('Ctrl+Shift+O'), 'page-host tests verify the final search shortcuts');
 expect(pageHostTests.includes('tabStateManagerKey'), 'page-host tests require unique stable page identities');
-expect(pageHostTests.includes('#include <QtWidgets>'), 'page-host tests include the widget declarations required by SettingsWidgets.h');
-expect(pageHostTests.includes('convertWithProductionConfigDialog'), 'page-host tree tests call the production CConfigDialog conversion');
-expect(!pageHostTests.includes('convertToTreeLikeConfigDialog'), 'page-host tree tests do not retain the removed conversion fixture');
+expect((pageHostTests.match(/convertWithProductionConfigDialog\(&dialog,/g) || []).length === 2,
+  'tree lifecycle tests use the production CConfigDialog conversion seam');
+expect((pageHostTests.match(/TestConfigDialog dialog;/g) || []).length === 2,
+  'both tree lifecycle fixtures instantiate the production config dialog test seam');
+expect(!pageHostTests.includes('convertToTreeLikeConfigDialog'),
+  'tree lifecycle tests do not call the removed conversion imitation');
 expect(pageHostTestProject.includes('QT += core gui network widgets testlib'), 'page-host QtTest target links Qt Test and Widgets');
 expect(pageHostTestProject.includes('-lMiscHelpers'), 'page-host QtTest target links the production state manager');
+for (const source of ['M3DialogHost.cpp', 'M3RegexExecutionPolicy.cpp']) {
+  expect(pageHostTestProject.includes(`../Windows/${source}`), `qmake page-host tests compile ${source}`);
+  expect(pageHostVisualStudioProject.includes(`..\\Windows\\${source}`), `Visual Studio page-host tests compile ${source}`);
+  expect(pageHostVisualStudioFilters.includes(`..\\Windows\\${source}`), `Visual Studio page-host test filters expose ${source}`);
+}
 expect(pageHostVisualStudioProject.includes('<QtModules>core;gui;network;widgets;testlib</QtModules>'), 'page-host QtTest target is wired for Visual Studio');
 expect(pageHostVisualStudioProject.includes('<AdditionalDependencies>MiscHelpers.lib;'), 'Visual Studio page-host tests link the production state manager');
 expect(visualStudioSolution.includes('SandMan\\Tests\\M3PageNavigationHostTests.vcxproj'), 'page-host QtTest target is present in the Visual Studio solution');
@@ -207,19 +220,25 @@ const hasRunScopedQtRuntime = source => {
 };
 expect(hasRunScopedQtRuntime(qmakeBuild), 'page-host QtTest resolves Qt and plugins from the verified run-scoped path');
 expect(!hasRunScopedQtRuntime(qmakeBuild.replace(runtimePath, 'rem runtime path removed')),
-  'page-host runtime wiring Chut fails when the Qt DLL path is removed');
+  'page-host runtime wiring check fails when the Qt DLL path is removed');
 
 const hasFreshPageHostBuild = source => {
   const cleanIndex = source.indexOf('rmdir /S /Q "%~dp0Build_M3PageNavigationHostTests_%build_arch%"');
-  const qmakeIndex = source.indexOf('%qt_path%\\bin\\qmake.exe %~dp0\\SandMan\\Tests\\M3PageNavigationHostTests.pro');
+  const qmakeIndex = source.indexOf('"%qt_path%\\bin\\qmake.exe" "%~dp0SandMan\\Tests\\M3PageNavigationHostTests.pro"');
   const jomIndex = source.indexOf('"%jom%" -f Makefile.Release -j 8', qmakeIndex);
   const qmakeExitIndex = source.indexOf('IF %ERRORLEVEL% NEQ 0 goto :error', qmakeIndex);
+  const launchIndex = source.indexOf(pageHostLaunch, qmakeIndex);
+  const errorLabelIsDefined = /^:error\r?$/m.test(source);
   return cleanIndex >= 0 && cleanIndex < qmakeIndex
     && qmakeIndex >= 0 && qmakeExitIndex > qmakeIndex
-    && qmakeExitIndex < jomIndex;
+    && jomIndex > qmakeExitIndex && jomIndex < launchIndex
+    && errorLabelIsDefined;
 };
 expect(hasFreshPageHostBuild(qmakeBuild), 'page-host QtTest uses a fresh build directory and checks qmake before jom');
-expect(qmakeBuild.includes(':error'), 'page-host QtTest has a concrete failure label');
+expect(!hasFreshPageHostBuild(qmakeBuild.replace('"%jom%" -f Makefile.Release -j 8', 'rem bootstrapped jom removed')),
+  'page-host build wiring check fails when the bootstrapped jom invocation is removed');
+expect(!hasFreshPageHostBuild(qmakeBuild.replace(/^:error\r?$/m, ':missing_error')),
+  'page-host build wiring check fails when its error label is removed');
 
 const memoryFiles = required.filter(file => file.includes('/Views/')).map(read).join('\n');
 for (const forbidden of ['QProcess', 'QNetworkAccessManager', 'QTcpSocket', 'system(', 'ShellExecute', 'CreateProcess']) {

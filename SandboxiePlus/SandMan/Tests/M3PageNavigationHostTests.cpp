@@ -376,7 +376,7 @@ void M3PageNavigationHostTests::settingsOptionTreeRebindSurvivesDeferredDeletes(
     QCOMPARE(host->currentIndex(), 4);
     verifyVisibleNavigation(host, tree.pageWidgets, [pages = tree.pages] { return pages->currentWidget(); });
     auto* treeNavigation = host->findChild<QListWidget*>(QStringLiteral("m3PageNavigationList"));
-    QVERIFY(treeNavigation->item(0)->text().contains(QStringLiteral("Grouped pages")));
+    QCOMPARE(treeNavigation->item(0)->text(), QStringLiteral("Settings tree 1"));
     finalTabs->deleteLater();
 
     processDeferredDeletes();
