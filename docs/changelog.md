@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased · Unsigned release evidence contract
+
+- Added a non-cancelling Windows release workflow that calls the repository's
+  root build entrypoints and publishes only after one installer is verified as
+  unsigned, hashed, versioned, and tied to the exact source revision.
+- Added a deterministic full-history line counter over immutable tree blobs,
+  with exhaustive source, test, style, generated, and excluded allowlists;
+  project and grand totals; surviving-line agent/people blank/nonblank
+  attribution; deep evidence verification; and arithmetic mutation coverage.
+- Release notes now require authoritative workflow timing, the complete line
+  table, an unsigned-installer warning, and a link to the public dim-sum catalog
+  without copying or attaching an image.
+- The integrating commit is not guessed in this unreleased entry. The workflow
+  records and verifies the exact source SHA when a release actually runs.
+
 ## 2026-08-09 · Complete offline documentation browser inventory
 
 Commit: [acd0c449164398798b1a0d9bbdadd6b7c2635083](https://github.com/Ding-Ding-Projects/material-sandbox/commit/acd0c449164398798b1a0d9bbdadd6b7c2635083)

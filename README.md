@@ -77,6 +77,7 @@ This profile does **not** remove copyright notices, third-party attributions, or
 | Material Design 3 shell | Shared light/dark roles, typography baseline, shape, elevation, focus, and responsive control styling | [`docs/material-design.md`](docs/material-design.md) |
 | Settings provenance | Shows whether presentation and Material values come from the user's profile or compiled-in fallback, with live refresh after edits and reset | [`docs/features/settings-provenance.md`](docs/features/settings-provenance.md) |
 | Windows build entrypoints | `build.bat /s` builds the pinned Windows target; `build-installer.bat /s` stages and hashes an explicitly unsigned installer | [`docs/features/native-ci-evidence.md`](docs/features/native-ci-evidence.md) |
+| Verified release contract | The non-cancelling `Windows Release` workflow uses the root entrypoints, verifies one unsigned installer, publishes one monotonic non-draft release, and records timing, hashes, line counts, attribution, and the public dim-sum catalog link | [`docs/features/native-ci-evidence.md`](docs/features/native-ci-evidence.md) |
 | Native M3 shell migration | One frameless title-bar/menu host with accessible window controls; central Fusion/proxy resets removed while two live Designer forms remain a tracked migration boundary | [`docs/features/ui/m3-shell-boundary.md`](docs/features/ui/m3-shell-boundary.md) |
 | Material Sandbox UI rewrite overlay | Searchable M3 menus, regex builder, navigation rail, tab strip, workspace host, snackbars, and manager-safe Settings/Options adaptation | [`docs/features/ui/material-sandbox-ui-rewrite.md`](docs/features/ui/material-sandbox-ui-rewrite.md) |
 | Appearance editor | Persisted theme, density, accent, display name, per-page Qt typography controls, live preview, and reset; unsupported properties are disclosed | [`docs/features/appearance-editor.md`](docs/features/appearance-editor.md) |
@@ -175,6 +176,10 @@ node scripts/validate-school-mode.mjs
 node scripts/validate-settings-history.mjs
 node scripts/validate-tab-discovery.mjs
 node scripts/validate-ci-concurrency.mjs
+node scripts/validate-release-contract.mjs
+node scripts/validate-release-contract.mjs --self-test
+node --test scripts/test-count-lines.mjs
+node scripts/count-lines.mjs
 node scripts/validate-ci-artifacts.mjs --help
 node scripts/validate-pages-material.mjs
 node scripts/validate-pages-article-completeness.mjs
@@ -186,7 +191,7 @@ pwsh -NoProfile -File scripts/validate-pages-contract.ps1
 git diff --check
 ```
 
-The Pages workflow runs the documentation and feature contracts on every `master` update. A successful static contract proves source structure and local asset references; it does not prove that Qt/MSVC produced a fresh binary, that the service and driver loaded, or that a hidden-desktop screenshot was captured. Those boundaries are intentionally recorded in the feature articles and the Pages status panel.
+The Pages workflow runs the documentation, line-counter regression, and release-shape contracts on every `master` update. A successful static contract proves source structure and local asset references; it does not prove that Qt/MSVC produced a fresh binary, that the service and driver loaded, that the unsigned installer was produced, that a release was published, or that a hidden-desktop screenshot was captured. Those boundaries are intentionally recorded in the feature articles and the Pages status panel.
 
 | Evidence class | What it proves | What it does not prove |
 | --- | --- | --- |

@@ -63,7 +63,7 @@ function insertBeforeSuggestedArticles(file, text) {
 test('complete repository contract validates 23 feature articles and one supplemental document', () => {
   const result = runValidator(makeFixture('complete'));
   assert.equal(result.status, 0, result.stderr || result.stdout);
-  assert.match(result.stdout, /articles=23 supplemental=1 suggested=23 images=24 internal-links=64 external-links=138/);
+  assert.match(result.stdout, /articles=23 supplemental=1 suggested=23 images=24 internal-links=64 external-links=139/);
 });
 
 test('oversized and excessive changelog inventories fail before offline splitting or rendering', () => {
