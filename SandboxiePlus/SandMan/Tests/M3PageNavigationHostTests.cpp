@@ -309,6 +309,7 @@ private slots:
     void searchBuilderCancellationReturnsFocusToEditor();
     void nativeMenuBuilderCancellationPreservesFilterAndFocus();
     void dialogHostTransfersExistingLayoutWithoutCrash();
+    void dialogHostApplicationFilterSafelyHostsMessageBox();
 };
 
 void M3PageNavigationHostTests::dialogHostTransfersExistingLayoutWithoutCrash()
@@ -332,15 +333,65 @@ void M3PageNavigationHostTests::dialogHostTransfersExistingLayoutWithoutCrash()
     QCOMPARE(root->menuBar(), title);
     dialog.close();
 
+}
+
+void M3PageNavigationHostTests::dialogHostApplicationFilterSafelyHostsMessageBox()
+{
     M3DialogHost::InstallForApplication(qApp);
-    QMessageBox message;
-    message.setText(QStringLiteral("message content"));
-    message.setStandardButtons(QMessageBox::Ok);
-    M3DialogHost::Install(&message);
-    QVERIFY(message.layout());
-    QVERIFY(message.layout()->menuBar());
-    QCOMPARE(message.layout()->menuBar()->objectName(), QStringLiteral("m3DialogTitle"));
-    message.close();
+    QVERIFY(qApp->property("m3DialogFilterInstalled").toBool());
+
+    bool handled = false;
+    bool observed = false;
+    bool deadline = false;
+    int titleCount = 0;
+    QTimer inspector;
+    inspector.setInterval(10);
+    connect(&inspector, &QTimer::timeout, qApp, [&] {
+        for (QWidget* widget : QApplication::topLevelWidgets()) {
+            auto* message = qobject_cast<QMessageBox*>(widget);
+            if (!message || !message->isVisible())
+                continue;
+
+            QLayout* layout = message->layout();
+            titleCount = message->findChildren<QWidget*>(QStringLiteral("m3DialogTitle")).size();
+            observed = message->property("m3DialogInstalled").toBool()
+                && layout
+                && layout->menuBar()
+                && layout->menuBar()->objectName() == QStringLiteral("m3DialogTitle");
+            handled = true;
+            inspector.stop();
+            if (QAbstractButton* ok = message->button(QMessageBox::Ok))
+                ok->click();
+            else
+                message->reject();
+            return;
+        }
+    });
+
+    QTimer emergency;
+    emergency.setSingleShot(true);
+    connect(&emergency, &QTimer::timeout, qApp, [&] {
+        deadline = true;
+        inspector.stop();
+        for (QWidget* widget : QApplication::topLevelWidgets()) {
+            if (auto* message = qobject_cast<QMessageBox*>(widget))
+                message->reject();
+        }
+    });
+
+    inspector.start();
+    emergency.start(1000);
+    const QMessageBox::StandardButton result = QMessageBox::warning(nullptr,
+                                                                     QStringLiteral("M3 warning"),
+                                                                     QStringLiteral("M3 dialog host fixture"),
+                                                                     QMessageBox::Ok);
+    inspector.stop();
+    emergency.stop();
+
+    QVERIFY2(handled && observed && !deadline,
+             "QMessageBox::warning must remain visible long enough for the application filter to add one title host");
+    QCOMPARE(titleCount, 1);
+    QCOMPARE(result, QMessageBox::Ok);
 }
 
 void M3PageNavigationHostTests::settingsNormalRebindSurvivesDeferredDelete()
