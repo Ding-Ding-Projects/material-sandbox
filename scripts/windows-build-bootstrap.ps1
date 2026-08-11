@@ -177,11 +177,12 @@ function Invoke-External {
     Write-Phase 'run' $Description
     Push-Location $WorkingDirectory
     try {
-        & $FilePath @Arguments
+        $output = & $FilePath @Arguments 2>&1
         $exitCode = $LASTEXITCODE
     } finally {
         Pop-Location
     }
+    $output | ForEach-Object { Write-Host $_ }
     if ($exitCode -ne 0) {
         throw ('{0} failed with exit code {1}.' -f $Description, $exitCode)
     }
@@ -890,6 +891,8 @@ function Invoke-SelfTest {
     }; $checks++
     $spacePath = Join-Path 'C:\checkout with spaces' 'Installer\Release\SbiePlus_x64-run'
     if ($spacePath -notmatch 'checkout with spaces') { throw 'Path-with-spaces self-test failed.' }; $checks++
+    $externalOutput = @(Invoke-External -FilePath $env:ComSpec -Arguments @('/d', '/c', 'echo bootstrap-stdout-fixture') -Description 'Testing external-output isolation.' -WorkingDirectory $script:RepositoryRoot)
+    if ($externalOutput.Count -ne 0) { throw 'Invoke-External leaked child output into its return value.' }; $checks++
     Write-Host ('windows-build-bootstrap-self-test checks={0}' -f $checks)
 }
 

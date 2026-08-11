@@ -42,6 +42,8 @@ for (const marker of [
   'VERSION_UPD',
   'Select-ExactlyOne',
   'Get-AuthenticodeSignature',
+  '$output = & $FilePath @Arguments 2>&1',
+  'Invoke-External leaked child output into its return value.',
   "-ne 'NotSigned'",
   'SignerCertificate',
   'TimeStamperCertificate',
@@ -58,7 +60,7 @@ const selfTest = run('powershell.exe', [
   '-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
   'scripts\\windows-build-bootstrap.ps1', '-SelfTest',
 ], { env: planEnv });
-assertIncludes(selfTest, 'windows-build-bootstrap-self-test checks=17', 'PowerShell 5.1 self-test');
+assertIncludes(selfTest, 'windows-build-bootstrap-self-test checks=18', 'PowerShell 5.1 self-test');
 
 const x64Plan = run('cmd.exe', ['/d', '/s', '/c', 'call build.bat --plan'], {
   env: { ...planEnv, SBIE_ARCH: 'x64' },
@@ -108,4 +110,4 @@ const statusAfter = run('git.exe', ['status', '--porcelain=v1', '--untracked-fil
 if (statusAfter !== statusBefore) throw new Error('entrypoint self-tests mutated the source tree');
 
 const unsignedChecks = validateUnsignedPackaging();
-console.log(`build-entrypoints-contract checks=${46 + unsignedChecks} helperSelfTests=17`);
+console.log(`build-entrypoints-contract checks=${46 + unsignedChecks} helperSelfTests=18`);
