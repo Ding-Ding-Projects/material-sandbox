@@ -159,7 +159,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $json = Join-Path $env:RELEASE_EVIDENCE 'line-count.json'
           $markdown = Join-Path $env:RELEASE_EVIDENCE 'line-count.md'
-          node scripts/count-lines.mjs --json $json --markdown $markdown
+          node scripts/count-lines.mjs --json $json --markdown $markdown --jobs 32
           node scripts/count-lines.mjs --verify $json
           $report = Get-Content -Raw -LiteralPath $json | ConvertFrom-Json
           if ($report.revision -ne $env:GITHUB_SHA) {
