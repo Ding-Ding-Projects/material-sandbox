@@ -56,6 +56,9 @@ const workflow = fs.readFileSync('.github/workflows/main.yml', 'utf8');
 if ((workflow.match(/name: Expose Qt host tools/g) || []).length !== 2) {
   throw new Error('main workflow must expose Qt host tools in both x64 and ARM64 jobs');
 }
+const qmake = fs.readFileSync('SandboxiePlus/qmake_plus.cmd', 'utf8');
+assertIncludes(qmake, 'QT_HOST_PATH', 'qmake host-root fallback');
+assertIncludes(qmake, '%QT_HOST_PATH%\\..\\..', 'qmake host-root derivation');
 for (const marker of [
   'GITHUB_PATH',
   'GITHUB_ENV',

@@ -8,6 +8,10 @@ if errorlevel 1 exit /b %errorlevel%
 set "SBIE_QMAKE_BUILD_ONLY=0"
 if /I "%~3"=="build_only" set "SBIE_QMAKE_BUILD_ONLY=1"
 
+rem GitHub's Qt action may install the verified host and target packages beside
+rem the checkout. Derive the shared Qt root from its exported host path before
+rem falling back to the repository-local install used by install_qt.cmd.
+if not defined SBIE_QT_ROOT if defined QT_HOST_PATH for %%H in ("%QT_HOST_PATH%\..\..") do set "SBIE_QT_ROOT=%%~fH"
 if not defined SBIE_QT_ROOT set "SBIE_QT_ROOT=%~dp0..\Qt"
 set "jom=%SBIE_QT_ROOT%\Tools\QtCreator\bin\jom.exe"
 
