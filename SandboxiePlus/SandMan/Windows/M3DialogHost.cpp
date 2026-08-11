@@ -108,9 +108,15 @@ void Install(QDialog* dialog)
     dialog->setProperty("m3DialogInstalled", true);
     dialog->setWindowFlag(Qt::FramelessWindowHint, true);
 
-    QLayout* oldLayout = dialog->layout();
-    if (oldLayout)
-        oldLayout->setParent(nullptr);
+    // Dialogs that already own their content layout must keep that top-level
+    // layout. QLayout tracks the widget it is installed on internally; moving
+    // it into a second root leaves a null child in QtWidgets and crashes on
+    // the next QMessageBox/QDialog show. QLayout::setMenuBar adds our chrome
+    // above the existing items without changing ownership.
+    if (QLayout* existingLayout = dialog->layout()) {
+        existingLayout->setMenuBar(new M3DialogTitle(dialog));
+        return;
+    }
 
     auto* shell = new QWidget(dialog);
     shell->setObjectName(QStringLiteral("m3DialogShell"));
@@ -118,8 +124,6 @@ void Install(QDialog* dialog)
     shellLayout->setContentsMargins(0, 0, 0, 0);
     shellLayout->setSpacing(0);
     shellLayout->addWidget(new M3DialogTitle(dialog));
-    if (oldLayout)
-        shellLayout->addLayout(oldLayout);
 
     auto* rootLayout = new QVBoxLayout(dialog);
     rootLayout->setContentsMargins(0, 0, 0, 0);

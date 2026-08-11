@@ -2,6 +2,7 @@
 #include "../Windows/M3Menu.h"
 #include "../Windows/M3SearchField.h"
 #include "../Windows/RegexBuilderDialog.h"
+#include "../Windows/M3DialogHost.h"
 #include "../../MiscHelpers/Common/Settings.h"
 #include "../../MiscHelpers/Common/MaterialTheme.h"
 #include <QtWidgets>
@@ -307,7 +308,40 @@ private slots:
     void searchCapsuleStatesAreVisibleAndAccessible();
     void searchBuilderCancellationReturnsFocusToEditor();
     void nativeMenuBuilderCancellationPreservesFilterAndFocus();
+    void dialogHostTransfersExistingLayoutWithoutCrash();
 };
+
+void M3PageNavigationHostTests::dialogHostTransfersExistingLayoutWithoutCrash()
+{
+    QDialog dialog;
+    auto* root = new QVBoxLayout(&dialog);
+    auto* content = new QLabel(QStringLiteral("dialog content"), &dialog);
+    root->addWidget(content);
+
+    M3DialogHost::Install(&dialog);
+    showFixture(dialog);
+
+    QCOMPARE(dialog.layout(), static_cast<QLayout*>(root));
+    QWidget* title = root->menuBar();
+    QVERIFY(title);
+    QCOMPARE(title->objectName(), QStringLiteral("m3DialogTitle"));
+    QCOMPARE(dialog.findChildren<QWidget*>(QStringLiteral("m3DialogTitle")).size(), 1);
+    QVERIFY(dialog.findChildren<QLabel*>(QString(), Qt::FindChildrenRecursively).contains(content));
+    QVERIFY(content->isVisible());
+    M3DialogHost::Install(&dialog);
+    QCOMPARE(root->menuBar(), title);
+    dialog.close();
+
+    M3DialogHost::InstallForApplication(qApp);
+    QMessageBox message;
+    message.setText(QStringLiteral("message content"));
+    message.setStandardButtons(QMessageBox::Ok);
+    M3DialogHost::Install(&message);
+    QVERIFY(message.layout());
+    QVERIFY(message.layout()->menuBar());
+    QCOMPARE(message.layout()->menuBar()->objectName(), QStringLiteral("m3DialogTitle"));
+    message.close();
+}
 
 void M3PageNavigationHostTests::settingsNormalRebindSurvivesDeferredDelete()
 {
