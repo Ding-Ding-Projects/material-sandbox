@@ -14,10 +14,16 @@ win32:LIBS += -L$$MISCHELPERS_LIB_DIR -lMiscHelpers
 SOURCES += \
     M3PageNavigationHostTests.cpp \
     ../Windows/M3PageNavigationHost.cpp \
+    ../Windows/M3Menu.cpp \
     ../Windows/M3SearchField.cpp \
-    ../Windows/RegexBuilderDialog.cpp
+    ../Windows/RegexBuilderDialog.cpp \
+    ../Windows/M3RegexExecutionPolicy.cpp \
+    ../Windows/M3DialogHost.cpp \
+    ../../MiscHelpers/Common/MaterialTheme.cpp \
+    ../../MiscHelpers/Common/M3Tokens.cpp
 
 HEADERS += \
     ../Windows/M3PageNavigationHost.h \
+    ../Windows/M3Menu.h \
     ../Windows/M3SearchField.h \
     ../Windows/RegexBuilderDialog.h

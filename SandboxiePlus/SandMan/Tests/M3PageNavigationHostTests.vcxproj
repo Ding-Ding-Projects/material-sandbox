@@ -99,11 +99,21 @@
       <QtMocFileName>%(Filename).moc</QtMocFileName>
     </ClCompile>
     <ClCompile Include="..\Windows\M3PageNavigationHost.cpp" />
+    <ClCompile Include="..\Windows\M3Menu.cpp" />
     <ClCompile Include="..\Windows\M3SearchField.cpp" />
     <ClCompile Include="..\Windows\RegexBuilderDialog.cpp" />
+    <ClCompile Include="..\Windows\M3RegexExecutionPolicy.cpp" />
+    <ClCompile Include="..\Windows\M3DialogHost.cpp" />
+    <ClCompile Include="..\..\MiscHelpers\Common\MaterialTheme.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\MiscHelpers\Common\M3Tokens.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="..\Windows\M3PageNavigationHost.h" />
+    <QtMoc Include="..\Windows\M3Menu.h" />
     <QtMoc Include="..\Windows\M3SearchField.h" />
     <QtMoc Include="..\Windows\RegexBuilderDialog.h" />
   </ItemGroup>

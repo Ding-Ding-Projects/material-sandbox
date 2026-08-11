@@ -135,6 +135,25 @@ QLineEdit[m3="search"] {
     background: %(surfaceCont)s;
     padding: 0 16px;
 }
+QWidget[m3SearchSurface="true"] QLineEdit#m3SearchInput {
+    min-width: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0 8px;
+}
+QWidget[m3SearchSurface="true"] QLineEdit#m3SearchInput:focus,
+QWidget[m3SearchSurface="true"] QLineEdit#m3SearchInput[m3Focus="true"] {
+    border: 0;
+    background: transparent;
+}
+QWidget[m3SearchSurface="true"] QToolButton#m3RegexBuilderButton[m3Invalid="true"] {
+    background: %(errorCont)s;
+    color: %(onErrorCont)s;
+}
+QWidget[m3SearchSurface="true"] QToolButton#m3RegexBuilderButton[m3Invalid="true"][m3Focus="true"] {
+    border: 3px solid %(onErrorCont)s;
+}
 
 QTabWidget::pane { border: 0; border-top: 1px solid %(outlineVar)s; background: %(surface)s; }
 QTabBar::tab {

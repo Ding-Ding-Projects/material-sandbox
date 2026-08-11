@@ -28,8 +28,8 @@ public:
                   const QString& pattern,
                   const QString& flags,
                   bool regexMode);
-    void openAnchored(QWidget* origin);
-    int execAnchored(QWidget* origin);
+    void openAnchored(QWidget* origin, QWidget* focusReturnTarget = nullptr);
+    int execAnchored(QWidget* origin, QWidget* focusReturnTarget = nullptr);
 
     QString pattern() const;
     QString flags() const;
@@ -69,6 +69,7 @@ private:
     QString previewText(const QRegularExpression& expression) const;
 
     QPointer<QWidget> m_origin;
+    QPointer<QWidget> m_focusReturnTarget;
     QLineEdit* m_patternEdit;
     QLineEdit* m_flagsEdit;
     QPlainTextEdit* m_sampleEdit;

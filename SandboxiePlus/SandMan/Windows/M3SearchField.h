@@ -5,6 +5,7 @@
 
 class CRegexBuilderDialog;
 class QLineEdit;
+class QPaintEvent;
 class QToolButton;
 
 class CM3SearchField final : public QWidget
@@ -45,17 +46,22 @@ signals:
     void escapePressed();
 
 protected:
+    void changeEvent(QEvent* event) override;
     bool eventFilter(QObject* watched, QEvent* event) override;
+    void paintEvent(QPaintEvent* event) override;
 
 private slots:
+    void clearSearch();
     void onTextChanged(const QString& text);
     void openRegexBuilder();
+    void restoreSearchStateAfterCancellation();
     void applyRegexPattern(const QString& pattern, const QString& flags);
     void keepPlainText(const QString& text);
 
 private:
     void rebuildExpression(bool notify);
     void updateControls();
+    void updateFocusState();
     void updateAccessibleNames();
     void rejectOversizedState(const QString& message);
     static QRegularExpression compileRegex(const QString& pattern, const QString& flags, QString* error);

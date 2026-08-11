@@ -2,12 +2,18 @@
 #include "M3SearchField.h"
 #include "RegexBuilderDialog.h"
 #include "M3RegexExecutionPolicy.h"
+#include "../../MiscHelpers/Common/M3Tokens.h"
 
+#include <QApplication>
 #include <QMenu>
 #include <QEvent>
 #include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QLineEdit>
+#include <QPaintEvent>
+#include <QPainter>
+#include <QPen>
+#include <QPointer>
 #include <QSignalBlocker>
 #include <QStyle>
 #include <QTimer>
@@ -28,17 +34,22 @@ CM3SearchField::CM3SearchField(QWidget* parent)
 {
     setObjectName(QStringLiteral("m3SearchField"));
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    setFocusPolicy(Qt::NoFocus);
+    setAttribute(Qt::WA_Hover, true);
+    setProperty("m3SearchSurface", true);
 
     m_lineEdit->setObjectName(QStringLiteral("m3SearchInput"));
     m_lineEdit->setClearButtonEnabled(false);
     m_lineEdit->setAccessibleName(tr("Search"));
     m_lineEdit->installEventFilter(this);
+    setFocusProxy(m_lineEdit);
 
     m_clearButton->setObjectName(QStringLiteral("m3SearchClearButton"));
     m_clearButton->setText(QString(QChar(0x00D7)));
     m_clearButton->setToolTip(tr("Clear search"));
     m_clearButton->setAccessibleName(m_clearButton->toolTip());
     m_clearButton->setAutoRaise(true);
+    m_clearButton->installEventFilter(this);
 
     m_regexButton->setObjectName(QStringLiteral("m3RegexBuilderButton"));
     m_regexButton->setText(QStringLiteral(".*"));
@@ -46,6 +57,7 @@ CM3SearchField::CM3SearchField(QWidget* parent)
     m_regexButton->setAccessibleName(m_regexButton->toolTip());
     m_regexButton->setCheckable(true);
     m_regexButton->setAutoRaise(true);
+    m_regexButton->installEventFilter(this);
 
     auto* layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -55,7 +67,7 @@ CM3SearchField::CM3SearchField(QWidget* parent)
     layout->addWidget(m_regexButton);
 
     connect(m_lineEdit, &QLineEdit::textChanged, this, &CM3SearchField::onTextChanged);
-    connect(m_clearButton, &QToolButton::clicked, m_lineEdit, &QLineEdit::clear);
+    connect(m_clearButton, &QToolButton::clicked, this, &CM3SearchField::clearSearch);
     connect(m_regexButton, &QToolButton::clicked, this, &CM3SearchField::openRegexBuilder);
 
     setAccessibleName(tr("Search"));
@@ -155,6 +167,10 @@ void CM3SearchField::focusEditor()
 
 bool CM3SearchField::eventFilter(QObject* watched, QEvent* event)
 {
+    if ((watched == m_lineEdit || watched == m_clearButton || watched == m_regexButton)
+        && (event->type() == QEvent::FocusIn || event->type() == QEvent::FocusOut)) {
+        updateFocusState();
+    }
     if (watched == m_lineEdit && event->type() == QEvent::KeyPress) {
         auto* key = static_cast<QKeyEvent*>(event);
         if (key->key() == Qt::Key_Escape) {
@@ -163,6 +179,63 @@ bool CM3SearchField::eventFilter(QObject* watched, QEvent* event)
         }
     }
     return QWidget::eventFilter(watched, event);
+}
+
+void CM3SearchField::changeEvent(QEvent* event)
+{
+    QWidget::changeEvent(event);
+    if (event && (event->type() == QEvent::EnabledChange
+                  || event->type() == QEvent::PaletteChange
+                  || event->type() == QEvent::FontChange)) {
+        update();
+        m_clearButton->update();
+        m_regexButton->update();
+    }
+}
+
+void CM3SearchField::paintEvent(QPaintEvent* event)
+{
+    Q_UNUSED(event);
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
+    const QPalette::ColorGroup colorGroup = isEnabled()
+        ? QPalette::Active
+        : QPalette::Disabled;
+    const QRectF capsule = QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5);
+    const qreal radius = qMax<qreal>(0.0, capsule.height() / 2.0);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(palette().color(colorGroup, QPalette::AlternateBase));
+    painter.drawRoundedRect(capsule, radius, radius);
+
+    const bool invalid = property("m3Invalid").toBool();
+    const bool focused = m_lineEdit->hasFocus()
+        || m_clearButton->hasFocus()
+        || m_regexButton->hasFocus();
+    qreal borderWidth = 0.0;
+    QColor borderColor;
+    if (invalid) {
+        const bool dark = qApp && qApp->property("m3Dark").toBool();
+        borderColor = M3Tokens::colors(dark).error;
+        borderWidth = 2.0;
+    } else if (focused) {
+        borderColor = palette().color(colorGroup, QPalette::Highlight);
+        borderWidth = 3.0;
+    }
+    if (borderWidth > 0.0) {
+        const qreal inset = borderWidth / 2.0;
+        const QRectF border = capsule.adjusted(inset, inset, -inset, -inset);
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen(QPen(borderColor, borderWidth));
+        painter.drawRoundedRect(border, qMax<qreal>(0.0, radius - inset), qMax<qreal>(0.0, radius - inset));
+    }
+}
+
+void CM3SearchField::clearSearch()
+{
+    m_lineEdit->clear();
+    focusEditor();
 }
 
 void CM3SearchField::onTextChanged(const QString& text)
@@ -190,34 +263,47 @@ void CM3SearchField::openRegexBuilder()
                 this, &CM3SearchField::applyRegexPattern);
         connect(m_builder, &CRegexBuilderDialog::plainTextRequested,
                 this, &CM3SearchField::keepPlainText);
+        connect(m_builder, &QDialog::rejected,
+                this, &CM3SearchField::restoreSearchStateAfterCancellation);
         updateAccessibleNames();
     }
     m_builder->setState(m_query, m_pattern, m_flags, m_regexMode);
 
     QWidget* popupAncestor = parentWidget();
     while (popupAncestor && !qobject_cast<QMenu*>(popupAncestor)
-           && !(popupAncestor->windowFlags() & Qt::Popup)) {
+           && popupAncestor->windowType() != Qt::Popup) {
         popupAncestor = popupAncestor->parentWidget();
     }
     if (!popupAncestor) {
-        m_builder->openAnchored(m_regexButton);
+        m_builder->openAnchored(m_regexButton, m_lineEdit);
         return;
     }
 
-    const QPoint popupPosition = popupAncestor->pos();
-    popupAncestor->setProperty("m3ChildDialogActive", true);
-    m_builder->execAnchored(m_regexButton);
-    popupAncestor->setProperty("m3ChildDialogActive", false);
+    QPointer<CM3SearchField> self(this);
+    QPointer<QWidget> popupGuard(popupAncestor);
+    const QPoint popupPosition = popupGuard->pos();
+    popupGuard->setProperty("m3ChildDialogActive", true);
+    m_builder->execAnchored(m_regexButton, m_lineEdit);
+    if (popupGuard)
+        popupGuard->setProperty("m3ChildDialogActive", false);
+    if (!self || !popupGuard)
+        return;
+    QWidget* restoredPopup = popupGuard.data();
 
-    if (auto* nativeMenu = qobject_cast<QMenu*>(popupAncestor)) {
+    if (auto* nativeMenu = qobject_cast<QMenu*>(restoredPopup)) {
         nativeMenu->setProperty("m3ResumeMenuSearch", true);
         nativeMenu->popup(popupPosition);
     } else {
-        popupAncestor->move(popupPosition);
-        popupAncestor->show();
-        popupAncestor->raise();
+        restoredPopup->move(popupPosition);
+        restoredPopup->show();
+        restoredPopup->raise();
         focusEditor();
     }
+}
+
+void CM3SearchField::restoreSearchStateAfterCancellation()
+{
+    updateControls();
 }
 
 void CM3SearchField::applyRegexPattern(const QString& pattern, const QString& flags)
@@ -254,7 +340,11 @@ void CM3SearchField::updateControls()
 {
     m_clearButton->setVisible(!m_query.isEmpty());
     m_regexButton->setChecked(m_regexMode);
-    m_lineEdit->setProperty("m3Invalid", !m_valid);
+    const bool invalid = !m_valid;
+    setProperty("m3Invalid", invalid);
+    m_lineEdit->setProperty("m3Invalid", invalid);
+    m_clearButton->setProperty("m3Invalid", invalid);
+    m_regexButton->setProperty("m3Invalid", invalid);
     const QString fieldName = QWidget::accessibleName().trimmed().isEmpty()
         ? tr("Search")
         : QWidget::accessibleName().trimmed();
@@ -273,8 +363,22 @@ void CM3SearchField::updateControls()
     m_clearButton->setAccessibleDescription(tr("Clears the current query in %1.").arg(fieldName));
     m_regexButton->setAccessibleDescription(modeDescription);
     QWidget::setAccessibleDescription(description);
-    m_lineEdit->style()->unpolish(m_lineEdit);
-    m_lineEdit->style()->polish(m_lineEdit);
+    updateFocusState();
+}
+
+void CM3SearchField::updateFocusState()
+{
+    const bool anyFocused = m_lineEdit->hasFocus()
+        || m_clearButton->hasFocus()
+        || m_regexButton->hasFocus();
+    for (QWidget* control : { static_cast<QWidget*>(this), static_cast<QWidget*>(m_lineEdit),
+                              static_cast<QWidget*>(m_clearButton), static_cast<QWidget*>(m_regexButton) }) {
+        const bool focused = control == this ? anyFocused : control->hasFocus();
+        control->setProperty("m3Focus", focused);
+        control->style()->unpolish(control);
+        control->style()->polish(control);
+        control->update();
+    }
 }
 
 void CM3SearchField::updateAccessibleNames()
