@@ -76,16 +76,16 @@ IF NOT "%build_arch%"=="x64" GOTO :after_page_host_tests
 
 cd /d %~dp0
 if exist "%~dp0Build_M3PageNavigationHostTests_%build_arch%" rmdir /S /Q "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
-if exist "%~dp0Build_M3PageNavigationHostTests_%build_arch%" goto :error
+if exist "%~dp0Build_M3PageNavigationHostTests_%build_arch%" goto :page_host_tests_error
 mkdir "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
-IF %ERRORLEVEL% NEQ 0 goto :error
+IF %ERRORLEVEL% NEQ 0 goto :page_host_tests_error
 cd /d "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
 
-%qt_path%\bin\qmake.exe %~dp0\SandMan\Tests\M3PageNavigationHostTests.pro %qt_params%
-IF %ERRORLEVEL% NEQ 0 goto :error
-%~dp0..\..\Qt\Tools\QtCreator\bin\jom.exe -f Makefile.Release -j 8
-IF %ERRORLEVEL% NEQ 0 goto :error
-if NOT EXIST release\M3PageNavigationHostTests.exe goto :error
+"%qt_path%\bin\qmake.exe" "%~dp0SandMan\Tests\M3PageNavigationHostTests.pro" %qt_params%
+IF %ERRORLEVEL% NEQ 0 goto :page_host_tests_error
+"%jom%" -f Makefile.Release -j 8
+IF %ERRORLEVEL% NEQ 0 goto :page_host_tests_error
+if NOT EXIST release\M3PageNavigationHostTests.exe goto :page_host_tests_error
 
 setlocal
 if "%qt_version:~0,1%"=="5" set "qt_core_dll=Qt5Core.dll"
@@ -93,17 +93,17 @@ if "%qt_version:~0,1%"=="6" set "qt_core_dll=Qt6Core.dll"
 if not exist "%qt_path%\bin\%qt_core_dll%" (
   echo Missing Qt runtime: %qt_path%\bin\%qt_core_dll%
   endlocal
-  goto :error
+  goto :page_host_tests_error
 )
 if not exist "%qt_path%\plugins\platforms\qoffscreen.dll" (
   echo Missing Qt offscreen platform plugin: %qt_path%\plugins\platforms\qoffscreen.dll
   endlocal
-  goto :error
+  goto :page_host_tests_error
 )
 if not exist "%~dp0bin\%build_arch%\Release\MiscHelpers.dll" (
   echo Missing MiscHelpers runtime: %~dp0bin\%build_arch%\Release\MiscHelpers.dll
   endlocal
-  goto :error
+  goto :page_host_tests_error
 )
 set "PATH=%qt_path%\bin;%~dp0bin\%build_arch%\Release;%PATH%"
 set "QT_QPA_PLATFORM_PLUGIN_PATH=%qt_path%\plugins\platforms"
@@ -112,17 +112,22 @@ where "%qt_core_dll%" >nul 2>&1
 IF %ERRORLEVEL% NEQ 0 (
   echo Qt runtime is not resolvable from the run-scoped PATH
   endlocal
-  goto :error
+  goto :page_host_tests_error
 )
 if exist M3PageNavigationHostTests.txt del /F /Q M3PageNavigationHostTests.txt
 release\M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt
 IF %ERRORLEVEL% NEQ 0 (
   type M3PageNavigationHostTests.txt
   endlocal
-  goto :error
+  goto :page_host_tests_error
 )
 type M3PageNavigationHostTests.txt
 endlocal
+goto :after_page_host_tests
+
+:page_host_tests_error
+echo [qt] M3 page navigation host tests failed.
+exit /b 1
 
 :after_page_host_tests
 

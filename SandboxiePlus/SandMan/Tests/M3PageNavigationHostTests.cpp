@@ -1,3 +1,5 @@
+#include <QtWidgets>
+
 #include "../Windows/M3PageNavigationHost.h"
 #include "../../MiscHelpers/Common/Settings.h"
 #include "../../MiscHelpers/Common/SettingsWidgets.h"
@@ -342,7 +344,7 @@ void M3PageNavigationHostTests::settingsNormalRebindSurvivesDeferredDelete()
 void M3PageNavigationHostTests::settingsOptionTreeRebindSurvivesDeferredDeletes()
 {
     PortableSettingsFixture settings(QStringLiteral("SettingsTreeLifecycle"));
-    QDialog dialog;
+    TestConfigDialog dialog;
     auto* root = new QVBoxLayout(&dialog);
     QList<QWidget*> originalPages;
     QTabWidget* designerTabs = makeTabs(&dialog, QStringLiteral("Settings tree"), 6, &originalPages);
@@ -366,7 +368,7 @@ void M3PageNavigationHostTests::settingsOptionTreeRebindSurvivesDeferredDeletes(
 
     host->releaseStateManager();
     host->rebind(finalTabs);
-    TreeContainer tree = convertToTreeLikeConfigDialog(finalTabs);
+    TreeContainer tree = convertWithProductionConfigDialog(&dialog, finalTabs);
     tree.titles->hide();
     QPointer<QTabWidget> retiredFinalTabs = finalTabs;
     const QString treeStateKey = QStringLiteral("Tests/SettingsWindow/Tabs/Tree");
@@ -375,7 +377,7 @@ void M3PageNavigationHostTests::settingsOptionTreeRebindSurvivesDeferredDeletes(
     QCOMPARE(host->currentIndex(), 4);
     verifyVisibleNavigation(host, tree.pageWidgets, [pages = tree.pages] { return pages->currentWidget(); });
     auto* treeNavigation = host->findChild<QListWidget*>(QStringLiteral("m3PageNavigationList"));
-    QVERIFY(treeNavigation->item(0)->text().contains(QStringLiteral("Grouped pages")));
+    QCOMPARE(treeNavigation->item(0)->text(), QStringLiteral("Settings tree 1"));
     finalTabs->deleteLater();
 
     processDeferredDeletes();
@@ -450,7 +452,7 @@ void M3PageNavigationHostTests::optionsNormalRefreshSurvivesDeferredDelete()
 void M3PageNavigationHostTests::optionsOptionTreeRebindSurvivesDeferredDelete()
 {
     PortableSettingsFixture settings(QStringLiteral("OptionsTreeLifecycle"));
-    QDialog dialog;
+    TestConfigDialog dialog;
     auto* root = new QVBoxLayout(&dialog);
     QList<QWidget*> originalPages;
     QTabWidget* tabs = makeTabs(&dialog, QStringLiteral("Options tree"), 7, &originalPages);
@@ -464,7 +466,7 @@ void M3PageNavigationHostTests::optionsOptionTreeRebindSurvivesDeferredDelete()
                  QStringLiteral("Tests/OptionsWindow/Tabs"));
     host->releaseStateManager();
     host->rebind(tabs);
-    TreeContainer tree = convertToTreeLikeConfigDialog(tabs);
+    TreeContainer tree = convertWithProductionConfigDialog(&dialog, tabs);
     tree.titles->hide();
     QPointer<QTabWidget> retiredTabs = tabs;
     const QString treeStateKey = QStringLiteral("Tests/OptionsWindow/Tabs/Tree");

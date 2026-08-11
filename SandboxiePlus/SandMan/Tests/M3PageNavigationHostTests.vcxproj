@@ -98,9 +98,15 @@
       <DynamicSource>input</DynamicSource>
       <QtMocFileName>%(Filename).moc</QtMocFileName>
     </ClCompile>
+    <ClCompile Include="..\Windows\M3DialogHost.cpp" />
     <ClCompile Include="..\Windows\M3PageNavigationHost.cpp" />
+    <ClCompile Include="..\Windows\M3RegexExecutionPolicy.cpp" />
     <ClCompile Include="..\Windows\M3SearchField.cpp" />
     <ClCompile Include="..\Windows\RegexBuilderDialog.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Windows\M3DialogHost.h" />
+    <ClInclude Include="..\Windows\M3RegexExecutionPolicy.h" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="..\Windows\M3PageNavigationHost.h" />
