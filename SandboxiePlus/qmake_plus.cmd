@@ -127,21 +127,55 @@ if NOT EXIST %~dp0\bin\%build_arch%\Release\SandMan.exe goto :error
 
 IF NOT "%build_arch%"=="x64" GOTO :after_page_host_tests
 
-mkdir %~dp0\Build_M3PageNavigationHostTests_%build_arch%
-cd %~dp0\Build_M3PageNavigationHostTests_%build_arch%
+cd /d %~dp0
+if exist "%~dp0Build_M3PageNavigationHostTests_%build_arch%" rmdir /S /Q "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
+if exist "%~dp0Build_M3PageNavigationHostTests_%build_arch%" goto :error
+mkdir "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
+IF %ERRORLEVEL% NEQ 0 goto :error
+cd /d "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
 
 %qt_path%\bin\qmake.exe %~dp0\SandMan\Tests\M3PageNavigationHostTests.pro %qt_params%
+IF %ERRORLEVEL% NEQ 0 goto :error
 %~dp0..\..\Qt\Tools\QtCreator\bin\jom.exe -f Makefile.Release -j 8
 IF %ERRORLEVEL% NEQ 0 goto :error
 if NOT EXIST release\M3PageNavigationHostTests.exe goto :error
 
-set QT_QPA_PLATFORM=offscreen
+setlocal
+if "%qt_version:~0,1%"=="5" set "qt_core_dll=Qt5Core.dll"
+if "%qt_version:~0,1%"=="6" set "qt_core_dll=Qt6Core.dll"
+if not exist "%qt_path%\bin\%qt_core_dll%" (
+  echo Missing Qt runtime: %qt_path%\bin\%qt_core_dll%
+  endlocal
+  goto :error
+)
+if not exist "%qt_path%\plugins\platforms\qoffscreen.dll" (
+  echo Missing Qt offscreen platform plugin: %qt_path%\plugins\platforms\qoffscreen.dll
+  endlocal
+  goto :error
+)
+if not exist "%~dp0bin\%build_arch%\Release\MiscHelpers.dll" (
+  echo Missing MiscHelpers runtime: %~dp0bin\%build_arch%\Release\MiscHelpers.dll
+  endlocal
+  goto :error
+)
+set "PATH=%qt_path%\bin;%~dp0bin\%build_arch%\Release;%PATH%"
+set "QT_QPA_PLATFORM_PLUGIN_PATH=%qt_path%\plugins\platforms"
+set "QT_QPA_PLATFORM=offscreen"
+where "%qt_core_dll%" >nul 2>&1
+IF %ERRORLEVEL% NEQ 0 (
+  echo Qt runtime is not resolvable from the run-scoped PATH
+  endlocal
+  goto :error
+)
+if exist M3PageNavigationHostTests.txt del /F /Q M3PageNavigationHostTests.txt
 release\M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt
 IF %ERRORLEVEL% NEQ 0 (
   type M3PageNavigationHostTests.txt
+  endlocal
   goto :error
 )
 type M3PageNavigationHostTests.txt
+endlocal
 
 :after_page_host_tests
 

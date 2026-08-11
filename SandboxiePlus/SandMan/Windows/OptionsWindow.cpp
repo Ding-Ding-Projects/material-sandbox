@@ -6,7 +6,6 @@
 #include "SandMan.h"
 #include "SettingsWindow.h"
 #include "../MiscHelpers/Common/Settings.h"
-#include "../MiscHelpers/Common/TabStateManager.h"
 #include "../MiscHelpers/Common/Common.h"
 #include "../MiscHelpers/Common/ComboInputDialog.h"
 #include "../MiscHelpers/Common/SettingsWidgets.h"
@@ -191,7 +190,6 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	this->setWindowFlag(Qt::WindowStaysOnTopHint, theGUI->IsAlwaysOnTop());
 
 	ui.setupUi(this);
-	new CTabStateManager(ui.tabs, theConf, QStringLiteral("OptionsWindow/Tabs"), this);
 	this->setWindowTitle(tr("Sandboxie Plus - '%1' Options").arg(QString(Name).replace("_", " ")));
 	// The options content remains behavior-rich and Designer-backed for now;
 	// the shared host replaces its platform chrome while each tab is migrated.
@@ -204,7 +202,9 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	if (ui.tabsGeneral && ui.tabFile) {
 		const int fileIndex = ui.tabsGeneral->indexOf(ui.tabFile);
 		if (fileIndex >= 0) {
+			auto* legacyFile = ui.tabFile;
 			auto* nativeFile = new QWidget(ui.tabsGeneral);
+			nativeFile->setObjectName(legacyFile->objectName());
 			auto* fileLayout = new QVBoxLayout(nativeFile);
 			ui.lblStructure = new QLabel(tr("Box Structure"), nativeFile);
 			ui.lblStructure->setProperty("m3NativeSurface", true);
@@ -259,7 +259,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 			fileLayout->addStretch();
 			ui.tabsGeneral->removeTab(fileIndex);
 			ui.tabsGeneral->insertTab(fileIndex, nativeFile, tr("File Options"));
-			ui.tabFile->deleteLater();
+			legacyFile->deleteLater();
+			ui.tabFile = nativeFile;
 		}
 	}
 
@@ -268,7 +269,9 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	if (ui.tabsGeneral && ui.tabMigration) {
 		const int migrationIndex = ui.tabsGeneral->indexOf(ui.tabMigration);
 		if (migrationIndex >= 0) {
+			auto* legacyMigration = ui.tabMigration;
 			auto* nativeMigration = new QWidget(ui.tabsGeneral);
+			nativeMigration->setObjectName(legacyMigration->objectName());
 			auto* migrationLayout = new QVBoxLayout(nativeMigration);
 			ui.lblMigration = new QLabel(tr("File Migration"), nativeMigration);
 			ui.lblMigration->setProperty("m3NativeSurface", true);
@@ -313,7 +316,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 			migrationLayout->addWidget(ui.chkNoCopyMsg);
 			ui.tabsGeneral->removeTab(migrationIndex);
 			ui.tabsGeneral->insertTab(migrationIndex, nativeMigration, tr("File Migration"));
-			ui.tabMigration->deleteLater();
+			legacyMigration->deleteLater();
+			ui.tabMigration = nativeMigration;
 		}
 	}
 
@@ -322,7 +326,9 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	if (ui.tabsGeneral && ui.tabRestrictions) {
 		const int restrictionIndex = ui.tabsGeneral->indexOf(ui.tabRestrictions);
 		if (restrictionIndex >= 0) {
+			auto* legacyRestrictions = ui.tabRestrictions;
 			auto* nativeRestrictions = new QWidget(ui.tabsGeneral);
+			nativeRestrictions->setObjectName(legacyRestrictions->objectName());
 			auto* restrictionLayout = new QVBoxLayout(nativeRestrictions);
 			ui.lblPrinting = new QLabel(tr("Printing restrictions"), nativeRestrictions);
 			ui.lblPrinting->setProperty("m3NativeSurface", true);
@@ -359,7 +365,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 			restrictionLayout->addStretch();
 			ui.tabsGeneral->removeTab(restrictionIndex);
 			ui.tabsGeneral->insertTab(restrictionIndex, nativeRestrictions, tr("Restrictions"));
-			ui.tabRestrictions->deleteLater();
+			legacyRestrictions->deleteLater();
+			ui.tabRestrictions = nativeRestrictions;
 		}
 	}
 
@@ -368,7 +375,9 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	if (ui.tabsGeneral && ui.tabOtherRestrictions) {
 		const int isolationIndex = ui.tabsGeneral->indexOf(ui.tabOtherRestrictions);
 		if (isolationIndex >= 0) {
+			auto* legacyIsolation = ui.tabOtherRestrictions;
 			auto* nativeIsolation = new QWidget(ui.tabsGeneral);
+			nativeIsolation->setObjectName(legacyIsolation->objectName());
 			auto* isolationLayout = new QVBoxLayout(nativeIsolation);
 			ui.lblAccess = new QLabel(tr("Access Isolation"), nativeIsolation);
 			ui.lblAccess->setProperty("m3NativeSurface", true);
@@ -388,7 +397,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 			isolationLayout->addStretch();
 			ui.tabsGeneral->removeTab(isolationIndex);
 			ui.tabsGeneral->insertTab(isolationIndex, nativeIsolation, tr("Isolation"));
-			ui.tabOtherRestrictions->deleteLater();
+			legacyIsolation->deleteLater();
+			ui.tabOtherRestrictions = nativeIsolation;
 		}
 	}
 
@@ -397,7 +407,9 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	if (ui.tabsGeneral && ui.tabRun) {
 		const int runIndex = ui.tabsGeneral->indexOf(ui.tabRun);
 		if (runIndex >= 0) {
+			auto* legacyRun = ui.tabRun;
 			auto* nativeRun = new QWidget(ui.tabsGeneral);
+			nativeRun->setObjectName(legacyRun->objectName());
 			auto* runLayout = new QVBoxLayout(nativeRun);
 			auto* runHint = new QLabel(tr("Configure custom entries for the sandbox run menu."), nativeRun);
 			runHint->setWordWrap(true);
@@ -425,7 +437,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 			runLayout->addLayout(runActions);
 			ui.tabsGeneral->removeTab(runIndex);
 			ui.tabsGeneral->insertTab(runIndex, nativeRun, tr("Run Menu"));
-			ui.tabRun->deleteLater();
+			legacyRun->deleteLater();
+			ui.tabRun = nativeRun;
 		}
 	}
 
@@ -434,7 +447,9 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	if (ui.tabsSecurity && ui.tabPrivileges) {
 		const int privilegeIndex = ui.tabsSecurity->indexOf(ui.tabPrivileges);
 		if (privilegeIndex >= 0) {
+			auto* legacyPrivileges = ui.tabPrivileges;
 			auto* nativePrivileges = new QWidget(ui.tabsSecurity);
+			nativePrivileges->setObjectName(legacyPrivileges->objectName());
 			auto* privilegeLayout = new QVBoxLayout(nativePrivileges);
 			ui.lblPrivilege = new QLabel(tr("Privilege isolation"), nativePrivileges);
 			ui.lblPrivilege->setProperty("m3NativeSurface", true);
@@ -468,7 +483,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 			privilegeLayout->addStretch();
 			ui.tabsSecurity->removeTab(privilegeIndex);
 			ui.tabsSecurity->insertTab(privilegeIndex, nativePrivileges, tr("Advanced Security"));
-			ui.tabPrivileges->deleteLater();
+			legacyPrivileges->deleteLater();
+			ui.tabPrivileges = nativePrivileges;
 		}
 	}
 
@@ -477,7 +493,9 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	if (ui.tabsSecurity && ui.tabIsolation) {
 		const int isolationIndex = ui.tabsSecurity->indexOf(ui.tabIsolation);
 		if (isolationIndex >= 0) {
+			auto* legacySecurityIsolation = ui.tabIsolation;
 			auto* nativeSecurityIsolation = new QWidget(ui.tabsSecurity);
+			nativeSecurityIsolation->setObjectName(legacySecurityIsolation->objectName());
 			auto* securityLayout = new QVBoxLayout(nativeSecurityIsolation);
 			auto* compatibilityHint = new QLabel(tr("Isolation features can affect compatibility. Disable them only when this sandbox is used for portability rather than security."), nativeSecurityIsolation);
 			compatibilityHint->setWordWrap(true);
@@ -503,7 +521,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 			securityLayout->addStretch();
 			ui.tabsSecurity->removeTab(isolationIndex);
 			ui.tabsSecurity->insertTab(isolationIndex, nativeSecurityIsolation, tr("Security Isolation"));
-			ui.tabIsolation->deleteLater();
+			legacySecurityIsolation->deleteLater();
+			ui.tabIsolation = nativeSecurityIsolation;
 		}
 	}
 
@@ -512,7 +531,9 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	if (ui.tabsSecurity && ui.tabPrivate) {
 		const int protectionIndex = ui.tabsSecurity->indexOf(ui.tabPrivate);
 		if (protectionIndex >= 0) {
+			auto* legacyProtection = ui.tabPrivate;
 			auto* nativeProtection = new QWidget(ui.tabsSecurity);
+			nativeProtection->setObjectName(legacyProtection->objectName());
 			auto* protectionLayout = new QVBoxLayout(nativeProtection);
 			auto* protectionHint = new QLabel(tr("Confidential sandboxes protect processes and files from unauthorized host access."), nativeProtection);
 			protectionHint->setWordWrap(true);
@@ -552,7 +573,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 			protectionLayout->addLayout(hostActions);
 			ui.tabsSecurity->removeTab(protectionIndex);
 			ui.tabsSecurity->insertTab(protectionIndex, nativeProtection, tr("Box Protection"));
-			ui.tabPrivate->deleteLater();
+			legacyProtection->deleteLater();
+			ui.tabPrivate = nativeProtection;
 		}
 	}
 
@@ -561,7 +583,9 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	if (ui.tabsSecurity && ui.tabJob) {
 		const int jobIndex = ui.tabsSecurity->indexOf(ui.tabJob);
 		if (jobIndex >= 0) {
+			auto* legacyJob = ui.tabJob;
 			auto* nativeJob = new QWidget(ui.tabsSecurity);
+			nativeJob->setObjectName(legacyJob->objectName());
 			auto* jobLayout = new QVBoxLayout(nativeJob);
 			ui.lblJob = new QLabel(tr("Other isolation"), nativeJob);
 			ui.lblJob->setProperty("m3NativeSurface", true);
@@ -595,7 +619,8 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 			jobLayout->addStretch();
 			ui.tabsSecurity->removeTab(jobIndex);
 			ui.tabsSecurity->insertTab(jobIndex, nativeJob, tr("Job Object"));
-			ui.tabJob->deleteLater();
+			legacyJob->deleteLater();
+			ui.tabJob = nativeJob;
 		}
 	}
 
@@ -606,6 +631,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (groupIndex >= 0) {
 			auto* legacyGroups = ui.tabGroups;
 			auto* nativeGroups = new QWidget(ui.tabs);
+			nativeGroups->setObjectName(legacyGroups->objectName());
 			auto* groupsLayout = new QVBoxLayout(nativeGroups);
 			auto* groupsHint = new QLabel(tr("Group programs under a shared name for use by sandbox settings; box groups override template groups."), nativeGroups);
 			groupsHint->setWordWrap(true);
@@ -640,6 +666,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (forceIndex >= 0) {
 			auto* legacyForce = ui.tabForceProgs;
 			auto* nativeForce = new QWidget(ui.tabsForce);
+			nativeForce->setObjectName(legacyForce->objectName());
 			auto* forceLayout = new QVBoxLayout(nativeForce);
 			auto* forceHint = new QLabel(tr("Programs started from these entries or locations are placed in this sandbox unless explicitly started elsewhere."), nativeForce);
 			forceHint->setWordWrap(true);
@@ -682,6 +709,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (breakoutIndex >= 0) {
 			auto* legacyBreakout = ui.tabBreakout;
 			auto* nativeBreakout = new QWidget(ui.tabsForce);
+			nativeBreakout->setObjectName(legacyBreakout->objectName());
 			auto* breakoutLayout = new QVBoxLayout(nativeBreakout);
 			auto* breakoutHint = new QLabel(tr("Programs listed here may break out of this sandbox or be captured into another sandbox."), nativeBreakout);
 			breakoutHint->setWordWrap(true);
@@ -726,6 +754,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (startIndex >= 0) {
 			auto* legacyStart = ui.tabStart;
 			auto* nativeStart = new QWidget(ui.tabs);
+			nativeStart->setObjectName(legacyStart->objectName());
 			auto* startLayout = new QVBoxLayout(nativeStart);
 			auto* startHint = new QLabel(tr("Choose which programs may start in this sandbox; installed programs cannot start when selection-only mode is active."), nativeStart);
 			startHint->setWordWrap(true);
@@ -770,6 +799,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (filesIndex >= 0) {
 			auto* legacyFiles = ui.tabFiles;
 			auto* nativeFiles = new QWidget(ui.tabsAccess);
+			nativeFiles->setObjectName(legacyFiles->objectName());
 			auto* filesLayout = new QVBoxLayout(nativeFiles);
 			auto* filesHint = new QLabel(tr("Configure which processes can access files, folders, and pipes. Open access applies to programs outside the sandbox."), nativeFiles);
 			filesHint->setWordWrap(true);
@@ -803,6 +833,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (keysIndex >= 0) {
 			auto* legacyKeys = ui.tabKeys;
 			auto* nativeKeys = new QWidget(ui.tabsAccess);
+			nativeKeys->setObjectName(legacyKeys->objectName());
 			auto* keysLayout = new QVBoxLayout(nativeKeys);
 			auto* keysHint = new QLabel(tr("Configure which processes can access the Registry. Open access applies to programs outside the sandbox."), nativeKeys);
 			keysHint->setWordWrap(true);
@@ -836,6 +867,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (ipcIndex >= 0) {
 			auto* legacyIPC = ui.tabIPC;
 			auto* nativeIPC = new QWidget(ui.tabsAccess);
+			nativeIPC->setObjectName(legacyIPC->objectName());
 			auto* ipcLayout = new QVBoxLayout(nativeIPC);
 			auto* ipcHint = new QLabel(tr("Configure access to NT IPC objects such as ALPC ports and process context. Use $:program.exe to target a process."), nativeIPC);
 			ipcHint->setWordWrap(true);
@@ -869,6 +901,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (wndIndex >= 0) {
 			auto* legacyWnd = ui.tabWnd;
 			auto* nativeWnd = new QWidget(ui.tabsAccess);
+			nativeWnd->setObjectName(legacyWnd->objectName());
 			auto* wndLayout = new QVBoxLayout(nativeWnd);
 			auto* wndHint = new QLabel(tr("Configure which processes can access desktop objects such as windows."), nativeWnd);
 			wndHint->setWordWrap(true);
@@ -904,6 +937,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (comIndex >= 0) {
 			auto* legacyCOM = ui.tabCOM;
 			auto* nativeCOM = new QWidget(ui.tabsAccess);
+			nativeCOM->setObjectName(legacyCOM->objectName());
 			auto* comLayout = new QVBoxLayout(nativeCOM);
 			auto* comHint = new QLabel(tr("Configure which processes can access COM objects."), nativeCOM);
 			comHint->setWordWrap(true);
@@ -939,6 +973,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (policyIndex >= 0) {
 			auto* legacyPolicy = ui.tabPolicy;
 			auto* nativePolicy = new QWidget(ui.tabsAccess);
+			nativePolicy->setObjectName(legacyPolicy->objectName());
 			auto* policyLayout = new QVBoxLayout(nativePolicy);
 			ui.lblMode = new QLabel(tr("Access Mode"), nativePolicy);
 			ui.lblMode->setProperty("m3NativeSurface", true);
@@ -974,6 +1009,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (inetIndex >= 0) {
 			auto* legacyINet = ui.tabINet;
 			auto* nativeINet = new QWidget(ui.tabsInternet);
+			nativeINet->setObjectName(legacyINet->objectName());
 			auto* inetLayout = new QVBoxLayout(nativeINet);
 			auto* modeRow = new QHBoxLayout();
 			modeRow->addWidget(new QLabel(tr("Network access for unlisted processes:"), nativeINet));
@@ -1010,6 +1046,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (fwIndex >= 0) {
 			auto* legacyFw = ui.tabNetFw;
 			auto* nativeFw = new QWidget(ui.tabsInternet);
+			nativeFw->setObjectName(legacyFw->objectName());
 			auto* fwLayout = new QVBoxLayout(nativeFw);
 			ui.lblNoWfp = new QLabel(tr("Caution: Windows Filtering Platform may be unavailable; rules then apply only in user mode and can be bypassed."), nativeFw);
 			ui.lblNoWfp->setWordWrap(true);
@@ -1060,6 +1097,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (dnsIndex >= 0) {
 			auto* legacyDns = ui.tabDNS;
 			auto* nativeDns = new QWidget(ui.tabsInternet);
+			nativeDns->setObjectName(legacyDns->objectName());
 			auto* dnsLayout = new QVBoxLayout(nativeDns);
 			auto* dnsHint = new QLabel(tr("Block individual domains per process; leave IP empty to block or enter an IP address to redirect."), nativeDns);
 			dnsHint->setWordWrap(true);
@@ -1090,6 +1128,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (proxyIndex >= 0) {
 			auto* legacyProxy = ui.tabNetProxy;
 			auto* nativeProxy = new QWidget(ui.tabsInternet);
+			nativeProxy->setObjectName(legacyProxy->objectName());
 			auto* proxyLayout = new QVBoxLayout(nativeProxy);
 			auto* proxyHint = new QLabel(tr("Sandboxed programs can be forced through preset SOCKS5 proxies."), nativeProxy);
 			proxyHint->setWordWrap(true);
@@ -1131,6 +1170,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		if (netConfigIndex >= 0) {
 			auto* legacyNetConfig = ui.tabNetConfig;
 			auto* nativeNetConfig = new QWidget(ui.tabsInternet);
+			nativeNetConfig->setObjectName(legacyNetConfig->objectName());
 			auto* netLayout = new QVBoxLayout(nativeNetConfig);
 			ui.lblPorts = new QLabel(tr("Port Blocking"), nativeNetConfig);
 			ui.lblPorts->setProperty("m3NativeSurface", true);
@@ -2225,6 +2265,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 	// collect file options on a new files tab
 
 	QWidget* pWidget = new QWidget();
+	pWidget->setObjectName(QStringLiteral("tabFileOptionsCombined"));
 	QGridLayout* pLayout = new QGridLayout(pWidget);
 
 	QTabWidget* pTabWidget = new QTabWidget();
@@ -2708,7 +2749,7 @@ COptionsWindow::COptionsWindow(const QSharedPointer<CSbieIni>& pBox, const QStri
 		pSetTree->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 		this->addAction(pSetTree);
 		if (m_pPageNavigationHost)
-			m_pPageNavigationHost->rebind(ui.tabs);
+			m_pPageNavigationHost->rebind(ui.tabs, theConf, QStringLiteral("OptionsWindow/Tabs"));
 	}
 	m_pSearch->setPlaceholderText(tr("Search for options"));
 	
@@ -2741,8 +2782,10 @@ void COptionsWindow::UpdateAutoCompletion()
 void COptionsWindow::OnSetTree()
 {
 	if (!ui.tabs) return;
-	if (m_pPageNavigationHost)
+	if (m_pPageNavigationHost) {
+		m_pPageNavigationHost->releaseStateManager();
 		m_pPageNavigationHost->rebind(ui.tabs);
+	}
 	QWidget* currentPage = ui.tabs->currentWidget();
 	if (currentPage) {
 		QGridLayout* pageLayout = qobject_cast<QGridLayout*>(currentPage->layout());
@@ -2758,10 +2801,14 @@ void COptionsWindow::OnSetTree()
 	if (m_pPageNavigationHost) {
 		m_pTree->hide();
 		m_pSearch->parentWidget()->hide();
-		m_pPageNavigationHost->rebind(pAltView, m_pStack, m_pTree);
 		connect(m_pStack, &QStackedLayout::currentChanged, this, [this](int index) {
 			OnTab(m_pStack->widget(index));
 		});
+		m_pPageNavigationHost->rebind(pAltView,
+			m_pStack,
+			m_pTree,
+			theConf,
+			QStringLiteral("OptionsWindow/Tabs/Tree"));
 	}
 	else {
 		ui.verticalLayout->replaceWidget(ui.tabs, pAltView);

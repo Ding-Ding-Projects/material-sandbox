@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "M3PageNavigationHost.h"
 #include "M3SearchField.h"
+#include "../../MiscHelpers/Common/TabStateManager.h"
 
 #include <QAbstractButton>
 #include <QComboBox>
@@ -145,6 +146,7 @@ void CM3PageNavigationHost::hostContainer(QWidget* container)
 
 void CM3PageNavigationHost::rebind(QTabWidget* tabs)
 {
+    releaseStateManager();
     if (!tabs)
         return;
 
@@ -192,6 +194,7 @@ void CM3PageNavigationHost::rebind(QWidget* container,
                                    QStackedLayout* pages,
                                    QTreeWidget* titles)
 {
+    releaseStateManager();
     if (!container || !pages)
         return;
 
@@ -210,6 +213,44 @@ void CM3PageNavigationHost::rebind(QWidget* container,
     });
     connect(pages, &QObject::destroyed, m_pageList, &QListWidget::clear);
     setCurrentIndex(qBound(0, originalIndex, qMax(0, pages->count() - 1)));
+}
+
+void CM3PageNavigationHost::rebind(QTabWidget* tabs,
+                                   CSettings* settings,
+                                   const QString& stateKey)
+{
+    rebind(tabs);
+    if (m_adaptedTabs == tabs && settings) {
+        m_stateManager = new CTabStateManager(tabs,
+                                              m_pageList,
+                                              this,
+                                              settings,
+                                              stateKey,
+                                              this);
+    }
+}
+
+void CM3PageNavigationHost::rebind(QWidget* container,
+                                   QStackedLayout* pages,
+                                   QTreeWidget* titles,
+                                   CSettings* settings,
+                                   const QString& stateKey)
+{
+    rebind(container, pages, titles);
+    if (m_adaptedStack == pages && settings) {
+        m_stateManager = new CTabStateManager(pages,
+                                              m_pageList,
+                                              this,
+                                              settings,
+                                              stateKey,
+                                              this);
+    }
+}
+
+void CM3PageNavigationHost::releaseStateManager()
+{
+    delete m_stateManager.data();
+    m_stateManager.clear();
 }
 
 void CM3PageNavigationHost::rebuildTabNavigation()
@@ -335,6 +376,8 @@ void CM3PageNavigationHost::setProvenanceText(const QString& text)
 }
 
 CM3SearchField* CM3PageNavigationHost::searchField() const { return m_search; }
+
+QListWidget* CM3PageNavigationHost::navigationList() const { return m_pageList; }
 
 void CM3PageNavigationHost::selectPage(int row)
 {

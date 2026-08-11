@@ -7,6 +7,10 @@ CONFIG -= app_bundle
 
 INCLUDEPATH += .. ../Windows ../../MiscHelpers
 
+MISCHELPERS_LIB_DIR = $$(MISCHELPERS_LIB_DIR)
+isEmpty(MISCHELPERS_LIB_DIR): MISCHELPERS_LIB_DIR = $$PWD/../../Bin/x64/Release
+win32:LIBS += -L$$MISCHELPERS_LIB_DIR -lMiscHelpers
+
 SOURCES += \
     M3PageNavigationHostTests.cpp \
     ../Windows/M3PageNavigationHost.cpp \

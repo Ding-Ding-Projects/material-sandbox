@@ -8,6 +8,8 @@
 #include <QWidget>
 
 class CM3SearchField;
+class CSettings;
+class CTabStateManager;
 class QDialog;
 class QLabel;
 class QListWidget;
@@ -25,8 +27,8 @@ public:
     explicit CM3PageNavigationHost(QWidget* parent = nullptr);
 
     // Recompose an existing QTabWidget without removing/reparenting its pages.
-    // This preserves CTabStateManager ownership, object names, indexes, signals,
-    // and generated-form behavior while changing only presentation.
+    // This preserves object names, indexes, signals, and generated-form
+    // behavior while changing only presentation.
     static CM3PageNavigationHost* adapt(QDialog* dialog,
                                         QTabWidget* tabs,
                                         const QString& searchPlaceholder = QString());
@@ -36,6 +38,13 @@ public:
     // queued delete of the Designer tab widget cannot strand the navigation.
     void rebind(QTabWidget* tabs);
     void rebind(QWidget* container, QStackedLayout* pages, QTreeWidget* titles);
+    void rebind(QTabWidget* tabs, CSettings* settings, const QString& stateKey);
+    void rebind(QWidget* container,
+                QStackedLayout* pages,
+                QTreeWidget* titles,
+                CSettings* settings,
+                const QString& stateKey);
+    void releaseStateManager();
 
     void addPage(QWidget* page, const QString& title, const QIcon& icon = QIcon());
     int pageCount() const;
@@ -44,6 +53,7 @@ public:
     void setCurrentIndex(int index);
     void setProvenanceText(const QString& text);
     CM3SearchField* searchField() const;
+    QListWidget* navigationList() const;
 
 signals:
     void currentPageChanged(int index);
@@ -78,6 +88,7 @@ private:
     QPointer<QWidget> m_adaptedContainer;
     QPointer<QTabWidget> m_adaptedTabs;
     QPointer<QStackedLayout> m_adaptedStack;
+    QPointer<CTabStateManager> m_stateManager;
     PageSource m_pageSource = PageSource::InternalStack;
     QStringList m_titles;
 };

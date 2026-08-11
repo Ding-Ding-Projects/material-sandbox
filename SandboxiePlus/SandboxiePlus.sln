@@ -12,6 +12,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SandMan", "SandMan\SandMan.
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "M3PageNavigationHostTests", "SandMan\Tests\M3PageNavigationHostTests.vcxproj", "{3FF7F1AD-D622-3814-89CB-C6699EEBECD4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7AB8215A-59A4-4B8B-8090-16C87A860429} = {7AB8215A-59A4-4B8B-8090-16C87A860429}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QSbieAPI", "QSbieAPI\QSbieAPI.vcxproj", "{1433EC85-BDA4-402E-BEC1-48611206A64A}"
 EndProject
