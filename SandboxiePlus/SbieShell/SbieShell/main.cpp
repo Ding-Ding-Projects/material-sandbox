@@ -29,6 +29,15 @@ extern "C"
         if (Func == NULL) Func = (FUNC)GetProcAddress(g_combase, "RoOriginateLanguageException");
         return Func(error, message, exception);
     }
+    // Older Windows SDK cppwinrt headers import the same helpers without the
+    // newer IMPLEMENTATION prefix. Keep both ABI spellings exported so the
+    // shell links against the SDK actually present on the build host.
+    int32_t __stdcall WINRT_RoGetActivationFactory(void* classId, winrt::guid const& iid, void** factory) noexcept {
+        return WINRT_IMPL_RoGetActivationFactory(classId, iid, factory);
+    }
+    int32_t __stdcall WINRT_RoOriginateLanguageException(int32_t error, void* message, void* exception) noexcept {
+        return WINRT_IMPL_RoOriginateLanguageException(error, message, exception);
+    }
     int32_t __stdcall WINRT_SetRestrictedErrorInfo(void* info) noexcept {
         typedef int32_t(__stdcall* FUNC)(void* info);
         static FUNC Func = NULL;

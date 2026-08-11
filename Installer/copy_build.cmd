@@ -79,14 +79,23 @@ for %%F in (qdirect2d.dll qminimal.dll qoffscreen.dll qwindows.dll) do (
 call :ensure_dir "%instPath%\styles" || exit /b 13
 call :copy_file "%qtPath%\plugins\styles\qmodernwindowsstyle.dll" "%instPath%\styles" || exit /b 13
 call :ensure_dir "%instPath%\tls" || exit /b 14
-for %%F in (qcertonlybackend.dll qopensslbackend.dll qschannelbackend.dll) do (
-  call :copy_file "%qtPath%\plugins\tls\%%F" "%instPath%\tls" || exit /b 14
+if /I "%archPath%"=="ARM64" (
+  rem The upstream OpenSSL archive labels its Win_arm64 entries as ARM64,
+  rem but the PE payloads are x64. ARM64 ships the native Schannel backend;
+  rem never place an x64 OpenSSL DLL beside a native ARM64 process.
+  for %%F in (qcertonlybackend.dll qschannelbackend.dll) do (
+    call :copy_file "%qtPath%\plugins\tls\%%F" "%instPath%\tls" || exit /b 14
+  )
+) else (
+  for %%F in (qcertonlybackend.dll qopensslbackend.dll qschannelbackend.dll) do (
+    call :copy_file "%qtPath%\plugins\tls\%%F" "%instPath%\tls" || exit /b 14
+  )
 )
 
 if /I "%archPath%"=="Win32" (
   call :copy_file "%~dp0OpenSSL\Win_x86\bin\libssl-%sslMajorVersion%.dll" "%instPath%" || exit /b 15
   call :copy_file "%~dp0OpenSSL\Win_x86\bin\libcrypto-%sslMajorVersion%.dll" "%instPath%" || exit /b 15
-) else (
+) else if /I "%archPath%"=="x64" (
   call :copy_file "%~dp0OpenSSL\Win_%archPath%\bin\libssl-%sslMajorVersion%-%archPath%.dll" "%instPath%" || exit /b 15
   call :copy_file "%~dp0OpenSSL\Win_%archPath%\bin\libcrypto-%sslMajorVersion%-%archPath%.dll" "%instPath%" || exit /b 15
 )

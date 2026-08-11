@@ -17,7 +17,7 @@ if (!['x64', 'ARM64'].includes(architecture)) throw new Error(`unsupported archi
 const commonRequired = [
   'Qt6Core.dll', 'Qt6Gui.dll', 'Qt6Network.dll', 'Qt6Widgets.dll', 'Qt6Qml.dll', 'Qt6Concurrent.dll',
   'platforms/qdirect2d.dll', 'platforms/qminimal.dll', 'platforms/qoffscreen.dll', 'platforms/qwindows.dll',
-  'styles/qmodernwindowsstyle.dll', 'tls/qcertonlybackend.dll', 'tls/qopensslbackend.dll', 'tls/qschannelbackend.dll',
+  'styles/qmodernwindowsstyle.dll', 'tls/qcertonlybackend.dll', 'tls/qschannelbackend.dll',
   '7z.dll', 'MiscHelpers.dll', 'MiscHelpers.pdb', 'QSbieAPI.dll', 'QSbieAPI.pdb', 'QtSingleApp.dll',
   'QtSingleApp.pdb', 'UGlobalHotkey.dll', 'UGlobalHotkey.pdb', 'SandMan.exe', 'SandMan.pdb',
   'translations.7z', 'troubleshooting.7z', 'SbieSvc.exe', 'SbieSvc.pdb', 'SbieDll.dll', 'SbieDll.pdb',
@@ -33,8 +33,8 @@ const commonRequired = [
 
 function requiredFilesFor(target) {
   const required = [...commonRequired];
-  if (target === 'x64') required.push('libssl-3-x64.dll', 'libcrypto-3-x64.dll');
-  else required.push('libssl-1_1-ARM64.dll', 'libcrypto-1_1-ARM64.dll', '64/SbieDll.dll', '64/SbieDll.pdb');
+  if (target === 'x64') required.push('tls/qopensslbackend.dll', 'libssl-3-x64.dll', 'libcrypto-3-x64.dll');
+  else required.push('64/SbieDll.dll', '64/SbieDll.pdb');
   return required;
 }
 
@@ -125,7 +125,7 @@ function assertMachine(root, relative, expected, label) {
 const root = path.resolve(directory);
 if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) throw new Error(`missing artifact directory: ${root}`);
 const required = requiredFilesFor(architecture);
-if (required.length !== (architecture === 'x64' ? 73 : 75)) throw new Error('internal artifact inventory count changed without review');
+if (required.length !== (architecture === 'x64' ? 73 : 72)) throw new Error('internal artifact inventory count changed without review');
 
 const missing = required.filter((relative) => {
   const file = path.join(root, relative);
@@ -159,10 +159,10 @@ for (const pattern of [/\blayout\.json\s*$/im, /\bAppCompatibility\.js\s*$/im, /
 }
 
 const targetMachine = architecture === 'x64' ? 0x8664 : 0xaa64;
-for (const relative of ['SandMan.exe', 'SbieSvc.exe', 'SbieDll.dll', 'SbieDrv.sys', 'tls/qopensslbackend.dll']) {
+for (const relative of ['SandMan.exe', 'SbieSvc.exe', 'SbieDll.dll', 'SbieDrv.sys', ...(architecture === 'x64' ? ['tls/qopensslbackend.dll'] : [])]) {
   assertMachine(root, relative, targetMachine, architecture);
 }
-for (const relative of architecture === 'x64' ? ['libssl-3-x64.dll', 'libcrypto-3-x64.dll'] : ['libssl-1_1-ARM64.dll', 'libcrypto-1_1-ARM64.dll']) {
+for (const relative of architecture === 'x64' ? ['libssl-3-x64.dll', 'libcrypto-3-x64.dll'] : []) {
   assertMachine(root, relative, targetMachine, architecture);
 }
 assertMachine(root, '32/SbieDll.dll', 0x014c, 'Win32');

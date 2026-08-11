@@ -21,6 +21,14 @@ separator and `./` presentation before matching required troubleshooting files.
 The local entrypoint contract checks both the solution mapping and these listing
 normalizations before a build is considered ready for hosted verification.
 
+ARM64 staging uses Qt's native Schannel TLS backend (`qcertonlybackend` and
+`qschannelbackend`) and intentionally omits `qopensslbackend` and OpenSSL DLLs.
+The pinned upstream archive labels its `Win_arm64` files as ARM64 even though
+their PE machine field is x64; shipping those files beside a native ARM64
+process would make the package architecture-inconsistent. The artifact Chut
+therefore requires the Schannel-only ARM64 inventory and retains the OpenSSL
+backend only for x64, where its PE architecture is verified.
+
 Every `SboxDrv.vcxproj` debug and release configuration for Win32, x64, and
 ARM64 sets the scalar WDK `SignMode` property to `Off`, so staging cannot inherit a
 freshly signed driver from the supported build. The unsigned-packaging contract
@@ -34,8 +42,9 @@ route fails closed and points callers to the repository-root installer entry
 point; it no longer contains or invokes the historical signing machinery. The
 supported scripts do not collect credentials, install signing material,
 publish, or create releases. If the pinned Qt kit or Visual Studio environment
-is absent, the scripts report the exact path and stop. This checkout currently
-has no local Qt qmake kit, so hosted Windows CI remains the build proof.
+is absent, the scripts report the exact path and stop. A local x64 build has
+now been exercised through the same qmake/MSVC path; ARM64 remains a hosted
+build proof until an ARM64 target toolchain is available locally.
 
 The bootstrap uses the Qt 6.8.3 base desktop package set for both the x64 host
 and ARM64 target. Qt 6.8.3 already includes the `qtdeclarative` and `qttools`

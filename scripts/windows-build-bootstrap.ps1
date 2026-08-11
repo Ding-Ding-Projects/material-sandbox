@@ -420,7 +420,7 @@ function Ensure-Qt {
             'bin\Qt6Qml.dll', 'bin\Qt6Concurrent.dll', 'plugins\platforms\qdirect2d.dll',
             'plugins\platforms\qminimal.dll', 'plugins\platforms\qoffscreen.dll', 'plugins\platforms\qwindows.dll',
             'plugins\styles\qmodernwindowsstyle.dll', 'plugins\tls\qcertonlybackend.dll',
-            'plugins\tls\qopensslbackend.dll', 'plugins\tls\qschannelbackend.dll',
+            'plugins\tls\qschannelbackend.dll',
             ('include\QtCore\{0}\QtCore\private\qglobal_p.h' -f $script:QtVersion)
         )
         $armMissing = @(Get-MissingRelativeFiles -Root $armRoot -RelativePaths $armRequired)
@@ -453,13 +453,13 @@ function Ensure-OpenSsl {
     param([string]$SevenZip)
     $target = Join-Path $script:InstallerRoot 'OpenSSL'
     $marker = Join-Path $target '.bootstrap-sha256'
+    # The published archive's Win_arm64 entries are mislabeled x64 PE files;
+    # ARM64 packaging deliberately uses Qt Schannel and never stages them.
     $required = [ordered]@{
         'Win_x64\bin\libssl-3-x64.dll' = 'bf862a2ff42a2b10a8b15809a7d6ff01fa6f786ae4e8871d2ae27025f022e80a'
         'Win_x64\bin\libcrypto-3-x64.dll' = 'eea017eaca93659b604b582d6272bac6667f7b5a8abce226325db59d1ac47cff'
         'Win_x86\bin\libssl-3.dll' = '6bedec3aed258dad517ddaae26b22f24fd90a2bf054ee865148ad87668b7a38d'
         'Win_x86\bin\libcrypto-3.dll' = '7f0c5e2fa57b2227b29036b5992b7a75af3caf964f3f7f474b93ac4dd9c92c91'
-        'Win_arm64\bin\libssl-1_1-arm64.dll' = '2200234f8529b4272a4022b451269e4fc694b6b0c71b7e0420858c20721fdaa9'
-        'Win_arm64\bin\libcrypto-1_1-arm64.dll' = 'b9702116484b90811a0c0e55f403057c43cb5980b7dce33f494ba422db2f31ec'
     }
     $valid = (Test-Path -LiteralPath $marker -PathType Leaf) -and ([IO.File]::ReadAllText($marker).Trim() -eq $script:Pins.OpenSsl.Sha256)
     foreach ($relative in $required.Keys) {
@@ -702,7 +702,7 @@ function Get-RequiredStageFiles {
     $required = @(
         'Qt6Core.dll','Qt6Gui.dll','Qt6Network.dll','Qt6Widgets.dll','Qt6Qml.dll','Qt6Concurrent.dll',
         'platforms\qdirect2d.dll','platforms\qminimal.dll','platforms\qoffscreen.dll','platforms\qwindows.dll',
-        'styles\qmodernwindowsstyle.dll','tls\qcertonlybackend.dll','tls\qopensslbackend.dll','tls\qschannelbackend.dll',
+        'styles\qmodernwindowsstyle.dll','tls\qcertonlybackend.dll','tls\qschannelbackend.dll',
         '7z.dll','MiscHelpers.dll','MiscHelpers.pdb','QSbieAPI.dll','QSbieAPI.pdb','QtSingleApp.dll','QtSingleApp.pdb',
         'UGlobalHotkey.dll','UGlobalHotkey.pdb','SandMan.exe','SandMan.pdb','translations.7z','troubleshooting.7z',
         'SbieSvc.exe','SbieSvc.pdb','SbieDll.dll','SbieDll.pdb','SbieDrv.sys','SbieDrv.pdb','SbieCtrl.exe','SbieCtrl.pdb',
@@ -714,9 +714,9 @@ function Get-RequiredStageFiles {
         'ImBox.exe','ImBox.pdb','UpdUtil.exe','UpdUtil.pdb','MiniDump.exe','MiniDump.pdb'
     )
     if ($TargetArchitecture -eq 'x64') {
-        $required += @('libssl-3-x64.dll','libcrypto-3-x64.dll')
+        $required += @('tls\qopensslbackend.dll','libssl-3-x64.dll','libcrypto-3-x64.dll')
     } else {
-        $required += @('libssl-1_1-ARM64.dll','libcrypto-1_1-ARM64.dll','64\SbieDll.dll','64\SbieDll.pdb')
+        $required += @('64\SbieDll.dll','64\SbieDll.pdb')
     }
     return $required
 }
@@ -803,10 +803,12 @@ function Assert-Stage {
 
     $targetMachine = if ($TargetArchitecture -eq 'x64') { 0x8664 } else { 0xaa64 }
     $targetName = if ($TargetArchitecture -eq 'x64') { 'x64' } else { 'ARM64' }
-    foreach ($relative in @('SandMan.exe', 'SbieSvc.exe', 'SbieDll.dll', 'SbieDrv.sys', 'tls\qopensslbackend.dll')) {
+    $nativeFiles = @('SandMan.exe', 'SbieSvc.exe', 'SbieDll.dll', 'SbieDrv.sys')
+    if ($TargetArchitecture -eq 'x64') { $nativeFiles += 'tls\qopensslbackend.dll' }
+    foreach ($relative in $nativeFiles) {
         Assert-PeMachine -Path (Join-Path $Stage $relative) -ExpectedMachine $targetMachine -ExpectedName $targetName
     }
-    $sslFiles = if ($TargetArchitecture -eq 'x64') { @('libssl-3-x64.dll', 'libcrypto-3-x64.dll') } else { @('libssl-1_1-ARM64.dll', 'libcrypto-1_1-ARM64.dll') }
+    $sslFiles = if ($TargetArchitecture -eq 'x64') { @('libssl-3-x64.dll', 'libcrypto-3-x64.dll') } else { @() }
     foreach ($relative in $sslFiles) {
         Assert-PeMachine -Path (Join-Path $Stage $relative) -ExpectedMachine $targetMachine -ExpectedName $targetName
     }
@@ -884,7 +886,7 @@ function Invoke-SelfTest {
     if (@(Get-BuildPlan -TargetArchitecture 'x64').Count -ne 6) { throw 'x64 build graph self-test failed.' }; $checks++
     if (@(Get-BuildPlan -TargetArchitecture 'ARM64').Count -ne 7) { throw 'ARM64 build graph self-test failed.' }; $checks++
     if (@(Get-RequiredStageFiles -TargetArchitecture 'x64').Count -ne 73) { throw 'x64 stage inventory self-test failed.' }; $checks++
-    if (@(Get-RequiredStageFiles -TargetArchitecture 'ARM64').Count -ne 75) { throw 'ARM64 stage inventory self-test failed.' }; $checks++
+    if (@(Get-RequiredStageFiles -TargetArchitecture 'ARM64').Count -ne 72) { throw 'ARM64 stage inventory self-test failed.' }; $checks++
     $peFixture = New-Object byte[] 70
     $peFixture[0] = 0x4d; $peFixture[1] = 0x5a
     [BitConverter]::GetBytes([int]64).CopyTo($peFixture, 0x3c)
