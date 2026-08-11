@@ -106,7 +106,14 @@ void Install(QDialog* dialog)
     if (!dialog || dialog->property("m3DialogInstalled").toBool())
         return;
     dialog->setProperty("m3DialogInstalled", true);
+    const bool wasVisible = dialog->isVisible();
     dialog->setWindowFlag(Qt::FramelessWindowHint, true);
+    // Changing a native window flag on a visible dialog temporarily hides it.
+    // The application Show filter calls us from QMessageBox/QDialog showEvent,
+    // so restore visibility immediately instead of leaving a modal dialog
+    // hidden inside its nested event loop.
+    if (wasVisible)
+        dialog->show();
 
     // Dialogs that already own their content layout must keep that top-level
     // layout. QLayout tracks the widget it is installed on internally; moving

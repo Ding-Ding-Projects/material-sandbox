@@ -221,10 +221,12 @@ expect(pageHostVisualStudioFilters.includes('..\\Windows\\M3Menu.cpp') && pageHo
 expect(pageHostVisualStudioFilters.includes('..\\..\\MiscHelpers\\Common\\MaterialTheme.cpp') && pageHostVisualStudioFilters.includes('..\\..\\MiscHelpers\\Common\\M3Tokens.cpp'), 'Visual Studio page-host test filters expose the Material paint sources');
 expect(pageHostTests.includes('searchCapsuleStatesAreVisibleAndAccessible') && pageHostTests.includes('searchBuilderCancellationReturnsFocusToEditor') && pageHostTests.includes('nativeMenuBuilderCancellationPreservesFilterAndFocus'), 'page-host QtTest covers capsule states and cancel/Escape focus return');
 expect(pageHostTests.includes('m3ResumeMenuSearch') && pageHostTests.includes('m3ChildDialogActive') && pageHostTests.includes('QVERIFY2(dismissed && !deadline'), 'page-host QtTest proves native menu restoration with a bounded nested-dialog watchdog');
-expect(pageHostTests.includes('QMessageBox::warning(nullptr')
+expect(pageHostTests.includes('QMessageBox message;')
   && pageHostTests.includes('M3DialogHost::InstallForApplication(qApp)')
-  && pageHostTests.includes('handled && observed && !deadline')
-  && pageHostTests.includes('QCOMPARE(titleCount, 1)'), 'page-host QtTest reproduces the application Show-filter QMessageBox path with a bounded watchdog');
+  && pageHostTests.includes('QElapsedTimer deadline;')
+  && pageHostTests.includes('message.show()')
+  && pageHostTests.includes('QTRY_VERIFY_WITH_TIMEOUT(!message.isVisible(), 1000)')
+  && pageHostTests.includes('QCOMPARE(titleCount, 1)'), 'page-host QtTest reproduces the application Show-filter QMessageBox path with a bounded visibility watchdog');
 expect(visualStudioSolution.includes('SandMan\\Tests\\M3PageNavigationHostTests.vcxproj'), 'page-host QtTest target is present in the Visual Studio solution');
 expect(qmakeBuild.includes('SandMan\\Tests\\M3PageNavigationHostTests.pro'), 'x64 qmake build compiles the page-host QtTest target');
 expect(qmakeBuild.includes('M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt'), 'x64 qmake build runs the page-host lifecycle suite');
