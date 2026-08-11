@@ -68,7 +68,7 @@ for (const marker of [
   'PIN Ewdk version=10.0.26100.6584',
   'PIN Qt version=6.8.3',
   'Platform=Win32',
-  'SandboxiePlus\\qmake_plus.cmd x64 build_qt6',
+  'SandboxiePlus\\qmake_plus.cmd x64 build_qt6 build_only',
   'SandboxiePlus\\SbieShell\\SbieShell.sln',
   'SandboxieTools\\SandboxieTools.sln',
   'STAGE Installer\\copy_build.cmd x64 build_qt6',
@@ -80,7 +80,7 @@ const arm64Plan = run('cmd.exe', ['/d', '/s', '/c', 'call build.bat --plan'], {
 for (const marker of [
   'PLAN architecture=ARM64',
   'Platform=ARM64EC',
-  'SandboxiePlus\\qmake_plus.cmd ARM64 build_qt6',
+  'SandboxiePlus\\qmake_plus.cmd ARM64 build_qt6 build_only',
   'STAGE Installer\\copy_build.cmd ARM64 build_qt6',
 ]) assertIncludes(arm64Plan, marker, 'ARM64 plan');
 

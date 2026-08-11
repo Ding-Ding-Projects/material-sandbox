@@ -179,6 +179,9 @@ expect(pageHostTests.includes('PortableSettingsFixture'), 'page-host tests use r
 expect(pageHostTests.includes('findChildren<CTabStateManager*>'), 'page-host tests drive the production state-manager seam');
 expect(pageHostTests.includes('Ctrl+Shift+O'), 'page-host tests verify the final search shortcuts');
 expect(pageHostTests.includes('tabStateManagerKey'), 'page-host tests require unique stable page identities');
+expect(pageHostTests.includes('#include <QtWidgets>'), 'page-host tests include the widget declarations required by SettingsWidgets.h');
+expect(pageHostTests.includes('convertWithProductionConfigDialog'), 'page-host tree tests call the production CConfigDialog conversion');
+expect(!pageHostTests.includes('convertToTreeLikeConfigDialog'), 'page-host tree tests do not retain the removed conversion fixture');
 expect(pageHostTestProject.includes('QT += core gui network widgets testlib'), 'page-host QtTest target links Qt Test and Widgets');
 expect(pageHostTestProject.includes('-lMiscHelpers'), 'page-host QtTest target links the production state manager');
 expect(pageHostVisualStudioProject.includes('<QtModules>core;gui;network;widgets;testlib</QtModules>'), 'page-host QtTest target is wired for Visual Studio');
@@ -186,6 +189,8 @@ expect(pageHostVisualStudioProject.includes('<AdditionalDependencies>MiscHelpers
 expect(visualStudioSolution.includes('SandMan\\Tests\\M3PageNavigationHostTests.vcxproj'), 'page-host QtTest target is present in the Visual Studio solution');
 expect(qmakeBuild.includes('SandMan\\Tests\\M3PageNavigationHostTests.pro'), 'x64 qmake build compiles the page-host QtTest target');
 expect(qmakeBuild.includes('M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt'), 'x64 qmake build runs the page-host lifecycle suite');
+expect(qmakeBuild.includes('if /I "%~3"=="build_only" set "SBIE_QMAKE_BUILD_ONLY=1"'), 'qmake build-only mode is explicit for workflow builds');
+expect(qmakeBuild.includes('IF "%SBIE_QMAKE_BUILD_ONLY%"=="1" GOTO :after_page_host_tests'), 'workflow builds skip the local lifecycle executable');
 
 const pageHostLaunch = 'release\\M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt';
 const runtimePath = 'set "PATH=%qt_path%\\bin;%~dp0bin\\%build_arch%\\Release;%PATH%"';
@@ -207,13 +212,14 @@ expect(!hasRunScopedQtRuntime(qmakeBuild.replace(runtimePath, 'rem runtime path 
 const hasFreshPageHostBuild = source => {
   const cleanIndex = source.indexOf('rmdir /S /Q "%~dp0Build_M3PageNavigationHostTests_%build_arch%"');
   const qmakeIndex = source.indexOf('%qt_path%\\bin\\qmake.exe %~dp0\\SandMan\\Tests\\M3PageNavigationHostTests.pro');
-  const jomIndex = source.indexOf('%~dp0..\\..\\Qt\\Tools\\QtCreator\\bin\\jom.exe -f Makefile.Release -j 8', qmakeIndex);
+  const jomIndex = source.indexOf('"%jom%" -f Makefile.Release -j 8', qmakeIndex);
   const qmakeExitIndex = source.indexOf('IF %ERRORLEVEL% NEQ 0 goto :error', qmakeIndex);
   return cleanIndex >= 0 && cleanIndex < qmakeIndex
     && qmakeIndex >= 0 && qmakeExitIndex > qmakeIndex
     && qmakeExitIndex < jomIndex;
 };
 expect(hasFreshPageHostBuild(qmakeBuild), 'page-host QtTest uses a fresh build directory and checks qmake before jom');
+expect(qmakeBuild.includes(':error'), 'page-host QtTest has a concrete failure label');
 
 const memoryFiles = required.filter(file => file.includes('/Views/')).map(read).join('\n');
 for (const forbidden of ['QProcess', 'QNetworkAccessManager', 'QTcpSocket', 'system(', 'ShellExecute', 'CreateProcess']) {

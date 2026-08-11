@@ -292,7 +292,7 @@ function Get-BuildPlan {
         $common += 'msbuild /t:Rebuild Sandboxie\SandboxDll.sln /p:Configuration=SbieRelease /p:Platform=ARM64EC'
     }
     $common += ('msbuild /t:Rebuild Sandboxie\SandboxDrv.sln /p:Configuration=SbieRelease /p:Platform={0}' -f $TargetArchitecture)
-    $common += ('SandboxiePlus\qmake_plus.cmd {0} build_qt6' -f $TargetArchitecture)
+    $common += ('SandboxiePlus\qmake_plus.cmd {0} build_qt6 build_only' -f $TargetArchitecture)
     $common += ('msbuild /restore /t:Rebuild SandboxiePlus\SbieShell\SbieShell.sln /p:Configuration=Release /p:Platform={0} /p:PlatformToolset=v143' -f $TargetArchitecture)
     $common += ('msbuild /t:Rebuild SandboxieTools\SandboxieTools.sln /p:Configuration=Release /p:Platform={0}' -f $TargetArchitecture)
     return $common
@@ -682,7 +682,7 @@ function Invoke-FullBuild {
     Invoke-MsBuild -MsBuild $MsBuild -Solution 'Sandboxie\SandboxDrv.sln' -Configuration 'SbieRelease' -Platform $TargetArchitecture
 
     $env:SBIE_CLEAN_BUILD = '1'
-    Invoke-External -FilePath (Join-Path $script:RepositoryRoot 'SandboxiePlus\qmake_plus.cmd') -Arguments @($TargetArchitecture, 'build_qt6') -Description ('Building Sandboxie Plus with Qt {0} for {1}.' -f $script:QtVersion, $TargetArchitecture)
+    Invoke-External -FilePath (Join-Path $script:RepositoryRoot 'SandboxiePlus\qmake_plus.cmd') -Arguments @($TargetArchitecture, 'build_qt6', 'build_only') -Description ('Building Sandboxie Plus with Qt {0} for {1}.' -f $script:QtVersion, $TargetArchitecture)
 
     $shellAdditional = @('/restore', '/p:RestorePackagesConfig=true', ('/p:PlatformToolset={0}' -f $script:Toolset))
     Invoke-MsBuild -MsBuild $MsBuild -Solution 'SandboxiePlus\SbieShell\SbieShell.sln' -Configuration 'Release' -Platform $TargetArchitecture -Additional $shellAdditional

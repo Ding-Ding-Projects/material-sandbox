@@ -134,13 +134,21 @@ jobs:
           New-Item -ItemType Directory -Force -Path $output | Out-Null
           $buildLog = Join-Path $env:RELEASE_EVIDENCE 'build.log'
           $buildError = Join-Path $env:RELEASE_EVIDENCE 'build-error.log'
-          $build = Start-Process -FilePath (Join-Path $env:GITHUB_WORKSPACE 'build.bat') -ArgumentList '/s' -NoNewWindow -Wait -PassThru -RedirectStandardOutput $buildLog -RedirectStandardError $buildError
+          $buildBat = Join-Path $env:GITHUB_WORKSPACE 'build.bat'
+          if (-not (Test-Path -LiteralPath $buildBat -PathType Leaf)) {
+            throw "Repository build entrypoint is missing: $buildBat"
+          }
+          $build = Start-Process -FilePath $env:ComSpec -ArgumentList @('/d', '/s', '/c', ('call "{0}" /s' -f $buildBat)) -WorkingDirectory $env:GITHUB_WORKSPACE -NoNewWindow -Wait -PassThru -RedirectStandardOutput $buildLog -RedirectStandardError $buildError
           if ($build.ExitCode -ne 0) {
             throw "build.bat /s failed with exit code $($build.ExitCode)"
           }
           $installerLog = Join-Path $env:RELEASE_EVIDENCE 'build-installer.log'
           $installerError = Join-Path $env:RELEASE_EVIDENCE 'build-installer-error.log'
-          $installer = Start-Process -FilePath (Join-Path $env:GITHUB_WORKSPACE 'build-installer.bat') -ArgumentList '/s' -NoNewWindow -Wait -PassThru -RedirectStandardOutput $installerLog -RedirectStandardError $installerError
+          $installerBat = Join-Path $env:GITHUB_WORKSPACE 'build-installer.bat'
+          if (-not (Test-Path -LiteralPath $installerBat -PathType Leaf)) {
+            throw "Repository installer entrypoint is missing: $installerBat"
+          }
+          $installer = Start-Process -FilePath $env:ComSpec -ArgumentList @('/d', '/s', '/c', ('call "{0}" /s' -f $installerBat)) -WorkingDirectory $env:GITHUB_WORKSPACE -NoNewWindow -Wait -PassThru -RedirectStandardOutput $installerLog -RedirectStandardError $installerError
           if ($installer.ExitCode -ne 0) {
             throw "build-installer.bat /s failed with exit code $($installer.ExitCode)"
           }

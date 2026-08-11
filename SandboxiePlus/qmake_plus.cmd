@@ -5,6 +5,9 @@ call "%~dp0..\Installer\buildVariables.cmd" %*
 if errorlevel 1 exit /b %errorlevel%
 @echo off
 
+set "SBIE_QMAKE_BUILD_ONLY=0"
+if /I "%~3"=="build_only" set "SBIE_QMAKE_BUILD_ONLY=1"
+
 if not defined SBIE_QT_ROOT set "SBIE_QT_ROOT=%~dp0..\Qt"
 set "jom=%SBIE_QT_ROOT%\Tools\QtCreator\bin\jom.exe"
 
@@ -73,8 +76,9 @@ call :build_qmake "Build_qtsingleapp_%build_arch%" "%~dp0QtSingleApp\qtsingleapp
 call :build_qmake "Build_MiscHelpers_%build_arch%" "%~dp0MiscHelpers\MiscHelpers.qc.pro" "%~dp0bin\%build_arch%\Release\MiscHelpers.dll" || exit /b 12
 call :build_qmake "Build_QSbieAPI_%build_arch%" "%~dp0QSbieAPI\QSbieAPI.qc.pro" "%~dp0bin\%build_arch%\Release\QSbieAPI.dll" || exit /b 13
 IF NOT "%build_arch%"=="x64" GOTO :after_page_host_tests
+IF "%SBIE_QMAKE_BUILD_ONLY%"=="1" GOTO :after_page_host_tests
 
-cd /d %~dp0
+cd /d "%~dp0"
 if exist "%~dp0Build_M3PageNavigationHostTests_%build_arch%" rmdir /S /Q "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
 if exist "%~dp0Build_M3PageNavigationHostTests_%build_arch%" goto :error
 mkdir "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
@@ -83,7 +87,7 @@ cd /d "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
 
 %qt_path%\bin\qmake.exe %~dp0\SandMan\Tests\M3PageNavigationHostTests.pro %qt_params%
 IF %ERRORLEVEL% NEQ 0 goto :error
-%~dp0..\..\Qt\Tools\QtCreator\bin\jom.exe -f Makefile.Release -j 8
+"%jom%" -f Makefile.Release -j 8
 IF %ERRORLEVEL% NEQ 0 goto :error
 if NOT EXIST release\M3PageNavigationHostTests.exe goto :error
 
@@ -186,3 +190,7 @@ if not exist "%~3" (
   exit /b 1
 )
 exit /b 0
+
+:error
+echo [qt] M3 page-navigation lifecycle test failed.
+exit /b 20
