@@ -15,6 +15,17 @@
 - The integrating commit is not guessed in this unreleased entry. The workflow
   records and verifies the exact source SHA when a release actually runs.
 
+## 2026-08-11 · Safe native dialog layout chrome
+
+Commit: [ca606b052a32dcc91497f67432e487460115d2b5](https://github.com/Ding-Ding-Projects/material-sandbox/commit/ca606b052a32dcc91497f67432e487460115d2b5)
+
+- Kept dialogs' existing top-level Qt layouts in place while adding the native
+  Material 3 title surface through `QLayout::setMenuBar`.
+- Removed the unsafe layout reparenting path that could leave a null child in
+  QtWidgets during `QMessageBox` display under Qt 6.8.3.
+- Added a regression Chut covering box and grid layouts, idempotent installation,
+  and the `QMessageBox` layout path.
+
 ## 2026-08-09 · Complete offline documentation browser inventory
 
 Commit: [acd0c449164398798b1a0d9bbdadd6b7c2635083](https://github.com/Ding-Ding-Projects/material-sandbox/commit/acd0c449164398798b1a0d9bbdadd6b7c2635083)

@@ -208,6 +208,13 @@ dialogs now use the reusable `M3DialogHost`. It supplies a frameless title
 surface, accessible close action, keyboard-sized target, and drag behavior while
 preserving each dialog's existing content and decision semantics.
 
+The host leaves an already-installed top-level Qt layout attached to its dialog
+and adds the M3 title with `QLayout::setMenuBar`. This avoids reparenting a live
+layout into a second root, which Qt 6.8.3 can otherwise represent with a null
+child during a `QMessageBox` show. Dialogs that begin without a layout, such as
+the regex builder before its scroll area is created, still receive the shared
+shell used by their constructor.
+
 `M3ShellHost::InstallDialog` was the first dialog migration slice. `TestProxyDialog`
 now owns its proxy summary, progress, transcript, test settings, and actions in
 code; its retired Designer form no longer participates in the build. The shared
