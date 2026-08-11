@@ -814,7 +814,10 @@ function Assert-Stage {
     }
     Assert-PeMachine -Path (Join-Path $Stage '32\SbieDll.dll') -ExpectedMachine 0x014c -ExpectedName 'Win32'
     if ($TargetArchitecture -eq 'ARM64') {
-        Assert-PeMachine -Path (Join-Path $Stage '64\SbieDll.dll') -ExpectedMachine 0xa641 -ExpectedName 'ARM64EC'
+        # ARM64EC is the x64-compatible hybrid payload.  MSVC deliberately
+        # emits the AMD64 PE machine value for this image; 0xaa64 belongs to
+        # the native ARM64 payload checked above.
+        Assert-PeMachine -Path (Join-Path $Stage '64\SbieDll.dll') -ExpectedMachine 0x8664 -ExpectedName 'ARM64EC x64-compatible PE'
     }
     Write-Phase 'verify' ('Stage contract passed for {0}: explicit-files={1}, crt-files={2}.' -f $TargetArchitecture, $required.Count, $crtFiles.Count)
 }

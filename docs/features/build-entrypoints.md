@@ -52,6 +52,13 @@ archives in that set; passing them again as `--modules` makes `aqtinstall`
 reject the official metadata before installation, so the helper deliberately
 does not duplicate those selectors.
 
+The ARM64 package contains two Sandboxie DLL payloads: the native `SbieDll.dll`
+is checked as ARM64 (`0xaa64`), while `64/SbieDll.dll` is the ARM64EC hybrid
+payload used by x64 processes. The MSVC ARM64EC linker emits the AMD64 PE
+machine value (`0x8664`) for that hybrid image, so the artifact contract checks
+the path and its hybrid-compatible PE value rather than incorrectly requiring
+the distinct `IMAGE_FILE_MACHINE_ARM64EC` header value.
+
 Run `node scripts/validate-unsigned-packaging.mjs --self-test` to verify the
 permanent unsigned invariant and prove that representative signing directives,
 executables, inputs, included Inno scripts, signed-uninstaller and file-signing

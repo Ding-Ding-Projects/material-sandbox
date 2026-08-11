@@ -166,7 +166,11 @@ for (const relative of architecture === 'x64' ? ['libssl-3-x64.dll', 'libcrypto-
   assertMachine(root, relative, targetMachine, architecture);
 }
 assertMachine(root, '32/SbieDll.dll', 0x014c, 'Win32');
-if (architecture === 'ARM64') assertMachine(root, '64/SbieDll.dll', 0xa641, 'ARM64EC');
+// ARM64EC is the x64-compatible hybrid payload loaded by x64 processes on an
+// ARM64 system.  The MSVC ARM64EC linker intentionally keeps the AMD64 PE
+// machine value (0x8664); the ARM64 native payload above is the one that must
+// carry 0xaa64.  Checking for 0xa641 here rejects the real compiler output.
+if (architecture === 'ARM64') assertMachine(root, '64/SbieDll.dll', 0x8664, 'ARM64EC x64-compatible PE');
 
 const files = [];
 for (const relative of [...required, ...crtFiles]) {
