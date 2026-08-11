@@ -61,8 +61,12 @@ if not defined build_arch (
 if not defined SBIE_TOOLCHAIN_READY (
   call :load_vs_environment || exit /b 6
 )
-if not exist "%qt_host_path%\bin\qmake.exe" (
-  echo [qt] Missing host qmake at "%qt_host_path%\bin\qmake.exe".
+set "qt_host_qmake="
+if exist "%qt_host_path%\bin\qmake.exe" set "qt_host_qmake=%qt_host_path%\bin\qmake.exe"
+if not defined qt_host_qmake if exist "%qt_host_path%\bin\qmake.bat" set "qt_host_qmake=%qt_host_path%\bin\qmake.bat"
+if not defined qt_host_qmake if exist "%qt_host_path%\bin\qmake6.exe" set "qt_host_qmake=%qt_host_path%\bin\qmake6.exe"
+if not defined qt_host_qmake (
+  echo [qt] Missing host qmake under "%qt_host_path%\bin". Expected qmake.exe, qmake.bat, or qmake6.exe.
   exit /b 3
 )
 if not exist "%jom%" (
@@ -90,7 +94,7 @@ mkdir "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
 IF %ERRORLEVEL% NEQ 0 goto :error
 cd /d "%~dp0Build_M3PageNavigationHostTests_%build_arch%"
 
-"%qt_host_path%\bin\qmake.exe" "%~dp0SandMan\Tests\M3PageNavigationHostTests.pro" %qt_params%
+call "%qt_host_qmake%" "%~dp0SandMan\Tests\M3PageNavigationHostTests.pro" %qt_params%
 IF %ERRORLEVEL% NEQ 0 goto :error
 "%jom%" -f Makefile.Release -j 8
 IF %ERRORLEVEL% NEQ 0 goto :error
@@ -172,7 +176,7 @@ set "build_dir=%~dp0%~1"
 if not exist "%build_dir%\." mkdir "%build_dir%"
 if errorlevel 1 exit /b 1
 pushd "%build_dir%"
-"%qt_host_path%\bin\qmake.exe" "%~2" %qt_params%
+call "%qt_host_qmake%" "%~2" %qt_params%
 if errorlevel 1 (
   popd
   exit /b 1

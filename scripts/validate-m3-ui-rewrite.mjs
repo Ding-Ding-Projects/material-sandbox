@@ -210,8 +210,13 @@ expect(qmakeBuild.includes('set "qt_host_path=%SBIE_QT_ROOT%\\%qt6_version%\\msv
   'ARM64 qmake uses the separately installed x64 host Qt tools');
 expect(qmakeBuild.includes('set "qt_host_path=%SBIE_QT_ROOT%\\%qt_version%\\msvc2022_64"'),
   'x64 qmake host path is assigned without relying on block-time variable expansion');
-expect(qmakeBuild.includes('"%qt_host_path%\\bin\\qmake.exe"'),
-  'qmake invocation is routed through the host Qt installation for cross-compiled targets');
+expect(qmakeBuild.includes('set "qt_host_qmake="') &&
+  qmakeBuild.includes('set "qt_host_qmake=%qt_host_path%\\bin\\qmake.exe"') &&
+  qmakeBuild.includes('set "qt_host_qmake=%qt_host_path%\\bin\\qmake.bat"') &&
+  qmakeBuild.includes('set "qt_host_qmake=%qt_host_path%\\bin\\qmake6.exe"'),
+  'qmake resolves the host Qt executable or relocatable wrapper across supported Qt packages');
+expect((qmakeBuild.match(/call "%qt_host_qmake%"/g) || []).length >= 2,
+  'all qmake invocations use the checked host-tool resolver');
 
 const pageHostLaunch = 'release\\M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt';
 const runtimePath = 'set "PATH=%qt_path%\\bin;%~dp0bin\\%build_arch%\\Release;%PATH%"';
@@ -232,7 +237,7 @@ expect(!hasRunScopedQtRuntime(qmakeBuild.replace(runtimePath, 'rem runtime path 
 
 const hasFreshPageHostBuild = source => {
   const cleanIndex = source.indexOf('rmdir /S /Q "%~dp0Build_M3PageNavigationHostTests_%build_arch%"');
-  const qmakeIndex = source.indexOf('"%qt_host_path%\\bin\\qmake.exe" "%~dp0SandMan\\Tests\\M3PageNavigationHostTests.pro"');
+  const qmakeIndex = source.indexOf('call "%qt_host_qmake%" "%~dp0SandMan\\Tests\\M3PageNavigationHostTests.pro"');
   const jomIndex = source.indexOf('"%jom%" -f Makefile.Release -j 8', qmakeIndex);
   const qmakeExitIndex = source.indexOf('IF %ERRORLEVEL% NEQ 0 goto :error', qmakeIndex);
   const launchIndex = source.indexOf(pageHostLaunch, qmakeIndex);
