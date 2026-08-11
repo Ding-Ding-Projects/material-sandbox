@@ -843,20 +843,26 @@ function Assert-PeVersion {
     return $actual.ToString()
 }
 
+function Test-InnoSetupVersion {
+    param([string]$Version)
+    $normalized = ([string]$Version).Trim()
+    return $normalized -eq '6.7.3' -or $normalized -like '6.7.3.*'
+}
+
 function Ensure-InnoSetup {
     $target = Join-Path $script:ToolRoot 'inno-setup\6.7.3'
     $iscc = Join-Path $target 'ISCC.exe'
     if (Test-Path -LiteralPath $iscc -PathType Leaf) {
-        $version = [Diagnostics.FileVersionInfo]::GetVersionInfo($iscc).FileVersion
-        if ($version -like '6.7.3.*') { return $iscc }
+        $version = ([string][Diagnostics.FileVersionInfo]::GetVersionInfo($iscc).FileVersion).Trim()
+        if (Test-InnoSetupVersion -Version $version) { return $iscc }
         # Inno Setup's compiler binaries intentionally carry a 0.0.0.0 file
         # version.  The pinned installer records its real version on the
         # bundled uninstaller, so use that stable product marker when ISCC's
         # own version resource is blank.
         $uninstaller = Join-Path $target 'unins000.exe'
         if (Test-Path -LiteralPath $uninstaller -PathType Leaf) {
-            $uninstallerVersion = [Diagnostics.FileVersionInfo]::GetVersionInfo($uninstaller).ProductVersion
-            if ($uninstallerVersion -eq '6.7.3' -or $uninstallerVersion -like '6.7.3.*') { return $iscc }
+            $uninstallerVersion = ([string][Diagnostics.FileVersionInfo]::GetVersionInfo($uninstaller).ProductVersion).Trim()
+            if (Test-InnoSetupVersion -Version $uninstallerVersion) { return $iscc }
         }
     }
     $installer = Get-PinnedDownload -Pin $script:Pins.InnoSetup
@@ -868,13 +874,13 @@ function Ensure-InnoSetup {
     )
     Invoke-CommandFile -Lines $lines -Description ('Installing pinned Inno Setup {0} in the user-scoped toolchain.' -f $script:Pins.InnoSetup.Version)
     if (-not (Test-Path -LiteralPath $iscc -PathType Leaf)) { throw ('Inno Setup did not produce {0}.' -f $iscc) }
-    $version = [Diagnostics.FileVersionInfo]::GetVersionInfo($iscc).FileVersion
-    if ($version -notlike '6.7.3.*') {
+    $version = ([string][Diagnostics.FileVersionInfo]::GetVersionInfo($iscc).FileVersion).Trim()
+    if (-not (Test-InnoSetupVersion -Version $version)) {
         $uninstaller = Join-Path $target 'unins000.exe'
         $uninstallerVersion = if (Test-Path -LiteralPath $uninstaller -PathType Leaf) {
-            [Diagnostics.FileVersionInfo]::GetVersionInfo($uninstaller).ProductVersion
+            ([string][Diagnostics.FileVersionInfo]::GetVersionInfo($uninstaller).ProductVersion).Trim()
         } else { '' }
-        if ($uninstallerVersion -ne '6.7.3' -and $uninstallerVersion -notlike '6.7.3.*') {
+        if (-not (Test-InnoSetupVersion -Version $uninstallerVersion)) {
             throw ('Inno Setup version mismatch at {0}: ISCC={1}; uninstaller={2}.' -f $iscc, $version, $uninstallerVersion)
         }
     }
@@ -885,6 +891,12 @@ function Invoke-SelfTest {
     $checks = 0
     $version = Get-VersionFromText -Text "#define VERSION_MJR 1`n#define VERSION_MIN 18`n#define VERSION_REV 2`n#define VERSION_UPD 0`n"
     if ($version.Display -ne '1.18.2' -or $version.Binary -ne '1.18.2.0') { throw 'Version parsing self-test failed.' }; $checks++
+    foreach ($fixture in @(
+        @{ Value = '6.7.3   '; Expected = $true },
+        @{ Value = '6.7.2   '; Expected = $false }
+    )) {
+        if ((Test-InnoSetupVersion -Version $fixture.Value) -ne $fixture.Expected) { throw 'Inno Setup padded-version self-test failed.' }; $checks++
+    }
     foreach ($bad in @(
         "#define VERSION_MJR 1`n#define VERSION_MIN 18`n#define VERSION_REV 2`n",
         "#define VERSION_MJR 1`n#define VERSION_MJR 2`n#define VERSION_MIN 18`n#define VERSION_REV 2`n#define VERSION_UPD 0`n",
