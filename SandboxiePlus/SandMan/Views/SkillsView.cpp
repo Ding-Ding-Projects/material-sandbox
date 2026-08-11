@@ -6,19 +6,18 @@
 #include <QDir>
 #include <QApplication>
 #include <QClipboard>
-#include <QDesktopServices>
 #include <QFileInfo>
 #include <QHeaderView>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPlainTextEdit>
 #include <QPushButton>
 #include <QTreeWidget>
-#include <QUrl>
 #include <QVBoxLayout>
 
 CSkillsView::CSkillsView(const QString& repositoryRoot, QWidget* parent)
     : QWidget(parent), m_repository(repositoryRoot), m_search(new CM3SearchField(this)),
-      m_state(new QLabel(this)), m_tree(new QTreeWidget(this))
+      m_state(new QLabel(this)), m_tree(new QTreeWidget(this)), m_reader(new QPlainTextEdit(this))
 {
     setObjectName(QStringLiteral("skillsView"));
     setProperty("memoryOwned", true);
@@ -53,10 +52,19 @@ CSkillsView::CSkillsView(const QString& repositoryRoot, QWidget* parent)
     m_tree->setAccessibleName(tr("Installed skills"));
     root->addWidget(m_tree, 1);
 
+    m_reader->setObjectName(QStringLiteral("skillDocumentReader"));
+    m_reader->setReadOnly(true);
+    m_reader->setLineWrapMode(QPlainTextEdit::NoWrap);
+    m_reader->setProperty("m3Monospace", true);
+    m_reader->setAccessibleName(tr("Selected skill documentation"));
+    m_reader->setMinimumHeight(160);
+    root->addWidget(m_reader, 1);
+
     auto* actions = new QHBoxLayout;
     auto* refreshButton = new QPushButton(tr("Refresh"), this);
     refreshButton->setProperty("m3", QStringLiteral("tonal"));
-    auto* openButton = new QPushButton(tr("Open SKILL.md"), this);
+    auto* openButton = new QPushButton(tr("View SKILL.md here"), this);
+    openButton->setObjectName(QStringLiteral("skillViewHereButton"));
     auto* reinstallButton = new QPushButton(tr("Copy reinstall command"), this);
     reinstallButton->setProperty("m3", QStringLiteral("filled"));
     actions->addWidget(refreshButton);
@@ -70,6 +78,7 @@ CSkillsView::CSkillsView(const QString& repositoryRoot, QWidget* parent)
     connect(openButton, &QPushButton::clicked, this, &CSkillsView::openSelected);
     connect(reinstallButton, &QPushButton::clicked, this, &CSkillsView::copyReinstallInstruction);
     connect(m_tree, &QTreeWidget::itemDoubleClicked, this, [this](QTreeWidgetItem*, int) { openSelected(); });
+    connect(m_tree, &QTreeWidget::currentItemChanged, this, [this] { openSelected(); });
     refresh();
 }
 
@@ -82,6 +91,7 @@ void CSkillsView::setRepositoryRoot(const QString& root)
 void CSkillsView::refresh()
 {
     m_tree->clear();
+    m_reader->clear();
     const auto skills = m_repository.list(QStringLiteral("skills"));
     if (!skills.ok()) {
         m_state->setText(tr("Skills unavailable: %1").arg(skills.message));
@@ -92,14 +102,13 @@ void CSkillsView::refresh()
         if (!entry.directory)
             continue;
         const QString relative = entry.relativePath + QStringLiteral("/SKILL.md");
-        CLocalMemoryRepository::Error error = CLocalMemoryRepository::NoError;
-        const QString skillPath = m_repository.safeExistingPath(relative, &error);
-        if (skillPath.isEmpty())
+        const auto document = m_repository.readText(relative);
+        if (!document.ok())
             continue;
         auto* item = new QTreeWidgetItem(m_tree);
         item->setText(0, entry.name);
         item->setText(1, tr("Owned"));
-        item->setText(2, QDir::toNativeSeparators(skillPath));
+        item->setText(2, QDir::toNativeSeparators(document.absolutePath));
         item->setText(3, tr("Installed"));
         item->setData(0, Qt::UserRole, relative);
         ++count;
@@ -128,10 +137,11 @@ QString CSkillsView::selectedRelativePath() const
 void CSkillsView::openSelected()
 {
     const QString relative = selectedRelativePath();
-    CLocalMemoryRepository::Error error = CLocalMemoryRepository::NoError;
-    const QString path = relative.isEmpty() ? QString() : m_repository.safeExistingPath(relative, &error);
-    if (!path.isEmpty())
-        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+    const auto document = relative.isEmpty() ? CLocalMemoryRepository::TextResult()
+                                             : m_repository.readText(relative);
+    m_reader->setPlainText(document.ok() ? document.text : document.message);
+    if (!relative.isEmpty())
+        m_reader->setFocus(Qt::OtherFocusReason);
 }
 
 void CSkillsView::copyReinstallInstruction()

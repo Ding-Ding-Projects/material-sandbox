@@ -4,7 +4,6 @@
 
 #include <QDir>
 #include <QSet>
-#include <QDesktopServices>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QHBoxLayout>
@@ -15,7 +14,6 @@
 #include <QPushButton>
 #include <QSaveFile>
 #include <QSplitter>
-#include <QUrl>
 #include <QVBoxLayout>
 
 CMemoryInventoryView::CMemoryInventoryView(const QString& repositoryRoot, QWidget* parent)
@@ -55,7 +53,8 @@ CMemoryInventoryView::CMemoryInventoryView(const QString& repositoryRoot, QWidge
     auto* actions = new QHBoxLayout;
     auto* refreshButton = new QPushButton(tr("Refresh"), this);
     refreshButton->setProperty("m3", QStringLiteral("tonal"));
-    auto* openButton = new QPushButton(tr("Open in editor"), this);
+    auto* openButton = new QPushButton(tr("View here"), this);
+    openButton->setObjectName(QStringLiteral("memoryViewHereButton"));
     auto* exportButton = new QPushButton(tr("Export…"), this);
     exportButton->setProperty("m3", QStringLiteral("filled"));
     actions->addWidget(refreshButton);
@@ -81,13 +80,12 @@ void CMemoryInventoryView::setRepositoryRoot(const QString& root)
 
 void CMemoryInventoryView::addIfPresent(const QString& relativePath)
 {
-    CLocalMemoryRepository::Error error = CLocalMemoryRepository::NoError;
-    const QString path = m_repository.safeExistingPath(relativePath, &error);
-    if (path.isEmpty() || !QFileInfo(path).isFile())
+    const auto document = m_repository.readText(relativePath);
+    if (!document.ok())
         return;
     auto* item = new QListWidgetItem(QFileInfo(relativePath).fileName(), m_files);
     item->setData(Qt::UserRole, relativePath);
-    item->setToolTip(QDir::toNativeSeparators(path));
+    item->setToolTip(QDir::toNativeSeparators(document.absolutePath));
     item->setSizeHint(QSize(0, 48));
 }
 
@@ -165,11 +163,8 @@ void CMemoryInventoryView::applyFilter(QString query, bool, QRegularExpression e
 
 void CMemoryInventoryView::openCurrentFile()
 {
-    const QString relative = currentRelativePath();
-    CLocalMemoryRepository::Error error = CLocalMemoryRepository::NoError;
-    const QString path = relative.isEmpty() ? QString() : m_repository.safeExistingPath(relative, &error);
-    if (!path.isEmpty())
-        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+    showCurrentFile();
+    m_reader->setFocus(Qt::OtherFocusReason);
 }
 
 void CMemoryInventoryView::exportCurrentFile()

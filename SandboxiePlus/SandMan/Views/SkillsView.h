@@ -6,6 +6,7 @@
 
 class CM3SearchField;
 class QLabel;
+class QPlainTextEdit;
 class QTreeWidget;
 class QTreeWidgetItem;
 
@@ -31,4 +32,5 @@ private:
     CM3SearchField* m_search;
     QLabel* m_state;
     QTreeWidget* m_tree;
+    QPlainTextEdit* m_reader;
 };
