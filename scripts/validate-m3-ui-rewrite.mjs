@@ -17,7 +17,8 @@ const read = relative => {
     failures.push(`missing: ${relative}`);
     return '';
   }
-  return fs.readFileSync(absolute, 'utf8');
+  // Keep source-contract assertions independent of the checkout's CRLF/LF mode.
+  return fs.readFileSync(absolute, 'utf8').replace(/\r\n/g, '\n');
 };
 const expect = (condition, message) => {
   (condition ? passes : failures).push(message);
