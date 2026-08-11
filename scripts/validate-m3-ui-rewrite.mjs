@@ -104,8 +104,16 @@ expect(search.includes('M3RegexExecutionPolicy::compile(pattern, flags, error)')
 expect(search.includes('M3RegexExecutionPolicy::invalidExpression()'), 'invalid search state cannot expose an empty match-all expression');
 expect(search.includes('void CM3SearchField::setAccessibleName') && search.includes('m_lineEdit->setAccessibleName(fieldName)'), 'search accessible name is forwarded to the focused editor');
 expect(search.includes('void CM3SearchField::setAccessibleDescription') && search.includes('m_lineEdit->setAccessibleDescription(description)'), 'search accessible description includes the regex mode state');
-expect(search.includes('emit escapePressed()') && search.includes('execAnchored(m_regexButton)') && search.includes('m3ResumeMenuSearch'), 'menu-originated builder preserves Escape and menu restoration APIs');
-expect(regexHeader.includes('int execAnchored(QWidget* origin);'), 'regex builder keeps the menu-safe modal entry point');
+expect(search.includes('void CM3SearchField::paintEvent') && search.includes('M3Tokens::colors(dark).error') && search.includes('m_lineEdit->hasFocus()'), 'search capsule paints Material error and focus outlines');
+expect(search.includes('m_clearButton->installEventFilter(this)') && search.includes('m_regexButton->installEventFilter(this)') && search.includes('setProperty("m3Focus", focused)'), 'search action focus updates the capsule state');
+expect(search.includes('setProperty("m3Invalid", invalid)') && search.includes('m_regexButton->setProperty("m3Invalid", invalid)'), 'invalid regex state reaches the pill and its builder action');
+expect(search.includes('openAnchored(m_regexButton, m_lineEdit)') && search.includes('execAnchored(m_regexButton, m_lineEdit)') && search.includes('popupAncestor->windowType() != Qt::Popup'), 'builder cancellation returns focus to the originating search editor without changing its anchor');
+expect(search.includes('restoreSearchStateAfterCancellation') && search.includes('QPointer<CM3SearchField> self(this)') && search.includes('QPointer<QWidget> popupGuard(popupAncestor)'), 'cancellation restores the regex action state and preserves popup lifetime across nested execution');
+expect(search.includes('if (popupGuard)\n        popupGuard->setProperty("m3ChildDialogActive", false);\n    if (!self || !popupGuard)'), 'nested popup cleanup clears the child-dialog state before a retired search field can return');
+expect(search.includes('void CM3SearchField::clearSearch()') && search.includes('m_lineEdit->clear();') && search.includes('focusEditor();'), 'clearing a query returns keyboard focus to the editor');
+expect(search.includes('emit escapePressed()') && search.includes('execAnchored(m_regexButton, m_lineEdit)') && search.includes('m3ResumeMenuSearch'), 'menu-originated builder preserves Escape and menu restoration APIs');
+expect(regexHeader.includes('int execAnchored(QWidget* origin, QWidget* focusReturnTarget = nullptr);') && regexHeader.includes('QPointer<QWidget> m_focusReturnTarget;'), 'regex builder keeps the menu-safe modal entry point with an explicit focus-return target');
+expect(regexBuilder.includes('m_focusReturnTarget = focusReturnTarget ? focusReturnTarget : origin;') && regexBuilder.includes('if (!m_restoreOriginFocus || !m_focusReturnTarget)'), 'regex builder restores the requested focus target after cancellation');
 expect(count(regexBuilder, 'M3DialogHost::Install(this)') === 1 && !regexBuilder.includes('titleRow'), 'regex builder installs exactly one shared M3 title host');
 expect(!regexBuilder.includes('FramelessWindowHint'), 'regex builder delegates frameless chrome to the shared title host');
 expect(regexBuilder.includes('BoundedPlainTextEdit') && regexBuilder.includes('not inserted because it would exceed'), 'oversized sample paste and IME input are rejected rather than truncated');
@@ -128,6 +136,8 @@ expect(count(project, 'Include="..\\MiscHelpers\\Common\\M3Tokens.cpp"') === 1, 
 expect(project.includes('Include="..\\MiscHelpers\\Common\\MaterialTheme.cpp">\n      <PrecompiledHeader>NotUsing</PrecompiledHeader>') && project.includes('Include="..\\MiscHelpers\\Common\\M3Tokens.cpp">\n      <PrecompiledHeader>NotUsing</PrecompiledHeader>'), 'MSVC project disables PCH for external M3 sources without stdafx');
 expect(project.includes('Windows\\M3RegexExecutionPolicy.h') && project.includes('Windows\\M3RegexExecutionPolicy.cpp'), 'MSVC project registers the shared regex policy exactly once');
 expect(projectFilters.includes('Windows\\M3RegexExecutionPolicy.h') && projectFilters.includes('Windows\\M3RegexExecutionPolicy.cpp') && projectFilters.includes('Windows\\RegexBuilderDialog.cpp'), 'MSVC filters expose the M3 semantic-port sources for IDE review');
+const materialTheme = read(`${common}/MaterialTheme.cpp`);
+expect(materialTheme.includes('QWidget[m3SearchSurface="true"] QLineEdit#m3SearchInput') && materialTheme.includes('QToolButton#m3RegexBuilderButton[m3Invalid="true"]'), 'Material theme renders the search capsule interior and invalid builder action');
 
 const workspace = read(`${base}/Windows/M3WorkspaceHost.cpp`);
 expect(workspace.includes('takeCentralWidget'), 'workspace preserves and rehosts existing central view');
@@ -197,8 +207,17 @@ for (const source of ['M3DialogHost.cpp', 'M3RegexExecutionPolicy.cpp']) {
   expect(pageHostVisualStudioProject.includes(`..\\Windows\\${source}`), `Visual Studio page-host tests compile ${source}`);
   expect(pageHostVisualStudioFilters.includes(`..\\Windows\\${source}`), `Visual Studio page-host test filters expose ${source}`);
 }
+expect(pageHostTestProject.includes('../Windows/M3Menu.cpp') && pageHostTestProject.includes('../Windows/M3Menu.h'), 'page-host QtTest links the native menu restoration path');
+expect(pageHostTestProject.includes('../../MiscHelpers/Common/MaterialTheme.cpp') && pageHostTestProject.includes('../../MiscHelpers/Common/M3Tokens.cpp'), 'page-host QtTest links the Material paint sources');
 expect(pageHostVisualStudioProject.includes('<QtModules>core;gui;network;widgets;testlib</QtModules>'), 'page-host QtTest target is wired for Visual Studio');
 expect(pageHostVisualStudioProject.includes('<AdditionalDependencies>MiscHelpers.lib;'), 'Visual Studio page-host tests link the production state manager');
+expect(pageHostVisualStudioProject.includes('..\\Windows\\M3RegexExecutionPolicy.cpp') && pageHostVisualStudioProject.includes('..\\Windows\\M3DialogHost.cpp'), 'Visual Studio page-host QtTest compiles the search policy and shared dialog host');
+expect(pageHostVisualStudioProject.includes('..\\Windows\\M3Menu.cpp') && pageHostVisualStudioProject.includes('<QtMoc Include="..\\Windows\\M3Menu.h" />'), 'Visual Studio page-host QtTest compiles and MOCs the native menu restoration path');
+expect(pageHostVisualStudioProject.includes('Include="..\\..\\MiscHelpers\\Common\\MaterialTheme.cpp">\n      <PrecompiledHeader>NotUsing</PrecompiledHeader>') && pageHostVisualStudioProject.includes('Include="..\\..\\MiscHelpers\\Common\\M3Tokens.cpp">\n      <PrecompiledHeader>NotUsing</PrecompiledHeader>'), 'Visual Studio page-host QtTest compiles the Material paint sources without PCH');
+expect(pageHostVisualStudioFilters.includes('..\\Windows\\M3Menu.cpp') && pageHostVisualStudioFilters.includes('..\\Windows\\M3Menu.h'), 'Visual Studio page-host test filters expose the native menu restoration path');
+expect(pageHostVisualStudioFilters.includes('..\\..\\MiscHelpers\\Common\\MaterialTheme.cpp') && pageHostVisualStudioFilters.includes('..\\..\\MiscHelpers\\Common\\M3Tokens.cpp'), 'Visual Studio page-host test filters expose the Material paint sources');
+expect(pageHostTests.includes('searchCapsuleStatesAreVisibleAndAccessible') && pageHostTests.includes('searchBuilderCancellationReturnsFocusToEditor') && pageHostTests.includes('nativeMenuBuilderCancellationPreservesFilterAndFocus'), 'page-host QtTest covers capsule states and cancel/Escape focus return');
+expect(pageHostTests.includes('m3ResumeMenuSearch') && pageHostTests.includes('m3ChildDialogActive') && pageHostTests.includes('QVERIFY2(dismissed && !deadline'), 'page-host QtTest proves native menu restoration with a bounded nested-dialog watchdog');
 expect(visualStudioSolution.includes('SandMan\\Tests\\M3PageNavigationHostTests.vcxproj'), 'page-host QtTest target is present in the Visual Studio solution');
 expect(qmakeBuild.includes('SandMan\\Tests\\M3PageNavigationHostTests.pro'), 'x64 qmake build compiles the page-host QtTest target');
 expect(qmakeBuild.includes('M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt'), 'x64 qmake build runs the page-host lifecycle suite');

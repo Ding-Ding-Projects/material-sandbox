@@ -1,5 +1,9 @@
 #include "../Windows/M3PageNavigationHost.h"
+#include "../Windows/M3Menu.h"
+#include "../Windows/M3SearchField.h"
+#include "../Windows/RegexBuilderDialog.h"
 #include "../../MiscHelpers/Common/Settings.h"
+#include "../../MiscHelpers/Common/MaterialTheme.h"
 #include <QtWidgets>
 #include "../../MiscHelpers/Common/SettingsWidgets.h"
 #include "../../MiscHelpers/Common/TabStateManager.h"
@@ -300,6 +304,9 @@ private slots:
     void settingsOptionTreeRebindSurvivesDeferredDeletes();
     void optionsNormalRefreshSurvivesDeferredDelete();
     void optionsOptionTreeRebindSurvivesDeferredDelete();
+    void searchCapsuleStatesAreVisibleAndAccessible();
+    void searchBuilderCancellationReturnsFocusToEditor();
+    void nativeMenuBuilderCancellationPreservesFilterAndFocus();
 };
 
 void M3PageNavigationHostTests::settingsNormalRebindSurvivesDeferredDelete()
@@ -492,6 +499,167 @@ void M3PageNavigationHostTests::optionsOptionTreeRebindSurvivesDeferredDelete()
                                         settings.settings,
                                         treeStateKey);
                        });
+}
+
+void M3PageNavigationHostTests::searchCapsuleStatesAreVisibleAndAccessible()
+{
+    MaterialTheme::Apply(qApp, false);
+
+    QDialog dialog;
+    auto* root = new QVBoxLayout(&dialog);
+    auto* search = new CM3SearchField(&dialog);
+    auto* focusParking = new QToolButton(&dialog);
+    focusParking->setText(QStringLiteral("Park focus"));
+    search->setAccessibleName(QStringLiteral("Sandbox search"));
+    root->addWidget(search);
+    root->addWidget(focusParking);
+    showFixture(dialog);
+
+    auto* clear = search->findChild<QToolButton*>(QStringLiteral("m3SearchClearButton"));
+    auto* regex = search->findChild<QToolButton*>(QStringLiteral("m3RegexBuilderButton"));
+    QVERIFY(clear);
+    QVERIFY(regex);
+
+    search->setState(QStringLiteral("a"), QStringLiteral("a"), QStringLiteral("i"), true);
+    QVERIFY(search->isValid());
+    focusParking->setFocus(Qt::OtherFocusReason);
+    QTRY_VERIFY(QApplication::focusWidget() == focusParking);
+    const QImage validUnfocusedCapsule = search->grab().toImage();
+    const QImage validRegexAction = regex->grab().toImage();
+    search->focusEditor();
+    QTRY_VERIFY(QApplication::focusWidget() == search->lineEdit());
+    QVERIFY(search->property("m3Focus").toBool());
+    QVERIFY(validUnfocusedCapsule != search->grab().toImage());
+
+    search->setState(QStringLiteral("("), QStringLiteral("("), QStringLiteral("i"), true);
+    QVERIFY(!search->isValid());
+    QVERIFY(!search->expression().isValid());
+    QVERIFY(search->property("m3Invalid").toBool());
+    QVERIFY(search->lineEdit()->property("m3Invalid").toBool());
+    QVERIFY(clear->property("m3Invalid").toBool());
+    QVERIFY(regex->property("m3Invalid").toBool());
+    QVERIFY(search->accessibleDescription().contains(QStringLiteral("Invalid regular expression")));
+    QCoreApplication::processEvents(QEventLoop::AllEvents);
+    QVERIFY(validUnfocusedCapsule != search->grab().toImage());
+    QVERIFY(validRegexAction != regex->grab().toImage());
+    const QImage invalidRegexAction = regex->grab().toImage();
+    regex->setFocus(Qt::OtherFocusReason);
+    QTRY_VERIFY(regex->property("m3Focus").toBool());
+    QVERIFY(invalidRegexAction != regex->grab().toImage());
+
+    search->setQuery(QStringLiteral("clear me"));
+    QTest::mouseClick(clear, Qt::LeftButton);
+    QTRY_VERIFY(search->query().isEmpty());
+    QTRY_VERIFY(QApplication::focusWidget() == search->lineEdit());
+}
+
+void M3PageNavigationHostTests::searchBuilderCancellationReturnsFocusToEditor()
+{
+    QDialog dialog;
+    auto* root = new QVBoxLayout(&dialog);
+    auto* search = new CM3SearchField(&dialog);
+    root->addWidget(search);
+    showFixture(dialog);
+
+    auto* regex = search->findChild<QToolButton*>(QStringLiteral("m3RegexBuilderButton"));
+    QVERIFY(regex);
+    QTest::mouseClick(regex, Qt::LeftButton);
+    auto* builder = search->findChild<CRegexBuilderDialog*>(QStringLiteral("regexBuilderDialog"));
+    QTRY_VERIFY(builder && builder->isVisible());
+    auto* cancel = builder->findChild<QPushButton*>(QStringLiteral("regexCancelButton"));
+    QVERIFY(cancel);
+    QTest::mouseClick(cancel, Qt::LeftButton);
+    QTRY_VERIFY(!builder->isVisible());
+    QTRY_VERIFY(QApplication::focusWidget() == search->lineEdit());
+    QCOMPARE(regex->isChecked(), search->regexMode());
+
+    QTest::mouseClick(regex, Qt::LeftButton);
+    QTRY_VERIFY(builder->isVisible());
+    auto* pattern = builder->findChild<QLineEdit*>(QStringLiteral("regexPatternEdit"));
+    QVERIFY(pattern);
+    QTest::keyClick(pattern, Qt::Key_Escape);
+    QTRY_VERIFY(!builder->isVisible());
+    QTRY_VERIFY(QApplication::focusWidget() == search->lineEdit());
+    QCOMPARE(regex->isChecked(), search->regexMode());
+
+    QTest::keyClick(search->lineEdit(), Qt::Key_X);
+    QCOMPARE(search->query(), QStringLiteral("x"));
+}
+
+void M3PageNavigationHostTests::nativeMenuBuilderCancellationPreservesFilterAndFocus()
+{
+    CM3Menu::installGlobal(qApp);
+
+    QMenu menu;
+    menu.setTitle(QStringLiteral("Searchable actions"));
+    QAction* alpha = menu.addAction(QStringLiteral("Alpha action"));
+    QAction* beta = menu.addAction(QStringLiteral("Beta action"));
+    menu.ensurePolished();
+    menu.popup(QPoint(32, 32));
+    QTRY_VERIFY(menu.isVisible());
+
+    auto* search = menu.findChild<CM3SearchField*>(QStringLiteral("m3NativeMenuSearch"));
+    QTRY_VERIFY(search);
+    QTRY_VERIFY(QApplication::focusWidget() == search->lineEdit());
+    auto* regex = search->findChild<QToolButton*>(QStringLiteral("m3RegexBuilderButton"));
+    QVERIFY(regex);
+
+    search->setQuery(QStringLiteral("alpha"));
+    QTRY_VERIFY(alpha->isVisible());
+    QTRY_VERIFY(!beta->isVisible());
+
+    const auto dismissBuilder = [&menu, search, regex, alpha, beta](bool withEscape) {
+        bool sawNestedPopup = false;
+        bool dismissed = false;
+        bool deadline = false;
+        QTimer dismissTimer;
+        dismissTimer.setSingleShot(true);
+        QTimer breakerTimer;
+        breakerTimer.setSingleShot(true);
+        connect(&dismissTimer, &QTimer::timeout, &menu, [&] {
+            auto* builder = search->findChild<CRegexBuilderDialog*>(QStringLiteral("regexBuilderDialog"));
+            if (!builder || !builder->isVisible())
+                return;
+            sawNestedPopup = menu.property("m3ChildDialogActive").toBool();
+            if (withEscape) {
+                auto* pattern = builder->findChild<QLineEdit*>(QStringLiteral("regexPatternEdit"));
+                if (pattern) {
+                    dismissed = true;
+                    QTest::keyClick(pattern, Qt::Key_Escape);
+                }
+            } else {
+                auto* cancel = builder->findChild<QPushButton*>(QStringLiteral("regexCancelButton"));
+                if (cancel) {
+                    dismissed = true;
+                    QTest::mouseClick(cancel, Qt::LeftButton);
+                }
+            }
+        });
+        connect(&breakerTimer, &QTimer::timeout, &menu, [&] {
+            deadline = true;
+            if (auto* builder = search->findChild<CRegexBuilderDialog*>(QStringLiteral("regexBuilderDialog")))
+                builder->reject();
+        });
+        dismissTimer.start(10);
+        breakerTimer.start(1000);
+        QTest::mouseClick(regex, Qt::LeftButton);
+        dismissTimer.stop();
+        breakerTimer.stop();
+        QVERIFY2(dismissed && !deadline, "native menu builder cancellation did not complete through its requested control");
+        QVERIFY(sawNestedPopup);
+        QTRY_VERIFY(menu.isVisible());
+        QTRY_VERIFY(!menu.property("m3ResumeMenuSearch").toBool());
+        QTRY_VERIFY(QApplication::focusWidget() == search->lineEdit());
+        QCOMPARE(regex->isChecked(), search->regexMode());
+        QCOMPARE(search->query(), QStringLiteral("alpha"));
+        QVERIFY(alpha->isVisible());
+        QVERIFY(!beta->isVisible());
+    };
+
+    dismissBuilder(false);
+    dismissBuilder(true);
+    menu.close();
+    QTRY_VERIFY(!menu.isVisible());
 }
 
 QTEST_MAIN(M3PageNavigationHostTests)

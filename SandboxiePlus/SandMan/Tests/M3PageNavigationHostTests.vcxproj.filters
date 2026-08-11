@@ -18,7 +18,7 @@
     <ClCompile Include="..\Windows\M3PageNavigationHost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Windows\M3RegexExecutionPolicy.cpp">
+    <ClCompile Include="..\Windows\M3Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Windows\M3SearchField.cpp">
@@ -27,9 +27,21 @@
     <ClCompile Include="..\Windows\RegexBuilderDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Windows\M3RegexExecutionPolicy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MiscHelpers\Common\MaterialTheme.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MiscHelpers\Common\M3Tokens.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Windows\M3DialogHost.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Windows\M3Menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Windows\M3RegexExecutionPolicy.h">
@@ -38,6 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="..\Windows\M3PageNavigationHost.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\Windows\M3Menu.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="..\Windows\M3SearchField.h">

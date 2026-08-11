@@ -171,6 +171,11 @@ CRegexBuilderDialog::CRegexBuilderDialog(QWidget* parent)
     setMinimumSize(0, 0);
     resize(kDialogWidth, 640);
 
+    // Install the shared title host before adding builder content. This keeps
+    // the dialog on one layout tree and prevents an already-owned layout from
+    // being wrapped a second time when the dialog is shown.
+    M3DialogHost::Install(this);
+
     auto* content = new QWidget(this);
     content->setObjectName(QStringLiteral("regexBuilderContent"));
     content->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -335,10 +340,11 @@ CRegexBuilderDialog::CRegexBuilderDialog(QWidget* parent)
     scroller->setFrameShape(QFrame::NoFrame);
     scroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scroller->setWidget(content);
-    auto* rootLayout = new QVBoxLayout(this);
-    rootLayout->setContentsMargins(0, 0, 0, 0);
-    rootLayout->setSpacing(0);
-    rootLayout->addWidget(scroller);
+    auto* shell = findChild<QWidget*>(QStringLiteral("m3DialogShell"));
+    auto* shellLayout = shell ? qobject_cast<QVBoxLayout*>(shell->layout()) : nullptr;
+    Q_ASSERT(shellLayout);
+    if (shellLayout)
+        shellLayout->addWidget(scroller);
 
     setStyleSheet(QStringLiteral(
         "QDialog#regexBuilderDialog, QWidget#regexBuilderContent { background: palette(window); color: palette(window-text); }"
@@ -374,9 +380,6 @@ CRegexBuilderDialog::CRegexBuilderDialog(QWidget* parent)
     auto* applyShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Return), this);
     connect(applyShortcut, &QShortcut::activated, this, &CRegexBuilderDialog::applyPattern);
 
-    // The application-level event filter is intentionally idempotent.  Installing
-    // this host here gives the builder exactly one title/close surface.
-    M3DialogHost::Install(this);
     if (auto* closeButton = findChild<QPushButton*>(QStringLiteral("m3DialogClose"))) {
         closeButton->setMinimumSize(kMinimumInteractiveTarget, kMinimumInteractiveTarget);
         closeButton->setAccessibleDescription(tr("Close the regular expression builder without changing the search field."));
@@ -414,11 +417,12 @@ void CRegexBuilderDialog::setState(const QString& plainText,
     updatePreview();
 }
 
-void CRegexBuilderDialog::openAnchored(QWidget* origin)
+void CRegexBuilderDialog::openAnchored(QWidget* origin, QWidget* focusReturnTarget)
 {
     if (!origin)
         return;
     m_origin = origin;
+    m_focusReturnTarget = focusReturnTarget ? focusReturnTarget : origin;
     m_restoreOriginFocus = true;
     m_userResized = false;
     watchOriginGeometry();
@@ -432,11 +436,12 @@ void CRegexBuilderDialog::openAnchored(QWidget* origin)
     m_patternEdit->setCursorPosition(m_patternEdit->text().size());
 }
 
-int CRegexBuilderDialog::execAnchored(QWidget* origin)
+int CRegexBuilderDialog::execAnchored(QWidget* origin, QWidget* focusReturnTarget)
 {
     if (!origin)
         return QDialog::Rejected;
     m_origin = origin;
+    m_focusReturnTarget = focusReturnTarget ? focusReturnTarget : origin;
     m_restoreOriginFocus = true;
     m_userResized = false;
     watchOriginGeometry();
@@ -630,12 +635,12 @@ void CRegexBuilderDialog::positionBesideOrigin()
 void CRegexBuilderDialog::restoreOriginFocus()
 {
     clearOriginGeometryWatchers();
-    if (!m_restoreOriginFocus || !m_origin)
+    if (!m_restoreOriginFocus || !m_focusReturnTarget)
         return;
-    const QPointer<QWidget> origin = m_origin;
-    QTimer::singleShot(0, this, [origin] {
-        if (origin && origin->isVisible() && origin->isEnabled())
-            origin->setFocus(Qt::OtherFocusReason);
+    const QPointer<QWidget> focusReturnTarget = m_focusReturnTarget;
+    QTimer::singleShot(0, this, [focusReturnTarget] {
+        if (focusReturnTarget && focusReturnTarget->isVisible() && focusReturnTarget->isEnabled())
+            focusReturnTarget->setFocus(Qt::OtherFocusReason);
     });
 }
 
