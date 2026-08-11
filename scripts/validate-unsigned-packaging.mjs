@@ -13,6 +13,7 @@ const packagingFiles = [
   'Sandboxie/install/build.bat',
   'SandboxiePlus/install_jom.cmd',
   'SandboxiePlus/qmake_plus.cmd',
+  'scripts/windows-build-bootstrap.ps1',
 ];
 
 const expectedDriverConfigurations = [
@@ -66,6 +67,7 @@ export function unsignedPackagingFailures(sources) {
   }
 
   const installer = sources['build-installer.bat'];
+  const bootstrap = sources['scripts/windows-build-bootstrap.ps1'];
   const installerScript = sources['Installer/Sandboxie-Plus.iss'];
   const driverProject = sources['Sandboxie/core/drv/SboxDrv.vcxproj'];
   const legacyInstaller = sources['Sandboxie/install/build.bat'];
@@ -81,18 +83,27 @@ export function unsignedPackagingFailures(sources) {
   }
 
   for (const marker of [
-    'Sandboxie-Plus.iss',
-    'Get-AuthenticodeSignature',
-    'SBIE_UNSIGNED_INSTALLER',
-    '%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe',
-    '%SystemRoot%\\System32\\certutil.exe',
-    "Status -ne 'NotSigned'",
+    'windows-build-bootstrap.ps1',
+    '-Mode Installer',
     'permanently unsigned',
   ]) {
-    if (!installer.includes(marker)) failures.push(`build-installer.bat: missing unsigned contract marker ${marker}`);
+    if (!installer.includes(marker)) failures.push(`build-installer.bat: missing unsigned delegation marker ${marker}`);
   }
-  if (/TEMP_ISS|findstr\s+\/V/i.test(installer)) {
-    failures.push('build-installer.bat: must compile the canonical installer script directly');
+  for (const marker of [
+    "'Sandboxie-Plus.iss'",
+    'Get-AuthenticodeSignature',
+    "-ne 'NotSigned'",
+    'SignerCertificate',
+    'TimeStamperCertificate',
+    'Select-ExactlyOne',
+    "'^[0-9a-f]{64}$'",
+    'build-manifest.json',
+    'permanently unsigned',
+  ]) {
+    if (!bootstrap.includes(marker)) failures.push(`scripts/windows-build-bootstrap.ps1: missing unsigned contract marker ${marker}`);
+  }
+  if (/TEMP_ISS|findstr\s+\/V/i.test(`${installer}\n${bootstrap}`)) {
+    failures.push('installer entry points must compile the canonical installer script directly');
   }
   if (!/^\s*\[Setup\]\s*$/im.test(installerScript)) {
     failures.push('Installer/Sandboxie-Plus.iss: missing Setup section');
@@ -213,8 +224,8 @@ function selfTest(root) {
     },
     {
       name: 'missing unsigned proof',
-      file: 'build-installer.bat',
-      replace: ["Status -ne 'NotSigned'", "Status -ne 'FixtureState'"],
+      file: 'scripts/windows-build-bootstrap.ps1',
+      replace: ["-ne 'NotSigned'", "-ne 'FixtureState'"],
     },
     ...expectedDriverConfigurations.map((configuration) => ({
       name: `driver signing enabled for ${configuration}`,
