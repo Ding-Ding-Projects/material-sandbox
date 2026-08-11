@@ -849,6 +849,15 @@ function Ensure-InnoSetup {
     if (Test-Path -LiteralPath $iscc -PathType Leaf) {
         $version = [Diagnostics.FileVersionInfo]::GetVersionInfo($iscc).FileVersion
         if ($version -like '6.7.3.*') { return $iscc }
+        # Inno Setup's compiler binaries intentionally carry a 0.0.0.0 file
+        # version.  The pinned installer records its real version on the
+        # bundled uninstaller, so use that stable product marker when ISCC's
+        # own version resource is blank.
+        $uninstaller = Join-Path $target 'unins000.exe'
+        if (Test-Path -LiteralPath $uninstaller -PathType Leaf) {
+            $uninstallerVersion = [Diagnostics.FileVersionInfo]::GetVersionInfo($uninstaller).ProductVersion
+            if ($uninstallerVersion -eq '6.7.3' -or $uninstallerVersion -like '6.7.3.*') { return $iscc }
+        }
     }
     $installer = Get-PinnedDownload -Pin $script:Pins.InnoSetup
     New-Item -ItemType Directory -Force -Path $target | Out-Null
@@ -860,7 +869,15 @@ function Ensure-InnoSetup {
     Invoke-CommandFile -Lines $lines -Description ('Installing pinned Inno Setup {0} in the user-scoped toolchain.' -f $script:Pins.InnoSetup.Version)
     if (-not (Test-Path -LiteralPath $iscc -PathType Leaf)) { throw ('Inno Setup did not produce {0}.' -f $iscc) }
     $version = [Diagnostics.FileVersionInfo]::GetVersionInfo($iscc).FileVersion
-    if ($version -notlike '6.7.3.*') { throw ('Inno Setup version mismatch at {0}: {1}.' -f $iscc, $version) }
+    if ($version -notlike '6.7.3.*') {
+        $uninstaller = Join-Path $target 'unins000.exe'
+        $uninstallerVersion = if (Test-Path -LiteralPath $uninstaller -PathType Leaf) {
+            [Diagnostics.FileVersionInfo]::GetVersionInfo($uninstaller).ProductVersion
+        } else { '' }
+        if ($uninstallerVersion -ne '6.7.3' -and $uninstallerVersion -notlike '6.7.3.*') {
+            throw ('Inno Setup version mismatch at {0}: ISCC={1}; uninstaller={2}.' -f $iscc, $version, $uninstallerVersion)
+        }
+    }
     return $iscc
 }
 

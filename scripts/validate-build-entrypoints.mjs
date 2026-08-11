@@ -42,6 +42,7 @@ for (const marker of [
   'VERSION_UPD',
   'Select-ExactlyOne',
   'Get-AuthenticodeSignature',
+  'unins000.exe',
   '$output = & $FilePath @Arguments 2>&1',
   'Invoke-External leaked child output into its return value.',
   "-ne 'NotSigned'",
