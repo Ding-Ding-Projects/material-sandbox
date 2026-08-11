@@ -51,6 +51,10 @@ for (const marker of [
   'SBIE_INSTALL_STAGE',
   "'Sandboxie-Plus.iss'",
 ]) assertIncludes(helper, marker, 'bootstrap helper');
+if (helper.includes("'--modules', 'qtdeclarative', 'qttools'")) {
+  throw new Error('bootstrap helper must not pass Qt 6.8.3 base modules through --modules');
+}
+assertIncludes(helper, 'base-modules=qtdeclarative,qttools', 'Qt base-module provenance');
 
 const workflow = fs.readFileSync('.github/workflows/main.yml', 'utf8');
 if ((workflow.match(/name: Expose Qt host tools/g) || []).length !== 2) {

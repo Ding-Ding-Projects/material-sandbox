@@ -313,7 +313,7 @@ function Show-Plan {
         $pin = $entry.Value
         Write-Host ('PIN {0} version={1} sha256={2} source={3}' -f $entry.Key, $pin.Version, $pin.Sha256, $pin.Uri)
     }
-    Write-Host ('PIN Qt version={0} architectures=win64_msvc2022_64,win64_msvc2022_arm64_cross_compiled modules=qtdeclarative,qttools source=https://download.qt.io' -f $script:QtVersion)
+    Write-Host ('PIN Qt version={0} architectures=win64_msvc2022_64,win64_msvc2022_arm64_cross_compiled base-modules=qtdeclarative,qttools source=https://download.qt.io' -f $script:QtVersion)
     foreach ($command in (Get-BuildPlan -TargetArchitecture $TargetArchitecture)) {
         Write-Host ('BUILD {0}' -f $command)
     }
@@ -399,7 +399,10 @@ function Ensure-Qt {
     )
     $hostMissing = @(Get-MissingRelativeFiles -Root $hostRoot -RelativePaths $hostRequired)
     if ($hostMissing.Count -gt 0) {
-        $args = @('install-qt', '--outputdir', $script:QtRoot, '--base', 'https://download.qt.io', '--timeout', '30', '--external', $SevenZip, 'windows', 'desktop', $script:QtVersion, 'win64_msvc2022_64', '--modules', 'qtdeclarative', 'qttools')
+        # Qt 6.8.3 publishes qtdeclarative and qttools in the base desktop
+        # package set. Passing them again through --modules makes aqtinstall
+        # reject the repository metadata before downloading anything.
+        $args = @('install-qt', '--outputdir', $script:QtRoot, '--base', 'https://download.qt.io', '--timeout', '30', '--external', $SevenZip, 'windows', 'desktop', $script:QtVersion, 'win64_msvc2022_64')
         Invoke-External -FilePath $aqt -Arguments $args -Description ('Installing Qt {0} MSVC 2022 x64 from the official Qt repository.' -f $script:QtVersion)
     }
     $hostMissing = @(Get-MissingRelativeFiles -Root $hostRoot -RelativePaths $hostRequired)
@@ -422,7 +425,10 @@ function Ensure-Qt {
         )
         $armMissing = @(Get-MissingRelativeFiles -Root $armRoot -RelativePaths $armRequired)
         if ($armMissing.Count -gt 0) {
-            $args = @('install-qt', '--outputdir', $script:QtRoot, '--base', 'https://download.qt.io', '--timeout', '30', '--external', $SevenZip, 'windows', 'desktop', $script:QtVersion, 'win64_msvc2022_arm64_cross_compiled', '--modules', 'qtdeclarative', 'qttools')
+            # Keep the ARM64 install on the same base package contract as the
+            # x64 host install; the Qt 6.8.3 metadata rejects duplicate module
+            # selectors here as well.
+            $args = @('install-qt', '--outputdir', $script:QtRoot, '--base', 'https://download.qt.io', '--timeout', '30', '--external', $SevenZip, 'windows', 'desktop', $script:QtVersion, 'win64_msvc2022_arm64_cross_compiled')
             Invoke-External -FilePath $aqt -Arguments $args -Description ('Installing Qt {0} MSVC 2022 ARM64 from the official Qt repository.' -f $script:QtVersion)
         }
         $armMissing = @(Get-MissingRelativeFiles -Root $armRoot -RelativePaths $armRequired)

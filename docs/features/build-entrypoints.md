@@ -37,6 +37,12 @@ publish, or create releases. If the pinned Qt kit or Visual Studio environment
 is absent, the scripts report the exact path and stop. This checkout currently
 has no local Qt qmake kit, so hosted Windows CI remains the build proof.
 
+The bootstrap uses the Qt 6.8.3 base desktop package set for both the x64 host
+and ARM64 target. Qt 6.8.3 already includes the `qtdeclarative` and `qttools`
+archives in that set; passing them again as `--modules` makes `aqtinstall`
+reject the official metadata before installation, so the helper deliberately
+does not duplicate those selectors.
+
 Run `node scripts/validate-unsigned-packaging.mjs --self-test` to verify the
 permanent unsigned invariant and prove that representative signing directives,
 executables, inputs, included Inno scripts, signed-uninstaller and file-signing
