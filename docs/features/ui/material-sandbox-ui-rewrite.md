@@ -9,6 +9,23 @@ It rehosts the existing Boxes central widget and adapts the live Settings and
 Box Options `QTabWidget` in place, preserving page objects, indexes, signals,
 and `CTabStateManager` ownership.
 
+The search field and its anchored builder share `M3RegexExecutionPolicy`.
+Invalid expressions resolve to an invalid sentinel rather than an empty
+match-all expression. The builder keeps Qt's normal literals, classes,
+anchors, groups, alternation, quantifiers, and `i`/`m`/`s`/`x`/`U` flags, while
+making pattern, flags, sample, match, capture, and preview-output bounds
+visible. The shared expression prefix uses PCRE `LIMIT_MATCH=100000` and
+`LIMIT_DEPTH=1000` verbs before the user's unmodified pattern, so execution
+is bounded by the actual Qt regex engine without a second incomplete grammar
+parser or altered capture numbering. Search accessibility names and state
+descriptions are forwarded to the focused editor; menu-originated builders
+retain Escape, focus return, and menu restoration behavior.
+
+The builder uses the shared dialog host exactly once and reflows its fields,
+guided tokens, and actions below the narrow-layout threshold. It remains
+anchored to its source when room permits, otherwise uses a viewport-bounded,
+scrollable fallback instead of painting off-screen.
+
 ## Configuration and integration
 
 `tools/apply_ui_rewrite.py` copies the overlay, patches `SandMan.pri`, updates
@@ -25,6 +42,11 @@ and does not launch processes or make network requests. Native compilation,
 startup, driver communication, high-DPI behavior, bilingual layout, and real
 window captures are not implied by the static validator; failures in those
 areas must remain visible until Windows evidence exists.
+
+The MSVC project contains one `MaterialTheme.cpp` and one `M3Tokens.cpp`
+compile item, each with `PrecompiledHeader` disabled because those external
+sources do not include `stdafx.h`. The qmake and MSVC registrations also carry
+the shared regex policy.
 
 ## Verification
 

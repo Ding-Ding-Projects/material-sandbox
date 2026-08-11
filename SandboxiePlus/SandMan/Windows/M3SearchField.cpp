@@ -1,23 +1,19 @@
 #include "stdafx.h"
 #include "M3SearchField.h"
 #include "RegexBuilderDialog.h"
+#include "M3RegexExecutionPolicy.h"
 
-#include <QApplication>
 #include <QMenu>
 #include <QEvent>
 #include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QLineEdit>
-#include <QSet>
 #include <QSignalBlocker>
 #include <QStyle>
 #include <QTimer>
 #include <QToolButton>
 
 namespace {
-constexpr int kMaximumPatternLength = 500;
-constexpr int kMaximumFlagsLength = 8;
-QString bounded(const QString& value, int maximum) { return value.left(maximum); }
 }
 
 CM3SearchField::CM3SearchField(QWidget* parent)
@@ -34,7 +30,6 @@ CM3SearchField::CM3SearchField(QWidget* parent)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     m_lineEdit->setObjectName(QStringLiteral("m3SearchInput"));
-    m_lineEdit->setMaxLength(kMaximumPatternLength);
     m_lineEdit->setClearButtonEnabled(false);
     m_lineEdit->setAccessibleName(tr("Search"));
     m_lineEdit->installEventFilter(this);
@@ -63,6 +58,8 @@ CM3SearchField::CM3SearchField(QWidget* parent)
     connect(m_clearButton, &QToolButton::clicked, m_lineEdit, &QLineEdit::clear);
     connect(m_regexButton, &QToolButton::clicked, this, &CM3SearchField::openRegexBuilder);
 
+    setAccessibleName(tr("Search"));
+    setAccessibleDescription(tr("Searches using plain text. A regular expression builder is available beside the field."));
     setHeightVariant(Control);
     rebuildExpression(false);
     updateControls();
@@ -79,15 +76,29 @@ QString CM3SearchField::error() const { return m_error; }
 
 void CM3SearchField::setQuery(const QString& query)
 {
-    setState(query, query, m_flags, false);
+    setState(query, query, QString(), false);
 }
 
 void CM3SearchField::setState(const QString& query, const QString& pattern, const QString& flags, bool regexMode)
 {
+    const QString nextQuery = regexMode ? pattern : query;
+    const QString nextPattern = pattern.isEmpty() ? nextQuery : pattern;
+    if (nextQuery.size() > M3RegexExecutionPolicy::MaximumPatternLength
+        || nextPattern.size() > M3RegexExecutionPolicy::MaximumPatternLength) {
+        rejectOversizedState(tr("The search input was not applied because patterns are limited to %1 UTF-16 text units.")
+                                .arg(M3RegexExecutionPolicy::MaximumPatternLength));
+        return;
+    }
+    if (flags.size() > M3RegexExecutionPolicy::MaximumFlagsLength) {
+        rejectOversizedState(tr("The search flags were not applied because flags are limited to %1 UTF-16 text units.")
+                                .arg(M3RegexExecutionPolicy::MaximumFlagsLength));
+        return;
+    }
+
     m_regexMode = regexMode;
-    m_query = bounded(regexMode ? pattern : query, kMaximumPatternLength);
-    m_pattern = bounded(pattern.isEmpty() ? m_query : pattern, kMaximumPatternLength);
-    m_flags = bounded(flags, kMaximumFlagsLength);
+    m_query = nextQuery;
+    m_pattern = nextPattern;
+    m_flags = flags;
     {
         const QSignalBlocker blocker(m_lineEdit);
         m_lineEdit->setText(m_query);
@@ -99,6 +110,19 @@ void CM3SearchField::setState(const QString& query, const QString& pattern, cons
 void CM3SearchField::setPlaceholderText(const QString& placeholder)
 {
     m_lineEdit->setPlaceholderText(placeholder);
+}
+
+void CM3SearchField::setAccessibleName(const QString& name)
+{
+    QWidget::setAccessibleName(name.trimmed().isEmpty() ? tr("Search") : name.trimmed());
+    updateAccessibleNames();
+    updateControls();
+}
+
+void CM3SearchField::setAccessibleDescription(const QString& description)
+{
+    m_accessibleDescription = description.trimmed();
+    updateControls();
 }
 
 void CM3SearchField::setHeightVariant(HeightVariant variant)
@@ -143,8 +167,13 @@ bool CM3SearchField::eventFilter(QObject* watched, QEvent* event)
 
 void CM3SearchField::onTextChanged(const QString& text)
 {
-    m_query = bounded(text, kMaximumPatternLength);
+    m_query = text;
     m_pattern = m_query;
+    if (text.size() > M3RegexExecutionPolicy::MaximumPatternLength) {
+        rejectOversizedState(tr("The search input is over %1 UTF-16 text units. It remains visible but is not applied until it is shortened.")
+                                .arg(M3RegexExecutionPolicy::MaximumPatternLength));
+        return;
+    }
     rebuildExpression(true);
     updateControls();
 }
@@ -152,16 +181,16 @@ void CM3SearchField::onTextChanged(const QString& text)
 void CM3SearchField::openRegexBuilder()
 {
     if (!m_builder) {
-        QWidget* owner = window();
-        if (auto* sourceMenu = qobject_cast<QMenu*>(owner)) {
-            QWidget* menuOwner = sourceMenu->parentWidget();
-            owner = menuOwner ? menuOwner->window() : QApplication::activeWindow();
-        }
-        m_builder = new CRegexBuilderDialog(owner);
+        // Parent the anchored builder to its owning search field. A rebuild can
+        // retire an app-bar or menu field while the builder is open; parenting
+        // here closes that popup with the field instead of leaving a stale
+        // dialog attached to the main window.
+        m_builder = new CRegexBuilderDialog(this);
         connect(m_builder, &CRegexBuilderDialog::patternApplied,
                 this, &CM3SearchField::applyRegexPattern);
         connect(m_builder, &CRegexBuilderDialog::plainTextRequested,
                 this, &CM3SearchField::keepPlainText);
+        updateAccessibleNames();
     }
     m_builder->setState(m_query, m_pattern, m_flags, m_regexMode);
 
@@ -209,6 +238,8 @@ void CM3SearchField::rebuildExpression(bool notify)
     if (m_regexMode) {
         m_expression = compileRegex(m_pattern, m_flags, &m_error);
         m_valid = m_expression.isValid() && m_error.isEmpty();
+        if (!m_valid)
+            m_expression = M3RegexExecutionPolicy::invalidExpression();
     } else {
         m_expression = QRegularExpression(QRegularExpression::escape(m_query),
                                           QRegularExpression::CaseInsensitiveOption);
@@ -224,44 +255,54 @@ void CM3SearchField::updateControls()
     m_clearButton->setVisible(!m_query.isEmpty());
     m_regexButton->setChecked(m_regexMode);
     m_lineEdit->setProperty("m3Invalid", !m_valid);
-    m_lineEdit->setToolTip(m_valid ? QString() : m_error);
+    const QString fieldName = QWidget::accessibleName().trimmed().isEmpty()
+        ? tr("Search")
+        : QWidget::accessibleName().trimmed();
+    const QString modeDescription = !m_valid
+        ? tr("Invalid regular expression: %1").arg(m_error)
+        : (m_regexMode
+            ? tr("Regular expression mode is on. Active flags: %1.")
+                  .arg(m_flags.isEmpty() ? tr("none") : m_flags)
+            : tr("Plain-text search is on. Matching ignores letter case."));
+    QString description = m_accessibleDescription;
+    if (!description.isEmpty())
+        description.append(QLatin1Char(' '));
+    description.append(modeDescription);
+    m_lineEdit->setAccessibleDescription(description);
+    m_lineEdit->setToolTip(m_valid ? QString() : modeDescription);
+    m_clearButton->setAccessibleDescription(tr("Clears the current query in %1.").arg(fieldName));
+    m_regexButton->setAccessibleDescription(modeDescription);
+    QWidget::setAccessibleDescription(description);
     m_lineEdit->style()->unpolish(m_lineEdit);
     m_lineEdit->style()->polish(m_lineEdit);
 }
 
+void CM3SearchField::updateAccessibleNames()
+{
+    const QString fieldName = QWidget::accessibleName().trimmed().isEmpty()
+        ? tr("Search")
+        : QWidget::accessibleName().trimmed();
+    m_lineEdit->setAccessibleName(fieldName);
+    m_clearButton->setAccessibleName(tr("Clear %1").arg(fieldName));
+    m_clearButton->setToolTip(tr("Clear %1").arg(fieldName));
+    m_regexButton->setAccessibleName(tr("Open regular expression builder for %1").arg(fieldName));
+    m_regexButton->setToolTip(tr("Open regular expression builder for %1").arg(fieldName));
+    if (m_builder) {
+        m_builder->setAccessibleName(
+            tr("Regular expression builder for %1").arg(fieldName));
+    }
+}
+
+void CM3SearchField::rejectOversizedState(const QString& message)
+{
+    m_error = message;
+    m_valid = false;
+    m_expression = M3RegexExecutionPolicy::invalidExpression();
+    updateControls();
+    emit searchChanged(m_query, m_regexMode, m_expression, m_flags, m_valid, m_error);
+}
+
 QRegularExpression CM3SearchField::compileRegex(const QString& pattern, const QString& flags, QString* error)
 {
-    if (pattern.size() > kMaximumPatternLength) {
-        if (error) *error = tr("Patterns are limited to %1 characters.").arg(kMaximumPatternLength);
-        return QRegularExpression();
-    }
-    if (flags.size() > kMaximumFlagsLength) {
-        if (error) *error = tr("Flags are limited to %1 characters.").arg(kMaximumFlagsLength);
-        return QRegularExpression();
-    }
-
-    QRegularExpression::PatternOptions options = QRegularExpression::NoPatternOption;
-    QSet<QChar> seen;
-    for (const QChar flag : flags) {
-        if (seen.contains(flag)) {
-            if (error) *error = tr("Flag '%1' appears more than once.").arg(flag);
-            return QRegularExpression();
-        }
-        seen.insert(flag);
-        switch (flag.unicode()) {
-        case 'i': options |= QRegularExpression::CaseInsensitiveOption; break;
-        case 'm': options |= QRegularExpression::MultilineOption; break;
-        case 's': options |= QRegularExpression::DotMatchesEverythingOption; break;
-        case 'x': options |= QRegularExpression::ExtendedPatternSyntaxOption; break;
-        case 'U': options |= QRegularExpression::InvertedGreedinessOption; break;
-        default:
-            if (error) *error = tr("Unsupported flag '%1'. Use i, m, s, x, or U.").arg(flag);
-            return QRegularExpression();
-        }
-    }
-
-    QRegularExpression expression(pattern, options);
-    if (!expression.isValid() && error)
-        *error = expression.errorString();
-    return expression;
+    return M3RegexExecutionPolicy::compile(pattern, flags, error);
 }

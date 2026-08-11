@@ -49,7 +49,7 @@ public:
         auto* title = new QLabel(dialog->windowTitle(), this);
         title->setObjectName(QStringLiteral("m3DialogTitleLabel"));
         row->addWidget(title, 1);
-        auto* close = new QPushButton(QStringLiteral("×"), this);
+        auto* close = new QPushButton(QString(QChar(0x00D7)), this);
         close->setObjectName(QStringLiteral("m3DialogClose"));
         close->setAccessibleName(QObject::tr("Close dialog"));
         close->setMinimumSize(40, 36);
