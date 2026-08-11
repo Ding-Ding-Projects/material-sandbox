@@ -63,7 +63,7 @@ node scripts/validate-ci-concurrency.mjs
 git diff --check
 ```
 
-The workflow must retain the `master` push trigger until the repository's
+The workflow uses the `main` push trigger after the repository's
 default-branch migration is complete. It must also remain outside cancelling
 concurrency, call the root build scripts, resolve release API access through
 `RELEASE_TOKEN || ORG_TOKEN || GITHUB_TOKEN`, attach only the five allowlisted

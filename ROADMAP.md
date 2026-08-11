@@ -26,7 +26,7 @@ workspace must state that boundary instead of simulating those integrations.
 3. Verify the deployed project-subpath site, including an in-site article route
    and its keyboard-accessible tab/navigation surface.
 4. Run the non-cancelling `Windows Release` workflow from a clean full-history
-   `master` revision and verify its one monotonic non-draft release, exact target
+   `main` revision and verify its one monotonic non-draft release, exact target
    commit, downloadable unsigned installer, SHA-256, authoritative timing, line
    table, attribution arithmetic, and public dim-sum catalog link.
 5. Keep native-build and publication evidence pending until that hosted run is

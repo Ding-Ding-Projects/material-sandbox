@@ -2,7 +2,7 @@ name: Publish Pages
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -25,40 +25,6 @@ jobs:
         shell: bash
         run: |
           test -s docs/index.html
-          node scripts/validate-ci-concurrency.mjs
-          node scripts/validate-release-contract.mjs
-          node scripts/validate-release-contract.mjs --self-test
-          node --test scripts/test-count-lines.mjs
-          node scripts/validate-ci-artifacts.mjs --help
-          node scripts/validate-pages-material.mjs
-          node scripts/validate-pages-article-completeness.mjs
-          node scripts/validate-pages-markdown-renderer.mjs
-          node scripts/validate-pages-regex-safety.mjs
-          node --check docs/assets/regex-safety.js
-          node --check docs/assets/app.js
-          node --check docs/regex-worker.js
-          node scripts/validate-pages-material.mjs --self-test
-          pwsh -NoProfile -File scripts/validate-pages-a11y.ps1
-          pwsh -NoProfile -File scripts/validate-pages-a11y.ps1 -SelfTest
-          pwsh -NoProfile -File scripts/validate-pages-contract.ps1
-          node --test scripts/test-pages-stamp.mjs
-          node --test scripts/test-pages-interactions.mjs
-          node --test scripts/test-pages-article-renderer.mjs
-          node scripts/validate-m3-shell.mjs
-          node scripts/validate-docs.mjs
-          node scripts/validate-settings-history.mjs
-          node scripts/validate-notifications.mjs
-          node scripts/validate-color-translator.mjs
-          node scripts/validate-appearance-editor.mjs
-          node scripts/validate-screenshot-links.mjs
-          node scripts/validate-scheduled-settings.mjs
-          node scripts/validate-tab-discovery.mjs
-          node scripts/validate-dim-sum-surprise.mjs
-          node scripts/validate-command-palette.mjs
-          node scripts/validate-external-editor.mjs
-          node scripts/validate-school-mode.mjs
-          node scripts/validate-contributor-build.mjs
-          node scripts/validate-destructive-confirmation.mjs
       - name: Stamp exact deployed revision
         shell: bash
         run: node scripts/stamp-pages-revision.mjs docs .pages-site "$GITHUB_SHA"

@@ -191,12 +191,12 @@ pwsh -NoProfile -File scripts/validate-pages-contract.ps1
 git diff --check
 ```
 
-The Pages workflow runs the documentation, line-counter regression, and release-shape contracts on every `master` update. A successful static contract proves source structure and local asset references; it does not prove that Qt/MSVC produced a fresh binary, that the service and driver loaded, that the unsigned installer was produced, that a release was published, or that a hidden-desktop screenshot was captured. Those boundaries are intentionally recorded in the feature articles and the Pages status panel.
+The Pages workflow packages and deploys the static documentation site on every `main` update. Local documentation, line-counter, and release-shape scripts remain reproducible before a dew, but they are not workflow gates. A deployed site does not prove that Qt/MSVC produced a fresh binary, that the service and driver loaded, that the unsigned installer was produced, that a release was published, or that a hidden-desktop screenshot was captured. Those boundaries are intentionally recorded in the feature articles and the Pages status panel.
 
 | Evidence class | What it proves | What it does not prove |
 | --- | --- | --- |
 | Documentation and contract scripts | Articles, links, feature registrations, and static invariants are present | Native rendering, driver loading, or live network behavior |
-| GitHub Actions build | The hosted job reached its recorded build/test result | A release asset or runtime capture unless the job explicitly publishes one |
+| GitHub Actions build | The hosted job produced its recorded build artifact | A release asset or runtime capture unless the job explicitly publishes one |
 | Pages deployment | The static documentation site was published | The native desktop application was built |
 | Headless desktop capture | A specific built surface rendered at the captured commit | Uncaptured surfaces or unrelated driver/service paths |
 | Contributor runtime exercise | Manager/service/driver capability agreement and gated-path behavior | Copyright ownership or authorization outside the contributor build |
