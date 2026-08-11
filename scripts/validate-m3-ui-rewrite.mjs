@@ -204,6 +204,8 @@ expect(qmakeBuild.includes('SandMan\\Tests\\M3PageNavigationHostTests.pro'), 'x6
 expect(qmakeBuild.includes('M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt'), 'x64 qmake build runs the page-host lifecycle suite');
 expect(qmakeBuild.includes('if /I "%~3"=="build_only" set "SBIE_QMAKE_BUILD_ONLY=1"'), 'qmake build-only mode is explicit for workflow builds');
 expect(qmakeBuild.includes('IF "%SBIE_QMAKE_BUILD_ONLY%"=="1" GOTO :after_page_host_tests'), 'workflow builds skip the local lifecycle executable');
+expect(qmakeBuild.includes('set "qt_path=%SBIE_QT_ROOT%\\%qt6_version%\\msvc2022_arm64"'),
+  'ARM64 qmake uses the target Qt installation while retaining the x64 host tools');
 
 const pageHostLaunch = 'release\\M3PageNavigationHostTests.exe -o M3PageNavigationHostTests.txt,txt';
 const runtimePath = 'set "PATH=%qt_path%\\bin;%~dp0bin\\%build_arch%\\Release;%PATH%"';
@@ -248,6 +250,8 @@ expect(memoryFiles.includes('1024 * 1024'), 'memory reader enforces 1 MiB bound'
 expect(memoryFiles.includes('2000'), 'memory listing enforces 2,000-entry bound');
 expect(memoryFiles.includes('canonicalFilePath'), 'memory paths are canonicalized');
 expect(memoryFiles.includes('isWithinRoot'), 'memory path traversal is fail-closed');
+expect(memoryFiles.includes('(std::numeric_limits<USHORT>::max)()'),
+  'memory reader avoids the Windows max macro around numeric_limits');
 
 const shell = read(`${base}/Windows/M3ShellHost.cpp`);
 expect(shell.includes('setFixedHeight(64)'), 'top app bar is 64 px');

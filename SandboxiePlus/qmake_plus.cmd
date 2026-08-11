@@ -28,7 +28,7 @@ if /I "%~1"=="x64" (
   set "vcvars_arg=amd64"
 )
 if /I "%~1"=="ARM64" (
-  set "qt_path=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_64"
+  set "qt_path=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64"
   set "private_headers=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\include\QtCore\%qt6_version%\QtCore"
   set "private_target=%SBIE_QT_ROOT%\%qt6_version%\msvc2022_arm64\include\QtCore"
   set "build_arch=ARM64"

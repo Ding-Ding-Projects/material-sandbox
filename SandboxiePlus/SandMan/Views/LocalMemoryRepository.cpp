@@ -304,7 +304,7 @@ ScopedHandle openChild(HANDLE parent, const QString& component, bool directory,
     }
 
     std::wstring wide = component.toStdWString();
-    if (wide.size() > (std::numeric_limits<USHORT>::max() / sizeof(wchar_t))) {
+    if (wide.size() > ((std::numeric_limits<USHORT>::max)() / sizeof(wchar_t))) {
         if (error) *error = CLocalMemoryRepository::InvalidPath;
         return ScopedHandle();
     }
