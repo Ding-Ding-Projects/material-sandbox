@@ -172,6 +172,7 @@ HEADERS += \
     Windows/M3Menu.h \
     Windows/M3NavigationRail.h \
     Windows/M3PageNavigationHost.h \
+    Windows/M3RegexExecutionPolicy.h \
     Windows/M3SearchField.h \
     Windows/M3TabStrip.h \
     Windows/M3WorkspaceHost.h \
@@ -188,6 +189,7 @@ SOURCES += \
     Windows/M3Menu.cpp \
     Windows/M3NavigationRail.cpp \
     Windows/M3PageNavigationHost.cpp \
+    Windows/M3RegexExecutionPolicy.cpp \
     Windows/M3SearchField.cpp \
     Windows/M3TabStrip.cpp \
     Windows/M3WorkspaceHost.cpp \

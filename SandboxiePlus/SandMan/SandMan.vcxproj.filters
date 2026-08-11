@@ -207,6 +207,39 @@
     <ClCompile Include="Windows\M3DialogHost.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\M3Menu.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\M3NavigationRail.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\M3PageNavigationHost.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\M3RegexExecutionPolicy.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\M3SearchField.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\M3TabStrip.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\M3WorkspaceHost.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\RegexBuilderDialog.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\SnackBar.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscHelpers\Common\MaterialTheme.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscHelpers\Common\M3Tokens.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Windows\DestructiveConfirmationDialog.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
@@ -364,6 +397,39 @@
     </QtMoc>
     <ClInclude Include="Windows\M3DialogHost.h">
       <Filter>Windows</Filter>
+    </ClInclude>
+    <QtMoc Include="Windows\M3Menu.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\M3NavigationRail.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\M3PageNavigationHost.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <ClInclude Include="Windows\M3RegexExecutionPolicy.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <QtMoc Include="Windows\M3SearchField.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\M3TabStrip.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\M3WorkspaceHost.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\RegexBuilderDialog.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\SnackBar.h">
+      <Filter>Windows</Filter>
+    </QtMoc>
+    <ClInclude Include="..\MiscHelpers\Common\MaterialTheme.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscHelpers\Common\M3Tokens.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <QtMoc Include="Windows\SnapshotsWindow.h">
       <Filter>Windows</Filter>

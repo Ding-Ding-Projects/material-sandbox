@@ -628,4 +628,46 @@
   </ImportGroup>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-<ItemGroup><QtMoc Include="Windows\M3Menu.h" /><QtMoc Include="Windows\M3NavigationRail.h" /><QtMoc Include="Windows\M3PageNavigationHost.h" /><QtMoc Include="Windows\M3SearchField.h" /><QtMoc Include="Windows\M3TabStrip.h" /><QtMoc Include="Windows\M3WorkspaceHost.h" /><QtMoc Include="Windows\RegexBuilderDialog.h" /><QtMoc Include="Windows\SnackBar.h" /><ClInclude Include="Views\LocalMemoryRepository.h" /><QtMoc Include="Views\MemorySyncView.h" /><QtMoc Include="Views\SkillsView.h" /><QtMoc Include="Views\MemoryInventoryView.h" /><QtMoc Include="Views\OperationsView.h" /><QtMoc Include="Views\StatusHubView.h" /><ClInclude Include="..\MiscHelpers\Common\M3Tokens.h" /></ItemGroup><ItemGroup><ClCompile Include="Windows\M3Menu.cpp" /><ClCompile Include="Windows\M3NavigationRail.cpp" /><ClCompile Include="Windows\M3PageNavigationHost.cpp" /><ClCompile Include="Windows\M3SearchField.cpp" /><ClCompile Include="Windows\M3TabStrip.cpp" /><ClCompile Include="Windows\M3WorkspaceHost.cpp" /><ClCompile Include="Windows\RegexBuilderDialog.cpp" /><ClCompile Include="Windows\SnackBar.cpp" /><ClCompile Include="Views\LocalMemoryRepository.cpp" /><ClCompile Include="Views\MemorySyncView.cpp" /><ClCompile Include="Views\SkillsView.cpp" /><ClCompile Include="Views\MemoryInventoryView.cpp" /><ClCompile Include="Views\OperationsView.cpp" /><ClCompile Include="Views\StatusHubView.cpp" /><ClCompile Include="..\MiscHelpers\Common\M3Tokens.cpp" /></ItemGroup></Project>
+  <ItemGroup>
+    <QtMoc Include="Windows\M3Menu.h" />
+    <QtMoc Include="Windows\M3NavigationRail.h" />
+    <QtMoc Include="Windows\M3PageNavigationHost.h" />
+    <ClInclude Include="Windows\M3RegexExecutionPolicy.h" />
+    <QtMoc Include="Windows\M3SearchField.h" />
+    <QtMoc Include="Windows\M3TabStrip.h" />
+    <QtMoc Include="Windows\M3WorkspaceHost.h" />
+    <QtMoc Include="Windows\RegexBuilderDialog.h" />
+    <QtMoc Include="Windows\SnackBar.h" />
+    <ClInclude Include="Views\LocalMemoryRepository.h" />
+    <QtMoc Include="Views\MemorySyncView.h" />
+    <QtMoc Include="Views\SkillsView.h" />
+    <QtMoc Include="Views\MemoryInventoryView.h" />
+    <QtMoc Include="Views\OperationsView.h" />
+    <QtMoc Include="Views\StatusHubView.h" />
+    <ClInclude Include="..\MiscHelpers\Common\MaterialTheme.h" />
+    <ClInclude Include="..\MiscHelpers\Common\M3Tokens.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Windows\M3Menu.cpp" />
+    <ClCompile Include="Windows\M3NavigationRail.cpp" />
+    <ClCompile Include="Windows\M3PageNavigationHost.cpp" />
+    <ClCompile Include="Windows\M3RegexExecutionPolicy.cpp" />
+    <ClCompile Include="Windows\M3SearchField.cpp" />
+    <ClCompile Include="Windows\M3TabStrip.cpp" />
+    <ClCompile Include="Windows\M3WorkspaceHost.cpp" />
+    <ClCompile Include="Windows\RegexBuilderDialog.cpp" />
+    <ClCompile Include="Windows\SnackBar.cpp" />
+    <ClCompile Include="Views\LocalMemoryRepository.cpp" />
+    <ClCompile Include="Views\MemorySyncView.cpp" />
+    <ClCompile Include="Views\SkillsView.cpp" />
+    <ClCompile Include="Views\MemoryInventoryView.cpp" />
+    <ClCompile Include="Views\OperationsView.cpp" />
+    <ClCompile Include="Views\StatusHubView.cpp" />
+    <ClCompile Include="..\MiscHelpers\Common\MaterialTheme.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\MiscHelpers\Common\M3Tokens.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+</Project>

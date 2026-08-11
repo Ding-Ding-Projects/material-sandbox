@@ -29,6 +29,8 @@ public:
     void setQuery(const QString& query);
     void setState(const QString& query, const QString& pattern, const QString& flags, bool regexMode);
     void setPlaceholderText(const QString& placeholder);
+    void setAccessibleName(const QString& name);
+    void setAccessibleDescription(const QString& description);
     void setHeightVariant(HeightVariant variant);
     void setRegexEnabled(bool enabled);
     void focusEditor();
@@ -54,6 +56,8 @@ private slots:
 private:
     void rebuildExpression(bool notify);
     void updateControls();
+    void updateAccessibleNames();
+    void rejectOversizedState(const QString& message);
     static QRegularExpression compileRegex(const QString& pattern, const QString& flags, QString* error);
 
     QLineEdit* m_lineEdit;
@@ -65,6 +69,7 @@ private:
     QString m_flags;
     QRegularExpression m_expression;
     QString m_error;
+    QString m_accessibleDescription;
     HeightVariant m_heightVariant;
     bool m_regexMode;
     bool m_valid;

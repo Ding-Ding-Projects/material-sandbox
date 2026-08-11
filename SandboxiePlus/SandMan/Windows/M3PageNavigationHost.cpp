@@ -19,6 +19,13 @@
 #include <QTextEdit>
 #include <QVBoxLayout>
 
+namespace {
+
+constexpr int kMaximumSearchSubjectLength = 64 * 1024;
+constexpr int kMaximumNavigationMatches = 128;
+
+} // namespace
+
 CM3PageNavigationHost::CM3PageNavigationHost(QWidget* parent)
     : QWidget(parent),
       m_search(new CM3SearchField(this)),
@@ -248,7 +255,10 @@ QString CM3PageNavigationHost::searchableText(QWidget* page) const
             for (int i = 0; i < combo->count(); ++i) values << combo->itemText(i);
         } else values << widget->accessibleName();
     }
-    return values.join(QLatin1Char('\n'));
+    QString searchable = values.join(QLatin1Char('\n'));
+    if (searchable.size() > kMaximumSearchSubjectLength)
+        searchable.truncate(kMaximumSearchSubjectLength);
+    return searchable;
 }
 
 int CM3PageNavigationHost::countMatches(QWidget* page, const QRegularExpression& expression) const
@@ -257,7 +267,7 @@ int CM3PageNavigationHost::countMatches(QWidget* page, const QRegularExpression&
         return 0;
     int count = 0;
     QRegularExpressionMatchIterator iterator = expression.globalMatch(searchableText(page));
-    while (iterator.hasNext() && count < 999) {
+    while (iterator.hasNext() && count < kMaximumNavigationMatches) {
         iterator.next();
         ++count;
     }
