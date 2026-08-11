@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "M3PageNavigationHost.h"
 #include "M3SearchField.h"
+#include "../../MiscHelpers/Common/TabStateManager.h"
 
 #include <QAbstractButton>
 #include <QComboBox>
@@ -12,11 +13,14 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QRegularExpression>
+#include <QStackedLayout>
 #include <QStackedWidget>
 #include <QStyle>
 #include <QTabBar>
 #include <QTabWidget>
 #include <QTextEdit>
+#include <QTreeWidget>
+#include <QTreeWidgetItemIterator>
 #include <QVBoxLayout>
 
 namespace {
@@ -103,34 +107,75 @@ CM3PageNavigationHost* CM3PageNavigationHost::adapt(QDialog* dialog,
 
     QLayoutItem* replaced = parentLayout->replaceWidget(tabs, host, Qt::FindDirectChildrenOnly);
     delete replaced;
-    host->bindExistingTabs(tabs);
+    host->rebind(tabs);
     tabs->setProperty("m3TwoPaneAdapted", true);
     return host;
 }
 
-void CM3PageNavigationHost::bindExistingTabs(QTabWidget* tabs)
+void CM3PageNavigationHost::disconnectPageContainer()
 {
-    if (!tabs || m_adaptedTabs)
-        return;
-    m_adaptedTabs = tabs;
-    const int originalIndex = tabs->currentIndex();
+    if (m_adaptedTabs) {
+        disconnect(m_adaptedTabs, nullptr, this, nullptr);
+        disconnect(m_adaptedTabs, nullptr, m_pageList, nullptr);
+        if (m_adaptedTabs->tabBar())
+            disconnect(m_adaptedTabs->tabBar(), nullptr, this, nullptr);
+    }
+    if (m_adaptedStack) {
+        disconnect(m_adaptedStack, nullptr, this, nullptr);
+        disconnect(m_adaptedStack, nullptr, m_pageList, nullptr);
+    }
+}
 
-    QLayoutItem* replaced = m_rightLayout->replaceWidget(m_stack, tabs);
-    delete replaced;
+void CM3PageNavigationHost::hostContainer(QWidget* container)
+{
+    if (!container)
+        return;
+
+    QWidget* previous = m_adaptedContainer;
+    if (m_rightLayout->indexOf(container) < 0) {
+        QLayoutItem* replaced = nullptr;
+        if (previous && m_rightLayout->indexOf(previous) >= 0)
+            replaced = m_rightLayout->replaceWidget(previous, container);
+        else if (m_rightLayout->indexOf(m_stack) >= 0)
+            replaced = m_rightLayout->replaceWidget(m_stack, container);
+        else
+            m_rightLayout->addWidget(container, 1);
+        delete replaced;
+    }
+
+    if (previous && previous != container)
+        previous->hide();
     m_stack->hide();
-    tabs->setParent(m_rightLayout->parentWidget());
-    tabs->show();
+    container->setParent(m_rightLayout->parentWidget());
+    container->show();
+    m_adaptedContainer = container;
+}
+
+void CM3PageNavigationHost::rebind(QTabWidget* tabs)
+{
+    releaseStateManager();
+    if (!tabs)
+        return;
+
+    const int originalIndex = tabs->currentIndex();
+    disconnectPageContainer();
+    hostContainer(tabs);
+    m_adaptedStack.clear();
+    m_adaptedTabs = tabs;
+    m_pageSource = PageSource::TabWidget;
+
     tabs->setDocumentMode(true);
+    const bool alreadyHosted = tabs->property("m3HostedTabs").toBool();
     tabs->setProperty("m3HostedTabs", true);
+    tabs->setProperty("m3TwoPaneAdapted", true);
     if (tabs->tabBar())
         tabs->tabBar()->hide();
-    tabs->setStyleSheet(tabs->styleSheet() + QStringLiteral(
-        "QTabWidget[m3HostedTabs='true']::pane { border: 0; background: transparent; }"));
+    if (!alreadyHosted) {
+        tabs->setStyleSheet(tabs->styleSheet() + QStringLiteral(
+            "QTabWidget[m3HostedTabs='true']::pane { border: 0; background: transparent; }"));
+    }
 
-    m_titles.clear();
-    m_pageList->clear();
-    for (int i = 0; i < tabs->count(); ++i)
-        addNavigationItem(tabs->tabText(i), tabs->tabIcon(i), i);
+    rebuildTabNavigation();
 
     connect(tabs, &QTabWidget::currentChanged, this, [this](int index) {
         if (m_pageList->currentRow() != index)
@@ -141,13 +186,132 @@ void CM3PageNavigationHost::bindExistingTabs(QTabWidget* tabs)
         if (!m_adaptedTabs)
             return;
         const int current = m_adaptedTabs->currentIndex();
-        m_titles.clear();
-        m_pageList->clear();
-        for (int i = 0; i < m_adaptedTabs->count(); ++i)
-            addNavigationItem(m_adaptedTabs->tabText(i), m_adaptedTabs->tabIcon(i), i);
+        rebuildTabNavigation();
         setCurrentIndex(current);
     });
+    // Give the list ownership of this teardown connection. During host
+    // destruction QWidget children outlive this class' value members, so a
+    // callback through `this` could otherwise touch an already-destroyed
+    // QStringList or sibling widget.
+    connect(tabs, &QObject::destroyed, m_pageList, &QListWidget::clear);
     setCurrentIndex(qBound(0, originalIndex, qMax(0, tabs->count() - 1)));
+}
+
+void CM3PageNavigationHost::rebind(QWidget* container,
+                                   QStackedLayout* pages,
+                                   QTreeWidget* titles)
+{
+    releaseStateManager();
+    if (!container || !pages)
+        return;
+
+    const int originalIndex = pages->currentIndex();
+    disconnectPageContainer();
+    hostContainer(container);
+    m_adaptedTabs.clear();
+    m_adaptedStack = pages;
+    m_pageSource = PageSource::ExternalStack;
+
+    rebuildStackNavigation(titles);
+    connect(pages, &QStackedLayout::currentChanged, this, [this](int index) {
+        if (m_pageList->currentRow() != index)
+            m_pageList->setCurrentRow(index);
+        emit currentPageChanged(index);
+    });
+    connect(pages, &QObject::destroyed, m_pageList, &QListWidget::clear);
+    setCurrentIndex(qBound(0, originalIndex, qMax(0, pages->count() - 1)));
+}
+
+void CM3PageNavigationHost::rebind(QTabWidget* tabs,
+                                   CSettings* settings,
+                                   const QString& stateKey)
+{
+    rebind(tabs);
+    if (m_adaptedTabs == tabs && settings) {
+        m_stateManager = new CTabStateManager(tabs,
+                                              m_pageList,
+                                              this,
+                                              settings,
+                                              stateKey,
+                                              this);
+    }
+}
+
+void CM3PageNavigationHost::rebind(QWidget* container,
+                                   QStackedLayout* pages,
+                                   QTreeWidget* titles,
+                                   CSettings* settings,
+                                   const QString& stateKey)
+{
+    rebind(container, pages, titles);
+    if (m_adaptedStack == pages && settings) {
+        m_stateManager = new CTabStateManager(pages,
+                                              m_pageList,
+                                              this,
+                                              settings,
+                                              stateKey,
+                                              this);
+    }
+}
+
+void CM3PageNavigationHost::releaseStateManager()
+{
+    delete m_stateManager.data();
+    m_stateManager.clear();
+}
+
+void CM3PageNavigationHost::rebuildTabNavigation()
+{
+    m_titles.clear();
+    m_pageList->clear();
+    if (!m_adaptedTabs)
+        return;
+    for (int i = 0; i < m_adaptedTabs->count(); ++i)
+        addNavigationItem(m_adaptedTabs->tabText(i), m_adaptedTabs->tabIcon(i), i);
+}
+
+void CM3PageNavigationHost::rebuildStackNavigation(QTreeWidget* titles)
+{
+    m_titles.clear();
+    m_pageList->clear();
+    if (!m_adaptedStack)
+        return;
+
+    QStringList pageTitles;
+    QList<QIcon> pageIcons;
+    pageTitles.resize(m_adaptedStack->count());
+    pageIcons.resize(m_adaptedStack->count());
+
+    if (titles) {
+        for (QTreeWidgetItemIterator iterator(titles); *iterator; ++iterator) {
+            QTreeWidgetItem* item = *iterator;
+            const QVariant indexValue = item->data(0, Qt::UserRole);
+            if (!indexValue.isValid())
+                continue;
+            const int index = indexValue.toInt();
+            if (index < 0 || index >= pageTitles.size())
+                continue;
+            QString title = item->text(0);
+            if (item->parent())
+                title = tr("%1 · %2").arg(item->parent()->text(0), title);
+            if (pageTitles.at(index).isEmpty() || item->parent()) {
+                pageTitles[index] = title;
+                pageIcons[index] = item->icon(0);
+            }
+        }
+    }
+
+    for (int i = 0; i < m_adaptedStack->count(); ++i) {
+        QWidget* page = m_adaptedStack->widget(i);
+        QString title = pageTitles.at(i).trimmed();
+        if (title.isEmpty() && page)
+            title = page->accessibleName().trimmed();
+        if (title.isEmpty() && page)
+            title = page->objectName().trimmed();
+        if (title.isEmpty())
+            title = tr("Page %1").arg(i + 1);
+        addNavigationItem(title, pageIcons.at(i), i);
+    }
 }
 
 void CM3PageNavigationHost::addNavigationItem(const QString& title, const QIcon& icon, int index)
@@ -161,7 +325,7 @@ void CM3PageNavigationHost::addNavigationItem(const QString& title, const QIcon&
 
 void CM3PageNavigationHost::addPage(QWidget* page, const QString& title, const QIcon& icon)
 {
-    if (!page || m_adaptedTabs)
+    if (!page || m_pageSource != PageSource::InternalStack)
         return;
     page->setParent(m_stack);
     const int index = m_stack->addWidget(page);
@@ -170,20 +334,43 @@ void CM3PageNavigationHost::addPage(QWidget* page, const QString& title, const Q
 
 int CM3PageNavigationHost::pageCount() const
 {
-    return m_adaptedTabs ? m_adaptedTabs->count() : m_stack->count();
+    switch (m_pageSource) {
+    case PageSource::TabWidget:
+        return m_adaptedTabs ? m_adaptedTabs->count() : 0;
+    case PageSource::ExternalStack:
+        return m_adaptedStack ? m_adaptedStack->count() : 0;
+    case PageSource::InternalStack:
+        return m_stack->count();
+    }
+    return 0;
 }
 
 int CM3PageNavigationHost::currentIndex() const
 {
-    return m_adaptedTabs ? m_adaptedTabs->currentIndex() : m_stack->currentIndex();
+    switch (m_pageSource) {
+    case PageSource::TabWidget:
+        return m_adaptedTabs ? m_adaptedTabs->currentIndex() : -1;
+    case PageSource::ExternalStack:
+        return m_adaptedStack ? m_adaptedStack->currentIndex() : -1;
+    case PageSource::InternalStack:
+        return m_stack->currentIndex();
+    }
+    return -1;
+}
+
+QWidget* CM3PageNavigationHost::currentPage() const
+{
+    return pageAt(currentIndex());
 }
 
 void CM3PageNavigationHost::setCurrentIndex(int index)
 {
     if (index < 0 || index >= pageCount())
         return;
-    if (m_adaptedTabs)
+    if (m_pageSource == PageSource::TabWidget && m_adaptedTabs)
         m_adaptedTabs->setCurrentIndex(index);
+    else if (m_pageSource == PageSource::ExternalStack && m_adaptedStack)
+        m_adaptedStack->setCurrentIndex(index);
     else
         m_stack->setCurrentIndex(index);
     m_pageList->setCurrentRow(index);
@@ -197,13 +384,19 @@ void CM3PageNavigationHost::setProvenanceText(const QString& text)
 
 CM3SearchField* CM3PageNavigationHost::searchField() const { return m_search; }
 
+QListWidget* CM3PageNavigationHost::navigationList() const { return m_pageList; }
+
 void CM3PageNavigationHost::selectPage(int row)
 {
     if (row < 0 || row >= pageCount())
         return;
-    if (m_adaptedTabs) {
+    if (m_pageSource == PageSource::TabWidget && m_adaptedTabs) {
         m_adaptedTabs->setCurrentIndex(row);
         return; // QTabWidget::currentChanged forwards the notification.
+    }
+    if (m_pageSource == PageSource::ExternalStack && m_adaptedStack) {
+        m_adaptedStack->setCurrentIndex(row);
+        return; // QStackedLayout::currentChanged forwards the notification.
     }
     m_stack->setCurrentIndex(row);
     emit currentPageChanged(row);
@@ -238,7 +431,11 @@ QWidget* CM3PageNavigationHost::pageAt(int index) const
 {
     if (index < 0 || index >= pageCount())
         return nullptr;
-    return m_adaptedTabs ? m_adaptedTabs->widget(index) : m_stack->widget(index);
+    if (m_pageSource == PageSource::TabWidget)
+        return m_adaptedTabs->widget(index);
+    if (m_pageSource == PageSource::ExternalStack)
+        return m_adaptedStack->widget(index);
+    return m_stack->widget(index);
 }
 
 QString CM3PageNavigationHost::searchableText(QWidget* page) const

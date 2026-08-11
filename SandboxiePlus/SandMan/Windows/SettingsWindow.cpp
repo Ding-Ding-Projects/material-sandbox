@@ -6,7 +6,6 @@
 #include "SandMan.h"
 #include "../MiscHelpers/Common/Settings.h"
 #include "../MiscHelpers/Common/LocalSettingsHistory.h"
-#include "../MiscHelpers/Common/TabStateManager.h"
 #include "../MiscHelpers/Common/UserPresentationSettings.h"
 #include "../MiscHelpers/Common/ScheduledSettings.h"
 #include "../MiscHelpers/Common/Common.h"
@@ -310,7 +309,6 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		if (!UserPresentationSettings::schoolModeEnabled(theConf)) theGUI->UpdateTheme();
 	});
 	scheduledRefresh->start();
-	new CTabStateManager(ui.tabs, theConf, QStringLiteral("SettingsWindow/Tabs"), this);
 	this->setWindowTitle(tr("Sandboxie Plus - Global Settings"));
 	// Keep the large settings content behavior intact while the shared native
 	// M3 host replaces platform dialog chrome; tab-by-tab control migration is
@@ -318,7 +316,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	M3DialogHost::Install(this);
 
 	// MATERIAL_SANDBOX_M3_REWRITE: retain the live tab/state graph and replace only its presentation.
-	CM3PageNavigationHost::adapt(this, ui.tabs, tr("Search settings"));
+	m_pPageNavigationHost = CM3PageNavigationHost::adapt(this, ui.tabs, tr("Search settings"));
 	// Global presentation settings live beside the existing interface controls
 	// so they persist with the profile and are discoverable by the settings
 	// search.  The explanatory text names the real defaults instead of hiding
@@ -1173,6 +1171,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int notificationIndex = ui.tabsGeneral->indexOf(ui.tab_4);
 		if (notificationIndex >= 0) {
 			auto* nativeNotifications = new QWidget(ui.tabsGeneral);
+			nativeNotifications->setObjectName(ui.tab_4->objectName());
 			auto* notificationsLayout = new QVBoxLayout(nativeNotifications);
 			ui.lblNotify = new QLabel(tr("Notification Options"), nativeNotifications);
 			ui.lblMessages = new QLabel(tr("SBIE Messages"), nativeNotifications);
@@ -1218,6 +1217,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int generalIndex = ui.tabsGeneral->indexOf(ui.tab_3);
 		if (generalIndex >= 0) {
 			auto* nativeGeneral = new QWidget(ui.tabsGeneral);
+			nativeGeneral->setObjectName(ui.tab_3->objectName());
 			auto* generalLayout = new QVBoxLayout(nativeGeneral);
 			ui.lblGeneral = new QLabel(tr("SandMan Options"), nativeGeneral);
 			ui.lblGeneral->setProperty("m3NativeSurface", true);
@@ -1271,6 +1271,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int trayIndex = ui.tabsShell->indexOf(ui.tabTray);
 		if (trayIndex >= 0) {
 			auto* nativeTray = new QWidget(ui.tabsShell);
+			nativeTray->setObjectName(ui.tabTray->objectName());
 			auto* trayForm = new QFormLayout(nativeTray);
 			ui.lblSysTray = new QLabel(tr("Systray options"), nativeTray);
 			ui.lblSysTray->setProperty("m3NativeSurface", true);
@@ -1319,6 +1320,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int runIndex = ui.tabsShell->indexOf(ui.tabRun);
 		if (runIndex >= 0) {
 			auto* nativeRun = new QWidget(ui.tabsShell);
+			nativeRun->setObjectName(ui.tabRun->objectName());
 			auto* runLayout = new QVBoxLayout(nativeRun);
 			auto* runHint = new QLabel(tr("You can configure custom entries for all sandboxes run menus."), nativeRun);
 			runHint->setWordWrap(true);
@@ -1355,6 +1357,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int shellIndex = ui.tabsShell->indexOf(ui.tabWindows);
 		if (shellIndex >= 0) {
 			auto* nativeShell = new QWidget(ui.tabsShell);
+			nativeShell->setObjectName(ui.tabWindows->objectName());
 			auto* shellLayout = new QVBoxLayout(nativeShell);
 			auto addShellSection = [&](QLabel*& heading, const QString& text) {
 				heading = new QLabel(text, nativeShell);
@@ -1451,6 +1454,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int addonConfigIndex = ui.tabsAddons->indexOf(ui.tabAddonConfig);
 		if (addonConfigIndex >= 0) {
 			auto* nativeAddonConfig = new QWidget(ui.tabsAddons);
+			nativeAddonConfig->setObjectName(ui.tabAddonConfig->objectName());
 			auto* addonForm = new QFormLayout(nativeAddonConfig);
 			ui.lblDiskImage = new QLabel(tr("Disk Image Support"), nativeAddonConfig);
 			ui.lblDiskImage->setProperty("m3NativeSurface", true);
@@ -1492,6 +1496,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int addonListIndex = ui.tabsAddons->indexOf(ui.tabAddonList);
 		if (addonListIndex >= 0) {
 			auto* nativeAddonList = new QWidget(ui.tabsAddons);
+			nativeAddonList->setObjectName(ui.tabAddonList->objectName());
 			auto* addonListLayout = new QVBoxLayout(nativeAddonList);
 			ui.lblUpdateAddons = new QLabel(tr("<a href=\"sbie://addons\">update add-on list now</a>"), nativeAddonList);
 			ui.lblUpdateAddons->setOpenExternalLinks(false);
@@ -1544,6 +1549,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int alertIndex = ui.tabsControl->indexOf(ui.tabAlert);
 		if (alertIndex >= 0) {
 			auto* nativeAlert = new QWidget(ui.tabsControl);
+			nativeAlert->setObjectName(ui.tabAlert->objectName());
 			auto* alertLayout = new QVBoxLayout(nativeAlert);
 			ui.chkStartBlock = new QCheckBox(tr("Prevent the listed programs from starting on this system"), nativeAlert);
 			alertLayout->addWidget(ui.chkStartBlock);
@@ -1582,6 +1588,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int forceIndex = ui.tabsControl->indexOf(ui.tabForce);
 		if (forceIndex >= 0) {
 			auto* nativeForce = new QWidget(ui.tabsControl);
+			nativeForce->setObjectName(ui.tabForce->objectName());
 			auto* forceForm = new QFormLayout(nativeForce);
 			ui.chkSandboxMoTW = new QCheckBox(tr("Force files with a Mark of The Web into a sandbox"), nativeForce);
 			ui.cmbMoTWSandbox = new QComboBox(nativeForce);
@@ -1603,6 +1610,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int usbIndex = ui.tabsControl->indexOf(ui.tabUSB);
 		if (usbIndex >= 0) {
 			auto* nativeUsb = new QWidget(ui.tabsControl);
+			nativeUsb->setObjectName(ui.tabUSB->objectName());
 			auto* usbForm = new QFormLayout(nativeUsb);
 			ui.chkSandboxUsb = new QCheckBox(tr("Automatically sandbox all attached USB drives"), nativeUsb);
 			ui.cmbUsbSandbox = new QComboBox(nativeUsb);
@@ -1648,6 +1656,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int templateIndex = ui.tabsTemplates->indexOf(ui.tabLocalTemplates);
 		if (templateIndex >= 0) {
 			auto* nativeTemplates = new QWidget(ui.tabsTemplates);
+			nativeTemplates->setObjectName(ui.tabLocalTemplates->objectName());
 			auto* templateLayout = new QVBoxLayout(nativeTemplates);
 			auto* templateHint = new QLabel(tr("This list contains user created custom templates for sandbox options"), nativeTemplates);
 			templateHint->setWordWrap(true);
@@ -1686,6 +1695,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int compatIndex = ui.tabsTemplates->indexOf(ui.tabAppCompat);
 		if (compatIndex >= 0) {
 			auto* nativeCompat = new QWidget(ui.tabsTemplates);
+			nativeCompat->setObjectName(ui.tabAppCompat->objectName());
 			auto* compatLayout = new QVBoxLayout(nativeCompat);
 			auto* compatHint = new QLabel(tr("Sandboxie has detected software applications in your system. Enable or disable compatibility settings for existing and new sandboxes."), nativeCompat);
 			compatHint->setWordWrap(true);
@@ -1746,6 +1756,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int lockIndex = ui.tabsAdvanced->indexOf(ui.tabLock);
 		if (lockIndex >= 0) {
 			auto* nativeLock = new QWidget(ui.tabsAdvanced);
+			nativeLock->setObjectName(ui.tabLock->objectName());
 			auto* lockLayout = new QVBoxLayout(nativeLock);
 			ui.lblIni = new QLabel(tr("Sandbox Configuration"), nativeLock);
 			ui.lblIni->setProperty("m3NativeSurface", true);
@@ -1826,6 +1837,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int updateIndex = ui.tabsSupport->indexOf(ui.tabUpdate);
 		if (updateIndex >= 0) {
 			auto* nativeUpdate = new QWidget(ui.tabsSupport);
+			nativeUpdate->setObjectName(ui.tabUpdate->objectName());
 			auto* updateLayout = new QVBoxLayout(nativeUpdate);
 			ui.lblUpdates = new QLabel(tr("Update Settings"), nativeUpdate);
 			ui.lblUpdates->setProperty("m3NativeSurface", true);
@@ -1908,7 +1920,9 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 	if (ui.tabs && ui.tabEdit) {
 		const int editIndex = ui.tabs->indexOf(ui.tabEdit);
 		if (editIndex >= 0) {
+			auto* legacyEdit = ui.tabEdit;
 			auto* nativeEdit = new QWidget(ui.tabs);
+			nativeEdit->setObjectName(legacyEdit->objectName());
 			auto* editLayout = new QVBoxLayout(nativeEdit);
 			auto* editToolbar = new QHBoxLayout();
 			ui.btnEditIni = new QPushButton(tr("Edit ini"), nativeEdit);
@@ -1933,7 +1947,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 			editLayout->addWidget(ui.txtIniSection, 1);
 			ui.tabs->removeTab(editIndex);
 			ui.tabs->insertTab(editIndex, nativeEdit, tr("Edit ini Section"));
-			ui.tabEdit->deleteLater();
+			legacyEdit->deleteLater();
+			ui.tabEdit = nativeEdit;
 		}
 	}
 
@@ -1944,6 +1959,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int locationIndex = ui.tabsGUI->indexOf(ui.tabWindowLocation);
 		if (locationIndex >= 0) {
 			auto* nativeLocation = new QWidget(ui.tabsGUI);
+			nativeLocation->setObjectName(ui.tabWindowLocation->objectName());
 			auto* locationForm = new QFormLayout(nativeLocation);
 			ui.cmbLaunchMonitor = new QComboBox(nativeLocation);
 			ui.cmbNonMainLaunchMonitor = new QComboBox(nativeLocation);
@@ -2060,6 +2076,7 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		const int guiIndex = ui.tabsGUI->indexOf(ui.tab);
 		if (guiIndex >= 0) {
 			auto* nativeGui = new QWidget(ui.tabsGUI);
+			nativeGui->setObjectName(ui.tab->objectName());
 			auto* guiForm = new QFormLayout(nativeGui);
 			ui.cmbDPI = new QComboBox(nativeGui);
 			ui.cmbFontScale = new QComboBox(nativeGui);
@@ -2636,6 +2653,8 @@ CSettingsWindow::CSettingsWindow(QWidget* parent)
 		pSetTree->setShortcut(QKeySequence("Ctrl+Alt+T"));
 		pSetTree->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 		this->addAction(pSetTree);
+		if (m_pPageNavigationHost)
+			m_pPageNavigationHost->rebind(ui.tabs, theConf, QStringLiteral("SettingsWindow/Tabs"));
 	}
 	m_pSearch->setPlaceholderText(tr("Search for settings"));
 
@@ -2702,8 +2721,37 @@ void CSettingsWindow::OnResetUiFont()
 void CSettingsWindow::OnSetTree()
 {
 	if (!ui.tabs) return;
+	if (m_pPageNavigationHost) {
+		m_pPageNavigationHost->releaseStateManager();
+		m_pPageNavigationHost->rebind(ui.tabs);
+	}
+	QWidget* currentPage = ui.tabs->currentWidget();
+	if (currentPage) {
+		QGridLayout* pageLayout = qobject_cast<QGridLayout*>(currentPage->layout());
+		QLayoutItem* firstItem = pageLayout ? pageLayout->itemAt(0) : NULL;
+		QTabWidget* childTabs = firstItem ? qobject_cast<QTabWidget*>(firstItem->widget()) : NULL;
+		if (childTabs && childTabs->currentWidget())
+			currentPage = childTabs->currentWidget();
+	}
 	QWidget* pAltView = ConvertToTree(ui.tabs);
-	ui.verticalLayout->replaceWidget(ui.tabs, pAltView);
+	const int currentPageIndex = m_pStack->indexOf(currentPage);
+	if (currentPageIndex >= 0)
+		m_pStack->setCurrentIndex(currentPageIndex);
+	if (m_pPageNavigationHost) {
+		m_pTree->hide();
+		m_pSearch->parentWidget()->hide();
+		connect(m_pStack, &QStackedLayout::currentChanged, this, [this](int index) {
+			OnTab(m_pStack->widget(index));
+		});
+		m_pPageNavigationHost->rebind(pAltView,
+			m_pStack,
+			m_pTree,
+			theConf,
+			QStringLiteral("SettingsWindow/Tabs/Tree"));
+	}
+	else {
+		ui.verticalLayout->replaceWidget(ui.tabs, pAltView);
+	}
 	ui.tabs->deleteLater();
 	ui.tabs = NULL;
 }

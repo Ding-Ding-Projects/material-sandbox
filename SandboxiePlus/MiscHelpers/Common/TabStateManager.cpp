@@ -23,37 +23,107 @@
 #include <QMenu>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
+#include <QScopedValueRollback>
 #include <QSignalBlocker>
 #include <QPushButton>
 #include <QShortcut>
 #include <QSpinBox>
+#include <QStackedLayout>
 #include <QTabBar>
 #include <QTabWidget>
+#include <QTreeWidget>
+#include <QTreeWidgetItemIterator>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QWidgetAction>
 
-CTabStateManager::CTabStateManager(QTabWidget* tabs, CSettings* settings, const QString& key, QObject* parent)
-    : QObject(parent), m_tabs(tabs), m_settings(settings), m_key(key)
+#include <utility>
+
+CTabStateManager::CTabStateManager(QTabWidget* tabs,
+                                   CSettings* settings,
+                                   const QString& key,
+                                   QObject* parent)
+    : CTabStateManager(tabs, nullptr, tabs, settings, key, parent)
 {
-    if (!m_tabs)
+}
+
+CTabStateManager::CTabStateManager(QTabWidget* tabs,
+                                   QAbstractItemView* visibleNavigation,
+                                   QWidget* shortcutHost,
+                                   CSettings* settings,
+                                   const QString& key,
+                                   QObject* parent)
+    : QObject(parent),
+      m_tabs(tabs),
+      m_navigation(visibleNavigation),
+      m_shortcutHost(shortcutHost),
+      m_settings(settings),
+      m_key(key)
+{
+    initialize();
+}
+
+CTabStateManager::CTabStateManager(QStackedLayout* pages,
+                                   QAbstractItemView* visibleNavigation,
+                                   QWidget* shortcutHost,
+                                   CSettings* settings,
+                                   const QString& key,
+                                   QObject* parent)
+    : QObject(parent),
+      m_pages(pages),
+      m_navigation(visibleNavigation),
+      m_shortcutHost(shortcutHost),
+      m_settings(settings),
+      m_key(key)
+{
+    initialize();
+}
+
+CTabStateManager::~CTabStateManager()
+{
+    if (QWidget* interaction = interactionWidget())
+        interaction->removeEventFilter(this);
+    for (const QPointer<QShortcut>& shortcut : std::as_const(m_shortcuts))
+        delete shortcut.data();
+    for (const QPointer<QWidget>& transient : std::as_const(m_transients))
+        delete transient.data();
+}
+
+void CTabStateManager::initialize()
+{
+    QWidget* interaction = interactionWidget();
+    QWidget* shortcutHost = ownerWidget();
+    if (!interaction || !shortcutHost || pageCount() == 0)
         return;
-    QTabBar* bar = m_tabs->tabBar();
-    bar->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(bar, &QTabBar::customContextMenuRequested, this, &CTabStateManager::showContextMenu);
-    connect(m_tabs, &QTabWidget::currentChanged, this, [this](int index) {
+
+    if (!assignStablePageKeys())
+        return;
+    interaction->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(interaction, &QWidget::customContextMenuRequested,
+            this, &CTabStateManager::showContextMenu);
+    auto saveActive = [this](int index) {
         m_active = tabKey(index);
         save();
-    });
-    connect(bar, &QTabBar::tabMoved, this, [this](int, int) { save(); });
-    bar->installEventFilter(this);
-    auto anchor = [this]() {
-        const int index = m_tabs ? m_tabs->currentIndex() : -1;
-        return index >= 0 ? m_tabs->tabBar()->tabRect(index).center() : QPoint(1, 1);
     };
-    auto addSearchShortcut = [this, anchor](const QKeySequence& sequence, SearchScope scope) {
-        QShortcut* shortcut = new QShortcut(sequence, m_tabs);
+    if (m_tabs) {
+        connect(m_tabs, &QTabWidget::currentChanged, this, saveActive);
+        connect(m_tabs->tabBar(), &QTabBar::tabMoved, this, [this](int, int) { save(); });
+    }
+    else if (m_pages) {
+        connect(m_pages, &QStackedLayout::currentChanged, this, saveActive);
+    }
+    QObject* source = m_tabs ? static_cast<QObject*>(m_tabs.data())
+                             : static_cast<QObject*>(m_pages.data());
+    connect(source, &QObject::destroyed, this, [this]() { deleteLater(); });
+    interaction->installEventFilter(this);
+    auto anchor = [this]() {
+        const int index = currentIndex();
+        return index >= 0 ? itemRect(index).center() : QPoint(1, 1);
+    };
+    auto addSearchShortcut = [this, anchor, shortcutHost](const QKeySequence& sequence, SearchScope scope) {
+        QShortcut* shortcut = new QShortcut(sequence, shortcutHost);
         shortcut->setContext(Qt::WidgetWithChildrenShortcut);
+        m_shortcuts.append(shortcut);
         connect(shortcut, &QShortcut::activated, this, [this, anchor, scope]() {
             showScopedTabSearch(scope, anchor());
         });
@@ -66,17 +136,161 @@ CTabStateManager::CTabStateManager(QTabWidget* tabs, CSettings* settings, const 
     restoreOrder();
 }
 
+void CTabStateManager::trackTransient(QWidget* transient)
+{
+    if (transient)
+        m_transients.append(transient);
+}
+
+QWidget* CTabStateManager::interactionWidget() const
+{
+    if (m_navigation)
+        return m_navigation;
+    return m_tabs ? m_tabs->tabBar() : nullptr;
+}
+
+QWidget* CTabStateManager::ownerWidget() const
+{
+    if (m_shortcutHost)
+        return m_shortcutHost;
+    if (m_navigation)
+        return m_navigation;
+    return m_tabs;
+}
+
+int CTabStateManager::pageCount() const
+{
+    if (m_tabs)
+        return m_tabs->count();
+    return m_pages ? m_pages->count() : 0;
+}
+
+QWidget* CTabStateManager::pageAt(int index) const
+{
+    if (index < 0 || index >= pageCount())
+        return nullptr;
+    if (m_tabs)
+        return m_tabs->widget(index);
+    return m_pages ? m_pages->widget(index) : nullptr;
+}
+
+QString CTabStateManager::pageText(int index) const
+{
+    if (auto* list = qobject_cast<QListWidget*>(m_navigation.data())) {
+        if (index >= 0 && index < list->count())
+            return list->item(index)->text();
+    }
+    if (auto* tree = qobject_cast<QTreeWidget*>(m_navigation.data())) {
+        for (QTreeWidgetItemIterator iterator(tree); *iterator; ++iterator) {
+            QTreeWidgetItem* item = *iterator;
+            if (item->data(0, Qt::UserRole).toInt() != index)
+                continue;
+            return item->parent()
+                ? QStringLiteral("%1 · %2").arg(item->parent()->text(0), item->text(0))
+                : item->text(0);
+        }
+    }
+    if (m_tabs && index >= 0 && index < m_tabs->count())
+        return m_tabs->tabText(index);
+    QWidget* page = pageAt(index);
+    if (!page)
+        return QString();
+    const QString accessibleName = page->accessibleName().trimmed();
+    return accessibleName.isEmpty() ? tabKey(page) : accessibleName;
+}
+
+int CTabStateManager::currentIndex() const
+{
+    if (m_tabs)
+        return m_tabs->currentIndex();
+    return m_pages ? m_pages->currentIndex() : -1;
+}
+
+void CTabStateManager::setCurrentIndex(int index)
+{
+    if (m_tabs)
+        m_tabs->setCurrentIndex(index);
+    else if (m_pages)
+        m_pages->setCurrentIndex(index);
+}
+
+int CTabStateManager::itemAt(const QPoint& position) const
+{
+    if (auto* list = qobject_cast<QListWidget*>(m_navigation.data()))
+        return list->indexAt(position).row();
+    if (auto* tree = qobject_cast<QTreeWidget*>(m_navigation.data())) {
+        QTreeWidgetItem* item = tree->itemAt(position);
+        return item ? item->data(0, Qt::UserRole).toInt() : -1;
+    }
+    return m_tabs ? m_tabs->tabBar()->tabAt(position) : -1;
+}
+
+QRect CTabStateManager::itemRect(int index) const
+{
+    if (auto* list = qobject_cast<QListWidget*>(m_navigation.data())) {
+        if (index >= 0 && index < list->count())
+            return list->visualItemRect(list->item(index));
+    }
+    if (auto* tree = qobject_cast<QTreeWidget*>(m_navigation.data())) {
+        for (QTreeWidgetItemIterator iterator(tree); *iterator; ++iterator) {
+            QTreeWidgetItem* item = *iterator;
+            if (item->data(0, Qt::UserRole).toInt() == index)
+                return tree->visualItemRect(item);
+        }
+    }
+    return m_tabs && index >= 0 && index < m_tabs->count()
+        ? m_tabs->tabBar()->tabRect(index)
+        : QRect(QPoint(0, 0), QSize(1, 1));
+}
+
+QPoint CTabStateManager::mapToGlobal(const QPoint& position) const
+{
+    if (m_navigation)
+        return m_navigation->viewport()->mapToGlobal(position);
+    QWidget* interaction = interactionWidget();
+    return interaction ? interaction->mapToGlobal(position) : position;
+}
+
 QString CTabStateManager::tabKey(int index) const
 {
-    return m_tabs && index >= 0 && index < m_tabs->count() ? tabKey(m_tabs->widget(index)) : QString();
+    return tabKey(pageAt(index));
 }
 
 QString CTabStateManager::tabKey(QWidget* page) const
 {
     if (!page)
         return QString();
+    const QString assigned = page->property("tabStateManagerKey").toString().trimmed();
+    if (!assigned.isEmpty())
+        return assigned;
     const QString stable = page->objectName().trimmed();
-    return stable.isEmpty() ? page->windowTitle().trimmed() : stable;
+    return stable;
+}
+
+bool CTabStateManager::assignStablePageKeys()
+{
+    QSet<QString> used;
+    for (int index = 0; index < pageCount(); ++index) {
+        QWidget* page = pageAt(index);
+        if (!page)
+            continue;
+        QString key = page->property("tabStateManagerKey").toString().trimmed();
+        if (key.isEmpty())
+            key = page->objectName().trimmed();
+        // Designer-generated pages are not guaranteed to have an object name,
+        // and duplicate names are common in nested option forms. Do not turn
+        // off the entire state manager for those pages: derive a deterministic
+        // per-position fallback and keep the explicit key when it is unique.
+        if (key.isEmpty())
+            key = QStringLiteral("page-%1").arg(index + 1);
+        const QString base = key;
+        int suffix = 2;
+        while (used.contains(key))
+            key = QStringLiteral("%1-%2").arg(base).arg(suffix++);
+        page->setProperty("tabStateManagerKey", key);
+        used.insert(key);
+    }
+    return used.size() == pageCount();
 }
 
 void CTabStateManager::load()
@@ -106,8 +320,8 @@ void CTabStateManager::load()
     for (auto it = appearance.begin(); it != appearance.end(); ++it) {
         m_appearanceOverrides.insert(it.key());
         QWidget* page = nullptr;
-        for (int i = 0; i < m_tabs->count(); ++i)
-            if (tabKey(i) == it.key()) { page = m_tabs->widget(i); break; }
+        for (int i = 0; i < pageCount(); ++i)
+            if (tabKey(i) == it.key()) { page = pageAt(i); break; }
         if (!page || !it.value().isObject())
             continue;
         const QJsonObject value = it.value().toObject();
@@ -128,12 +342,12 @@ void CTabStateManager::load()
 
 void CTabStateManager::save() const
 {
-    if (!m_settings || !m_tabs)
+    if (m_restoring || !m_settings || pageCount() == 0)
         return;
     QJsonObject root;
     root.insert(QStringLiteral("schema"), 2);
     QJsonArray order;
-    for (int i = 0; i < m_tabs->count(); ++i)
+    for (int i = 0; i < pageCount(); ++i)
         order.append(tabKey(i));
     root.insert(QStringLiteral("order"), order);
     QJsonArray pinned;
@@ -144,12 +358,12 @@ void CTabStateManager::save() const
     for (auto it = m_groups.cbegin(); it != m_groups.cend(); ++it)
         groups.insert(it.key(), it.value());
     root.insert(QStringLiteral("groups"), groups);
-    root.insert(QStringLiteral("active"), m_active.isEmpty() ? tabKey(m_tabs->currentIndex()) : m_active);
+    root.insert(QStringLiteral("active"), m_active.isEmpty() ? tabKey(currentIndex()) : m_active);
     QJsonObject appearance;
     for (const QString& key : m_appearanceOverrides) {
         QWidget* page = nullptr;
-        for (int i = 0; i < m_tabs->count(); ++i)
-            if (tabKey(i) == key) { page = m_tabs->widget(i); break; }
+        for (int i = 0; i < pageCount(); ++i)
+            if (tabKey(i) == key) { page = pageAt(i); break; }
         if (!page)
             continue;
         const QFont font = page->font();
@@ -172,26 +386,29 @@ void CTabStateManager::save() const
 
 void CTabStateManager::restoreOrder()
 {
-    if (!m_tabs || !m_settings)
+    if ((!m_tabs && !m_pages) || !m_settings)
         return;
     const QJsonDocument document = QJsonDocument::fromJson(m_settings->GetBlob(m_key));
     const QJsonObject root = document.object();
     const int schema = root.value(QStringLiteral("schema")).toInt();
     if (schema != 1 && schema != 2)
         return;
+    QScopedValueRollback<bool> restoring(m_restoring, true);
     const QJsonArray order = root.value(QStringLiteral("order")).toArray();
-    QTabBar* bar = m_tabs->tabBar();
-    for (int target = 0; target < order.size(); ++target) {
-        const QString wanted = order.at(target).toString();
-        int current = -1;
-        for (int i = target; i < m_tabs->count(); ++i) if (tabKey(i) == wanted) { current = i; break; }
-        if (current >= 0 && current != target)
-            bar->moveTab(current, target);
+    if (m_tabs) {
+        QTabBar* bar = m_tabs->tabBar();
+        for (int target = 0; target < order.size(); ++target) {
+            const QString wanted = order.at(target).toString();
+            int current = -1;
+            for (int i = target; i < pageCount(); ++i) if (tabKey(i) == wanted) { current = i; break; }
+            if (current >= 0 && current != target)
+                bar->moveTab(current, target);
+        }
     }
     if (!m_active.isEmpty()) {
-        for (int i = 0; i < m_tabs->count(); ++i) {
+        for (int i = 0; i < pageCount(); ++i) {
             if (tabKey(i) == m_active) {
-                m_tabs->setCurrentIndex(i);
+                setCurrentIndex(i);
                 break;
             }
         }
@@ -200,13 +417,14 @@ void CTabStateManager::restoreOrder()
 
 void CTabStateManager::showContextMenu(const QPoint& position)
 {
-    if (!m_tabs)
+    QWidget* owner = ownerWidget();
+    if (!owner || pageCount() == 0)
         return;
-    const int index = m_tabs->tabBar()->tabAt(position);
+    const int index = itemAt(position);
     if (index < 0)
         return;
     const QString name = tabKey(index);
-    QMenu menu(m_tabs);
+    QMenu menu;
     QWidgetAction* searchAction = new QWidgetAction(&menu);
     QLineEdit* filter = new QLineEdit(&menu);
     filter->setPlaceholderText(tr("Filter tab actions"));
@@ -234,21 +452,22 @@ void CTabStateManager::showContextMenu(const QPoint& position)
     connect(currentGroupSearch, &QAction::triggered, this, [this, position, name]() { showScopedTabSearch(SearchScope::CurrentGroup, position, m_groups.value(name)); });
     connect(groupNameSearch, &QAction::triggered, this, [this, position]() { showScopedTabSearch(SearchScope::GroupNames, position); });
     connect(searchTabs, &QAction::triggered, this, [this, position]() { showScopedTabSearch(SearchScope::MasterTabs, position); });
-    connect(pin, &QAction::triggered, &menu, [this, name]() {
+    connect(pin, &QAction::triggered, this, [this, name]() {
         if (m_pinned.contains(name)) m_pinned.remove(name); else m_pinned.insert(name);
         save();
     });
-    connect(group, &QAction::triggered, &menu, [this, name, position]() {
+    connect(group, &QAction::triggered, this, [this, name, position]() {
         showGroupPicker(name, position);
     });
-    connect(clearGroup, &QAction::triggered, &menu, [this, name]() { m_groups.remove(name); save(); });
-    connect(edit, &QAction::triggered, &menu, [this, name]() {
+    connect(clearGroup, &QAction::triggered, this, [this, name]() { m_groups.remove(name); save(); });
+    connect(edit, &QAction::triggered, this, [this, name]() {
         QWidget* page = nullptr;
-        for (int i = 0; i < m_tabs->count(); ++i)
-            if (tabKey(i) == name) { page = m_tabs->widget(i); break; }
+        for (int i = 0; i < pageCount(); ++i)
+            if (tabKey(i) == name) { page = pageAt(i); break; }
         if (!page)
             return;
-        QDialog* editor = new QDialog(m_tabs, Qt::Tool | Qt::WindowStaysOnTopHint);
+        QDialog* editor = new QDialog(ownerWidget(), Qt::Tool | Qt::WindowStaysOnTopHint);
+        trackTransient(editor);
         editor->setAttribute(Qt::WA_DeleteOnClose);
         editor->setWindowTitle(tr("Edit tab page typography"));
         QFormLayout* form = new QFormLayout(editor);
@@ -331,7 +550,12 @@ void CTabStateManager::showContextMenu(const QPoint& position)
         form->addRow(tr("Not represented"), limitation);
         QPushButton* apply = new QPushButton(tr("Apply"), editor);
         form->addRow(QString(), apply);
-        connect(apply, &QPushButton::clicked, editor, [this, page, font, size, weight, style, underline, strikeOut, overline, capitalization, letterSpacing, wordSpacing, editor, name]() {
+        QPointer<QWidget> pageGuard(page);
+        connect(apply, &QPushButton::clicked, editor, [this, pageGuard, font, size, weight, style, underline, strikeOut, overline, capitalization, letterSpacing, wordSpacing, editor, name]() {
+            if (!pageGuard) {
+                editor->close();
+                return;
+            }
             QFont value = font->currentFont();
             value.setPointSize(size->value());
             value.setWeight(static_cast<QFont::Weight>(weight->currentData().toInt()));
@@ -342,24 +566,32 @@ void CTabStateManager::showContextMenu(const QPoint& position)
             value.setCapitalization(static_cast<QFont::Capitalization>(capitalization->currentData().toInt()));
             value.setLetterSpacing(QFont::AbsoluteSpacing, letterSpacing->value());
             value.setWordSpacing(wordSpacing->value());
-            page->setFont(value);
+            pageGuard->setFont(value);
             m_appearanceOverrides.insert(name);
             save();
             editor->close();
         });
-        const QPoint anchor = m_tabs->tabBar()->mapToGlobal(m_tabs->tabBar()->tabRect(m_tabs->indexOf(page)).bottomLeft());
+        int pageIndex = -1;
+        for (int i = 0; i < pageCount(); ++i)
+            if (pageAt(i) == page) { pageIndex = i; break; }
+        const QPoint anchor = mapToGlobal(itemRect(pageIndex).bottomLeft());
         editor->move(anchor);
         editor->show();
     });
-    menu.exec(m_tabs->tabBar()->mapToGlobal(position));
+    QPointer<CTabStateManager> guard(this);
+    menu.exec(mapToGlobal(position));
+    if (!guard)
+        return;
 }
 
 void CTabStateManager::showGroupPicker(const QString& tabName, const QPoint& position)
 {
-    if (!m_tabs)
+    QWidget* owner = ownerWidget();
+    if (!owner || pageCount() == 0)
         return;
 
-    QDialog* dialog = new QDialog(m_tabs, Qt::Tool | Qt::WindowStaysOnTopHint);
+    QDialog* dialog = new QDialog(owner, Qt::Tool | Qt::WindowStaysOnTopHint);
+    trackTransient(dialog);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->setWindowTitle(tr("Move tab into group"));
     dialog->setMinimumSize(420, 340);
@@ -480,9 +712,9 @@ void CTabStateManager::showGroupPicker(const QString& tabName, const QPoint& pos
     connect(buttons, &QDialogButtonBox::rejected, dialog, &QDialog::reject);
     search->setFocus();
     refresh();
-    const int anchorIndex = m_tabs->tabBar()->tabAt(position);
-    const QRect anchorRect = anchorIndex >= 0 ? m_tabs->tabBar()->tabRect(anchorIndex) : QRect(QPoint(0, 0), QSize(1, 1));
-    dialog->move(m_tabs->tabBar()->mapToGlobal(anchorRect.bottomLeft()));
+    const int anchorIndex = itemAt(position);
+    const QRect anchorRect = anchorIndex >= 0 ? itemRect(anchorIndex) : QRect(QPoint(0, 0), QSize(1, 1));
+    dialog->move(mapToGlobal(anchorRect.bottomLeft()));
     dialog->show();
 }
 
@@ -493,10 +725,12 @@ void CTabStateManager::showTabSearch(const QPoint& position)
 
 void CTabStateManager::showScopedTabSearch(SearchScope scope, const QPoint& position, const QString& groupName)
 {
-    if (!m_tabs)
+    QWidget* owner = ownerWidget();
+    if (!owner || pageCount() == 0)
         return;
 
-    QDialog* dialog = new QDialog(m_tabs, Qt::Tool | Qt::WindowStaysOnTopHint);
+    QDialog* dialog = new QDialog(owner, Qt::Tool | Qt::WindowStaysOnTopHint);
+    trackTransient(dialog);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     const bool groupNames = scope == SearchScope::GroupNames;
     const bool groupScoped = scope == SearchScope::CurrentGroup;
@@ -568,10 +802,10 @@ void CTabStateManager::showScopedTabSearch(SearchScope scope, const QPoint& posi
         results->clear();
         int matches = 0;
         QSet<QString> seenGroups;
-        for (int i = 0; i < m_tabs->count(); ++i) {
+        for (int i = 0; i < pageCount(); ++i) {
             const QString key = tabKey(i);
             const QString group = m_groups.value(key);
-            const QString label = m_tabs->tabText(i);
+            const QString label = pageText(i);
             if (groupScoped && group != groupName)
                 continue;
             if (groupNames && group.isEmpty())
@@ -623,8 +857,8 @@ void CTabStateManager::showScopedTabSearch(SearchScope scope, const QPoint& posi
     connect(sample, &QLineEdit::textChanged, dialog, [refresh](const QString&) { refresh(); });
     connect(results, &QListWidget::itemActivated, dialog, [this, dialog](QListWidgetItem* item) {
         const int index = item ? item->data(Qt::UserRole).toInt() : -1;
-        if (index >= 0 && index < m_tabs->count()) {
-            m_tabs->setCurrentIndex(index);
+        if (index >= 0 && index < pageCount()) {
+            setCurrentIndex(index);
             m_active = tabKey(index);
             save();
             dialog->close();
@@ -632,16 +866,16 @@ void CTabStateManager::showScopedTabSearch(SearchScope scope, const QPoint& posi
     });
     query->setFocus();
     refresh();
-    const int anchorIndex = m_tabs->tabBar()->tabAt(position);
-    const QRect anchorRect = anchorIndex >= 0 ? m_tabs->tabBar()->tabRect(anchorIndex) : QRect(QPoint(0, 0), QSize(1, 1));
-    const QPoint anchor = m_tabs->tabBar()->mapToGlobal(anchorRect.bottomLeft());
+    const int anchorIndex = itemAt(position);
+    const QRect anchorRect = anchorIndex >= 0 ? itemRect(anchorIndex) : QRect(QPoint(0, 0), QSize(1, 1));
+    const QPoint anchor = mapToGlobal(anchorRect.bottomLeft());
     dialog->move(anchor);
     dialog->show();
 }
 
 bool CTabStateManager::eventFilter(QObject* watched, QEvent* event)
 {
-    if (watched == m_tabs->tabBar() && event->type() == QEvent::MouseButtonRelease)
+    if (watched == interactionWidget() && event->type() == QEvent::MouseButtonRelease)
         save();
     return QObject::eventFilter(watched, event);
 }

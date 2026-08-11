@@ -1,6 +1,10 @@
 #pragma once
 
 #include <QObject>
+#include <QList>
+#include <QPoint>
+#include <QPointer>
+#include <QRect>
 #include <QSet>
 #include <QHash>
 #include <QString>
@@ -8,14 +12,31 @@
 #include "../mischelpers_global.h"
 
 class CSettings;
+class QAbstractItemView;
+class QShortcut;
+class QStackedLayout;
 class QTabWidget;
 class QMenu;
+class QWidget;
 
 class MISCHELPERS_EXPORT CTabStateManager : public QObject
 {
     Q_OBJECT
 public:
     CTabStateManager(QTabWidget* tabs, CSettings* settings, const QString& key, QObject* parent = nullptr);
+    CTabStateManager(QTabWidget* tabs,
+                     QAbstractItemView* visibleNavigation,
+                     QWidget* shortcutHost,
+                     CSettings* settings,
+                     const QString& key,
+                     QObject* parent = nullptr);
+    CTabStateManager(QStackedLayout* pages,
+                     QAbstractItemView* visibleNavigation,
+                     QWidget* shortcutHost,
+                     CSettings* settings,
+                     const QString& key,
+                     QObject* parent = nullptr);
+    ~CTabStateManager() override;
 
 private slots:
     void showContextMenu(const QPoint& position);
@@ -28,11 +49,30 @@ private:
     bool eventFilter(QObject* watched, QEvent* event) override;
     QString tabKey(int index) const;
     QString tabKey(QWidget* page) const;
+    bool assignStablePageKeys();
+    void initialize();
+    void trackTransient(QWidget* transient);
+    QWidget* interactionWidget() const;
+    QWidget* ownerWidget() const;
+    int pageCount() const;
+    QWidget* pageAt(int index) const;
+    QString pageText(int index) const;
+    int currentIndex() const;
+    void setCurrentIndex(int index);
+    int itemAt(const QPoint& position) const;
+    QRect itemRect(int index) const;
+    QPoint mapToGlobal(const QPoint& position) const;
     void load();
     void save() const;
     void restoreOrder();
 
-    QTabWidget* m_tabs;
+    QPointer<QTabWidget> m_tabs;
+    QPointer<QStackedLayout> m_pages;
+    QPointer<QAbstractItemView> m_navigation;
+    QPointer<QWidget> m_shortcutHost;
+    QList<QPointer<QShortcut>> m_shortcuts;
+    QList<QPointer<QWidget>> m_transients;
+    bool m_restoring = false;
     CSettings* m_settings;
     QString m_key;
     QSet<QString> m_pinned;
