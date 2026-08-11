@@ -98,7 +98,13 @@ function resolveSevenZip() {
 function archiveListing(sevenZip, archive) {
   const result = spawnSync(sevenZip, ['l', '-ba', archive], { encoding: 'utf8', windowsHide: true });
   if (result.status !== 0) throw new Error(`could not list archive ${archive}: ${result.stderr}`);
-  return result.stdout;
+  // 7-Zip emits archive members with a tool/version-dependent prefix (for
+  // example `.` or `./`). Normalize separators and trim that presentation
+  // detail before matching the required payload paths.
+  return result.stdout
+    .split(/\r?\n/)
+    .map((line) => line.trim().replaceAll('\\', '/').replace(/^\.\//, ''))
+    .join('\n');
 }
 
 function peMachine(file) {

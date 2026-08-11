@@ -14,6 +14,11 @@ Qt root from the installer action's target package when that package lives
 beside the checkout, and artifact verification discovers the installed VC143
 runtime version instead of assuming the `v143` alias exists.
 
+The ARM64 Sandboxie-Tools solution maps the `ImBox` Release configuration to
+`Release|ARM64` and includes its build mapping, so the ARM64 staging step cannot
+silently omit the executable. Archive membership checks normalize 7-Zip's
+separator and `./` presentation before matching required troubleshooting files.
+
 Every `SboxDrv.vcxproj` debug and release configuration for Win32, x64, and
 ARM64 sets the scalar WDK `SignMode` property to `Off`, so staging cannot inherit a
 freshly signed driver from the supported build. The unsigned-packaging contract

@@ -69,6 +69,19 @@ assertIncludes(copyBuild, 'SBIE_QT_ROOT', 'staging Qt-root override');
 const artifactValidator = fs.readFileSync('scripts/validate-ci-artifacts.mjs', 'utf8');
 assertIncludes(artifactValidator, 'hasCrt', 'artifact VC runtime discovery');
 assertIncludes(artifactValidator, 'discoveredVersions', 'artifact versioned VC runtime fallback');
+assertIncludes(artifactValidator, "replaceAll('\\\\', '/')", 'artifact archive path normalization');
+assertIncludes(artifactValidator, "replace(/^\\.\\//, '')", 'artifact archive dot-prefix normalization');
+const sandboxieToolsSolution = fs.readFileSync('SandboxieTools/SandboxieTools.sln', 'utf8');
+assertIncludes(
+  sandboxieToolsSolution,
+  '{96BCA164-BCD0-4839-B9FE-DA7E557481DB}.Release|ARM64.ActiveCfg = Release|ARM64',
+  'ImBox ARM64 release mapping',
+);
+assertIncludes(
+  sandboxieToolsSolution,
+  '{96BCA164-BCD0-4839-B9FE-DA7E557481DB}.Release|ARM64.Build.0 = Release|ARM64',
+  'ImBox ARM64 release build mapping',
+);
 for (const marker of [
   'GITHUB_PATH',
   'GITHUB_ENV',
