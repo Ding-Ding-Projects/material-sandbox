@@ -59,7 +59,7 @@ const SOURCE_ROOTS = [
 const SOURCE_EXTENSIONS = new Set([
   '.asm', '.bat', '.c', '.cmd', '.config', '.cpp', '.ddf', '.def', '.filters',
   '.h', '.html', '.idl', '.inf', '.ini', '.iss', '.js', '.json', '.manifest',
-  '.mjs', '.nsh', '.nsi', '.pro', '.props', '.sln', '.txt', '.vcxproj', '.yml',
+  '.mjs', '.nsh', '.nsi', '.pro', '.props', '.ps1', '.sln', '.txt', '.vcxproj', '.yml',
 ]);
 const LEGACY_WINDOWS_1252_PATHS = new Set([
   'installer/isl/swedish.isl',
