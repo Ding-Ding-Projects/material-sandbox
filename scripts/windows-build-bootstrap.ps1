@@ -846,7 +846,7 @@ function Assert-PeVersion {
 function Test-InnoSetupVersion {
     param([string]$Version)
     $normalized = ([string]$Version).Trim()
-    return $normalized -eq '6.7.3' -or $normalized -like '6.7.3.*'
+    return $normalized -eq $script:Pins.InnoSetup.Version
 }
 
 function Ensure-InnoSetup {
@@ -893,7 +893,9 @@ function Invoke-SelfTest {
     if ($version.Display -ne '1.18.2' -or $version.Binary -ne '1.18.2.0') { throw 'Version parsing self-test failed.' }; $checks++
     foreach ($fixture in @(
         @{ Value = '6.7.3   '; Expected = $true },
-        @{ Value = '6.7.2   '; Expected = $false }
+        @{ Value = '6.7.2   '; Expected = $false },
+        @{ Value = '6.7.3.9'; Expected = $false },
+        @{ Value = '6.7.3.forbidden'; Expected = $false }
     )) {
         if ((Test-InnoSetupVersion -Version $fixture.Value) -ne $fixture.Expected) { throw 'Inno Setup padded-version self-test failed.' }; $checks++
     }
