@@ -17,13 +17,13 @@ extern "C"
         if (Func == NULL) Func = (FUNC)GetProcAddress(g_combase, "GetRestrictedErrorInfo");
         return Func(info);
     }
-    int32_t __stdcall WINRT_RoGetActivationFactory(void* classId, winrt::guid const& iid, void** factory) noexcept {
+    int32_t __stdcall WINRT_IMPL_RoGetActivationFactory(void* classId, winrt::guid const& iid, void** factory) noexcept {
         typedef int32_t(__stdcall* FUNC)(void* classId, winrt::guid const& iid, void** factory);
         static FUNC Func = NULL;
         if (Func == NULL) Func = (FUNC)GetProcAddress(g_combase, "RoGetActivationFactory");
         return Func(classId, iid, factory);
     }
-    int32_t __stdcall WINRT_RoOriginateLanguageException(int32_t error, void* message, void* exception) noexcept {
+    int32_t __stdcall WINRT_IMPL_RoOriginateLanguageException(int32_t error, void* message, void* exception) noexcept {
         typedef int32_t(__stdcall* FUNC)(int32_t error, void* message, void* exception);
         static FUNC Func = NULL;
         if (Func == NULL) Func = (FUNC)GetProcAddress(g_combase, "RoOriginateLanguageException");

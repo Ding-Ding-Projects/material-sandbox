@@ -154,7 +154,7 @@ for (const pattern of [/\bsandman_[^\r\n\\/ ]+\.qm\s*$/im, /\bqt_[^\r\n\\/ ]+\.q
   if (!pattern.test(translations)) throw new Error(`translations.7z is missing required member family ${pattern}`);
 }
 const troubleshooting = archiveListing(sevenZip, path.join(root, 'troubleshooting.7z'));
-for (const pattern of [/\blayout\.json\s*$/im, /\bAppCompatibility\.js\s*$/im, /(?:^|[\\/])UI[\\/]shell\.js\s*$/im, /(?:^|[\\/])Sandboxing[\\/]SBIEMSG[\\/]SBIEMSG\.js\s*$/im]) {
+for (const pattern of [/\blayout\.json\s*$/im, /\bAppCompatibility\.js\s*$/im, /(?:^|[\\/\s])UI[\\/]shell\.js\s*$/im, /(?:^|[\\/\s])Sandboxing[\\/]SBIEMSG[\\/]SBIEMSG\.js\s*$/im]) {
   if (!pattern.test(troubleshooting)) throw new Error(`troubleshooting.7z is missing required member ${pattern}`);
 }
 

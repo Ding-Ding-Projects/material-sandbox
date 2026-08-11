@@ -797,8 +797,8 @@ function Assert-Stage {
         '(?im)\bqtbase_[^\r\n\\/ ]+\.qm\s*$', '(?im)\bqtmultimedia_[^\r\n\\/ ]+\.qm\s*$'
     )
     Assert-ArchiveContains -SevenZip $SevenZip -Archive (Join-Path $Stage 'troubleshooting.7z') -Patterns @(
-        '(?im)\blayout\.json\s*$', '(?im)\bAppCompatibility\.js\s*$', '(?im)(?:^|[\\/])UI[\\/]shell\.js\s*$',
-        '(?im)(?:^|[\\/])Sandboxing[\\/]SBIEMSG[\\/]SBIEMSG\.js\s*$'
+        '(?im)\blayout\.json\s*$', '(?im)\bAppCompatibility\.js\s*$', '(?im)(?:^|[\\/\s])UI[\\/]shell\.js\s*$',
+        '(?im)(?:^|[\\/\s])Sandboxing[\\/]SBIEMSG[\\/]SBIEMSG\.js\s*$'
     )
 
     $targetMachine = if ($TargetArchitecture -eq 'x64') { 0x8664 } else { 0xaa64 }
