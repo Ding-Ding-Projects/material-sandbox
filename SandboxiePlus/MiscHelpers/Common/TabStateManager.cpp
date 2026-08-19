@@ -3,14 +3,17 @@
 
 #include "Settings.h"
 #include <QAction>
+#include <QBrush>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QColorDialog>
 #include <QAbstractItemView>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QDoubleSpinBox>
 #include <QFontComboBox>
 #include <QFormLayout>
+#include <QGridLayout>
 #include <QFont>
 #include <QGroupBox>
 #include <QInputDialog>
@@ -21,11 +24,14 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMenu>
+#include <QMessageBox>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <QScopedValueRollback>
 #include <QSignalBlocker>
 #include <QPushButton>
+#include <QScrollArea>
+#include <QSharedPointer>
 #include <QShortcut>
 #include <QSpinBox>
 #include <QStackedLayout>
@@ -37,6 +43,7 @@
 #include <QHBoxLayout>
 #include <QWidgetAction>
 
+#include <functional>
 #include <utility>
 
 CTabStateManager::CTabStateManager(QTabWidget* tabs,
@@ -103,11 +110,12 @@ void CTabStateManager::initialize()
             this, &CTabStateManager::showContextMenu);
     auto saveActive = [this](int index) {
         m_active = tabKey(index);
+        applyGroupPresentation();
         save();
     };
     if (m_tabs) {
         connect(m_tabs, &QTabWidget::currentChanged, this, saveActive);
-        connect(m_tabs->tabBar(), &QTabBar::tabMoved, this, [this](int, int) { save(); });
+        connect(m_tabs->tabBar(), &QTabBar::tabMoved, this, [this](int, int) { applyGroupPresentation(); save(); });
     }
     else if (m_pages) {
         connect(m_pages, &QStackedLayout::currentChanged, this, saveActive);
@@ -134,6 +142,9 @@ void CTabStateManager::initialize()
     addSearchShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_O), SearchScope::MasterTabs);
     load();
     restoreOrder();
+    restoreGroupedOrder();
+    applyGroupPresentation();
+    save();
 }
 
 void CTabStateManager::trackTransient(QWidget* transient)
@@ -293,6 +304,266 @@ bool CTabStateManager::assignStablePageKeys()
     return used.size() == pageCount();
 }
 
+QString CTabStateManager::groupForTab(const QString& tabName) const
+{
+    return m_groups.value(tabName).trimmed();
+}
+
+void CTabStateManager::setGroupForTab(const QString& tabName, const QString& groupName)
+{
+    if (tabName.isEmpty())
+        return;
+    if (groupName.isEmpty())
+        m_groups.remove(tabName);
+    else
+        m_groups.insert(tabName, groupName);
+}
+
+bool CTabStateManager::validGroupName(const QString& value, QString* error) const
+{
+    const QString trimmed = value.trimmed();
+    if (trimmed.isEmpty()) {
+        if (error) *error = tr("Enter a group name.");
+        return false;
+    }
+    if (trimmed.size() > 80) {
+        if (error) *error = tr("Group names are limited to 80 UTF-16 characters.");
+        return false;
+    }
+    for (const QChar character : trimmed) {
+        if (character.isControl()) {
+            if (error) *error = tr("Group names cannot contain control characters.");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool CTabStateManager::groupNameInUse(const QString& value, const QString& except) const
+{
+    const QString candidate = value.trimmed();
+    for (const QString& name : m_groupMetadata.keys()) {
+        if (!except.isEmpty() && name.compare(except, Qt::CaseInsensitive) == 0)
+            continue;
+        if (name.compare(candidate, Qt::CaseInsensitive) == 0)
+            return true;
+    }
+    for (const QString& name : m_groups.values()) {
+        if (!except.isEmpty() && name.compare(except, Qt::CaseInsensitive) == 0)
+            continue;
+        if (name.compare(candidate, Qt::CaseInsensitive) == 0)
+            return true;
+    }
+    return false;
+}
+
+QColor CTabStateManager::defaultGroupColor(const QString& groupName) const
+{
+    quint32 hash = 2166136261u;
+    for (const QChar character : groupName) {
+        hash ^= character.unicode();
+        hash *= 16777619u;
+    }
+    return QColor::fromHsv(static_cast<int>(hash % 360u), 150, 225, 255);
+}
+
+QStringList CTabStateManager::orderedGroupNames() const
+{
+    QStringList names;
+    auto appendUnique = [this, &names](const QString& candidate) {
+        if (candidate.isEmpty())
+            return;
+        if (!validGroupName(candidate))
+            return;
+        for (const QString& existing : std::as_const(names))
+            if (existing.compare(candidate, Qt::CaseInsensitive) == 0)
+                return;
+        names.append(candidate);
+    };
+
+    for (const QString& name : m_groupOrder)
+        appendUnique(name);
+    for (const QString& name : m_groupMetadata.keys())
+        appendUnique(name);
+    for (const QString& name : m_groups.values())
+        appendUnique(name);
+
+    QStringList remainder;
+    for (const QString& name : names) {
+        bool inOrder = false;
+        for (const QString& ordered : m_groupOrder)
+            if (ordered.compare(name, Qt::CaseInsensitive) == 0) { inOrder = true; break; }
+        if (!inOrder)
+            remainder.append(name);
+    }
+    remainder.sort(Qt::CaseInsensitive);
+    QStringList result;
+    for (const QString& name : m_groupOrder) {
+        for (const QString& candidate : names) {
+            if (candidate.compare(name, Qt::CaseInsensitive) == 0 && !result.contains(candidate)) {
+                result.append(candidate);
+                break;
+            }
+        }
+    }
+    for (const QString& name : remainder)
+        if (!result.contains(name))
+            result.append(name);
+    return result;
+}
+
+void CTabStateManager::ensureGroupMetadata()
+{
+    const QStringList names = orderedGroupNames();
+    QHash<QString, QString> canonical;
+    for (const QString& name : names)
+        canonical.insert(name.toLower(), name);
+
+    for (auto it = m_groups.begin(); it != m_groups.end();) {
+        const QString value = it.value().trimmed();
+        const QString canonicalName = canonical.value(value.toLower());
+        if (canonicalName.isEmpty())
+            it = m_groups.erase(it);
+        else {
+            it.value() = canonicalName;
+            ++it;
+        }
+    }
+
+    QHash<QString, GroupMetadata> normalizedMetadata;
+    for (const QString& name : names) {
+        for (auto it = m_groupMetadata.cbegin(); it != m_groupMetadata.cend(); ++it) {
+            if (it.key().compare(name, Qt::CaseInsensitive) == 0) {
+                normalizedMetadata.insert(name, it.value());
+                break;
+            }
+        }
+    }
+    m_groupMetadata = normalizedMetadata;
+
+    m_groupOrder = orderedGroupNames();
+    for (int index = 0; index < m_groupOrder.size(); ++index) {
+        const QString name = m_groupOrder.at(index);
+        auto metadata = m_groupMetadata.find(name);
+        if (metadata == m_groupMetadata.end()) {
+            GroupMetadata value;
+            value.color = defaultGroupColor(name);
+            value.order = index;
+            value.collapsed = false;
+            m_groupMetadata.insert(name, value);
+        } else {
+            metadata->order = index;
+            if (!metadata->color.isValid())
+                metadata->color = defaultGroupColor(name);
+        }
+    }
+}
+
+void CTabStateManager::applyGroupPresentation()
+{
+    ensureGroupMetadata();
+    const int activeIndex = currentIndex();
+    for (int index = 0; index < pageCount(); ++index) {
+        QWidget* page = pageAt(index);
+        const QString key = tabKey(index);
+        const QString groupName = groupForTab(key);
+        const GroupMetadata metadata = m_groupMetadata.value(groupName);
+        const bool collapsed = !groupName.isEmpty() && metadata.collapsed;
+        const bool visible = groupName.isEmpty() || m_pinned.contains(key) || index == activeIndex || !collapsed;
+        const QString description = groupName.isEmpty()
+            ? tr("Ungrouped tab")
+            : tr("Tab group %1, %2").arg(groupName, collapsed ? tr("collapsed") : tr("expanded"));
+        if (page)
+            page->setAccessibleDescription(description);
+        if (m_tabs) {
+            m_tabs->setTabVisible(index, visible);
+            m_tabs->tabBar()->setTabTextColor(index, groupName.isEmpty() ? QColor() : metadata.color);
+            m_tabs->setTabToolTip(index, groupName.isEmpty() ? pageText(index) : tr("%1 — %2").arg(pageText(index), description));
+        }
+        if (auto* list = qobject_cast<QListWidget*>(m_navigation.data())) {
+            if (index >= 0 && index < list->count()) {
+                QListWidgetItem* item = list->item(index);
+                item->setHidden(!visible);
+                item->setForeground(groupName.isEmpty() ? QBrush() : QBrush(metadata.color));
+                item->setToolTip(groupName.isEmpty() ? pageText(index) : tr("%1 — %2").arg(pageText(index), description));
+            }
+        }
+        if (auto* tree = qobject_cast<QTreeWidget*>(m_navigation.data())) {
+            for (QTreeWidgetItemIterator iterator(tree); *iterator; ++iterator) {
+                QTreeWidgetItem* item = *iterator;
+                if (item->data(0, Qt::UserRole).toInt() != index)
+                    continue;
+                item->setHidden(!visible);
+                item->setForeground(0, groupName.isEmpty() ? QBrush() : QBrush(metadata.color));
+                item->setToolTip(0, groupName.isEmpty() ? pageText(index) : tr("%1 — %2").arg(pageText(index), description));
+                break;
+            }
+        }
+    }
+}
+
+void CTabStateManager::restoreGroupedOrder()
+{
+    if (!m_tabs && !m_pages)
+        return;
+    QStringList desired;
+    auto append = [&desired](const QString& key) { if (!key.isEmpty() && !desired.contains(key)) desired.append(key); };
+    for (int index = 0; index < pageCount(); ++index)
+        if (m_pinned.contains(tabKey(index))) append(tabKey(index));
+    for (const QString& groupName : orderedGroupNames())
+        for (int index = 0; index < pageCount(); ++index)
+            if (!m_pinned.contains(tabKey(index)) && groupForTab(tabKey(index)).compare(groupName, Qt::CaseInsensitive) == 0)
+                append(tabKey(index));
+    for (int index = 0; index < pageCount(); ++index)
+        if (!m_pinned.contains(tabKey(index)) && groupForTab(tabKey(index)).isEmpty()) append(tabKey(index));
+
+    QScopedValueRollback<bool> restoring(m_restoring, true);
+    if (m_tabs) {
+        QTabBar* bar = m_tabs->tabBar();
+        for (int target = 0; target < desired.size(); ++target) {
+            int current = -1;
+            for (int index = target; index < pageCount(); ++index)
+                if (tabKey(index) == desired.at(target)) { current = index; break; }
+            if (current >= 0 && current != target)
+                bar->moveTab(current, target);
+        }
+    } else if (m_pages) {
+        QList<QWidget*> pages;
+        for (const QString& key : desired)
+            for (int index = 0; index < pageCount(); ++index)
+                if (tabKey(index) == key) { pages.append(pageAt(index)); break; }
+        QHash<QString, QListWidgetItem*> navigationItems;
+        if (auto* list = qobject_cast<QListWidget*>(m_navigation.data())) {
+            for (int index = list->count() - 1; index >= 0; --index) {
+                QListWidgetItem* item = list->takeItem(index);
+                const int pageIndex = item->data(Qt::UserRole).toInt();
+                if (pageIndex >= 0 && pageIndex < pageCount())
+                    navigationItems.insert(tabKey(pageIndex), item);
+                else
+                    delete item;
+            }
+            list->clear();
+        }
+        for (int target = 0; target < pages.size(); ++target) {
+            m_pages->removeWidget(pages.at(target));
+            m_pages->insertWidget(target, pages.at(target));
+        }
+        if (auto* list = qobject_cast<QListWidget*>(m_navigation.data())) {
+            for (const QString& key : desired) {
+                QListWidgetItem* item = navigationItems.take(key);
+                if (!item)
+                    continue;
+                item->setData(Qt::UserRole, list->count());
+                list->addItem(item);
+            }
+        }
+        if (!m_active.isEmpty()) {
+            for (int index = 0; index < pageCount(); ++index)
+                if (tabKey(index) == m_active) { setCurrentIndex(index); break; }
+        }
+    }
+}
+
 void CTabStateManager::load()
 {
     if (!m_settings)
@@ -303,15 +574,42 @@ void CTabStateManager::load()
     QJsonParseError error;
     const QJsonObject root = QJsonDocument::fromJson(data, &error).object();
     const int schema = root.value(QStringLiteral("schema")).toInt();
-    if (error.error != QJsonParseError::NoError || (schema != 1 && schema != 2))
+    if (error.error != QJsonParseError::NoError || (schema != 1 && schema != 2 && schema != 3))
         return;
+    m_pinned.clear();
+    m_groups.clear();
+    m_groupMetadata.clear();
+    m_groupOrder.clear();
+    m_active.clear();
     for (const QJsonValue& value : root.value(QStringLiteral("pinned")).toArray())
-        m_pinned.insert(value.toString());
+        if (!value.toString().trimmed().isEmpty())
+            m_pinned.insert(value.toString().trimmed());
     const QJsonObject groups = root.value(QStringLiteral("groups")).toObject();
     for (auto it = groups.begin(); it != groups.end(); ++it)
-        m_groups.insert(it.key(), it.value().toString());
+        if (!it.key().trimmed().isEmpty())
+            m_groups.insert(it.key().trimmed(), it.value().toString().trimmed());
     if (schema >= 2)
-        m_active = root.value(QStringLiteral("active")).toString();
+        m_active = root.value(QStringLiteral("active")).toString().trimmed();
+    if (schema >= 3) {
+        for (const QJsonValue& value : root.value(QStringLiteral("groupOrder")).toArray()) {
+            const QString name = value.toString().trimmed();
+            if (!name.isEmpty())
+                m_groupOrder.append(name);
+        }
+        const QJsonObject metadata = root.value(QStringLiteral("groupMetadata")).toObject();
+        for (auto it = metadata.begin(); it != metadata.end(); ++it) {
+            const QString name = it.key().trimmed();
+            const QJsonObject value = it.value().toObject();
+            if (name.isEmpty() || value.isEmpty())
+                continue;
+            GroupMetadata group;
+            group.color = QColor(value.value(QStringLiteral("color")).toString());
+            group.order = value.value(QStringLiteral("order")).toInt();
+            group.collapsed = value.value(QStringLiteral("collapsed")).toBool();
+            m_groupMetadata.insert(name, group);
+        }
+    }
+    ensureGroupMetadata();
 
     // Per-tab appearance is a real element target: restore only the bounded
     // QFont attributes that Qt widgets can apply without inventing layout
@@ -345,19 +643,36 @@ void CTabStateManager::save() const
     if (m_restoring || !m_settings || pageCount() == 0)
         return;
     QJsonObject root;
-    root.insert(QStringLiteral("schema"), 2);
+    root.insert(QStringLiteral("schema"), 3);
     QJsonArray order;
     for (int i = 0; i < pageCount(); ++i)
         order.append(tabKey(i));
     root.insert(QStringLiteral("order"), order);
     QJsonArray pinned;
-    for (const QString& name : m_pinned)
+    QStringList pinnedNames = m_pinned.values();
+    pinnedNames.sort(Qt::CaseInsensitive);
+    for (const QString& name : pinnedNames)
         pinned.append(name);
     root.insert(QStringLiteral("pinned"), pinned);
     QJsonObject groups;
     for (auto it = m_groups.cbegin(); it != m_groups.cend(); ++it)
         groups.insert(it.key(), it.value());
     root.insert(QStringLiteral("groups"), groups);
+    QJsonArray groupOrder;
+    const QStringList ordered = orderedGroupNames();
+    for (const QString& name : ordered)
+        groupOrder.append(name);
+    root.insert(QStringLiteral("groupOrder"), groupOrder);
+    QJsonObject metadata;
+    for (const QString& name : ordered) {
+        const GroupMetadata value = m_groupMetadata.value(name);
+        QJsonObject entry;
+        entry.insert(QStringLiteral("color"), value.color.name(QColor::HexArgb));
+        entry.insert(QStringLiteral("order"), value.order);
+        entry.insert(QStringLiteral("collapsed"), value.collapsed);
+        metadata.insert(name, entry);
+    }
+    root.insert(QStringLiteral("groupMetadata"), metadata);
     root.insert(QStringLiteral("active"), m_active.isEmpty() ? tabKey(currentIndex()) : m_active);
     QJsonObject appearance;
     for (const QString& key : m_appearanceOverrides) {
@@ -391,7 +706,7 @@ void CTabStateManager::restoreOrder()
     const QJsonDocument document = QJsonDocument::fromJson(m_settings->GetBlob(m_key));
     const QJsonObject root = document.object();
     const int schema = root.value(QStringLiteral("schema")).toInt();
-    if (schema != 1 && schema != 2)
+    if (schema != 1 && schema != 2 && schema != 3)
         return;
     QScopedValueRollback<bool> restoring(m_restoring, true);
     const QJsonArray order = root.value(QStringLiteral("order")).toArray();
@@ -404,6 +719,41 @@ void CTabStateManager::restoreOrder()
             if (current >= 0 && current != target)
                 bar->moveTab(current, target);
         }
+    } else if (m_pages) {
+        QList<QWidget*> pages;
+        for (const QJsonValue& value : order) {
+            const QString wanted = value.toString();
+            for (int index = 0; index < pageCount(); ++index)
+                if (tabKey(index) == wanted) { pages.append(pageAt(index)); break; }
+        }
+        for (int index = 0; index < pageCount(); ++index)
+            if (!pages.contains(pageAt(index)))
+                pages.append(pageAt(index));
+        QHash<QString, QListWidgetItem*> navigationItems;
+        if (auto* list = qobject_cast<QListWidget*>(m_navigation.data())) {
+            for (int index = list->count() - 1; index >= 0; --index) {
+                QListWidgetItem* item = list->takeItem(index);
+                const int pageIndex = item->data(Qt::UserRole).toInt();
+                if (pageIndex >= 0 && pageIndex < pageCount())
+                    navigationItems.insert(tabKey(pageIndex), item);
+                else
+                    delete item;
+            }
+            list->clear();
+        }
+        for (int target = 0; target < pages.size(); ++target) {
+            m_pages->removeWidget(pages.at(target));
+            m_pages->insertWidget(target, pages.at(target));
+        }
+        if (auto* list = qobject_cast<QListWidget*>(m_navigation.data())) {
+            for (int index = 0; index < pages.size(); ++index) {
+                QListWidgetItem* item = navigationItems.take(tabKey(index));
+                if (!item)
+                    continue;
+                item->setData(Qt::UserRole, index);
+                list->addItem(item);
+            }
+        }
     }
     if (!m_active.isEmpty()) {
         for (int i = 0; i < pageCount(); ++i) {
@@ -413,6 +763,7 @@ void CTabStateManager::restoreOrder()
             }
         }
     }
+    ensureGroupMetadata();
 }
 
 void CTabStateManager::showContextMenu(const QPoint& position)
@@ -436,30 +787,34 @@ void CTabStateManager::showContextMenu(const QPoint& position)
     currentStripSearch->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_T));
     QAction* currentGroupSearch = menu.addAction(tr("Search current tab group…"));
     currentGroupSearch->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_G));
-    currentGroupSearch->setEnabled(!m_groups.value(name).isEmpty());
+    currentGroupSearch->setEnabled(!groupForTab(name).isEmpty());
     QAction* groupNameSearch = menu.addAction(tr("Search tab groups…"));
     groupNameSearch->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_N));
     QAction* searchTabs = menu.addAction(tr("Search all open tabs…"));
     searchTabs->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_O));
     QAction* group = menu.addAction(tr("Move… into group…"));
+    QAction* manageGroups = menu.addAction(tr("Manage tab groups…"));
     QAction* clearGroup = menu.addAction(tr("Remove from group"));
     QAction* edit = menu.addAction(tr("Edit tab page typography…"));
-    connect(filter, &QLineEdit::textChanged, &menu, [filter, pin, currentStripSearch, currentGroupSearch, groupNameSearch, searchTabs, group, clearGroup, edit](const QString& query) {
-        for (QAction* action : { pin, currentStripSearch, currentGroupSearch, groupNameSearch, searchTabs, group, clearGroup, edit })
+    connect(filter, &QLineEdit::textChanged, &menu, [filter, pin, currentStripSearch, currentGroupSearch, groupNameSearch, searchTabs, group, manageGroups, clearGroup, edit](const QString& query) {
+        for (QAction* action : { pin, currentStripSearch, currentGroupSearch, groupNameSearch, searchTabs, group, manageGroups, clearGroup, edit })
             action->setVisible(query.isEmpty() || action->text().contains(query, Qt::CaseInsensitive));
     });
     connect(currentStripSearch, &QAction::triggered, this, [this, position]() { showScopedTabSearch(SearchScope::CurrentStrip, position); });
-    connect(currentGroupSearch, &QAction::triggered, this, [this, position, name]() { showScopedTabSearch(SearchScope::CurrentGroup, position, m_groups.value(name)); });
+    connect(currentGroupSearch, &QAction::triggered, this, [this, position, name]() { showScopedTabSearch(SearchScope::CurrentGroup, position, groupForTab(name)); });
     connect(groupNameSearch, &QAction::triggered, this, [this, position]() { showScopedTabSearch(SearchScope::GroupNames, position); });
     connect(searchTabs, &QAction::triggered, this, [this, position]() { showScopedTabSearch(SearchScope::MasterTabs, position); });
     connect(pin, &QAction::triggered, this, [this, name]() {
         if (m_pinned.contains(name)) m_pinned.remove(name); else m_pinned.insert(name);
+        restoreGroupedOrder();
+        applyGroupPresentation();
         save();
     });
     connect(group, &QAction::triggered, this, [this, name, position]() {
         showGroupPicker(name, position);
     });
-    connect(clearGroup, &QAction::triggered, this, [this, name]() { m_groups.remove(name); save(); });
+    connect(manageGroups, &QAction::triggered, this, [this, position]() { showManageGroups(position); });
+    connect(clearGroup, &QAction::triggered, this, [this, name]() { setGroupForTab(name, QString()); restoreGroupedOrder(); applyGroupPresentation(); save(); });
     connect(edit, &QAction::triggered, this, [this, name]() {
         QWidget* page = nullptr;
         for (int i = 0; i < pageCount(); ++i)
@@ -584,6 +939,194 @@ void CTabStateManager::showContextMenu(const QPoint& position)
         return;
 }
 
+void CTabStateManager::showManageGroups(const QPoint& position)
+{
+    QWidget* owner = ownerWidget();
+    if (!owner || pageCount() == 0)
+        return;
+
+    ensureGroupMetadata();
+    QDialog* dialog = new QDialog(owner, Qt::Tool | Qt::WindowStaysOnTopHint);
+    trackTransient(dialog);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setWindowModality(Qt::NonModal);
+    dialog->setWindowTitle(tr("Manage tab groups"));
+    dialog->setAccessibleName(tr("Manage tab groups"));
+    dialog->setMinimumSize(560, 420);
+
+    auto* root = new QVBoxLayout(dialog);
+    auto* description = new QLabel(tr("Create and arrange groups without closing tabs. Pinned tabs stay first and visible; ungrouped tabs stay last."), dialog);
+    description->setWordWrap(true);
+    description->setAccessibleDescription(tr("Group order, colors, and collapsed state are saved with this tab strip."));
+    root->addWidget(description);
+
+    auto* createRow = new QHBoxLayout();
+    auto* createName = new QLineEdit(dialog);
+    createName->setMaxLength(80);
+    createName->setPlaceholderText(tr("New group name"));
+    createName->setAccessibleName(tr("New tab group name"));
+    auto* create = new QPushButton(tr("Create group"), dialog);
+    create->setAccessibleDescription(tr("Create an empty tab group with the entered name."));
+    createRow->addWidget(createName, 1);
+    createRow->addWidget(create);
+    root->addLayout(createRow);
+
+    auto* scroll = new QScrollArea(dialog);
+    scroll->setWidgetResizable(true);
+    scroll->setAccessibleName(tr("Tab group list"));
+    auto* panel = new QWidget(scroll);
+    auto* groupsLayout = new QVBoxLayout(panel);
+    groupsLayout->setContentsMargins(4, 4, 4, 4);
+    scroll->setWidget(panel);
+    root->addWidget(scroll, 1);
+
+    auto* close = new QPushButton(tr("Close"), dialog);
+    close->setAccessibleDescription(tr("Close group management and keep the saved changes."));
+    root->addWidget(close, 0, Qt::AlignRight);
+    connect(close, &QPushButton::clicked, dialog, &QDialog::close);
+
+    const auto rebuild = QSharedPointer<std::function<void()>>::create();
+    *rebuild = [this, dialog, createName, groupsLayout, rebuild]() {
+        while (QLayoutItem* item = groupsLayout->takeAt(0)) {
+            if (QWidget* widget = item->widget())
+                widget->deleteLater();
+            delete item;
+        }
+        ensureGroupMetadata();
+        const QStringList names = orderedGroupNames();
+        if (names.isEmpty()) {
+            auto* empty = new QLabel(tr("No tab groups yet. Create one above or use Move… into group… from a tab."), groupsLayout->parentWidget());
+            empty->setWordWrap(true);
+            empty->setAccessibleDescription(tr("The group list is empty."));
+            groupsLayout->addWidget(empty);
+        }
+        for (const QString& originalName : names) {
+            const GroupMetadata metadata = m_groupMetadata.value(originalName);
+            int memberCount = 0;
+            for (int index = 0; index < pageCount(); ++index)
+                if (groupForTab(tabKey(index)).compare(originalName, Qt::CaseInsensitive) == 0)
+                    ++memberCount;
+            auto* row = new QGroupBox(tr("%1 (%2 members)").arg(originalName).arg(memberCount), groupsLayout->parentWidget());
+            auto* layout = new QGridLayout(row);
+            auto* name = new QLineEdit(originalName, row);
+            name->setMaxLength(80);
+            name->setAccessibleName(tr("Name for tab group %1").arg(originalName));
+            auto* color = new QPushButton(tr("Color"), row);
+            color->setAccessibleName(tr("Color for tab group %1").arg(originalName));
+            color->setStyleSheet(QStringLiteral("QPushButton { background: %1; }").arg(metadata.color.name(QColor::HexArgb)));
+            auto* collapsed = new QCheckBox(tr("Collapsed"), row);
+            collapsed->setChecked(metadata.collapsed);
+            collapsed->setAccessibleDescription(tr("Hide non-active members while keeping this preference saved."));
+            auto* up = new QPushButton(tr("Move up"), row);
+            auto* down = new QPushButton(tr("Move down"), row);
+            auto* remove = new QPushButton(tr("Remove"), row);
+            remove->setAccessibleDescription(tr("Remove the group and leave its tabs open and ungrouped."));
+            layout->addWidget(new QLabel(tr("Name"), row), 0, 0);
+            layout->addWidget(name, 0, 1, 1, 5);
+            layout->addWidget(color, 1, 0);
+            layout->addWidget(collapsed, 1, 1);
+            layout->addWidget(up, 1, 2);
+            layout->addWidget(down, 1, 3);
+            layout->addWidget(remove, 1, 4);
+            groupsLayout->addWidget(row);
+
+            connect(name, &QLineEdit::editingFinished, dialog, [this, name, originalName, rebuild]() {
+                const QString candidate = name->text().trimmed();
+                QString error;
+                if (!validGroupName(candidate, &error) || groupNameInUse(candidate, originalName)) {
+                    name->setText(originalName);
+                    return;
+                }
+                for (auto it = m_groups.begin(); it != m_groups.end(); ++it)
+                    if (it.value().compare(originalName, Qt::CaseInsensitive) == 0)
+                        it.value() = candidate;
+                GroupMetadata metadata = m_groupMetadata.take(originalName);
+                m_groupMetadata.insert(candidate, metadata);
+                for (QString& group : m_groupOrder)
+                    if (group.compare(originalName, Qt::CaseInsensitive) == 0)
+                        group = candidate;
+                ensureGroupMetadata();
+                save();
+                applyGroupPresentation();
+                (*rebuild)();
+            });
+            connect(color, &QPushButton::clicked, dialog, [this, color, originalName, dialog]() {
+                const QColor chosen = QColorDialog::getColor(m_groupMetadata.value(originalName).color, dialog, tr("Choose tab group color"), QColorDialog::ShowAlphaChannel);
+                if (!chosen.isValid())
+                    return;
+                m_groupMetadata[originalName].color = chosen;
+                color->setStyleSheet(QStringLiteral("QPushButton { background: %1; }").arg(chosen.name(QColor::HexArgb)));
+                applyGroupPresentation();
+                save();
+            });
+            connect(collapsed, &QCheckBox::toggled, dialog, [this, originalName](bool value) {
+                m_groupMetadata[originalName].collapsed = value;
+                applyGroupPresentation();
+                save();
+            });
+            connect(up, &QPushButton::clicked, dialog, [this, originalName, rebuild]() {
+                const int index = m_groupOrder.indexOf(originalName);
+                if (index > 0) {
+                    m_groupOrder.swapItemsAt(index, index - 1);
+                    ensureGroupMetadata();
+                    restoreGroupedOrder();
+                    applyGroupPresentation();
+                    save();
+                    (*rebuild)();
+                }
+            });
+            connect(down, &QPushButton::clicked, dialog, [this, originalName, rebuild]() {
+                const int index = m_groupOrder.indexOf(originalName);
+                if (index >= 0 && index + 1 < m_groupOrder.size()) {
+                    m_groupOrder.swapItemsAt(index, index + 1);
+                    ensureGroupMetadata();
+                    restoreGroupedOrder();
+                    applyGroupPresentation();
+                    save();
+                    (*rebuild)();
+                }
+            });
+            connect(remove, &QPushButton::clicked, dialog, [this, originalName, dialog, rebuild]() {
+                if (QMessageBox::question(dialog, tr("Remove tab group"), tr("Remove %1? Its tabs remain open and become ungrouped.").arg(originalName)) != QMessageBox::Yes)
+                    return;
+                for (auto it = m_groups.begin(); it != m_groups.end();) {
+                    if (it.value().compare(originalName, Qt::CaseInsensitive) == 0)
+                        it = m_groups.erase(it);
+                    else
+                        ++it;
+                }
+                m_groupMetadata.remove(originalName);
+                m_groupOrder.removeAll(originalName);
+                applyGroupPresentation();
+                save();
+                (*rebuild)();
+            });
+        }
+        groupsLayout->addStretch(1);
+        createName->setFocus();
+    };
+    connect(create, &QPushButton::clicked, dialog, [this, createName, rebuild]() {
+        const QString candidate = createName->text().trimmed();
+        QString error;
+        if (!validGroupName(candidate, &error) || groupNameInUse(candidate))
+            return;
+        GroupMetadata metadata;
+        metadata.color = defaultGroupColor(candidate);
+        metadata.order = m_groupOrder.size();
+        metadata.collapsed = false;
+        m_groupMetadata.insert(candidate, metadata);
+        m_groupOrder.append(candidate);
+        ensureGroupMetadata();
+        save();
+        applyGroupPresentation();
+        createName->clear();
+        (*rebuild)();
+    });
+    (*rebuild)();
+    dialog->move(mapToGlobal(position));
+    dialog->show();
+}
+
 void CTabStateManager::showGroupPicker(const QString& tabName, const QPoint& position)
 {
     QWidget* owner = ownerWidget();
@@ -653,25 +1196,22 @@ void CTabStateManager::showGroupPicker(const QString& tabName, const QPoint& pos
         } else {
             validation->setText(tr("Plain-text search is active."));
         }
-        QSet<QString> names;
-        for (auto it = m_groups.cbegin(); it != m_groups.cend(); ++it)
-            if (!it.value().isEmpty())
-                names.insert(it.value());
-        QStringList sorted = names.values();
-        sorted.sort(Qt::CaseInsensitive);
+        const QStringList sorted = orderedGroupNames();
         groups->clear();
         for (const QString& name : sorted) {
             const bool match = needle.isEmpty() || (regex->isChecked() ? expression.match(name).hasMatch() : name.contains(needle, Qt::CaseInsensitive));
             if (!match)
                 continue;
             int members = 0;
-            for (auto it = m_groups.cbegin(); it != m_groups.cend(); ++it)
-                if (it.value() == name)
+            for (int index = 0; index < pageCount(); ++index)
+                if (groupForTab(tabKey(index)).compare(name, Qt::CaseInsensitive) == 0)
                     ++members;
-            QListWidgetItem* item = new QListWidgetItem(tr("%1  · %2 tabs").arg(name).arg(members), groups);
+            const GroupMetadata metadata = m_groupMetadata.value(name);
+            const QString state = metadata.collapsed ? tr("collapsed") : tr("expanded");
+            QListWidgetItem* item = new QListWidgetItem(tr("%1  · %2 tabs  · %3").arg(name).arg(members).arg(state), groups);
             item->setData(Qt::UserRole, name);
-            item->setToolTip(tr("Group %1 contains %2 tab(s)").arg(name).arg(members));
-            item->setBackground(QColor::fromHsv(static_cast<int>(qHash(name) % 360u), 35, 245));
+            item->setToolTip(tr("Group %1 contains %2 tab(s), color %3, and is %4").arg(name).arg(members).arg(metadata.color.name(QColor::HexArgb), state));
+            item->setBackground(metadata.color);
         }
         if (groups->count() > 0)
             groups->setCurrentRow(0);
@@ -692,11 +1232,21 @@ void CTabStateManager::showGroupPicker(const QString& tabName, const QPoint& pos
     });
     connect(create, &QPushButton::clicked, dialog, [this, tabName, dialog, search, refresh]() {
         const QString value = search->text().trimmed();
-        if (value.isEmpty()) {
+        QString error;
+        if (!validGroupName(value, &error) || groupNameInUse(value)) {
             search->setFocus();
             return;
         }
-        m_groups.insert(tabName, value);
+        GroupMetadata metadata;
+        metadata.color = defaultGroupColor(value);
+        metadata.order = m_groupOrder.size();
+        metadata.collapsed = false;
+        m_groupMetadata.insert(value, metadata);
+        m_groupOrder.append(value);
+        setGroupForTab(tabName, value);
+        ensureGroupMetadata();
+        restoreGroupedOrder();
+        applyGroupPresentation();
         save();
         dialog->accept();
     });
@@ -705,7 +1255,10 @@ void CTabStateManager::showGroupPicker(const QString& tabName, const QPoint& pos
         const QString value = item ? item->data(Qt::UserRole).toString().trimmed() : QString();
         if (value.isEmpty())
             return;
-        m_groups.insert(tabName, value);
+        setGroupForTab(tabName, value);
+        ensureGroupMetadata();
+        restoreGroupedOrder();
+        applyGroupPresentation();
         save();
         dialog->accept();
     });
@@ -801,26 +1354,40 @@ void CTabStateManager::showScopedTabSearch(SearchScope scope, const QPoint& posi
         regexStatus->setText(useRegex ? tr("Valid pattern. Capture preview: %1").arg(expression.match(sample->text()).capturedTexts().join(QStringLiteral(" · "))) : tr("Plain-text search is active."));
         results->clear();
         int matches = 0;
-        QSet<QString> seenGroups;
+        if (groupNames) {
+            for (const QString& group : orderedGroupNames()) {
+                if (!needle.isEmpty()) {
+                    const bool matched = useRegex ? expression.match(group).hasMatch() : group.contains(needle, sensitivity);
+                    if (!matched)
+                        continue;
+                }
+                QListWidgetItem* item = new QListWidgetItem(group, results);
+                int firstMember = -1;
+                for (int index = 0; index < pageCount(); ++index)
+                    if (groupForTab(tabKey(index)).compare(group, Qt::CaseInsensitive) == 0) { firstMember = index; break; }
+                item->setData(Qt::UserRole, firstMember);
+                item->setToolTip(tr("Tab group %1, %2").arg(group, m_groupMetadata.value(group).collapsed ? tr("collapsed") : tr("expanded")));
+                item->setBackground(m_groupMetadata.value(group).color);
+                ++matches;
+            }
+            count->setText(tr("%1 matching tab groups").arg(matches));
+            if (results->count() > 0)
+                results->setCurrentRow(0);
+            return;
+        }
         for (int i = 0; i < pageCount(); ++i) {
             const QString key = tabKey(i);
-            const QString group = m_groups.value(key);
+            const QString group = groupForTab(key);
             const QString label = pageText(i);
             if (groupScoped && group != groupName)
                 continue;
-            if (groupNames && group.isEmpty())
-                continue;
-            if (groupNames && seenGroups.contains(group))
-                continue;
-            if (groupNames)
-                seenGroups.insert(group);
             const QString haystack = label + QStringLiteral(" ") + key + QStringLiteral(" ") + group;
             bool matched = needle.isEmpty();
             if (!needle.isEmpty())
                 matched = useRegex ? expression.match(haystack).hasMatch() : haystack.contains(needle, sensitivity);
             if (!matched)
                 continue;
-            QString display = groupNames ? group : (label.isEmpty() ? key : label);
+            QString display = label.isEmpty() ? key : label;
             if (!groupNames && !group.isEmpty())
                 display += tr("  · group: %1").arg(group);
             if (!groupNames && m_pinned.contains(key))

@@ -7,7 +7,9 @@
 #include <QRect>
 #include <QSet>
 #include <QHash>
+#include <QColor>
 #include <QString>
+#include <QStringList>
 
 #include "../mischelpers_global.h"
 
@@ -44,6 +46,13 @@ private slots:
     void showGroupPicker(const QString& tabName, const QPoint& position);
 
 private:
+    struct GroupMetadata
+    {
+        QColor color;
+        int order = 0;
+        bool collapsed = false;
+    };
+
     enum class SearchScope { CurrentStrip, CurrentGroup, GroupNames, MasterTabs };
     void showScopedTabSearch(SearchScope scope, const QPoint& position, const QString& groupName = QString());
     bool eventFilter(QObject* watched, QEvent* event) override;
@@ -65,6 +74,16 @@ private:
     void load();
     void save() const;
     void restoreOrder();
+    void showManageGroups(const QPoint& position);
+    void ensureGroupMetadata();
+    void applyGroupPresentation();
+    void restoreGroupedOrder();
+    QStringList orderedGroupNames() const;
+    QColor defaultGroupColor(const QString& groupName) const;
+    bool validGroupName(const QString& value, QString* error = nullptr) const;
+    bool groupNameInUse(const QString& value, const QString& except = QString()) const;
+    QString groupForTab(const QString& tabName) const;
+    void setGroupForTab(const QString& tabName, const QString& groupName);
 
     QPointer<QTabWidget> m_tabs;
     QPointer<QStackedLayout> m_pages;
@@ -78,5 +97,7 @@ private:
     QSet<QString> m_pinned;
     QSet<QString> m_appearanceOverrides;
     QHash<QString, QString> m_groups;
+    QHash<QString, GroupMetadata> m_groupMetadata;
+    QStringList m_groupOrder;
     QString m_active;
 };

@@ -14,6 +14,12 @@
   without copying or attaching an image.
 - The integrating commit is not guessed in this unreleased entry. The workflow
   records and verifies the exact source SHA when a release actually runs.
+- Added native tab-group management to the Settings and Options tab strips:
+  persisted schema 3 metadata now retains ARGB color, group order, and collapsed
+  state while migrating schema 1/2 mappings with deterministic defaults. The
+  anchored manager supports create, rename, recolor, reorder, collapse/expand,
+  and removal without closing tabs; the move picker now shows stored order,
+  colors, empty groups, collapse state, and member counts.
 
 ## 2026-08-11 · Keep visible dialogs visible after M3 chrome install
 
