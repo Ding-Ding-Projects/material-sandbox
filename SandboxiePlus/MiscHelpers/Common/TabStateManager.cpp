@@ -331,7 +331,7 @@ bool CTabStateManager::validGroupName(const QString& value, QString* error) cons
         return false;
     }
     for (const QChar character : trimmed) {
-        if (character.isControl()) {
+        if (character.category() == QChar::Other_Control) {
             if (error) *error = tr("Group names cannot contain control characters.");
             return false;
         }
