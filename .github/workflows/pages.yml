@@ -33,6 +33,15 @@ jobs:
       - name: Build local documentation entry routes
         shell: bash
         run: node scripts/build-pages-articles.mjs docs .pages-site "$GITHUB_SHA"
+      - name: Apply search-index exclusions
+        shell: bash
+        run: node scripts/apply-pages-noindex.mjs .pages-site
+      - name: Verify noindex behavior and published artifact
+        shell: bash
+        run: |
+          node scripts/test-pages-noindex.mjs
+          python3 scripts/verify_pages_noindex.py --self-test
+          python3 scripts/verify_pages_noindex.py .pages-site
       - uses: actions/upload-pages-artifact@v5
         with:
           path: .pages-site
